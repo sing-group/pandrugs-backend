@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  PanDrugsDB Backend
+  %%
+  Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="pandrugsdb-backend" version="3.0" metadata-complete="false">
+	<!-- Spring -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:META-INF/applicationContext.xml</param-value>
+	</context-param>
+
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	    <init-param>
+	        <param-name>cors.allowed.origins</param-name>
+	        <param-value>*</param-value>
+	    </init-param>
+	    <init-param>
+	        <param-name>cors.allowed.methods</param-name>
+	        <param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/public/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+	    <filter-name>
+	        OpenEntityManagerInViewFilter
+	    </filter-name>
+	    <filter-class>
+	        org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+	    </filter-class>
+	    <init-param>
+	        <param-name>singleSession</param-name>
+	        <param-value>true</param-value>
+	    </init-param>
+	    <init-param>
+	        <param-name>flushMode</param-name>
+	        <param-value>AUTO</param-value>
+	    </init-param>
+	</filter>
+	
+	<!-- Include this if you are using Hibernate -->
+	<filter-mapping>
+	    <filter-name>OpenEntityManagerInViewFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- Jersey -->
+	<servlet>
+		<servlet-name>jersey-public-servlet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>es.uvigo.ei.sing.pandrugsdb.PanDrugsDBPublicApplication</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-public-servlet</servlet-name>
+		<url-pattern>/public/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>jersey-private-servlet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>es.uvigo.ei.sing.pandrugsdb.PanDrugsDBPrivateApplication</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-private-servlet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Security -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>All</web-resource-name>
+			<url-pattern>/api/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>HEAD</http-method>
+			<http-method>OPTIONS</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ADMIN</role-name>
+			<role-name>USER</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>PanDrugsDBRealm</realm-name>
+	</login-config>
+	
+	<!-- Data Source -->
+	<resource-ref>
+		<description>Homologic DataSource</description>
+		<res-ref-name>jdbc/pandrugsdb/database</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>
+			Resource reference to a factory for javax.mail.Session
+			instances that may be used for sending electronic mail
+			messages, preconfigured to connect to the appropriate
+			SMTP server.
+		</description>
+		<res-ref-name>mail/Session</res-ref-name>
+		<res-type>javax.mail.Session</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+</web-app>

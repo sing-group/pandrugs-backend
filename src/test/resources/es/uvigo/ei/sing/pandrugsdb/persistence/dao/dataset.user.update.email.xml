@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  #%L
+  PanDrugsDB Backend
+  %%
+  Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<dataset>
+	<user login="pepe" email="pepe@email.com" password="926e27eecdbc7a18858b3798ba99bddd" role="USER"/>
+	<user login="paco" email="francisco@email.com" password="311020666a5776c57d265ace682dc46d" role="USER"/>
+	<user login="ana" email="ana@email.com" password="276b6c4692e78d4799c12ada515bc3e4" role="USER"/>
+	<user login="juan" email="juan@email.com" password="a94652aa97c7211ba8954dd15a3cf838" role="USER"/>
+	<user login="maría" email="maria@email.com" password="8a2ac0c5b70c320c517fea7adb2e4d00" role="USER"/>
+	<user login="admin1" email="admin1@email.com" password="e00cf25ad42683b3df678c61f42c6bda" role="ADMIN"/>
+</dataset>

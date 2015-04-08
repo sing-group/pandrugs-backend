@@ -1,0 +1,91 @@
+<!--
+  #%L
+  PanDrugsDB Backend
+  %%
+  Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/jdbc
+		http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+	">
+
+	<context:component-scan base-package="es.uvigo.ei.sing.pandrugsdb.*" />
+
+	<!-- JPA(hibernate) configuration -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="pandrugsdbTestDS" />
+		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugsdb.persistence.entity" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />
+				<property name="generateDdl" value="true" />
+				<property name="showSql" value="false" />
+			</bean>
+		</property>
+	</bean>
+
+	<jdbc:embedded-database id="pandrugsdbTestDS" type="HSQL" />
+
+	<bean id="hsqldbDataTypeFactory" class="org.dbunit.ext.hsqldb.HsqldbDataTypeFactory" />
+
+	<bean id="dbUnitDatabaseConfig" class="com.github.springtestdbunit.bean.DatabaseConfigBean">
+		<property name="datatypeFactory" ref="hsqldbDataTypeFactory" />
+		<property name="qualifiedTableNames" value="false" />
+		<property name="caseSensitiveTableNames" value="false" />
+	</bean>
+
+	<bean id="dbUnitDatabaseConnection"
+		class="com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean">
+		<property name="databaseConfig" ref="dbUnitDatabaseConfig" />
+		<property name="dataSource" ref="pandrugsdbTestDS" />
+	</bean>
+	
+	<bean id="configuration" class="es.uvigo.ei.sing.pandrugsdb.Configuration" scope="singleton">
+        <property name="emailFrom" value="noreply@pandrugsdb.es"/>
+	    <property name="serverURL" value="http://localhost:8080/pandrugsdb-backend" />
+    </bean>
+	
+	<bean id="mailer" class="es.uvigo.ei.sing.pandrugsdb.mailer.SpyMailer" scope="singleton"/>
+	<bean id="accessChecker" class="es.uvigo.ei.sing.pandrugsdb.service.security.CustomizableUserAccessChecker"/>
+	
+	<bean id="defaultRegistrationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAO"/>
+	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAO"/>
+	<bean id="defaultGeneDrugDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAO"/>
+	<bean id="defaultRegistrationController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationController"/>
+	<bean id="defaultUserController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserController"/>
+	<bean id="defaultGeneDrugController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugController"/>
+	<bean id="defaultSessionService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService"/>
+	<bean id="defaultRegistrationService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService"/>
+	<bean id="defaultUserService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService"/>
+	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService"/>
+</beans>

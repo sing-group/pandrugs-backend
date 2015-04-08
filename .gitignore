@@ -1,0 +1,9 @@
+/bin
+/target
+.classpath
+.project
+.settings
+/login.properties
+pandrugsdb.log
+bak
+/db
