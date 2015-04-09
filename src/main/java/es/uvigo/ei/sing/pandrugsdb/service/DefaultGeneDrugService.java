@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createInternalServerErrorException;
 
 import java.util.List;
 
@@ -38,8 +37,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
@@ -56,8 +53,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultGeneDrugService implements GeneDrugService {
-	private final static Logger LOG = LoggerFactory.getLogger(DefaultGeneDrugService.class);
-	
 	@Inject
 	private GeneDrugController controller;
 	
@@ -82,10 +77,6 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			return Response.ok(GeneDrugBasicInfos.buildFor(geneDrugs)).build();
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
-		} catch (Exception e) {
-			LOG.error("Error retrieving gene drugs list", e);
-			
-			throw createInternalServerErrorException("Error retrieving gene drugs list");
 		}
 	}
 }

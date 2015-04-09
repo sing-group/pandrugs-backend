@@ -44,5 +44,6 @@ public class PanDrugsDBPublicApplication extends ResourceConfig {
 		register(RequestContextFilter.class);
 		register(JacksonFeature.class);
 		register(ValidationFeature.class);
+		register(UnexpectedExceptionMapper.class);
 	}
 }

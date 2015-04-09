@@ -42,5 +42,6 @@ public class PanDrugsDBPrivateApplication extends ResourceConfig {
 		register(JacksonFeature.class);
 		register(RolesAllowedDynamicFeature.class);
 		register(ValidationFeature.class);
+		register(UnexpectedExceptionMapper.class);
 	}
 }

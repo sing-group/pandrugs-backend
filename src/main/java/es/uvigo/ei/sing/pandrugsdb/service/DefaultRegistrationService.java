@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createInternalServerErrorException;
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundException;
 
 import javax.inject.Inject;
@@ -40,8 +39,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.RegistrationController;
@@ -56,9 +53,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultRegistrationService implements RegistrationService {
-	private final static Logger LOG = LoggerFactory.getLogger(
-		DefaultRegistrationService.class);
-	
 	@Inject
 	private RegistrationController controller;
 
@@ -79,10 +73,6 @@ public class DefaultRegistrationService implements RegistrationService {
 			return Response.ok(new Message("User registered")).build();
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
-		} catch (Exception e) {
-			LOG.error("Error registering user", e);
-			
-			throw createInternalServerErrorException("Error registering user");
 		}
 	}
 	
@@ -99,10 +89,6 @@ public class DefaultRegistrationService implements RegistrationService {
 			return Response.ok(metadata).build();
 		} catch (IllegalArgumentException iae) {
 			throw createNotFoundException(iae);
-		} catch (Exception e) {
-			LOG.error("Error confirming registration", e);
-			
-			throw createInternalServerErrorException("Error confirming registration");
 		}
 	}
 }

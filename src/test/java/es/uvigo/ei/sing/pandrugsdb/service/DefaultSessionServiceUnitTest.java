@@ -27,7 +27,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertThat;
 
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 
@@ -76,7 +75,7 @@ public class DefaultSessionServiceUnitTest {
 		service.login(new Login(username, password));
 	}
 	
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testLoginUnexpectedException() {
 		final String username = "pepe";
 		final String password = "pepe-pass";

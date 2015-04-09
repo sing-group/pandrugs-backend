@@ -58,7 +58,27 @@ public interface UserAccessChecker {
 	}
 
 	public default Response doIfPrivileged(
-		String user, ThrowingSupplier<Response> actionOk
+		String user,
+		ThrowingSupplier<Response> actionOk,
+		ThrowingSupplier<Response> accessError
+	) throws WebApplicationException {
+		return doIfPrivileged(
+			user,
+			actionOk,
+			new TypedThrowingFunction<Exception, Response, WebApplicationException>() {
+				@Override
+				public Response apply(Exception value)
+				throws WebApplicationException {
+					throw createInternalServerErrorException(value);
+				}
+			},
+			accessError
+		);
+	}
+
+	public default Response doIfPrivileged(
+		String user,
+		ThrowingSupplier<Response> actionOk
 	) throws WebApplicationException {
 		return doIfPrivileged(
 			user,

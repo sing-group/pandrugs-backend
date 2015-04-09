@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createInternalServerErrorException;
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createUnauthorizedException;
 
 import javax.inject.Inject;
@@ -34,8 +33,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
@@ -46,8 +43,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultSessionService implements SessionService {
-	private final static Logger LOG = LoggerFactory.getLogger(DefaultSessionService.class);
-	
 	@Inject
 	private UserController controller;
 	
@@ -63,10 +58,6 @@ public class DefaultSessionService implements SessionService {
 			}
 		} catch (NotAuthorizedException nae) {
 			throw nae;
-		} catch (Exception e) {
-			LOG.error("Error checking user's login: " + login, e);
-			
-			throw createInternalServerErrorException(e);
 		}
 	}
 }

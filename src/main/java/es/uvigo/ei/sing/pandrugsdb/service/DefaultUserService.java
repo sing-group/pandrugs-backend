@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createInternalServerErrorException;
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundException;
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createUnauthorizedException;
 
@@ -37,7 +36,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,7 +52,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
-import es.uvigo.ei.sing.pandrugsdb.util.TypedThrowingFunction;
 
 @Path("user")
 @Service
@@ -93,15 +90,6 @@ public class DefaultUserService implements UserService {
 						new UserMetadata(user)
 					).build();
 				}
-			},
-			new TypedThrowingFunction<Exception, Response, WebApplicationException>() {
-				public Response apply(Exception e) throws WebApplicationException {
-					LOG.error("Error while retrieving user information: " + userLogin, e);
-					
-					throw createInternalServerErrorException(
-						"Error while retrieving user information: " + userLogin
-					);
-				};
 			},
 			() -> {
 				LOG.error(String.format(
@@ -143,15 +131,6 @@ public class DefaultUserService implements UserService {
 					).build();
 				}
 			},
-			new TypedThrowingFunction<Exception, Response, WebApplicationException>() {
-				public Response apply(Exception e) throws WebApplicationException {
-					LOG.error("Error while updating user information: " + userLogin, e);
-					
-					throw createInternalServerErrorException(
-						"Error while updating user information: " + userLogin
-					);
-				}
-			},
 			() -> {
 				LOG.error(String.format(
 					"Illegal update attempt of user %s to data of user %s",
@@ -177,12 +156,6 @@ public class DefaultUserService implements UserService {
 			throw createNotFoundException(
 				"User " + login + " not found"
 			);
-		} catch (Exception e) {
-			LOG.error("Error deleting user", e);
-			
-			throw createInternalServerErrorException(
-				"Error deleting user: " + login
-			);
 		}
 	}
 
@@ -190,14 +163,8 @@ public class DefaultUserService implements UserService {
 	@Override
 	public Response list() 
 	throws InternalServerErrorException {
-		try {
-			return Response.ok(
-				UserMetadatas.buildFor(controller.list())
-			).build();
-		} catch (Exception e) {
-			LOG.error("Error listing users", e);
-			
-			throw createInternalServerErrorException("Error listing users");
-		}
+		return Response.ok(
+			UserMetadatas.buildFor(controller.list())
+		).build();
 	}
 }

@@ -40,7 +40,6 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -93,7 +92,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		service.list(emptyList(), null, null);
 	}
 	
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testListUnexpectedException() {
 		expect(controller.searchForGeneDrugs(anyObject(), anyObject(), anyObject()))
 			.andThrow(new RuntimeException("Unexpected exception"));

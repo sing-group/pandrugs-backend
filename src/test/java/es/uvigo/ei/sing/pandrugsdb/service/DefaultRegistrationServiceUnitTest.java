@@ -34,7 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
@@ -107,7 +106,7 @@ public class DefaultRegistrationServiceUnitTest {
 		service.register(registration);
 	}
 	
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testRegisterUnexpectedException() {
 		expect(controller.register(anyString(), anyString(), anyString()))
 			.andThrow(new RuntimeException("Unexpected exception"));
@@ -146,7 +145,7 @@ public class DefaultRegistrationServiceUnitTest {
 		service.confirm(uuid);
 	}
 	
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testConfirmUnexpectedException() {
 		expect(controller.confirm(anyString()))
 			.andThrow(new RuntimeException("Unexpected exception"));

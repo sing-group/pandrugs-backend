@@ -254,7 +254,7 @@ public class DefaultUserServiceUnitTest {
 		service.delete(new UserLogin(login));
 	}
 
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testDeleteUnexpectedException() {
 		final String login = anyUser().getLogin();
 		
@@ -288,7 +288,7 @@ public class DefaultUserServiceUnitTest {
 		assertThat(userMetadatas.getUsers(), hasTheSameItemsAs(metadatas));
 	}
 
-	@Test(expected = InternalServerErrorException.class)
+	@Test(expected = RuntimeException.class)
 	public void testListUnexpectedException() {
 		expect(controller.list())
 			.andThrow(new RuntimeException("Unexpected exception"));
