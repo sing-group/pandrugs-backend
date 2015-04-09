@@ -297,13 +297,12 @@ public final class Checks {
 	 * Checks if the provided collection is not empty.
 	 * 
 	 * @param collection the collection checked.
-	 * @param <T> type of the collection's items.
 	 * @param <C> type of the collection.
 	 * @return the provided collection.
 	 * @throws NullPointerException if the collection is {@code null}.
 	 * @throws IllegalArgumentException if the collection is empty.
 	 */
-	public static <T, C extends Collection<T>> C requireNonEmpty(C collection) {
+	public static <C extends Collection<?>> C requireNonEmpty(C collection) {
 		return check(requireNonNull(collection), 
 			not(Collection::isEmpty),
 			"collection can't be empty"
