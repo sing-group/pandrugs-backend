@@ -50,7 +50,7 @@
 	 />
    
 	<Realm className="org.apache.catalina.realm.LockOutRealm">
-		<Realm resourceName="HomologicRealm" 
+		<Realm resourceName="PanDrugsDBRealm" 
 			className="org.apache.catalina.realm.DataSourceRealm"
 			dataSourceName="jdbc/pandrugsdb/database"
 			userTable="user"

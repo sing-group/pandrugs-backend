@@ -134,7 +134,7 @@
 	
 	<!-- Data Source -->
 	<resource-ref>
-		<description>Homologic DataSource</description>
+		<description>PanDrugsDB DataSource</description>
 		<res-ref-name>jdbc/pandrugsdb/database</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
