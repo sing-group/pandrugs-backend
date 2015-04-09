@@ -79,34 +79,6 @@
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
-	<!-- Jersey -->
-	<servlet>
-		<servlet-name>jersey-public-servlet</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>es.uvigo.ei.sing.pandrugsdb.PanDrugsDBPublicApplication</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jersey-public-servlet</servlet-name>
-		<url-pattern>/public/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>jersey-private-servlet</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>es.uvigo.ei.sing.pandrugsdb.PanDrugsDBPrivateApplication</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jersey-private-servlet</servlet-name>
-		<url-pattern>/api/*</url-pattern>
-	</servlet-mapping>
-	
 	<!-- Security -->
 	<security-constraint>
 		<web-resource-collection>
