@@ -17,14 +17,12 @@ public class UserMetadatas {
 	@NotNull
 	private List<UserMetadata> users;
 	
-	public UserMetadatas() {}
-	
-	public static UserMetadatas buildFor(List<User> user) {
-		return new UserMetadatas(user.stream().map(UserMetadata::new).collect(toList()));
-	}
+	UserMetadatas() {}
 
-	public UserMetadatas(List<UserMetadata> users) {
-		this.users = users;
+	public UserMetadatas(List<User> users) {
+		this.users = users.stream()
+			.map(UserMetadata::new)
+		.collect(toList());
 	}
 
 	public List<UserMetadata> getUsers() {

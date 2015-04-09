@@ -74,7 +74,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 				startPosition, maxResults
 			);
 			
-			return Response.ok(GeneDrugBasicInfos.buildFor(geneDrugs)).build();
+			return Response.ok(new GeneDrugBasicInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
 		}

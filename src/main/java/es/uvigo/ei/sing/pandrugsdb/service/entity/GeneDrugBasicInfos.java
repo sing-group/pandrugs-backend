@@ -1,5 +1,6 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -17,22 +18,15 @@ public class GeneDrugBasicInfos {
 	@NotNull
 	private List<GeneDrugBasicInfo> geneDrugs;
 	
-	public GeneDrugBasicInfos() {}
-	
-	public static GeneDrugBasicInfos buildFor(List<GeneDrug> geneDrugs) {
-		return new GeneDrugBasicInfos(
-			geneDrugs.stream().map(GeneDrugBasicInfo::new).collect(toList()));
-	}
+	GeneDrugBasicInfos() {}
 
-	public GeneDrugBasicInfos(List<GeneDrugBasicInfo> users) {
-		this.geneDrugs = users;
+	public GeneDrugBasicInfos(List<GeneDrug> geneDrugs) {
+		this.geneDrugs = geneDrugs.stream()
+			.map(GeneDrugBasicInfo::new)
+		.collect(toList());
 	}
 
 	public List<GeneDrugBasicInfo> getGeneDrugs() {
-		return geneDrugs;
-	}
-
-	public void setGeneDrugs(List<GeneDrugBasicInfo> users) {
-		this.geneDrugs = users;
+		return unmodifiableList(geneDrugs);
 	}
 }

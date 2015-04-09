@@ -35,18 +35,21 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugBasicInfo {
 	@XmlAttribute(required = true)
-	private final String gene;
+	private String gene;
 	@XmlAttribute(required = true)
-	private final String drug;
-	private final String family;
-	private final String status;
-	private final String cancer;
-	private final String therapy;
-	private final String indirect;
-	private final String target;
+	private String drug;
+	private String family;
+	private String status;
+	private String cancer;
+	private String therapy;
+	private String indirect;
+	private String target;
 	@XmlAttribute(required = true)
-	private final double score;
-	private final String sources;
+	private double score;
+	private String sources;
+
+	GeneDrugBasicInfo() {
+	}
 
 	public GeneDrugBasicInfo(GeneDrug geneDrug) {
 		this.gene = geneDrug.getGeneSymbol();

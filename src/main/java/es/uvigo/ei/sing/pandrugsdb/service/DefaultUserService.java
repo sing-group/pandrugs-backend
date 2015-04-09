@@ -164,7 +164,7 @@ public class DefaultUserService implements UserService {
 	public Response list() 
 	throws InternalServerErrorException {
 		return Response.ok(
-			UserMetadatas.buildFor(controller.list())
+			new UserMetadatas(controller.list())
 		).build();
 	}
 }

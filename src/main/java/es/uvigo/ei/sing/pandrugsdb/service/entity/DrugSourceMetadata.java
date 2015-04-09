@@ -32,17 +32,20 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugSourceMetadata {
 	@XmlAttribute(required = true)
-	private final String source;
+	private String source;
 	@XmlAttribute(required = true)
-	private final String sourceDrugName;
+	private String sourceDrugName;
 	
-	public DrugSourceMetadata(String source, String sourceDrugName) {
-		this.source = source;
-		this.sourceDrugName = sourceDrugName;
+	DrugSourceMetadata() {
 	}
 
 	public DrugSourceMetadata(DrugSource source) {
 		this(source.getSource(), source.getSourceDrugName());
+	}
+	
+	public DrugSourceMetadata(String source, String sourceDrugName) {
+		this.source = source;
+		this.sourceDrugName = sourceDrugName;
 	}
 
 	public String getSource() {
