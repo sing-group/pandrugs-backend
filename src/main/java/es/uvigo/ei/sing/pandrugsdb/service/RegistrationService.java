@@ -24,10 +24,11 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
 public interface RegistrationService {
 	/**
@@ -44,7 +45,7 @@ public interface RegistrationService {
 	 * @throws BadRequestException if the registration information is not valid.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response register(Registration registration)
+	public abstract Message register(Registration registration)
 	throws BadRequestException, InternalServerErrorException;
 
 	/**
@@ -57,6 +58,6 @@ public interface RegistrationService {
 	 * @throws NotFoundException if the uuid is not valid. 
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response confirm(UUID uuid)
+	public abstract UserMetadata confirm(UUID uuid)
 	throws NotFoundException, InternalServerErrorException;
 }

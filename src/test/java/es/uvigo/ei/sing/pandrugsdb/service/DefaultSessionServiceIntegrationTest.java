@@ -21,19 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUserPassword;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUserPassword;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,9 +64,7 @@ public class DefaultSessionServiceIntegrationTest {
 		final String login = presentUser().getLogin();
 		final String password = presentUserPassword();
 		
-		final Response response = service.login(new Login(login, password));
-		
-		assertThat(response, hasHTTPStatus(OK));
+		service.login(new Login(login, password));
 	}
 	
 	@Test(expected = NotAuthorizedException.class)

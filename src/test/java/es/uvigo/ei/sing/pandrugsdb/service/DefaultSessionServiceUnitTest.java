@@ -21,14 +21,10 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -57,9 +53,7 @@ public class DefaultSessionServiceUnitTest {
 		
 		replay(controller);
 		
-		final Response response = service.login(new Login(username, password));
-		
-		assertThat(response, hasHTTPStatus(OK));
+		service.login(new Login(username, password));
 	}
 	
 	@Test(expected = NotAuthorizedException.class)

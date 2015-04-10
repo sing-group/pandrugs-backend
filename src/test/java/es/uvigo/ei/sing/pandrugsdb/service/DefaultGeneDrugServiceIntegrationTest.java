@@ -21,16 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
@@ -38,8 +34,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,9 +100,7 @@ public class DefaultGeneDrugServiceIntegrationTest {
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
-		final Response response = service.list(emptyList(), null, null);
-		
-		assertThat(response, hasHTTPStatus(Status.BAD_REQUEST));
+		service.list(emptyList(), null, null);
 	}
 	
 	private void testList(Integer startPosition, Integer maxResults) {
@@ -123,12 +115,8 @@ public class DefaultGeneDrugServiceIntegrationTest {
 		final List<GeneDrugBasicInfo> expectedInfos = geneDrugList.stream()
 			.map(GeneDrugBasicInfo::new).collect(toList());
 		
-		final Response response = service.list(asList(genes), startPosition, maxResults);
+		final GeneDrugBasicInfos infos = service.list(asList(genes), startPosition, maxResults);
 
-		assertThat(response, hasHTTPStatus(Status.OK));
-		assertThat(response.getEntity(), is(instanceOf(GeneDrugBasicInfos.class)));
-		
-		final GeneDrugBasicInfos infos = (GeneDrugBasicInfos) response.getEntity();
 		assertEquals(expectedInfos, infos.getGeneDrugs());
 	}
 }

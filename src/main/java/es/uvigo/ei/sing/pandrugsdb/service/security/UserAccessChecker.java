@@ -21,26 +21,26 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.security;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createInternalServerErrorException;
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createUnauthorizedException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils;
 import es.uvigo.ei.sing.pandrugsdb.util.ThrowingSupplier;
-import es.uvigo.ei.sing.pandrugsdb.util.TypedThrowingFunction;
 
 public interface UserAccessChecker {
 	public abstract boolean isUserInRole(RoleType role);
 	
 	public abstract String getUserName();
 	
-	public default Response doIfPrivileged(
+	public default <R, T extends WebApplicationException, AE extends WebApplicationException>
+	R doIfPrivileged(
 		String user,
-		ThrowingSupplier<Response> actionOk,
-		TypedThrowingFunction<Exception, Response, WebApplicationException> actionError,
-		ThrowingSupplier<Response> accessError
+		ThrowingSupplier<R> actionOk,
+		Function<Exception, WebApplicationException> actionError,
+		Supplier<AE> accessError
 	) throws WebApplicationException {
 		try {
 			if (isUserInRole(RoleType.ADMIN) ||
@@ -48,49 +48,25 @@ public interface UserAccessChecker {
 			) {
 				return actionOk.get();
 			} else {
-				return accessError.get();
+				throw accessError.get();
 			}
 		} catch (WebApplicationException wae) {
 			throw wae;
 		} catch (Exception e) {
-			return actionError.apply(e);
+			throw actionError.apply(e);
 		}
 	}
 
-	public default Response doIfPrivileged(
+	public default <R, AE extends WebApplicationException> R doIfPrivileged(
 		String user,
-		ThrowingSupplier<Response> actionOk,
-		ThrowingSupplier<Response> accessError
+		ThrowingSupplier<R> actionOk,
+		Supplier<AE> accessError
 	) throws WebApplicationException {
 		return doIfPrivileged(
 			user,
 			actionOk,
-			new TypedThrowingFunction<Exception, Response, WebApplicationException>() {
-				@Override
-				public Response apply(Exception value)
-				throws WebApplicationException {
-					throw createInternalServerErrorException(value);
-				}
-			},
+			ServiceUtils::createInternalServerErrorException,
 			accessError
-		);
-	}
-
-	public default Response doIfPrivileged(
-		String user,
-		ThrowingSupplier<Response> actionOk
-	) throws WebApplicationException {
-		return doIfPrivileged(
-			user,
-			actionOk,
-			new TypedThrowingFunction<Exception, Response, WebApplicationException>() {
-				@Override
-				public Response apply(Exception value)
-				throws WebApplicationException {
-					throw createInternalServerErrorException(value);
-				}
-			},
-			() -> { throw createUnauthorizedException("Unauthorized access"); }
 		);
 	}
 }

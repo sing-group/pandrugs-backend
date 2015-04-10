@@ -35,7 +35,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Transactional
-	public Response list(
+	public GeneDrugBasicInfos list(
 		@QueryParam("gene") List<String> genes,
 		@QueryParam("startPosition") Integer startPosition,
 		@QueryParam("maxResults") Integer maxResults
@@ -74,7 +73,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 				startPosition, maxResults
 			);
 			
-			return Response.ok(new GeneDrugBasicInfos(geneDrugs)).build();
+			return new GeneDrugBasicInfos(geneDrugs);
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
 		}

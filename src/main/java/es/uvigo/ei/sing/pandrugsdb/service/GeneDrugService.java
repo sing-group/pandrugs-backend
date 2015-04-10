@@ -25,7 +25,8 @@ import java.util.List;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.Response;
+
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
 
 public interface GeneDrugService {
 	/**
@@ -40,7 +41,7 @@ public interface GeneDrugService {
 	 * @throws BadRequestException if not gene symbol is provided.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response list(
+	public abstract GeneDrugBasicInfos list(
 		List<String> genes, Integer startPosition, Integer maxResults
 	) throws BadRequestException, InternalServerErrorException;
 }

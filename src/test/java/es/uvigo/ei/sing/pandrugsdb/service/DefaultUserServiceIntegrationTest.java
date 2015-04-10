@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
@@ -30,9 +29,7 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.present
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -41,7 +38,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +52,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
@@ -142,10 +137,7 @@ public class DefaultUserServiceIntegrationTest {
 	public void testDelete() {
 		final String login = presentUser().getLogin();
 		
-		final Response response = service.delete(new UserLogin(login));
-		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), is(instanceOf(Message.class)));
+		assertNotNull(service.delete(new UserLogin(login)));
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -162,12 +154,8 @@ public class DefaultUserServiceIntegrationTest {
 			.map(UserMetadata::new)
 		.collect(toList());
 		
-		final Response response = service.list();
+		final UserMetadatas userMetadatas = service.list();
 		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), is(instanceOf(UserMetadatas.class)));
-		
-		final UserMetadatas userMetadatas = (UserMetadatas) response.getEntity();
 		assertThat(userMetadatas.getUsers(), hasTheSameItemsAs(metadatas));
 	}
 	
@@ -180,10 +168,9 @@ public class DefaultUserServiceIntegrationTest {
 		
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 		
-		final Response response = service.get(new UserLogin(login), security);
+		final UserMetadata metadata = service.get(new UserLogin(login), security);
 		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), hasTheSameUserDataAs(targetUser));
+		assertThat(metadata, hasTheSameUserDataAs(targetUser));
 	}
 	
 	private void testUpdateUserData(User accessingUser, User targetUser) {
@@ -196,9 +183,8 @@ public class DefaultUserServiceIntegrationTest {
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 		
-		final Response response = service.update(new UserMetadata(updatedUser), security);
+		final UserMetadata metadata = service.update(new UserMetadata(updatedUser), security);
 		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), hasTheSameUserDataAs(updatedUser));
+		assertThat(metadata, hasTheSameUserDataAs(updatedUser));
 	}
 }

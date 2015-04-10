@@ -21,21 +21,17 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +46,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
@@ -71,11 +66,8 @@ public class DefaultRegistrationServiceIntegrationTest {
 	@Test
 	public void testRegisterAbsentRegistration() {
 		final Registration registration = absentRegistration();
-		
-		final Response result = service.register(registration);
-		
-		assertThat(result, hasHTTPStatus(OK));
-		assertThat(result.getEntity(), is(instanceOf(Message.class)));
+
+		assertNotNull(service.register(registration));
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -91,10 +83,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final Registration registration = absentRegistration();
 		registration.setEmail(presentRegistration().getEmail());
 		
-		final Response result = service.register(registration);
-		
-		assertThat(result, hasHTTPStatus(OK));
-		assertThat(result.getEntity(), is(instanceOf(Message.class)));
+		assertNotNull(service.register(registration));
 	}
 
 	@Test(expected = BadRequestException.class)
@@ -111,11 +100,9 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final Registration registration = presentRegistration();
 		final String uuid = registration.getUuid();
 		
-		final Response result = service.confirm(new UUID(uuid));
+		final UserMetadata metadata = service.confirm(new UUID(uuid));
 		
-		assertThat(result, hasHTTPStatus(OK));
-		assertThat(result.getEntity(), is(instanceOf(UserMetadata.class)));
-		assertThat(result.getEntity(), hasTheSameUserDataAs(registration));
+		assertThat(metadata, hasTheSameUserDataAs(registration));
 	}
 
 	@Test(expected = NotFoundException.class)

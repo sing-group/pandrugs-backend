@@ -37,7 +37,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
@@ -61,7 +60,7 @@ public class DefaultRegistrationService implements RegistrationService {
 	
 	@POST
 	@Override
-	public Response register(Registration registration)
+	public Message register(Registration registration)
 	throws BadRequestException, InternalServerErrorException {
 		try {
 			controller.register(
@@ -70,7 +69,7 @@ public class DefaultRegistrationService implements RegistrationService {
 				registration.getPassword()
 			);
 			
-			return Response.ok(new Message("User registered")).build();
+			return new Message("User registered");
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
 		}
@@ -80,13 +79,11 @@ public class DefaultRegistrationService implements RegistrationService {
 	@Path("/{uuid}")
 	@Consumes(MediaType.WILDCARD)
 	@Override
-	public Response confirm(@PathParam("uuid") UUID uuid)
+	public UserMetadata confirm(@PathParam("uuid") UUID uuid)
 	throws NotFoundException, InternalServerErrorException {
 		try {
 			final User user = controller.confirm(uuid.getUuid());
-			final UserMetadata metadata = new UserMetadata(user);
-			
-			return Response.ok(metadata).build();
+			return new UserMetadata(user);
 		} catch (IllegalArgumentException iae) {
 			throw createNotFoundException(iae);
 		}

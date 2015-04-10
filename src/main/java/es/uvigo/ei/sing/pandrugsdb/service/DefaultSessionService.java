@@ -31,7 +31,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
@@ -48,12 +47,10 @@ public class DefaultSessionService implements SessionService {
 	
 	@POST
 	@Override
-	public Response login(Login login) 
+	public void login(Login login) 
 	throws NotAuthorizedException, InternalServerErrorException {
 		try {
-			if (controller.checkLogin(login.getUsername(), login.getPassword())) {
-				return Response.ok().build();
-			} else {
+			if (!controller.checkLogin(login.getUsername(), login.getPassword())) {
 				throw createUnauthorizedException("Access denied");
 			}
 		} catch (NotAuthorizedException nae) {

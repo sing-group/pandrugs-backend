@@ -21,21 +21,17 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyUser;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -46,7 +42,6 @@ import org.junit.runner.RunWith;
 import es.uvigo.ei.sing.pandrugsdb.controller.RegistrationController;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
@@ -69,11 +64,8 @@ public class DefaultRegistrationServiceUnitTest {
 			.andReturn(registration);
 		
 		replay(controller);
-		
-		final Response response = service.register(registration);
-		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), is(instanceOf(Message.class)));
+
+		assertNotNull(service.register(registration));
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -102,7 +94,7 @@ public class DefaultRegistrationServiceUnitTest {
 			.andThrow(new IllegalArgumentException("Error"));
 		
 		replay(controller);
-		
+
 		service.register(registration);
 	}
 	
@@ -112,7 +104,7 @@ public class DefaultRegistrationServiceUnitTest {
 			.andThrow(new RuntimeException("Unexpected exception"));
 		
 		replay(controller);
-		
+
 		service.register(anyRegistration());
 	}
 
@@ -126,11 +118,9 @@ public class DefaultRegistrationServiceUnitTest {
 
 		replay(controller);
 		
-		final Response response = service.confirm(new UUID(uuid));
+		final UserMetadata metadata = service.confirm(new UUID(uuid));
 		
-		assertThat(response, hasHTTPStatus(OK));
-		assertThat(response.getEntity(), is(instanceOf(UserMetadata.class)));
-		assertThat(response.getEntity(), hasTheSameUserDataAs(user));
+		assertThat(metadata, hasTheSameUserDataAs(user));
 	}
 
 	@Test(expected = NotFoundException.class)

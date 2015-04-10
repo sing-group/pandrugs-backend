@@ -24,11 +24,12 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
 
 public interface UserService {
 	/**
@@ -49,7 +50,7 @@ public interface UserService {
 	 * will only happen for administrator users).
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response get(UserLogin login, SecurityContext security)
+	public abstract UserMetadata get(UserLogin login, SecurityContext security)
 	throws NotAuthorizedException, NotFoundException, InternalServerErrorException;
 
 	/**
@@ -70,7 +71,7 @@ public interface UserService {
 	 * will only happen for administrator users).
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response update(UserMetadata userMetadata, SecurityContext security)
+	public abstract UserMetadata update(UserMetadata userMetadata, SecurityContext security)
 	throws NotAuthorizedException, NotFoundException, InternalServerErrorException;
 
 	/**
@@ -84,7 +85,7 @@ public interface UserService {
 	 * @throws NotFoundException if the user does not exists.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response delete(UserLogin login)
+	public abstract Message delete(UserLogin login)
 	throws NotFoundException, InternalServerErrorException;
 
 	/**
@@ -96,6 +97,6 @@ public interface UserService {
 	 * the client has permission to access that user information.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response list()
+	public abstract UserMetadatas list()
 	throws InternalServerErrorException;
 }

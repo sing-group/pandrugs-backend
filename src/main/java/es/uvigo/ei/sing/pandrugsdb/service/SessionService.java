@@ -23,7 +23,6 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 
@@ -37,6 +36,6 @@ public interface SessionService {
 	 * @throws NotAuthorizedException if the credentials are not valid.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Response login(Login login)
+	public abstract void login(Login login)
 	throws NotAuthorizedException, InternalServerErrorException;
 }

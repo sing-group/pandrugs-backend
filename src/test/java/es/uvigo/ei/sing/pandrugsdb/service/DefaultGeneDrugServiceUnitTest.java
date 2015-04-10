@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
 import static java.util.Arrays.asList;
@@ -32,16 +31,11 @@ import static org.easymock.EasyMock.aryEq;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -113,12 +107,8 @@ public class DefaultGeneDrugServiceUnitTest {
 		
 		replay(controller);
 		
-		final Response response = service.list(asList(genes), startPosition, maxResults);
+		final GeneDrugBasicInfos infos = service.list(asList(genes), startPosition, maxResults);
 		
-		assertThat(response, hasHTTPStatus(Status.OK));
-		assertThat(response.getEntity(), is(instanceOf(GeneDrugBasicInfos.class)));
-		
-		final GeneDrugBasicInfos infos = (GeneDrugBasicInfos) response.getEntity();
 		assertEquals(expectedInfos, infos.getGeneDrugs());
 	}
 }

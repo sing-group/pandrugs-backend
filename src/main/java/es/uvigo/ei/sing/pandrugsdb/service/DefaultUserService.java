@@ -38,7 +38,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class DefaultUserService implements UserService {
 	@Path("/{login}")
 	@RolesAllowed({ "ADMIN", "USER" })
 	@Override
-	public Response get(
+	public UserMetadata get(
 		@PathParam("login") UserLogin login,
 		@Context SecurityContext security
 	) throws NotAuthorizedException, NotFoundException, InternalServerErrorException {
@@ -86,9 +85,7 @@ public class DefaultUserService implements UserService {
 						"No user found with login: " + userLogin
 					);
 				} else {
-					return Response.ok(
-						new UserMetadata(user)
-					).build();
+					return new UserMetadata(user);
 				}
 			},
 			() -> {
@@ -105,7 +102,7 @@ public class DefaultUserService implements UserService {
 	@PUT
 	@RolesAllowed({ "ADMIN", "USER" })
 	@Override
-	public Response update(
+	public UserMetadata update(
 		UserMetadata userMetadata,
 		@Context SecurityContext security
 	) throws NotAuthorizedException, NotFoundException, InternalServerErrorException {
@@ -126,9 +123,7 @@ public class DefaultUserService implements UserService {
 					user.setEmail(userMetadata.getEmail());
 					user.setPassword(userMetadata.getPassword());
 
-					return Response.ok(
-						new UserMetadata(controller.update(user))
-					).build();
+					return new UserMetadata(controller.update(user));
 				}
 			},
 			() -> {
@@ -144,14 +139,12 @@ public class DefaultUserService implements UserService {
 	
 	@Override
 	@DELETE
-	public Response delete(@PathParam("login") UserLogin login)
+	public Message delete(@PathParam("login") UserLogin login)
 	throws NotFoundException, InternalServerErrorException {
 		try {
 			this.controller.remove(login.getLogin());
 	
-			return Response.ok(
-				new Message("User " + login + " deleted")
-			).build();
+			return new Message("User " + login + " deleted");
 		} catch (IllegalArgumentException iae) {
 			throw createNotFoundException(
 				"User " + login + " not found"
@@ -161,10 +154,8 @@ public class DefaultUserService implements UserService {
 
 	@GET
 	@Override
-	public Response list() 
+	public UserMetadatas list() 
 	throws InternalServerErrorException {
-		return Response.ok(
-			new UserMetadatas(controller.list())
-		).build();
+		return new UserMetadatas(controller.list());
 	}
 }
