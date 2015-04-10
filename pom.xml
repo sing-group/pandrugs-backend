@@ -468,7 +468,6 @@
 				</executions>
 			</plugin>
 			
-			<!-- To enable Tomcat 7 during integration tests -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
@@ -502,25 +501,6 @@
 					<useTestClasspath>false</useTestClasspath>
 					<path>/${project.build.finalName}</path>
 				</configuration>
-				<executions>
-					<execution>
-						<id>start-tomcat7</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<fork>true</fork>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop-tomcat7</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>shutdown</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 		
