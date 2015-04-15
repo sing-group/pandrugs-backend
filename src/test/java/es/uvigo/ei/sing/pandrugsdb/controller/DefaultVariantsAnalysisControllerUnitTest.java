@@ -24,7 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
 import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createControl;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.newCapture;
@@ -38,45 +38,49 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.easymock.Capture;
-import org.easymock.EasyMock;
 import org.easymock.EasyMockRunner;
+import org.easymock.IMocksControl;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.ComputationsStore;
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.VariantCallingCandidateDrugComputation;
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.VariantCallingCandidateDrugComputer;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.CandidateTherapiesComputationResults;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.ComputationsStore;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputation;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.CandidateDrug;
 
 @RunWith(EasyMockRunner.class)
-public class DefaultVariantCallingAnalysisControllerUnitTest {
+public class DefaultVariantsAnalysisControllerUnitTest {
 
 	@Mock
 	private ComputationsStore store;
 
 	@Mock
-	private VariantCallingCandidateDrugComputer computer;
-
+	private VariantsCandidateTherapiesComputer computer;
+	
+	private IMocksControl mockControl = createControl();
 	
 	@TestSubject
-	private VariantCallingAnalysisController controller = new DefaultVariantCallingAnalysisController();
+	private VariantsAnalysisController controller = 
+		new DefaultVariantCallingAnalysisController();
 
 	private final User aUser = new User("login", "login@domain.com",
 			"926e27eecdbc7a18858b3798ba99bddd", ADMIN);
-	final URL aVCF = getClass().getResource("sampleVCF_31variants.vcf");
+	
+	private final URL aVCF = getClass().getResource("sampleVCF_31variants.vcf");
 
 	@Test
 	public void testExperimentIsStoredWhenStart() {
 
-		Capture<VariantCallingCandidateDrugComputation> capturedArgument = newCapture();
+		Capture<VariantsCandidateTherapiesComputation> capturedArgument = 
+				newCapture();
 		store.storeComputation(capture(capturedArgument), eq(aUser));
 		replay(store);
 
-		final VariantCallingCandidateDrugComputation computation = controller
-				.startCandidateDrugsComputation(aUser, aVCF);
+		final VariantsCandidateTherapiesComputation computation = 
+				controller.startCandidateTherapiesComputation(aUser, aVCF);
 
 		assertEquals(computation, capturedArgument.getValue());
 	}
@@ -84,10 +88,15 @@ public class DefaultVariantCallingAnalysisControllerUnitTest {
 	@Test
 	public void testGetComputations() {
 
-		final List<VariantCallingCandidateDrugComputation> expected = new ArrayList<>();
-		expected.add(createMock(VariantCallingCandidateDrugComputation.class));
-		expected.add(createMock(VariantCallingCandidateDrugComputation.class));
-
+		final List<VariantsCandidateTherapiesComputation> expected = 
+				new ArrayList<>();
+		expected.add(
+				mockControl.createMock(
+						VariantsCandidateTherapiesComputation.class));
+		expected.add(
+				mockControl.createMock(
+						VariantsCandidateTherapiesComputation.class));
+				
 		expect(store.retrieveComputations(aUser)).andReturn(expected);
 		replay(store);
 
@@ -98,12 +107,13 @@ public class DefaultVariantCallingAnalysisControllerUnitTest {
 	@Test
 	public void testComputerCallAndResults() throws InterruptedException, ExecutionException {
 
-		final List<CandidateDrug> expectedDrugs = new ArrayList<>();
-			expectedDrugs.add(createMock(CandidateDrug.class));
-			expectedDrugs.add(createMock(CandidateDrug.class));
+		final CandidateTherapiesComputationResults expectedDrugs = 
+				mockControl.createMock(
+						CandidateTherapiesComputationResults.class);
 		
-		final VariantCallingCandidateDrugComputation expectedComputation = 
-				createMock(VariantCallingCandidateDrugComputation.class);
+		final VariantsCandidateTherapiesComputation expectedComputation = 
+				mockControl.createMock(
+						VariantsCandidateTherapiesComputation.class);
 		
 		expect(expectedComputation.get()).andReturn(expectedDrugs);
 		replay(expectedComputation);
@@ -111,9 +121,10 @@ public class DefaultVariantCallingAnalysisControllerUnitTest {
 		expect(computer.createComputation(aVCF)).andReturn(expectedComputation);
 		replay(computer);
 		
-		final VariantCallingCandidateDrugComputation computation = controller
-				.startCandidateDrugsComputation(aUser, aVCF);
-		assertThat(expectedDrugs, hasTheSameItemsAs(computation.get()));
+		final VariantsCandidateTherapiesComputation computation = controller
+				.startCandidateTherapiesComputation(aUser, aVCF);
+		
+		assertEquals(expectedDrugs, computation.get());
 		
 	}
 }

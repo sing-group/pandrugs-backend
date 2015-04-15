@@ -28,13 +28,13 @@ import org.junit.runners.Suite.SuiteClasses;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantCallingAnalysisControllerUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerUnitTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerUnitTest.class,
 	DefaultUserControllerUnitTest.class,
 	DefaultGeneDrugControllerUnitTest.class,
-	DefaultVariantCallingAnalysisControllerUnitTest.class
+	DefaultVariantsAnalysisControllerUnitTest.class
 })
 @RunWith(Suite.class)
 public class ControllerUnitTestSuite {

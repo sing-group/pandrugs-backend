@@ -28,7 +28,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	ControllerUnitTestSuite.class,
 	ServiceUnitTestSuite.class,
-	UtilsUnitTestSuite.class
+	UtilsUnitTestSuite.class,
+	VariantsAnalysisUnitTestSuite.class
 })
 @RunWith(Suite.class)
 public class UnitTestSuite {

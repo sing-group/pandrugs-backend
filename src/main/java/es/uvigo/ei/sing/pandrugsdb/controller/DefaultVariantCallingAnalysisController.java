@@ -5,27 +5,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.ComputationsStore;
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.VariantCallingCandidateDrugComputation;
-import es.uvigo.ei.sing.pandrugsdb.core.vcfanalysis.VariantCallingCandidateDrugComputer;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.ComputationsStore;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputation;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 
 public class DefaultVariantCallingAnalysisController implements
-		VariantCallingAnalysisController {
+		VariantsAnalysisController {
 
 	@Inject
 	private ComputationsStore computationStore;
 	
 	@Inject
-	private VariantCallingCandidateDrugComputer 
-		variantCallingCandidateDrugComputer;
+	private VariantsCandidateTherapiesComputer 
+		variantCallingCandidateTherapiesComputer;
 	
 	@Override
-	public VariantCallingCandidateDrugComputation 
-		startCandidateDrugsComputation(User user, URL vcfFile) {
+	public VariantsCandidateTherapiesComputation 
+		startCandidateTherapiesComputation(User user, URL vcfFile) {
 		
-		final VariantCallingCandidateDrugComputation computation = 
-				variantCallingCandidateDrugComputer.createComputation(vcfFile);
+		final VariantsCandidateTherapiesComputation computation = 
+				variantCallingCandidateTherapiesComputer.createComputation(vcfFile);
 
 		computationStore.storeComputation(computation, user);
 		
@@ -34,7 +34,7 @@ public class DefaultVariantCallingAnalysisController implements
 
 
 	@Override
-	public List<VariantCallingCandidateDrugComputation> getComputations(
+	public List<VariantsCandidateTherapiesComputation> getComputations(
 			User user) {
 		return computationStore.retrieveComputations(user);
 	}
