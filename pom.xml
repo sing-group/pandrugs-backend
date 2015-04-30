@@ -93,6 +93,7 @@
 		<miredot-plugin.version>1.6.0</miredot-plugin.version>
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		
+		
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato</license.copyrightOwners>
@@ -122,6 +123,7 @@
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<springtestdbunit.version>1.2.1</springtestdbunit.version>
 		<easymock.version>3.3.1</easymock.version>
+		<guava-collections.version>r03</guava-collections.version>
 	</properties>
 	
 	<dependencies>
@@ -343,6 +345,13 @@
 			<artifactId>powermock-module-junit4</artifactId>
 			<version>1.6.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-collections</artifactId>
+			<version>${guava-collections.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 	<reporting>

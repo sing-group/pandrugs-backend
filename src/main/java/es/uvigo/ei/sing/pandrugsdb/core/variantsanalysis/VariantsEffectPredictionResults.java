@@ -1,5 +1,7 @@
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-public class VariantsEffectPredictionResults {
+import java.util.Collection;
 
+public interface VariantsEffectPredictionResults {
+	public Collection<Variant> getVariants();
 }
