@@ -27,7 +27,6 @@ public class DefaultVariantsCandidateTherapiesComputer implements
 		AbstractVariantCallingCandidateTherapiesComputation  computation =
 				new AbstractVariantCallingCandidateTherapiesComputation();
 		
-		System.out.println(computation);
 		computation.setCurrentTaskName("Calculate VEP");
 		computation.setOverallProgress(0f);
 		computation.setCurrentTaskProgress(0f);
