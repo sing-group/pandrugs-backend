@@ -21,31 +21,43 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.util.Optional;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity(name = "drug_source")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {
-	"source", "source_drug_name", "standard_drug_name"
+	"source", "source_drug_name", "standard_drug_name", "show_drug_name"
 }))
 public class DrugSource {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@Column(name = "source")
+	@Column(name = "source", length = 255)
 	private String source;
 	
-	@Column(name = "source_drug_name")
+	@Column(name = "source_drug_name", length = 1000)
 	private String sourceDrugName;
 	
-	@Column(name = "standard_drug_name")
+	@Column(name = "standard_drug_name", length = 1000)
 	private String standardDrugName;
+
+	@Column(name = "show_drug_name", length = 1000)
+	private String showDrugName;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "source", referencedColumnName = "source", insertable = false, updatable = false)
+	private SourceInformation sourceInformation;
 	
 	DrugSource() {}
 	
@@ -53,12 +65,16 @@ public class DrugSource {
 		int id,
 		String source,
 		String sourceDrugName,
-		String standardDrugName
+		String standardDrugName,
+		String showDrugName,
+		SourceInformation sourceInformation
 	) {
 		this.id = id;
 		this.source = source;
 		this.sourceDrugName = sourceDrugName;
 		this.standardDrugName = standardDrugName;
+		this.showDrugName = showDrugName;
+		this.sourceInformation = sourceInformation;
 	}
 	
 	public String getSource() {
@@ -72,16 +88,20 @@ public class DrugSource {
 	public String getStandardDrugName() {
 		return standardDrugName;
 	}
-
-	public void setSource(String source) {
-		this.source = source;
+	
+	public String getShowDrugName() {
+		return showDrugName;
 	}
-
-	public void setSourceDrugName(String sourceDrugName) {
-		this.sourceDrugName = sourceDrugName;
+	
+	public SourceInformation getSourceInformation() {
+		return sourceInformation;
 	}
-
-	public void setStandardDrugName(String standardDrugName) {
-		this.standardDrugName = standardDrugName;
+	
+	public String getDrugURL(String genes) {
+		return Optional.ofNullable(this.sourceInformation)
+			.map(SourceInformation::getUrlTemplate)
+			.map(template -> template.replaceAll("\\[GENES\\]", genes))
+			.map(template -> template.replaceAll("\\[DRUG\\]", this.standardDrugName))
+		.orElse(null);
 	}
 }

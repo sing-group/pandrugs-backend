@@ -21,44 +21,42 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@Embeddable
-public class GeneDrugId implements Serializable {
-	private static final long serialVersionUID = 1L;
+@Entity(name = "source_info")
+public class SourceInformation {
+	@Id
+	@Column(name = "source", length = 255)
+	private String source;
 	
-	@Column(name = "gene_symbol")
-	private String geneSymbol;
-	@Column(name = "standard_drug_name")
-	private String standardDrugName;
+	@Column(name = "url_template", length = 1000)
+	private String urlTemplate;
 	
-	GeneDrugId() {}
-	
-	GeneDrugId(String geneSymbol, String standardDrugName) {
-		this.geneSymbol = geneSymbol;
-		this.standardDrugName = standardDrugName;
+	SourceInformation() {
 	}
 
-	public String getGeneSymbol() {
-		return geneSymbol;
+	public SourceInformation(String source, String urlTemplate) {
+		this.source = source;
+		this.urlTemplate = urlTemplate;
 	}
 
-	public String getStandardDrugName() {
-		return standardDrugName;
+	public String getSource() {
+		return source;
+	}
+
+	public String getUrlTemplate() {
+		return urlTemplate;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		result = prime * result
-				+ ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
-		result = prime
-				* result
-				+ ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
+				+ ((urlTemplate == null) ? 0 : urlTemplate.hashCode());
 		return result;
 	}
 
@@ -70,16 +68,16 @@ public class GeneDrugId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneDrugId other = (GeneDrugId) obj;
-		if (geneSymbol == null) {
-			if (other.geneSymbol != null)
+		SourceInformation other = (SourceInformation) obj;
+		if (source == null) {
+			if (other.source != null)
 				return false;
-		} else if (!geneSymbol.equals(other.geneSymbol))
+		} else if (!source.equals(other.source))
 			return false;
-		if (standardDrugName == null) {
-			if (other.standardDrugName != null)
+		if (urlTemplate == null) {
+			if (other.urlTemplate != null)
 				return false;
-		} else if (!standardDrugName.equals(other.standardDrugName))
+		} else if (!urlTemplate.equals(other.urlTemplate))
 			return false;
 		return true;
 	}

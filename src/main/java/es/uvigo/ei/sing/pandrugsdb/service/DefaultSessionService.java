@@ -25,7 +25,6 @@ import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createUnauthorize
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,13 +47,9 @@ public class DefaultSessionService implements SessionService {
 	@POST
 	@Override
 	public void login(Login login) 
-	throws NotAuthorizedException, InternalServerErrorException {
-		try {
-			if (!controller.checkLogin(login.getUsername(), login.getPassword())) {
-				throw createUnauthorizedException("Access denied");
-			}
-		} catch (NotAuthorizedException nae) {
-			throw nae;
+	throws NotAuthorizedException {
+		if (!controller.checkLogin(login.getUsername(), login.getPassword())) {
+			throw createUnauthorizedException("Access denied");
 		}
 	}
 }

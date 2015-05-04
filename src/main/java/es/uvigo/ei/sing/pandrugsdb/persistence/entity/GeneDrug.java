@@ -21,34 +21,46 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity(name = "gene_drug")
-@IdClass(GeneDrugId.class)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {
+	"gene_symbol", "standard_drug_name", "target"
+}))
 public class GeneDrug implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	@Column(name = "gene_symbol")
-	private String geneSymbol;
 	
 	@Id
-	@Column(name = "standard_drug_name")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+
+	@Column(name = "gene_symbol", length = 1000)
+	private String geneSymbol;
+	
+	@Column(name = "standard_drug_name", length = 1000)
 	private String standardDrugName;
+	
+	@Column(name = "target", length = 1000)
+	private boolean target;
 	
 	private String family;
 	@Enumerated(EnumType.STRING)
@@ -56,31 +68,28 @@ public class GeneDrug implements Serializable {
 	private String pathology;
 	private String cancer;
 	private String extra;
-	private boolean target;
 	private String resistance;
 	private String alteration;
 	private double score;
 	
+	@ElementCollection
+	@CollectionTable(
+		name = "indirect_gene",
+		joinColumns = @JoinColumn(name = "direct_gene_id")
+	)
+	@Column(name = "gene_symbol")
+	private List<String> indirectGenes;
+	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "gene_drug_drug_source",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"gene_symbol", "standard_drug_name", "source_id"}),
-		joinColumns = {
-			@JoinColumn(name = "gene_symbol", referencedColumnName = "gene_symbol"),
-			@JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_drug_name")
-		},
-		inverseJoinColumns = {
-			@JoinColumn(name = "source_id", referencedColumnName = "id"),
-		}
+		joinColumns = @JoinColumn(name = "gene_drug_id", referencedColumnName = "id"),
+		inverseJoinColumns = @JoinColumn(name = "source_id", referencedColumnName = "id")
 	)
 	private List<DrugSource> drugSources;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "gene_drug_pathway",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"gene_symbol", "standard_drug_name", "pathway_id"}),
-		joinColumns = {
-			@JoinColumn(name = "gene_symbol", referencedColumnName = "gene_symbol"),
-			@JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_drug_name")
-		},
+		joinColumns = @JoinColumn(name = "gene_drug_id", referencedColumnName = "id"),
 		inverseJoinColumns = @JoinColumn(name = "pathway_id", referencedColumnName = "id")
 	)
 	private List<Pathway> pathways;
@@ -88,6 +97,7 @@ public class GeneDrug implements Serializable {
 	GeneDrug() {}
 
 	GeneDrug(
+		int id,
 		String geneSymbol,
 		String standardDrugName,
 		String family, 
@@ -99,9 +109,11 @@ public class GeneDrug implements Serializable {
 		String resistance,
 		String alteration,
 		double score,
+		List<String> inverseGene,
 		List<DrugSource> drugSources, 
 		List<Pathway> pathways
 	) {
+		this.id = id;
 		this.geneSymbol = geneSymbol;
 		this.standardDrugName = standardDrugName;
 		this.family = family;
@@ -113,8 +125,13 @@ public class GeneDrug implements Serializable {
 		this.resistance = resistance;
 		this.alteration = alteration;
 		this.score = score;
+		this.indirectGenes = inverseGene;
 		this.drugSources = drugSources;
 		this.pathways = pathways;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	public String getGeneSymbol() {
@@ -161,12 +178,16 @@ public class GeneDrug implements Serializable {
 		return score;
 	}
 	
+	public List<String> getIndirectGenes() {
+		return unmodifiableList(this.indirectGenes);
+	}
+	
 	public List<DrugSource> getDrugSources() {
-		return Collections.unmodifiableList(this.drugSources);
+		return unmodifiableList(this.drugSources);
 	}
 	
 	public List<Pathway> getPathways() {
-		return Collections.unmodifiableList(pathways);
+		return unmodifiableList(pathways);
 	}
 
 	@Override

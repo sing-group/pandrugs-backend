@@ -29,12 +29,11 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugId;
 
 @Repository
 @Transactional
 public class DefaultGeneDrugDAO
-extends DAO<GeneDrugId, GeneDrug>
+extends DAO<Integer, GeneDrug>
 implements GeneDrugDAO {
 	@Override
 	public List<GeneDrug> search(

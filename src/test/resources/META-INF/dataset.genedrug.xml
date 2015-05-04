@@ -22,6 +22,21 @@
   -->
 
 <dataset>
+	<source_info source="CancerCommons" url_template="http://dgidb.genome.wustl.edu/sources/CancerCommons"/>
+	<source_info source="ClearityFoundationBiomarkers" url_template="http://dgidb.genome.wustl.edu/sources/ClearityFoundationBiomarkers"/>
+	<source_info source="ClearityFoundationClinicalTrial" url_template="http://www.broadinstitute.org/ctrp/"/>
+	<source_info source="CTRP" url_template="http://www.broadinstitute.org/ctrp/"/>
+	<source_info source="DrugBank" url_template="http://dgidb.genome.wustl.edu/sources/DrugBank"/>
+	<source_info source="GDSC" url_template="http://www.cancerrxgene.org/translation/Gene/GDSC"/>
+	<source_info source="moAb" url_template="http://en.wikipedia.org/wiki/List_of_therapeutic_monoclonal_antibodies"/>
+	<source_info source="MyCancerGenome" url_template="http://dgidb.genome.wustl.edu/drug_claims/[GENES]/[DRUG]"/>
+	<source_info source="MyCancerGenomeClinicalTrial" url_template="http://dgidb.genome.wustl.edu/sources/MyCancerGenomeClinicalTrial"/>
+	<source_info source="PharmGKB" url_template="http://dgidb.genome.wustl.edu/sources/PharmGKB"/>
+	<source_info source="TALC" url_template="http://dgidb.genome.wustl.edu/sources/TALC"/>
+	<source_info source="TARGET-CGA" url_template="http://www.broadinstitute.org/cancer/cga/target"/>
+	<source_info source="TEND" url_template="http://dgidb.genome.wustl.edu/sources/TEND"/>
+	<source_info source="TTD" url_template="http://dgidb.genome.wustl.edu/sources/TTD"/>
+
 	<drug_source id="1" source="CTRP" source_drug_name="BMS-536924" standard_drug_name="BMS-536924" />
 	<drug_source id="2" source="CTRP" source_drug_name="indisulam" standard_drug_name="INDISULAM" />
 	<drug_source id="3" source="CTRP" source_drug_name="lovastatin acid" standard_drug_name="LOVASTATIN" />
@@ -41,45 +56,45 @@
 	<drug_source id="17" source="TTD" source_drug_name="DAP000842" standard_drug_name="AMINOGLUTETHIMIDE" />
 	<drug_source id="18" source="TTD" source_drug_name="DCL000137" standard_drug_name="IPI-504" />
 
-	<gene_drug gene_symbol="HDAC3" standard_drug_name="SODIUM PHENYLBUTYRATE" family="Epigenetics" status="APPROVED" pathology="Hematology" cancer="clinical cancer" target="true" score="0.9"/>
-	<gene_drug gene_symbol="FIGF" standard_drug_name="SALERMIDE" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
-	<gene_drug gene_symbol="ABI1" standard_drug_name="INDISULAM" family="Other" status="CLINICAL" cancer="cancer" target="false" resistance="resistance" score="0.0"/>
-	<gene_drug gene_symbol="KDM6A" standard_drug_name="CHEMBL254381" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
-	<gene_drug gene_symbol="CACNB2" standard_drug_name="LOVASTATIN" family="Other" status="APPROVED" pathology="Cardiology/Vascular disease" cancer="clinical cancer" target="false" score="0.4"/>
-	<gene_drug gene_symbol="MSH2" standard_drug_name="BMS-536924" family="Other" status="EXPERIMENTAL" target="false" resistance="resistance" score="0.0"/>
-	<gene_drug gene_symbol="TNFRSF1B" standard_drug_name="NAVITOCLAX" family="Other" status="CLINICAL" cancer="cancer" target="false" resistance="resistance" score="0.0"/>
-	<gene_drug gene_symbol="CASC5" standard_drug_name="LOVASTATIN" family="Other" status="APPROVED" pathology="Cardiology/Vascular disease" cancer="clinical cancer" target="false" resistance="resistance" score="0.0"/>
-	<gene_drug gene_symbol="EPHB4" standard_drug_name="XL647" family="Receptor Tyrosine Kinase" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
-	<gene_drug gene_symbol="EFTUD1" standard_drug_name="S-(METHYLMERCURY)-L-CYSTEINE" family="Other" status="EXPERIMENTAL" target="true" score="0.5"/>
-	<gene_drug gene_symbol="PSMD10P2" standard_drug_name="CARFILZOMIB" family="Proteases" status="APPROVED" pathology="Oncology" cancer="multiple myeloma" extra="TARGETED THERAPY" target="true" score="1.0"/>
-	<gene_drug gene_symbol="CYP11A1" standard_drug_name="AMINOGLUTETHIMIDE" family="Metabolism" status="WITHDRAWN" target="true" score="0.5"/>
-	<gene_drug gene_symbol="BCL2L1" standard_drug_name="BMS-536924" family="Other" status="EXPERIMENTAL" target="false" resistance="resistance" score="0.0"/>
-	<gene_drug gene_symbol="CCNA2" standard_drug_name="(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL" family="Cell cycle" status="EXPERIMENTAL" target="true" score="0.5"/>
-	<gene_drug gene_symbol="HSP90AA1" standard_drug_name="IPI-504" family="Chaperone inhibitor" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
-	<gene_drug gene_symbol="CLTC" standard_drug_name="YK 4-279" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
-	<gene_drug gene_symbol="PDE4A" standard_drug_name="PICLAMILAST" family="Other" status="EXPERIMENTAL" target="true" score="0.5"/>
-	<gene_drug gene_symbol="DBN1" standard_drug_name="NEOPELTOLIDE" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
-	<gene_drug gene_symbol="PIK3CB" standard_drug_name="BYL719" family="PI3K/Akt/mTOR" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
-	<gene_drug gene_symbol="ANGPTL4" standard_drug_name="PRIMA-1" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
+	<gene_drug id="1" gene_symbol="HDAC3" standard_drug_name="SODIUM PHENYLBUTYRATE" family="Epigenetics" status="APPROVED" pathology="Hematology" cancer="clinical cancer" target="true" score="0.9"/>
+	<gene_drug id="2" gene_symbol="FIGF" standard_drug_name="SALERMIDE" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
+	<gene_drug id="3" gene_symbol="ABI1" standard_drug_name="INDISULAM" family="Other" status="CLINICAL" cancer="cancer" target="false" resistance="resistance" score="0.0"/>
+	<gene_drug id="4" gene_symbol="KDM6A" standard_drug_name="CHEMBL254381" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
+	<gene_drug id="5" gene_symbol="CACNB2" standard_drug_name="LOVASTATIN" family="Other" status="APPROVED" pathology="Cardiology/Vascular disease" cancer="clinical cancer" target="false" score="0.4"/>
+	<gene_drug id="6" gene_symbol="MSH2" standard_drug_name="BMS-536924" family="Other" status="EXPERIMENTAL" target="false" resistance="resistance" score="0.0"/>
+	<gene_drug id="7" gene_symbol="TNFRSF1B" standard_drug_name="NAVITOCLAX" family="Other" status="CLINICAL" cancer="cancer" target="false" resistance="resistance" score="0.0"/>
+	<gene_drug id="8" gene_symbol="CASC5" standard_drug_name="LOVASTATIN" family="Other" status="APPROVED" pathology="Cardiology/Vascular disease" cancer="clinical cancer" target="false" resistance="resistance" score="0.0"/>
+	<gene_drug id="9" gene_symbol="EPHB4" standard_drug_name="XL647" family="Receptor Tyrosine Kinase" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
+	<gene_drug id="10" gene_symbol="EFTUD1" standard_drug_name="S-(METHYLMERCURY)-L-CYSTEINE" family="Other" status="EXPERIMENTAL" target="true" score="0.5"/>
+	<gene_drug id="11" gene_symbol="PSMD10P2" standard_drug_name="CARFILZOMIB" family="Proteases" status="APPROVED" pathology="Oncology" cancer="multiple myeloma" extra="TARGETED THERAPY" target="true" score="1.0"/>
+	<gene_drug id="12" gene_symbol="CYP11A1" standard_drug_name="AMINOGLUTETHIMIDE" family="Metabolism" status="WITHDRAWN" target="true" score="0.5"/>
+	<gene_drug id="13" gene_symbol="BCL2L1" standard_drug_name="BMS-536924" family="Other" status="EXPERIMENTAL" target="false" resistance="resistance" score="0.0"/>
+	<gene_drug id="14" gene_symbol="CCNA2" standard_drug_name="(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL" family="Cell cycle" status="EXPERIMENTAL" target="true" score="0.5"/>
+	<gene_drug id="15" gene_symbol="HSP90AA1" standard_drug_name="IPI-504" family="Chaperone inhibitor" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
+	<gene_drug id="16" gene_symbol="CLTC" standard_drug_name="YK 4-279" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
+	<gene_drug id="17" gene_symbol="PDE4A" standard_drug_name="PICLAMILAST" family="Other" status="EXPERIMENTAL" target="true" score="0.5"/>
+	<gene_drug id="18" gene_symbol="DBN1" standard_drug_name="NEOPELTOLIDE" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
+	<gene_drug id="19" gene_symbol="PIK3CB" standard_drug_name="BYL719" family="PI3K/Akt/mTOR" status="CLINICAL" cancer="cancer" target="true" score="0.8"/>
+	<gene_drug id="20" gene_symbol="ANGPTL4" standard_drug_name="PRIMA-1" family="Other" status="EXPERIMENTAL" target="false" score="0.0"/>
 	
-	<gene_drug_drug_source gene_symbol="HDAC3" source_id="16" standard_drug_name="SODIUM PHENYLBUTYRATE" />
-	<gene_drug_drug_source gene_symbol="FIGF" source_id="8" standard_drug_name="SALERMIDE" />
-	<gene_drug_drug_source gene_symbol="ABI1" source_id="2" standard_drug_name="INDISULAM" />
-	<gene_drug_drug_source gene_symbol="KDM6A" source_id="6" standard_drug_name="CHEMBL254381" />
-	<gene_drug_drug_source gene_symbol="CACNB2" source_id="3" standard_drug_name="LOVASTATIN" />
-	<gene_drug_drug_source gene_symbol="MSH2" source_id="1" standard_drug_name="BMS-536924" />
-	<gene_drug_drug_source gene_symbol="TNFRSF1B" source_id="4" standard_drug_name="NAVITOCLAX" />
-	<gene_drug_drug_source gene_symbol="CASC5" source_id="3" standard_drug_name="LOVASTATIN" />
-	<gene_drug_drug_source gene_symbol="EPHB4" source_id="15" standard_drug_name="XL647" />
-	<gene_drug_drug_source gene_symbol="EFTUD1" source_id="11" standard_drug_name="S-(METHYLMERCURY)-L-CYSTEINE" />
-	<gene_drug_drug_source gene_symbol="PSMD10P2" source_id="13" standard_drug_name="CARFILZOMIB" />
-	<gene_drug_drug_source gene_symbol="CYP11A1" source_id="17" standard_drug_name="AMINOGLUTETHIMIDE" />
-	<gene_drug_drug_source gene_symbol="BCL2L1" source_id="1" standard_drug_name="BMS-536924" />
-	<gene_drug_drug_source gene_symbol="CCNA2" source_id="10" standard_drug_name="(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL" />
-	<gene_drug_drug_source gene_symbol="HSP90AA1" source_id="18" standard_drug_name="IPI-504" />
-	<gene_drug_drug_source gene_symbol="CLTC" source_id="9" standard_drug_name="YK 4-279" />
-	<gene_drug_drug_source gene_symbol="PDE4A" source_id="12" standard_drug_name="PICLAMILAST" />
-	<gene_drug_drug_source gene_symbol="DBN1" source_id="5" standard_drug_name="NEOPELTOLIDE" />
-	<gene_drug_drug_source gene_symbol="PIK3CB" source_id="14" standard_drug_name="BYL719" />
-	<gene_drug_drug_source gene_symbol="ANGPTL4" source_id="7" standard_drug_name="PRIMA-1" />
+	<gene_drug_drug_source gene_drug_id="3" source_id="2"/>
+	<gene_drug_drug_source gene_drug_id="20" source_id="7"/>
+	<gene_drug_drug_source gene_drug_id="13" source_id="1"/>
+	<gene_drug_drug_source gene_drug_id="5" source_id="3"/>
+	<gene_drug_drug_source gene_drug_id="8" source_id="3"/>
+	<gene_drug_drug_source gene_drug_id="14" source_id="10"/>
+	<gene_drug_drug_source gene_drug_id="16" source_id="9"/>
+	<gene_drug_drug_source gene_drug_id="12" source_id="17"/>
+	<gene_drug_drug_source gene_drug_id="18" source_id="5"/>
+	<gene_drug_drug_source gene_drug_id="10" source_id="11"/>
+	<gene_drug_drug_source gene_drug_id="9" source_id="15"/>
+	<gene_drug_drug_source gene_drug_id="2" source_id="8"/>
+	<gene_drug_drug_source gene_drug_id="1" source_id="16"/>
+	<gene_drug_drug_source gene_drug_id="15" source_id="18"/>
+	<gene_drug_drug_source gene_drug_id="4" source_id="6"/>
+	<gene_drug_drug_source gene_drug_id="6" source_id="1"/>
+	<gene_drug_drug_source gene_drug_id="17" source_id="12"/>
+	<gene_drug_drug_source gene_drug_id="19" source_id="14"/>
+	<gene_drug_drug_source gene_drug_id="11" source_id="13"/>
+	<gene_drug_drug_source gene_drug_id="7" source_id="4"/>
 </dataset>
