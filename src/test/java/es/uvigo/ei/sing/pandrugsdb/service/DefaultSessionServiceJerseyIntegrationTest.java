@@ -24,35 +24,20 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ErrorMessage;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
-@TestExecutionListeners({
-	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
-})
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJerseyTest {
 	@Override
 	protected Class<?>[] getServiceClasses() {
@@ -65,7 +50,7 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 			.request(APPLICATION_JSON_TYPE)
 			.post(entity(new Login("pepe", "pepe"), APPLICATION_JSON_TYPE));
 		
-		assertThat(response, hasHTTPStatus(OK));
+		assertThat(response, hasHTTPStatus(NO_CONTENT));
 	}
 	
 	@Test
@@ -75,6 +60,7 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 			.post(entity(new Login("pepe", "badpassword"), APPLICATION_JSON_TYPE));
 		
 		assertThat(response, hasHTTPStatus(UNAUTHORIZED));
+		System.out.println(response.readEntity(ErrorMessage.class));
 	}
 	
 	@Test

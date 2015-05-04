@@ -77,6 +77,7 @@
 	
 	<bean id="mailer" class="es.uvigo.ei.sing.pandrugsdb.mailer.SpyMailer" scope="singleton"/>
 	<bean id="accessChecker" class="es.uvigo.ei.sing.pandrugsdb.service.security.CustomizableUserAccessChecker"/>
+	<bean id="securityContextFilter" class="es.uvigo.ei.sing.pandrugsdb.service.security.SecurityRequestFilter" scope="singleton"/>
 	
 	<bean id="defaultRegistrationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAO"/>
 	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAO"/>

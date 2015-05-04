@@ -24,9 +24,14 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.container.ContainerRequestFilter;
+
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -36,12 +41,35 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerException;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.junit.runner.RunWith;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+
+import es.uvigo.ei.sing.pandrugsdb.UnexpectedExceptionMapper;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
+@TestExecutionListeners({
+	DependencyInjectionTestExecutionListener.class,
+	DbUnitTestExecutionListener.class,
+	DirtiesContextTestExecutionListener.class
+})
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ConfiguredJerseyTest extends JerseyTest {
+	@Inject
+	@Named("securityContextFilter")
+	protected ContainerRequestFilter securityFilter;
+	
 	@Override
 	protected TestContainerFactory getTestContainerFactory()
 	throws TestContainerException {
@@ -65,7 +93,14 @@ public class ConfiguredJerseyTest extends JerseyTest {
 	
 	@Override
 	protected ResourceConfig configure() {
+		// Lazy is needed because injection is done after this method is called
+		final ContainerRequestFilter lazySecurityFilter = requestContext ->
+			this.securityFilter.filter(requestContext);
+			
 		return new ResourceConfig(getServiceClasses())
+			.registerInstances(lazySecurityFilter)
+			.register(UnexpectedExceptionMapper.class)
+			.register(RolesAllowedDynamicFeature.class)
 			.register(RequestContextFilter.class)
 			.register(JacksonFeature.class)
 			.register(ValidationFeature.class);
