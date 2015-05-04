@@ -19,19 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugsdb.service.database;
 
-import java.util.List;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
-public class DefaultCandidateTherapiesCalculator implements
-		CandidateTherapiesCalculator {
-
+public class HighOrderDbUnitTestExecutionListener
+extends DbUnitTestExecutionListener {
 	@Override
-	public List<CandidateTherapy> calculateTherapies(
-			VariantsEffectPredictionResults vep) {
-		
-		// TODO Auto-generated method stub
-		return null;
+	public int getOrder() {
+		return 2500;
 	}
-
 }
