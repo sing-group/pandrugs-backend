@@ -41,20 +41,20 @@ public final class GeneDrugDataset {
 	
 	public final static List<SourceInformation> sourceInfos() {
 		return asList(
-			new SourceInformation("CancerCommons", "http://dgidb.genome.wustl.edu/sources/CancerCommons"),
-			new SourceInformation("ClearityFoundationBiomarkers", "http://dgidb.genome.wustl.edu/sources/ClearityFoundationBiomarkers"),
-			new SourceInformation("ClearityFoundationClinicalTrial", "http://www.broadinstitute.org/ctrp/"),
-			new SourceInformation("CTRP", "http://www.broadinstitute.org/ctrp/"),
-			new SourceInformation("DrugBank", "http://dgidb.genome.wustl.edu/sources/DrugBank"),
-			new SourceInformation("GDSC", "http://www.cancerrxgene.org/translation/Gene/GDSC"),
-			new SourceInformation("moAb", "http://en.wikipedia.org/wiki/List_of_therapeutic_monoclonal_antibodies"),
-			new SourceInformation("MyCancerGenome", "http://dgidb.genome.wustl.edu/drug_claims/[GENES]/[DRUG]"),
-			new SourceInformation("MyCancerGenomeClinicalTrial", "http://dgidb.genome.wustl.edu/sources/MyCancerGenomeClinicalTrial"),
-			new SourceInformation("PharmGKB", "http://dgidb.genome.wustl.edu/sources/PharmGKB"),
-			new SourceInformation("TALC", "http://dgidb.genome.wustl.edu/sources/TALC"),
-			new SourceInformation("TARGET-CGA", "http://www.broadinstitute.org/cancer/cga/target"),
-			new SourceInformation("TEND", "http://dgidb.genome.wustl.edu/sources/TEND"),
-			new SourceInformation("TTD", "http://dgidb.genome.wustl.edu/sources/TTD")
+			new SourceInformation("CancerCommons", "http://dgidb.genome.wustl.edu/sources/CancerCommons", true),
+			new SourceInformation("ClearityFoundationBiomarkers", "http://dgidb.genome.wustl.edu/sources/ClearityFoundationBiomarkers", true),
+			new SourceInformation("ClearityFoundationClinicalTrial", "http://www.broadinstitute.org/ctrp/", true),
+			new SourceInformation("CTRP", "http://www.broadinstitute.org/ctrp/", false),
+			new SourceInformation("DrugBank", "http://dgidb.genome.wustl.edu/sources/DrugBank", false),
+			new SourceInformation("GDSC", "http://www.cancerrxgene.org/translation/Gene/GDSC", false),
+			new SourceInformation("moAb", "http://en.wikipedia.org/wiki/List_of_therapeutic_monoclonal_antibodies", true),
+			new SourceInformation("MyCancerGenome", "http://dgidb.genome.wustl.edu/drug_claims/[GENES]/[DRUG]", true),
+			new SourceInformation("MyCancerGenomeClinicalTrial", "http://dgidb.genome.wustl.edu/sources/MyCancerGenomeClinicalTrial", true),
+			new SourceInformation("PharmGKB", "http://dgidb.genome.wustl.edu/sources/PharmGKB", false),
+			new SourceInformation("TALC", "http://dgidb.genome.wustl.edu/sources/TALC", true),
+			new SourceInformation("TARGET-CGA", "http://www.broadinstitute.org/cancer/cga/target", true),
+			new SourceInformation("TEND", "http://dgidb.genome.wustl.edu/sources/TEND", true),
+			new SourceInformation("TTD", "http://dgidb.genome.wustl.edu/sources/TTD", false)
 		);
 	}
 	

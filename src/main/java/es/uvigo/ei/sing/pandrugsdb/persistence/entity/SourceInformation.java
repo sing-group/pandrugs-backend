@@ -34,12 +34,18 @@ public class SourceInformation {
 	@Column(name = "url_template", length = 1000)
 	private String urlTemplate;
 	
+	@Column(name = "curated")
+	private boolean curated;
+	
 	SourceInformation() {
 	}
 
-	public SourceInformation(String source, String urlTemplate) {
+	public SourceInformation(
+		String source, String urlTemplate, boolean curated
+	) {
 		this.source = source;
 		this.urlTemplate = urlTemplate;
+		this.curated = curated;
 	}
 
 	public String getSource() {
@@ -49,11 +55,16 @@ public class SourceInformation {
 	public String getUrlTemplate() {
 		return urlTemplate;
 	}
+	
+	public boolean isCurated() {
+		return curated;
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (curated ? 1231 : 1237);
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		result = prime * result
 				+ ((urlTemplate == null) ? 0 : urlTemplate.hashCode());
@@ -69,6 +80,8 @@ public class SourceInformation {
 		if (getClass() != obj.getClass())
 			return false;
 		SourceInformation other = (SourceInformation) obj;
+		if (curated != other.curated)
+			return false;
 		if (source == null) {
 			if (other.source != null)
 				return false;
