@@ -25,11 +25,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import es.uvigo.ei.sing.pandrugsdb.util.CompareCollectionsTest;
 import es.uvigo.ei.sing.pandrugsdb.util.DigestUtilsTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	DigestUtilsTest.class
+	DigestUtilsTest.class,
+	CompareCollectionsTest.class
 })
 public class UtilsUnitTestSuite {
 }

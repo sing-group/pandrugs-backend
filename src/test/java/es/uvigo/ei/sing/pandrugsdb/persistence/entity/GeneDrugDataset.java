@@ -23,216 +23,260 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 public final class GeneDrugDataset {
 	private GeneDrugDataset() {}
 	
-	public final static String[] geneDrugsIds() {
-		return geneDrugs().stream()
-			.map(GeneDrug::getGeneSymbol)
-		.toArray(String[]::new);
+	public static Map<String, SourceInformation> sourceInfos() {
+		return Stream.of(
+			new SourceInformation("Source 1", "http://source1.org", false),
+			new SourceInformation("Source 2", "http://source2.org", false)
+		).collect(toMap(
+			SourceInformation::getSource,
+			si -> si
+		));
 	}
 	
-	public final static List<SourceInformation> sourceInfos() {
-		return asList(
-			new SourceInformation("CancerCommons", "http://dgidb.genome.wustl.edu/sources/CancerCommons", true),
-			new SourceInformation("ClearityFoundationBiomarkers", "http://dgidb.genome.wustl.edu/sources/ClearityFoundationBiomarkers", true),
-			new SourceInformation("ClearityFoundationClinicalTrial", "http://www.broadinstitute.org/ctrp/", true),
-			new SourceInformation("CTRP", "http://www.broadinstitute.org/ctrp/", false),
-			new SourceInformation("DrugBank", "http://dgidb.genome.wustl.edu/sources/DrugBank", false),
-			new SourceInformation("GDSC", "http://www.cancerrxgene.org/translation/Gene/GDSC", false),
-			new SourceInformation("moAb", "http://en.wikipedia.org/wiki/List_of_therapeutic_monoclonal_antibodies", true),
-			new SourceInformation("MyCancerGenome", "http://dgidb.genome.wustl.edu/drug_claims/[GENES]/[DRUG]", true),
-			new SourceInformation("MyCancerGenomeClinicalTrial", "http://dgidb.genome.wustl.edu/sources/MyCancerGenomeClinicalTrial", true),
-			new SourceInformation("PharmGKB", "http://dgidb.genome.wustl.edu/sources/PharmGKB", false),
-			new SourceInformation("TALC", "http://dgidb.genome.wustl.edu/sources/TALC", true),
-			new SourceInformation("TARGET-CGA", "http://www.broadinstitute.org/cancer/cga/target", true),
-			new SourceInformation("TEND", "http://dgidb.genome.wustl.edu/sources/TEND", true),
-			new SourceInformation("TTD", "http://dgidb.genome.wustl.edu/sources/TTD", false)
-		);
+	public static Map<String, GeneInformation> geneInfos() {
+		return Stream.of(
+			new GeneInformation("Direct Gene 1", null, false, null, 0d),
+			new GeneInformation("Direct Gene 2", null, false, null, 0d),
+			new GeneInformation("Indirect Gene 1", null, false, null, 0d),
+			new GeneInformation("Indirect Gene 2", null, false, null, 0d)
+		).collect(toMap(
+			GeneInformation::getGeneSymbol,
+			si -> si
+		));
 	}
 	
-	public final static List<GeneDrug> geneDrugs() {
-		final Map<String, SourceInformation> sourceInfos = sourceInfos().stream()
-			.collect(toMap(SourceInformation::getSource, identity()));
-
-		return Arrays.asList(
-			new GeneDrug(3, "ABI1", "INDISULAM", "Other",
-				DrugStatus.CLINICAL, null, "cancer", null,
-				false, "resistance", null, 0d,
-				asList(),
-				asList(new DrugSource(2, "CTRP", "indisulam", "INDISULAM", "INDISULAM", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(20, "ANGPTL4", "PRIMA-1", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, null, null, 0d, 
-				asList(),
-				asList(new DrugSource(7, "CTRP", "PRIMA-1", "PRIMA-1", "PRIMA-1", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(13, "BCL2L1", "BMS-536924", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, "resistance", null, 0d, 
-				asList(),
-				asList(new DrugSource(1, "CTRP", "BMS-536924", "BMS-536924", "BMS-536924", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(5, "CACNB2", "LOVASTATIN", "Other",
-				DrugStatus.APPROVED,
-				"Cardiology/Vascular disease",
-				"clinical cancer", null, false, null, null,
-				0.4d, 
-				asList(),
-				asList(new DrugSource(3, "CTRP", "lovastatin acid", "LOVASTATIN", "LOVASTATIN", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(8, "CASC5", "LOVASTATIN", "Other",
-				DrugStatus.APPROVED,
-				"Cardiology/Vascular disease",
-				"clinical cancer", null, false, "resistance",
-				null, 0d, 
-				asList(),
-				asList(new DrugSource(3, "CTRP", "lovastatin acid", "LOVASTATIN", "LOVASTATIN", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(14, 
-				"CCNA2",
-				"(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL",
-				"Cell cycle", DrugStatus.EXPERIMENTAL, null,
-				null, null, true, null, null, 0.5d, 
-				asList(),
-				asList(
-					new DrugSource(10, "DrugBank", "DB08285", "(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL", "(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL", sourceInfos.get("DrugBank"))),
-				emptyList()),
-			new GeneDrug(16, "CLTC", "YK 4-279", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, null, null, 0d, 
-				asList(),
-				asList(new DrugSource(9, "CTRP", "YK 4-279", "YK 4-279", "YK 4-279", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(12, "CYP11A1", "AMINOGLUTETHIMIDE",
-				"Metabolism", DrugStatus.WITHDRAWN, null, null,
-				null, true, null, null, 0.5d, 
-				asList(),
-				asList(new DrugSource(17, "TTD", "DAP000842", "AMINOGLUTETHIMIDE", "AMINOGLUTETHIMIDE", sourceInfos.get("TTD"))),
-				emptyList()),
-			new GeneDrug(18, "DBN1", "NEOPELTOLIDE", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, null, null, 0d, 
-				asList(),
-				asList(new DrugSource(5, "CTRP", "neopeltolide", "NEOPELTOLIDE", "NEOPELTOLIDE", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(10, "EFTUD1", "S-(METHYLMERCURY)-L-CYSTEINE",
-				"Other", DrugStatus.EXPERIMENTAL, null, null,
-				null, true, null, null, 0.5d, 
-				asList(),
-				asList(new DrugSource(11, "DrugBank", "DB02750", "S-(METHYLMERCURY)-L-CYSTEINE", "S-(METHYLMERCURY)-L-CYSTEINE", sourceInfos.get("DrugBank"))),
-				emptyList()),
-			new GeneDrug(9, "EPHB4", "XL647",
-				"Receptor Tyrosine Kinase",
-				DrugStatus.CLINICAL, null, "cancer", null,
-				true, null, null, 0.8d, 
-				asList(),
-				asList(new DrugSource(15, "TALC", "XL647", "XL647", "XL647", sourceInfos.get("TALC"))),
-				emptyList()),
-			new GeneDrug(2, "FIGF", "SALERMIDE", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, null, null, 0d, 
-				asList(),
-				asList(new DrugSource(8, "CTRP", "salermide", "SALERMIDE", "SALERMIDE", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(1, "HDAC3", "SODIUM PHENYLBUTYRATE",
-				"Epigenetics", DrugStatus.APPROVED,
-				"Hematology", "clinical cancer", null, true,
-				null, null, 0.9d, 
-				asList(),
-				asList(new DrugSource(16, "TALC", "SODIUM PHENYLBUTYRATE", "SODIUM PHENYLBUTYRATE", "SODIUM PHENYLBUTYRATE", sourceInfos.get("TALC"))),
-				emptyList()),
-			new GeneDrug(15, "HSP90AA1", "IPI-504",
-				"Chaperone inhibitor", DrugStatus.CLINICAL,
-				null, "cancer", null, true, null, null, 0.8d,
-				asList(),
-				asList(new DrugSource(18, "TTD", "DCL000137", "IPI-504", "IPI-504", sourceInfos.get("TDD"))),
-				emptyList()),
-			new GeneDrug(4, "KDM6A", "CHEMBL254381", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, null, null, 0d, 
-				asList(),
-				asList(new DrugSource(6, "CTRP", "PNU-74654", "CHEMBL254381", "CHEMBL254381", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(6, "MSH2", "BMS-536924", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				false, "resistance", null, 0d, 
-				asList(),
-				asList(new DrugSource(1, "CTRP", "BMS-536924", "BMS-536924", "BMS-536924", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(17, "PDE4A", "PICLAMILAST", "Other",
-				DrugStatus.EXPERIMENTAL, null, null, null,
-				true, null, null, 0.5d, 
-				asList(),
-				asList(new DrugSource(12, "DrugBank", "DB01791", "PICLAMILAST", "PICLAMILAST", sourceInfos.get("CTRP"))),
-				emptyList()),
-			new GeneDrug(19, "PIK3CB", "BYL719", "PI3K/Akt/mTOR",
-				DrugStatus.CLINICAL, null, "cancer", null,
-				true, null, null, 0.8d, 
-				asList(),
-				asList(new DrugSource(14, "MyCancerGenomeClinicalTrial", "BYL719", "BYL719", "BYL719", sourceInfos.get("MyCancerGenomeClinicalTrial"))),
-				emptyList()),
-			new GeneDrug(11, "PSMD10P2", "CARFILZOMIB", "Proteases",
-				DrugStatus.APPROVED, "Oncology",
-				"multiple myeloma", "TARGETED THERAPY", true,
-				null, null, 1d, 
-				asList(),
-				asList(new DrugSource(13, "MyCancerGenome", "CARFILZOMIB", "CARFILZOMIB", "CARFILZOMIB", sourceInfos.get("MyCancerGenome"))),
-				emptyList()),
-			new GeneDrug(7, "TNFRSF1B", "NAVITOCLAX", "Other",
-				DrugStatus.CLINICAL, null, "cancer", null,
-				false, "resistance", null, 0d, 
-				asList(),
-				asList(new DrugSource(4, "CTRP", "navitoclax", "NAVITOCLAX", "NAVITOCLAX", sourceInfos.get("CTRP"))),
-				emptyList())
-		);
-	}
-	
-	public final static List<DrugSource> drugSources() {
-		final Map<String, SourceInformation> sourceInfos = sourceInfos().stream()
-			.collect(toMap(SourceInformation::getSource, identity()));
+	public static DrugSource[] drugSources() {
+		final Map<String, SourceInformation> sourceInfos = sourceInfos();
 		
-		return asList(
-			new DrugSource(1, "CTRP", "BMS-536924", "BMS-536924", "BMS-536924", sourceInfos.get("CTRP")),
-			new DrugSource(2, "CTRP", "indisulam", "INDISULAM", "INDISULAM", sourceInfos.get("CTRP")),
-			new DrugSource(3, "CTRP", "lovastatin acid", "LOVASTATIN", "LOVASTATIN", sourceInfos.get("CTRP")),
-			new DrugSource(4, "CTRP", "navitoclax", "NAVITOCLAX", "NAVITOCLAX", sourceInfos.get("CTRP")),
-			new DrugSource(5, "CTRP", "neopeltolide", "NEOPELTOLIDE", "NEOPELTOLIDE", sourceInfos.get("CTRP")),
-			new DrugSource(6, "CTRP", "PNU-74654", "CHEMBL254381", "CHEMBL254381", sourceInfos.get("CTRP")),
-			new DrugSource(7, "CTRP", "PRIMA-1", "PRIMA-1", "PRIMA-1", sourceInfos.get("CTRP")),
-			new DrugSource(8, "CTRP", "salermide", "SALERMIDE", "SALERMIDE", sourceInfos.get("CTRP")),
-			new DrugSource(9, "CTRP", "YK 4-279", "YK 4-279", "YK 4-279", sourceInfos.get("CTRP")),
-			new DrugSource(10, "DrugBank", "DB08285", "(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL", "(2R)-2-{[4-(BENZYLAMINO)-8-(1-METHYLETHYL)PYRAZOLO[1,5-A][1,3,5]TRIAZIN-2-YL]AMINO}BUTAN-1-OL", sourceInfos.get("DrugBank")),
-			new DrugSource(11, "DrugBank", "DB02750", "S-(METHYLMERCURY)-L-CYSTEINE", "S-(METHYLMERCURY)-L-CYSTEINE", sourceInfos.get("DrugBank")),
-			new DrugSource(12, "DrugBank", "DB01791", "PICLAMILAST", "PICLAMILAST", sourceInfos.get("DrugBank")),
-			new DrugSource(13, "MyCancerGenome", "CARFILZOMIB", "CARFILZOMIB", "CARFILZOMIB", sourceInfos.get("MyCancerGenome")),
-			new DrugSource(14, "MyCancerGenomeClinicalTrial", "BYL719", "BYL719", "BYL719", sourceInfos.get("MyCancerGenomeClinicalTrial")),
-			new DrugSource(15, "TALC", "XL647", "XL647", "XL647", sourceInfos.get("TALC")),
-			new DrugSource(16, "TALC", "SODIUM PHENYLBUTYRATE", "SODIUM PHENYLBUTYRATE", "SODIUM PHENYLBUTYRATE", sourceInfos.get("TALC")),
-			new DrugSource(17, "TTD", "DAP000842", "AMINOGLUTETHIMIDE", "AMINOGLUTETHIMIDE", sourceInfos.get("TTD")),
-			new DrugSource(18, "TTD", "DCL000137", "IPI-504", "IPI-504", sourceInfos.get("TTD"))
+		return new DrugSource[] {
+			new DrugSource(0, "Source 1", "Drug 1", "Drug 1", "Show Drug 1",
+				sourceInfos.get("Source 1")
+			),
+			new DrugSource(1, "Source 1", "Drug 2", "Drug 2", "Show Drug 2",
+				sourceInfos.get("Source 1")
+			),
+			new DrugSource(2, "Source 2", "Drug 3", "Drug 3", "Show Drug 3",
+				sourceInfos.get("Source 2")
+			),
+			new DrugSource(10, "Source 1", "Drug 10", "Drug 10", "Show Drug 10",
+				sourceInfos.get("Source 1")
+			),
+			new DrugSource(11, "Source 1", "Drug 11", "Drug 11", "Show Drug 11",
+				sourceInfos.get("Source 1")
+			),
+			new DrugSource(12, "Source 2", "Drug 12", "Drug 12", "Show Drug 12",
+				sourceInfos.get("Source 2")
+			)
+		};
+	}
+	
+	public static GeneDrug singleGeneDirect() {
+		return new GeneDrug(
+			0, "Direct Gene 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			emptyList(),
+			asList(drugSources()[0]), 
+			emptyList(),
+			geneInfos().get("Direct Gene 1")
 		);
 	}
 	
-	public final static GeneDrug presentGeneDrug() {
-		return geneDrugs().get(0);
+	public static GeneDrug[] multipleGeneDirect() {
+		final Map<String, GeneInformation> geneInfos = geneInfos();
+		
+		return new GeneDrug[] {
+			singleGeneDirect(),
+			new GeneDrug(
+				1, "Direct Gene 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				emptyList(),
+				asList(drugSources()[0]),
+				emptyList(),
+				geneInfos.get("Direct Gene 2")
+			),
+			new GeneDrug(
+				2, "Direct Gene 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				emptyList(),
+				asList(drugSources()[1]),
+				emptyList(),
+				geneInfos.get("Direct Gene 2")
+			),
+			new GeneDrug(
+				3, "Direct Gene 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				emptyList(),
+				asList(drugSources()[2]),
+				emptyList(),
+				geneInfos.get("Direct Gene 2")
+			)
+		};
 	}
 	
-	public final static GeneDrug absentGeneDrug() {
-		return new GeneDrug(1000, "GENE", "DRUG", "Other",
-			DrugStatus.CLINICAL, null, "cancer", null,
-			false, "resistance", null, 0d,
+	public static GeneDrug singleGeneIndirect() {
+		return new GeneDrug(
+			10, "Indirect Gene 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			asList("IG1"),
+			asList(drugSources()[0]), 
 			emptyList(),
-			emptyList(),
-			emptyList()
+			geneInfos().get("Indirect Gene 1")
 		);
+	}
+	
+	public static GeneDrug[] multipleGeneIndirect() {
+		final Map<String, GeneInformation> geneInfos = geneInfos();
+		
+		return new GeneDrug[] {
+			singleGeneIndirect(),
+			new GeneDrug(
+				11, "Indirect Gene 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				asList("IG2"),
+				asList(drugSources()[0]),
+				emptyList(),
+				geneInfos.get("Indirect Gene 2")
+			),
+			new GeneDrug(
+				12, "Indirect Gene 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				asList("IG2"),
+				asList(drugSources()[1]),
+				emptyList(),
+				geneInfos.get("Indirect Gene 2")
+			),
+			new GeneDrug(
+				13, "Indirect Gene 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				asList("IG2"),
+				asList(drugSources()[2]),
+				emptyList(),
+				geneInfos.get("Indirect Gene 2")
+			)
+		};
+	}
+	
+	public static GeneDrug[] multipleGeneMixed() {
+		return Stream.of(multipleGeneDirect(), multipleGeneIndirect())
+			.flatMap(Stream::of)
+		.toArray(GeneDrug[]::new);
+	}
+	
+	public static GeneDrugGroup singleGeneGroupDirect() {
+		return new GeneDrugGroup(
+			new String[] { "Direct Gene 1" },
+			asList(singleGeneDirect())
+		);
+	}
+	
+	public static GeneDrugGroup[] multipleGeneGroupDirect() {
+		final GeneDrug[] multipleGeneDirect = multipleGeneDirect();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 1", "Direct Gene 2" },
+				asList(
+					multipleGeneDirect[0],
+					multipleGeneDirect[1]
+				)
+			),
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 2" },
+				asList(multipleGeneDirect[2])
+			),
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 2" },
+				asList(multipleGeneDirect[3])
+			)
+		};
+	}
+	
+	public static GeneDrugGroup singleGeneGroupIndirect() {
+		return new GeneDrugGroup(
+			new String[] { "IG1" },
+			asList(singleGeneIndirect())
+		);
+	}
+	
+	public static GeneDrugGroup[] multipleGeneGroupIndirect() {
+		final GeneDrug[] multipleGeneIndirect = multipleGeneIndirect();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { "IG1", "IG2" },
+				asList(
+					multipleGeneIndirect[0],
+					multipleGeneIndirect[1]
+				)
+			),
+			new GeneDrugGroup(
+				new String[] { "IG2" },
+				asList(multipleGeneIndirect[2])
+			),
+			new GeneDrugGroup(
+				new String[] { "IG2" },
+				asList(multipleGeneIndirect[3])
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneGroupMixed() {
+		final GeneDrug[] multipleGeneMixed = multipleGeneMixed();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 1", "Direct Gene 2" },
+				asList(
+					multipleGeneMixed[0],
+					multipleGeneMixed[1]
+				)
+			),
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 2" },
+				asList(multipleGeneMixed[2])
+			),
+			new GeneDrugGroup(
+				new String[] { "Direct Gene 2" },
+				asList(multipleGeneMixed[3])
+			),
+			new GeneDrugGroup(
+				new String[] { "IG1", "IG2" },
+				asList(
+					multipleGeneMixed[4],
+					multipleGeneMixed[5]
+				)
+			),
+			new GeneDrugGroup(
+				new String[] { "IG2" },
+				asList(multipleGeneMixed[6])
+			),
+			new GeneDrugGroup(
+				new String[] { "IG2" },
+				asList(multipleGeneMixed[7])
+			)
+		};
+	}
+	
+	public static GeneDrugGroupInfos singleGeneGroupInfosDirect() {
+		return new GeneDrugGroupInfos(asList(singleGeneGroupDirect()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneGroupInfosDirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneGroupDirect()));
+	}
+	
+	public static GeneDrugGroupInfos singleGeneGroupInfosIndirect() {
+		return new GeneDrugGroupInfos(asList(singleGeneGroupIndirect()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneGroupInfosIndirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneGroupIndirect()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneGroupInfosMixed() {
+		return new GeneDrugGroupInfos(asList(multipleGeneGroupMixed()));
 	}
 }

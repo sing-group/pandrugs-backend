@@ -21,11 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasExactlyTheItems;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.presentGeneDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -59,53 +62,63 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Named("defaultGeneDrugDAO")
 	private GeneDrugDAO dao;
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSearchEmptyGenes() {
+		this.dao.searchWithIndirects(new String[0]);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testSearchNullGenes() {
+		this.dao.searchWithIndirects((String[]) null);
+	}
+	
 	@Test
-	public void testSearchSingleWithNullStartPositionAndMaxResutls() {
-		final GeneDrug expected = presentGeneDrug();
-		final List<GeneDrug> result = dao.search(
-			new String[] { expected.getGeneSymbol() }, null, null
+	public void testSearchNoResult() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects("Absent Gene");
+		
+		assertThat(result, is(empty()));
+	}
+	
+	@Test
+	public void testSearchSingleGeneDirect() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects("Direct Gene 1");
+		
+		assertThat(result, containsInAnyOrder(singleGeneDirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneDirect() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects(
+			"Direct Gene 1", "Direct Gene 2"
 		);
 		
-		assertThat(result, hasExactlyTheItems(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneDirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleWithNullStartPositionAndMaxResutls() {
-		final List<GeneDrug> expected = geneDrugs().subList(2, 6);
-		final List<GeneDrug> result = dao.search(
-			expected.stream().map(GeneDrug::getGeneSymbol).toArray(String[]::new), null, null
+	public void testSearchSingleGeneIndirect() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects(
+			"IG1"
 		);
 		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(singleGeneIndirect()));
 	}
 	
 	@Test
-	public void testSearchStartAt3() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
+	public void testSearchMultipleGeneIndirect() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects(
+			"IG1", "IG2"
+		);
 		
-		final List<GeneDrug> expected = geneDrugs.subList(3, geneDrugs.size());
-		final List<GeneDrug> result = dao.search(geneDrugsIds(), 3, null);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneIndirect()));
 	}
 	
 	@Test
-	public void testSearchWithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
+	public void testSearchMultipleGeneMixed() {
+		final List<GeneDrug> result = this.dao.searchWithIndirects(
+			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+		);
 		
-		final List<GeneDrug> expected = geneDrugs.subList(0, 5);
-		final List<GeneDrug> result = dao.search(geneDrugsIds(), null, 5);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
-	}
-	
-	@Test
-	public void testSearchStartAt1WithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
-		
-		final List<GeneDrug> expected = geneDrugs.subList(5, 10);
-		final List<GeneDrug> result = dao.search(geneDrugsIds(), 5, 5);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneMixed()));
 	}
 }

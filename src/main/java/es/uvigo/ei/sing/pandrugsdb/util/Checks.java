@@ -303,9 +303,24 @@ public final class Checks {
 	 * @throws IllegalArgumentException if the collection is empty.
 	 */
 	public static <C extends Collection<?>> C requireNonEmpty(C collection) {
-		return check(requireNonNull(collection), 
+		return requireNonEmpty(collection, "collection can't be empty");
+	}
+	
+	/**
+	 * Checks if the provided collection is not empty.
+	 * 
+	 * @param collection the collection checked.
+	 * @param message the message included in the exception thrown.
+	 * @param <C> type of the collection.
+	 * @return the provided collection.
+	 * @throws NullPointerException if the collection is {@code null}.
+	 * @throws IllegalArgumentException if the collection is empty.
+	 */
+	public static <C extends Collection<?>> C requireNonEmpty(
+		C collection, String message) {
+		return check(requireNonNull(collection, message), 
 			not(Collection::isEmpty),
-			"collection can't be empty"
+			message
 		);
 	}
 	
@@ -319,9 +334,23 @@ public final class Checks {
 	 * @throws IllegalArgumentException if the array is empty.
 	 */
 	public static <T> T[] requireNonEmpty(T[] values) {
+		return requireNonEmpty(values, "array can't be empty");
+	}
+	
+	/**
+	 * Checks if the provided array is not empty.
+	 * 
+	 * @param values the array checked.
+	 * @param message the message included in the exception thrown.
+	 * @param <T> type of the array items.
+	 * @return the provided array.
+	 * @throws NullPointerException if the array is {@code null}.
+	 * @throws IllegalArgumentException if the array is empty.
+	 */
+	public static <T> T[] requireNonEmpty(T[] values, String message) {
 		return check(requireNonNull(values), 
 			x -> x.length > 0,
-			"array can't be empty"
+			message
 		);
 	}
 	

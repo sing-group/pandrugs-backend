@@ -55,7 +55,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
-import es.uvigo.ei.sing.pandrugsdb.util.SecurityContextStub;
+import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

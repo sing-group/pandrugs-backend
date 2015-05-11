@@ -21,12 +21,16 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity(name = "source_info")
-public class SourceInformation {
+public class SourceInformation implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@Column(name = "source", length = 255)
 	private String source;

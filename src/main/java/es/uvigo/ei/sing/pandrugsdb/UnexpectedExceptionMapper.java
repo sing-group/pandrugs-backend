@@ -39,7 +39,6 @@ public class UnexpectedExceptionMapper implements ExceptionMapper<Throwable> {
 	
 	@Override
 	public Response toResponse(Throwable exception) {
-		System.out.println("Exception: " + exception);
 		if (exception instanceof WebApplicationException) {
 			return ((WebApplicationException) exception).getResponse();
 		} else {

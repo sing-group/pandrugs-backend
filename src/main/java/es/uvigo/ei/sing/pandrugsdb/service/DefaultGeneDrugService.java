@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 
 import java.util.List;
 
@@ -39,8 +40,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 /**
  * Service to query the gene drugs lists.
@@ -49,32 +50,27 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
  */
 @Path("genedrug")
 @Service
+@Transactional
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultGeneDrugService implements GeneDrugService {
 	@Inject
 	private GeneDrugController controller;
-	
-	@Override
+
 	@GET
 	@Consumes(MediaType.WILDCARD)
-	@Transactional
-	public GeneDrugBasicInfos list(
-		@QueryParam("gene") List<String> genes,
-		@QueryParam("startPosition") Integer startPosition,
-		@QueryParam("maxResults") Integer maxResults
-	) throws BadRequestException, InternalServerErrorException {
+	@Override
+	public GeneDrugGroupInfos list(@QueryParam("gene") List<String> genes)
+	throws BadRequestException, InternalServerErrorException {
 		try {
-			if (genes == null || genes.isEmpty()) 
-				throw new IllegalArgumentException("At least one gene should be provided");
+			requireNonEmpty(genes, "At least one gene must be provided");
 			
-			final List<GeneDrug> geneDrugs = controller.searchForGeneDrugs(
-				genes.toArray(new String[genes.size()]),
-				startPosition, maxResults
+			final List<GeneDrugGroup> geneDrugs = controller.searchForGeneDrugs(
+				genes.toArray(new String[genes.size()])
 			);
 			
-			return new GeneDrugBasicInfos(geneDrugs);
-		} catch (IllegalArgumentException iae) {
+			return new GeneDrugGroupInfos(geneDrugs);
+		} catch (IllegalArgumentException | NullPointerException iae) {
 			throw createBadRequestException(iae.getMessage());
 		}
 	}

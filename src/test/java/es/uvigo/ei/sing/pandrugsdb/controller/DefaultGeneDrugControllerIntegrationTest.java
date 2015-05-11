@@ -21,11 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasExactlyTheItems;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.presentGeneDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -44,7 +47,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -59,53 +62,63 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	@Named("defaultGeneDrugController")
 	private GeneDrugController controller;
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSearchEmptyGenes() {
+		this.controller.searchForGeneDrugs(new String[0]);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testSearchNullGenes() {
+		this.controller.searchForGeneDrugs((String[]) null);
+	}
+	
 	@Test
-	public void testSearchSingleWithNullStartPositionAndMaxResutls() {
-		final GeneDrug expected = presentGeneDrug();
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			new String[] { expected.getGeneSymbol() }, null, null
+	public void testSearchNoResult() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs("Absent Gene");
+		
+		assertThat(result, is(empty()));
+	}
+	
+	@Test
+	public void testSearchSingleGeneDirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs("Direct Gene 1");
+		
+		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneDirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			"Direct Gene 1", "Direct Gene 2"
 		);
 		
-		assertThat(result, hasExactlyTheItems(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleWithNullStartPositionAndMaxResutls() {
-		final List<GeneDrug> expected = geneDrugs().subList(2, 6);
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			expected.stream().map(GeneDrug::getGeneSymbol).toArray(String[]::new), null, null
+	public void testSearchSingleGeneIndirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			"IG1"
 		);
 		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
 	}
 	
 	@Test
-	public void testSearchStartAt3() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
+	public void testSearchMultipleGeneIndirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			"IG1", "IG2"
+		);
 		
-		final List<GeneDrug> expected = geneDrugs.subList(3, geneDrugs.size());
-		final List<GeneDrug> result = controller.searchForGeneDrugs(geneDrugsIds(), 3, null);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
 	}
 	
 	@Test
-	public void testSearchWithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
+	public void testSearchMultipleGeneMixed() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+		);
 		
-		final List<GeneDrug> expected = geneDrugs.subList(0, 5);
-		final List<GeneDrug> result = controller.searchForGeneDrugs(geneDrugsIds(), null, 5);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
-	}
-	
-	@Test
-	public void testSearchStartAt1WithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
-		
-		final List<GeneDrug> expected = geneDrugs.subList(5, 10);
-		final List<GeneDrug> result = controller.searchForGeneDrugs(geneDrugsIds(), 5, 5);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
 	}
 }

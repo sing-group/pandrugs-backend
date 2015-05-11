@@ -19,12 +19,21 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.util.List;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-
-public interface GeneDrugDAO {
-	public abstract List<GeneDrug> searchWithIndirects(String ... geneNames);
+public enum DriverLevel implements Weighted {
+	CANDIDATE_DRIVER(0.1d),
+	HIGH_CONFIDENCE_DRIVER(0.2d);
+	
+	private final double weight;
+	
+	private DriverLevel(double weight) {
+		this.weight = weight;
+	}
+	
+	@Override
+	public double getWeight() {
+		return weight;
+	}
 }

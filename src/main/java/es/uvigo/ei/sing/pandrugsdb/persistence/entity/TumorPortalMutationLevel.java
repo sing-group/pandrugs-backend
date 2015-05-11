@@ -19,14 +19,22 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.database;
+package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
-public class HighOrderDbUnitTestExecutionListener
-extends DbUnitTestExecutionListener {
+public enum TumorPortalMutationLevel implements Weighted {
+	NEAR_SIGNIFICANCE(0.05d),
+	SIGNIFICANTLY_MUTATED(0.1d),
+	HIGHLY_SIGNIFICANTLY_MUTATED(0.2d);
+	
+	private final double weight;
+	
+	private TumorPortalMutationLevel(double weight) {
+		this.weight = weight;
+	}
+	
 	@Override
-	public int getOrder() {
-		return 2500;
+	public double getWeight() {
+		return weight;
 	}
 }

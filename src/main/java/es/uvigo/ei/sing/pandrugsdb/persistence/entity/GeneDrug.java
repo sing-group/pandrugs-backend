@@ -21,10 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -39,8 +43,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity(name = "gene_drug")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {
@@ -53,7 +61,7 @@ public class GeneDrug implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	@Column(name = "gene_symbol", length = 1000)
+	@Column(name = "gene_symbol", length = 255)
 	private String geneSymbol;
 	
 	@Column(name = "standard_drug_name", length = 1000)
@@ -94,6 +102,16 @@ public class GeneDrug implements Serializable {
 	)
 	private List<Pathway> pathways;
 	
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(
+		name = "gene_symbol",
+		referencedColumnName = "gene_symbol",
+		insertable = false, updatable = false,
+		nullable = true
+	)
+	private GeneInformation geneInformation;
+	
 	GeneDrug() {}
 
 	GeneDrug(
@@ -111,7 +129,8 @@ public class GeneDrug implements Serializable {
 		double score,
 		List<String> inverseGene,
 		List<DrugSource> drugSources, 
-		List<Pathway> pathways
+		List<Pathway> pathways,
+		GeneInformation geneInformation
 	) {
 		this.id = id;
 		this.geneSymbol = geneSymbol;
@@ -128,6 +147,7 @@ public class GeneDrug implements Serializable {
 		this.indirectGenes = inverseGene;
 		this.drugSources = drugSources;
 		this.pathways = pathways;
+		this.geneInformation = geneInformation;
 	}
 	
 	public int getId() {
@@ -178,6 +198,13 @@ public class GeneDrug implements Serializable {
 		return score;
 	}
 	
+	public List<String> getDirectAndIndirectGenes() {
+		final List<String> genes = new ArrayList<>(this.indirectGenes);
+		genes.add(this.geneSymbol);
+		
+		return genes;
+	}
+	
 	public List<String> getIndirectGenes() {
 		return unmodifiableList(this.indirectGenes);
 	}
@@ -185,9 +212,34 @@ public class GeneDrug implements Serializable {
 	public List<DrugSource> getDrugSources() {
 		return unmodifiableList(this.drugSources);
 	}
+
+	public List<String> getDrugSourceNames() {
+		return this.drugSources.stream()
+			.map(DrugSource::getSource)
+			.distinct()
+		.collect(Collectors.toList());
+	}
+	
+	public List<DrugSource> getCuratedDrugSources() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+		.collect(toList());
+	}
+	
+	public List<String> getCuratedDrugSourceNames() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+			.map(DrugSource::getSource)
+			.distinct()
+		.collect(toList());
+	}
 	
 	public List<Pathway> getPathways() {
 		return unmodifiableList(pathways);
+	}
+	
+	public GeneInformation getGeneInformation() {
+		return geneInformation;
 	}
 
 	@Override
@@ -197,12 +249,21 @@ public class GeneDrug implements Serializable {
 		result = prime * result
 				+ ((alteration == null) ? 0 : alteration.hashCode());
 		result = prime * result + ((cancer == null) ? 0 : cancer.hashCode());
+		result = prime * result
+				+ ((drugSources == null) ? 0 : drugSources.hashCode());
 		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
 		result = prime * result + ((family == null) ? 0 : family.hashCode());
 		result = prime * result
+				+ ((geneInformation == null) ? 0 : geneInformation.hashCode());
+		result = prime * result
 				+ ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
+		result = prime * result + id;
+		result = prime * result
+				+ ((indirectGenes == null) ? 0 : indirectGenes.hashCode());
 		result = prime * result
 				+ ((pathology == null) ? 0 : pathology.hashCode());
+		result = prime * result
+				+ ((pathways == null) ? 0 : pathways.hashCode());
 		result = prime * result
 				+ ((resistance == null) ? 0 : resistance.hashCode());
 		long temp;
@@ -235,6 +296,10 @@ public class GeneDrug implements Serializable {
 				return false;
 		} else if (!cancer.equals(other.cancer))
 			return false;
+		
+		if (!equalsIgnoreOrder(drugSources, other.drugSources)) {
+			return false;
+		}
 		if (extra == null) {
 			if (other.extra != null)
 				return false;
@@ -245,16 +310,31 @@ public class GeneDrug implements Serializable {
 				return false;
 		} else if (!family.equals(other.family))
 			return false;
+		if (geneInformation == null) {
+			if (other.geneInformation != null)
+				return false;
+		} else if (!geneInformation.equals(other.geneInformation))
+			return false;
 		if (geneSymbol == null) {
 			if (other.geneSymbol != null)
 				return false;
 		} else if (!geneSymbol.equals(other.geneSymbol))
 			return false;
+		if (id != other.id)
+			return false;
+		
+		if (!equalsIgnoreOrder(indirectGenes, other.indirectGenes))
+				return false;
+		
 		if (pathology == null) {
 			if (other.pathology != null)
 				return false;
 		} else if (!pathology.equals(other.pathology))
 			return false;
+		
+		if (!equalsIgnoreOrder(pathways, other.pathways))
+				return false;
+		
 		if (resistance == null) {
 			if (other.resistance != null)
 				return false;
@@ -274,7 +354,7 @@ public class GeneDrug implements Serializable {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getGeneSymbol() + " - " + this.getStandardDrugName();

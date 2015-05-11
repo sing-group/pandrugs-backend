@@ -23,10 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import java.util.List;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 
 public interface GeneDrugController {
-	public abstract List<GeneDrug> searchForGeneDrugs(
-		String[] geneNames, Integer startPosition, Integer maxResults
-	);
+	public abstract List<GeneDrugGroup> searchForGeneDrugs(String ... geneNames);
 }

@@ -55,7 +55,7 @@ public class DrugSource {
 	@Column(name = "show_drug_name", length = 1000)
 	private String showDrugName;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "source", referencedColumnName = "source", insertable = false, updatable = false)
 	private SourceInformation sourceInformation;
 	
@@ -97,11 +97,86 @@ public class DrugSource {
 		return sourceInformation;
 	}
 	
-	public String getDrugURL(String genes) {
+	public boolean isCurated() {
+		return this.getSourceInformation().isCurated();
+	}
+	
+	public String getDrugURL(String ... genes) {
+		final String geneNames = String.join(",", genes);
+		
 		return Optional.ofNullable(this.sourceInformation)
 			.map(SourceInformation::getUrlTemplate)
-			.map(template -> template.replaceAll("\\[GENES\\]", genes))
+			.map(template -> template.replaceAll("\\[GENES\\]", geneNames))
 			.map(template -> template.replaceAll("\\[DRUG\\]", this.standardDrugName))
 		.orElse(null);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((showDrugName == null) ? 0 : showDrugName.hashCode());
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		result = prime * result
+				+ ((sourceDrugName == null) ? 0 : sourceDrugName.hashCode());
+		result = prime
+				* result
+				+ ((sourceInformation == null) ? 0 : sourceInformation
+						.hashCode());
+		result = prime
+				* result
+				+ ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		DrugSource other = (DrugSource) obj;
+		if (showDrugName == null) {
+			if (other.showDrugName != null) {
+				return false;
+			}
+		} else if (!showDrugName.equals(other.showDrugName)) {
+			return false;
+		}
+		if (source == null) {
+			if (other.source != null) {
+				return false;
+			}
+		} else if (!source.equals(other.source)) {
+			return false;
+		}
+		if (sourceDrugName == null) {
+			if (other.sourceDrugName != null) {
+				return false;
+			}
+		} else if (!sourceDrugName.equals(other.sourceDrugName)) {
+			return false;
+		}
+		if (sourceInformation == null) {
+			if (other.sourceInformation != null) {
+				return false;
+			}
+		} else if (!sourceInformation.equals(other.sourceInformation)) {
+			return false;
+		}
+		if (standardDrugName == null) {
+			if (other.standardDrugName != null) {
+				return false;
+			}
+		} else if (!standardDrugName.equals(other.standardDrugName)) {
+			return false;
+		}
+		return true;
 	}
 }

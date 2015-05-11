@@ -21,14 +21,23 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasExactlyTheItems;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.presentGeneDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -39,8 +48,8 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultGeneDrugControllerUnitTest {
@@ -51,81 +60,113 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Mock
 	private GeneDrugDAO dao;
 	
-	@Test
-	public void testSearchSingleWithNullStartPositionAndMaxResutls() {
-		final GeneDrug expected = presentGeneDrug();
-		final String[] geneNames = { expected.getGeneSymbol() };
+	@Test(expected = IllegalArgumentException.class)
+	public void testSearchEmptyGenes() {
+		final String[] query = new String[0];
 		
-		expect(dao.search(geneNames, null, null))
-			.andReturn(asList(expected));
+		expect(dao.searchWithIndirects(query))
+			.andThrow(new IllegalArgumentException());
+		
 		replay(dao);
 		
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			geneNames, null, null);
+		this.controller.searchForGeneDrugs(query);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testSearchNullPointerException() {
+		final String[] query = null;
 		
-		assertThat(result, hasExactlyTheItems(expected));
+		expect(dao.searchWithIndirects(query))
+			.andThrow(new NullPointerException());
+		
+		replay(dao);
+		
+		this.controller.searchForGeneDrugs(query);
 	}
 	
 	@Test
-	public void testSearchMultipleWithNullStartPositionAndMaxResutls() {
-		final List<GeneDrug> expected = geneDrugs().subList(2, 6);
-		final String[] geneNames = expected.stream()
-			.map(GeneDrug::getGeneSymbol)
-		.toArray(String[]::new);
+	public void testSearchNoResult() {
+		final String query = "Absent gene";
 		
-		expect(dao.search(geneNames, null, null)).andReturn(expected);
+		expect(dao.searchWithIndirects(query))
+			.andReturn(emptyList());
+		
 		replay(dao);
 		
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			geneNames, null, null);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
 		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, is(empty()));
 	}
 	
 	@Test
-	public void testSearchStartAt3() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
-		final List<GeneDrug> expected = geneDrugs.subList(3, geneDrugs.size());
-		final String[] geneNames = geneDrugsIds();
+	public void testSearchSingleGeneDirect() {
+		final String query = "Direct Gene 1";
 		
-		expect(dao.search(geneNames, 3, null)).andReturn(expected);
+		expect(dao.searchWithIndirects(query))
+			.andReturn(asList(singleGeneDirect()));
+		
 		replay(dao);
 		
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-				geneNames, 3, null);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
 		
-		assertThat(result, hasTheSameItemsAs(expected));
-	}
-	
-	
-	@Test
-	public void testSearchWithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
-		final String[] geneNames = geneDrugsIds();
-		final List<GeneDrug> expected = geneDrugs.subList(0, 5);
-		
-		expect(dao.search(geneNames, null, 5)).andReturn(expected);
-		replay(dao);
-		
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			geneNames, null, 5);
-		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
 	}
 	
 	@Test
-	public void testSearchStartAt1WithMaxResults5() {
-		final List<GeneDrug> geneDrugs = geneDrugs();
-		final String[] geneNames = geneDrugsIds();
+	public void testSearchMultipleGeneDirect() {
+		final String[] query = new String[] {"Direct Gene 1", "Direct Gene 2"};
 		
-		final List<GeneDrug> expected = geneDrugs.subList(5, 10);
+		expect(dao.searchWithIndirects(query))
+			.andReturn(asList(multipleGeneDirect()));
 		
-		expect(dao.search(geneNames, 5, 5)).andReturn(expected);
 		replay(dao);
 		
-		final List<GeneDrug> result = controller.searchForGeneDrugs(
-			geneNames, 5, 5);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
 		
-		assertThat(result, hasTheSameItemsAs(expected));
+		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
+	}
+	
+	@Test
+	public void testSearchSingleGeneIndirect() {
+		final String query = "IG1";
+		
+		expect(dao.searchWithIndirects(query))
+			.andReturn(asList(singleGeneIndirect()));
+		
+		replay(dao);
+		
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		
+		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneIndirect() {
+		final String[] query = new String[] {"IG1", "IG2"};
+		
+		expect(dao.searchWithIndirects(query))
+			.andReturn(asList(multipleGeneIndirect()));
+		
+		replay(dao);
+		
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixed() {
+		final String[] query = new String[] {
+			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+		};
+		
+		expect(dao.searchWithIndirects(query))
+			.andReturn(asList(multipleGeneMixed()));
+		
+		replay(dao);
+		
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
 	}
 }

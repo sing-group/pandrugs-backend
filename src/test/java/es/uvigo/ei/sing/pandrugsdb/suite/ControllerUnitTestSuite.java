@@ -29,12 +29,16 @@ import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroupGScoreTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroupTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerUnitTest.class,
 	DefaultUserControllerUnitTest.class,
 	DefaultGeneDrugControllerUnitTest.class,
-	DefaultVariantsAnalysisControllerUnitTest.class
+	DefaultVariantsAnalysisControllerUnitTest.class,
+	GeneDrugGroupTest.class,
+	GeneDrugGroupGScoreTest.class
 })
 @RunWith(Suite.class)
 public class ControllerUnitTestSuite {

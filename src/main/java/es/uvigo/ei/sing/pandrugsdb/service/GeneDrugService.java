@@ -26,22 +26,17 @@ import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 public interface GeneDrugService {
 	/**
 	 * Returns a list with the genes-drugs with the provided gene symbol/s.
 	 * 
 	 * @param genes a list of gene symbol names to search in the database.
-	 * @param startPosition the starting position in the database to return the
-	 * results. Optional (can be {@code null});
-	 * @param maxResults the maximum number of results to return. Optional (can
-	 * be {@code null});
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract GeneDrugBasicInfos list(
-		List<String> genes, Integer startPosition, Integer maxResults
-	) throws BadRequestException, InternalServerErrorException;
+	public abstract GeneDrugGroupInfos list(List<String> genes)
+	throws BadRequestException, InternalServerErrorException;
 }

@@ -21,14 +21,16 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsIds;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,9 +50,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfo;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
@@ -61,62 +61,70 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugBasicInfos;
 	DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
-@ExpectedDatabase(value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
-	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT
+)
 public class DefaultGeneDrugServiceIntegrationTest {
 	@Inject
 	@Named("defaultGeneDrugService")
 	private GeneDrugService service;
 	
-	@Test
-	public void testList() {
-		testList(null, null);
-	}
-	
-	@Test
-	public void testListWithStartPosition() {
-		testList(5, null);
-	}
-	
-	@Test
-	public void testListWithMaxResults() {
-		testList(null, 5);
-	}
-	
-	@Test
-	public void testListWithStartPositionAndMaxResults() {
-		testList(5, 5);
-	}
-//TODO: Check bounds
-//	@Test(expected = BadRequestException.class)
-//	public void testListStartPositionOutOfBounds() {
-//		service.list(asList(geneDrugsIds()), 1000, null);
-//	}
-
 	@Test(expected = BadRequestException.class)
 	public void testListWithNullGenes() {
-		service.list(null, null, null);
+		service.list(null);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
-		service.list(emptyList(), null, null);
+		service.list(emptyList());
 	}
 	
-	private void testList(Integer startPosition, Integer maxResults) {
-		final String[] genes = geneDrugsIds();
-		final List<GeneDrug> geneDrugs = geneDrugs();
+	@Test
+	public void testSearchNoResult() {
+		final GeneDrugGroupInfos result = this.service.list(asList("Absent Gene"));
 		
-		final int fromIndex = startPosition == null ? 0 : startPosition;
-		final int toIndex = maxResults == null ? geneDrugs.size()
-			: Math.min(geneDrugs.size(), fromIndex + maxResults);
+		assertThat(result.getGeneDrugs(), is(empty()));
+	}
+	
+	@Test
+	public void testSearchSingleGeneDirect() {
+		final GeneDrugGroupInfos result = this.service.list(asList("Direct Gene 1"));
 		
-		final List<GeneDrug> geneDrugList = geneDrugs.subList(fromIndex, toIndex);
-		final List<GeneDrugBasicInfo> expectedInfos = geneDrugList.stream()
-			.map(GeneDrugBasicInfo::new).collect(toList());
+		assertThat(result, is(singleGeneGroupInfosDirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneDirect() {
+		final GeneDrugGroupInfos result = this.service.list(
+			asList("Direct Gene 1", "Direct Gene 2")
+		);
 		
-		final GeneDrugBasicInfos infos = service.list(asList(genes), startPosition, maxResults);
-
-		assertEquals(expectedInfos, infos.getGeneDrugs());
+		assertThat(result, is(multipleGeneGroupInfosDirect()));
+	}
+	
+	@Test
+	public void testSearchSingleGeneIndirect() {
+		final GeneDrugGroupInfos result = this.service.list(asList("IG1"));
+		
+		assertThat(result, is(singleGeneGroupInfosIndirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneIndirect() {
+		final GeneDrugGroupInfos result = this.service.list(
+			asList("IG1", "IG2")
+		);
+		
+		assertThat(result, is(multipleGeneGroupInfosIndirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixed() {
+		final GeneDrugGroupInfos result = this.service.list(
+			asList("Direct Gene 1", "Direct Gene 2", "IG1", "IG2")
+		);
+		
+		assertThat(result, is(multipleGeneGroupInfosMixed()));
 	}
 }
