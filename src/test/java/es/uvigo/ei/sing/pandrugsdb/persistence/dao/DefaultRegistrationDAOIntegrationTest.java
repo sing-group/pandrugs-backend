@@ -21,13 +21,13 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.registrations;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -103,7 +103,7 @@ public class DefaultRegistrationDAOIntegrationTest {
 	
 	@Test
 	public void testList() {
-		assertThat(dao.list(), hasTheSameItemsAs(registrations()));
+		assertThat(dao.list(), containsInAnyOrder(registrations()));
 	}
 	
 	@Test

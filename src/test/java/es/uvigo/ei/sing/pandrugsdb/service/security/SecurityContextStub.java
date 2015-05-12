@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.security;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
 
 import java.security.Principal;
@@ -36,6 +37,14 @@ public class SecurityContextStub implements SecurityContext {
 	private final Map<String, RoleType> userToRole;
 	
 	private Principal principal;
+	
+	public SecurityContextStub(User[] users) {
+		this(asList(users));
+	}
+
+	public SecurityContextStub(User[] users, String user) {
+		this(asList(users), user);
+	}
 	
 	public SecurityContextStub(List<User> users) {
 		this.userToRole = users.stream().collect(toMap(User::getLogin, User::getRole));

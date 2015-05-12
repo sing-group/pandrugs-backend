@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentAdmin;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
@@ -29,6 +28,7 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -105,7 +105,7 @@ public class DefaultUserDAOIntegrationTest {
 	
 	@Test
 	public void testList() {
-		assertThat(dao.list(), hasTheSameItemsAs(users()));
+		assertThat(dao.list(), containsInAnyOrder(users()));
 	}
 	
 	@Test

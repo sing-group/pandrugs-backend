@@ -21,18 +21,17 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentAdmin;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
-import static java.util.stream.Collectors.toList;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -149,14 +148,14 @@ public class DefaultUserServiceIntegrationTest {
 
 	@Test
 	public void testList() {
-		final List<User> users = users();
-		final List<UserMetadata> metadatas  = users.stream()
+		final User[] users = users();
+		final UserMetadata[] metadatas  = Stream.of(users)
 			.map(UserMetadata::new)
-		.collect(toList());
+		.toArray(UserMetadata[]::new);
 		
 		final UserMetadatas userMetadatas = service.list();
 		
-		assertThat(userMetadatas.getUsers(), hasTheSameItemsAs(metadatas));
+		assertThat(userMetadatas.getUsers(), containsInAnyOrder(metadatas));
 	}
 	
 	private void testGetUserData(User accessingUser, User targetUser) {

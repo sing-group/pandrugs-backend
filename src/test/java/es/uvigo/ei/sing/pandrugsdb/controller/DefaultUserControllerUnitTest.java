@@ -21,9 +21,9 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.anyUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
@@ -32,6 +32,7 @@ import static org.easymock.EasyMock.replay;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import org.easymock.EasyMockRunner;
@@ -89,11 +90,11 @@ public class DefaultUserControllerUnitTest {
 	
 	@Test
 	public void testList() {
-		expect(userDAO.list()).andReturn(users());
+		expect(userDAO.list()).andReturn(asList(users()));
 		
 		replay(userDAO);
 		
-		assertThat(controller.list(), hasTheSameItemsAs(users()));
+		assertThat(controller.list(), containsInAnyOrder(users()));
 	}
 	
 	@Test

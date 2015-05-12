@@ -21,14 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.util.Arrays;
-import java.util.List;
 
 public final class RegistrationDataset {
 	private RegistrationDataset() {}
 
-	public final static List<Registration> registrations() {
-		return Arrays.asList(
+	public final static Registration[] registrations() {
+		return new Registration[] {
 			new Registration("pepe", "pepe@email.com",
 				"926e27eecdbc7a18858b3798ba99bddd",
 				"87654321-abcd-1234-cdef-0123456789ab"),
@@ -38,7 +36,7 @@ public final class RegistrationDataset {
 			new Registration("juan", "juan@email.com",
 				"a94652aa97c7211ba8954dd15a3cf838",
 				"12345678-abcd-1234-cdef-0123456789ab")
-		);
+		};
 	}
 	
 	public final static User presentUser() {
@@ -56,7 +54,7 @@ public final class RegistrationDataset {
 	}
 	
 	public final static Registration presentRegistration() {
-		return registrations().get(1);
+		return registrations()[1];
 	}
 	
 	public final static Registration absentRegistration() {

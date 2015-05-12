@@ -21,29 +21,27 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class UserDataset {
 	private UserDataset() {}
 	
-	public final static List<User> users() {
-		return Arrays.asList(
+	public final static User[] users() {
+		return new User[] {
 			new User("pepe", "pepe@email.com", "926e27eecdbc7a18858b3798ba99bddd", RoleType.USER),
 			new User("paco", "paco@email.com", "311020666a5776c57d265ace682dc46d", RoleType.USER),
 			new User("ana", "ana@email.com", "276b6c4692e78d4799c12ada515bc3e4", RoleType.USER),
 			new User("juan", "juan@email.com", "a94652aa97c7211ba8954dd15a3cf838", RoleType.USER),
 			new User("maría", "maria@email.com", "8a2ac0c5b70c320c517fea7adb2e4d00", RoleType.USER),
 			new User("admin1", "admin1@email.com", "e00cf25ad42683b3df678c61f42c6bda", RoleType.ADMIN)
-		);
+		};
 	}
 	
 	public final static User presentUser() {
-		return users().get(1);
+		return users()[1];
 	}
 	
 	public final static User presentUser2() {
-		return users().get(2);
+		return users()[2];
 	}
 	
 	public final static String presentUserPassword() {
@@ -51,8 +49,8 @@ public class UserDataset {
 	}
 	
 	public final static User presentAdmin() {
-		final List<User> users = users();
-		return users.get(users.size() - 1);
+		final User[] users = users();
+		return users[users.length - 1];
 	}
 	
 	public final static String presentAdminPassword() {

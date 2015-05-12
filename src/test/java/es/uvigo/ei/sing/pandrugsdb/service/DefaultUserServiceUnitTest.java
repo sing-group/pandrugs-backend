@@ -21,20 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.anyUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.stream.Stream;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
@@ -263,19 +263,19 @@ public class DefaultUserServiceUnitTest {
 
 	@Test
 	public void testList() {
-		final List<User> users = users();
-		final List<UserMetadata> metadatas  = users.stream()
+		final User[] users = users();
+		final UserMetadata[] metadatas  = Stream.of(users)
 			.map(UserMetadata::new)
-		.collect(toList());
+		.toArray(UserMetadata[]::new);
 		
 		expect(controller.list())
-			.andReturn(users);
+			.andReturn(asList(users));
 		
 		replay(controller, security, principal);
 		
 		final UserMetadatas userMetadatas = service.list();
 		
-		assertThat(userMetadatas.getUsers(), hasTheSameItemsAs(metadatas));
+		assertThat(userMetadatas.getUsers(), containsInAnyOrder(metadatas));
 	}
 
 	@Test(expected = RuntimeException.class)

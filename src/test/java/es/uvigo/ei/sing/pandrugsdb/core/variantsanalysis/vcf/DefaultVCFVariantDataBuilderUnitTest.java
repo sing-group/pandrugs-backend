@@ -23,8 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf;
 
 import static es.uvigo.ei.sing.pandrugsdb.TestUtils.asList;
 import static es.uvigo.ei.sing.pandrugsdb.TestUtils.asSet;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasExactlyTheItems;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replay;
@@ -236,9 +236,8 @@ public class DefaultVCFVariantDataBuilderUnitTest {
 				.build());
 		builder.endVariant();
 		
-		assertThat(	
-				builder.build(), 
-				hasExactlyTheItems(variant1, variant2, variant3));
+		assertThat(builder.build(), 
+			containsInAnyOrder(variant1, variant2, variant3));
 		
 		verify(VCFVariant.class, variant1, variant2, variant3);
 	}

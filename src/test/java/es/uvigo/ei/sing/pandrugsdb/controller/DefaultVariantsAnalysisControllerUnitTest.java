@@ -21,20 +21,19 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.createControl;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.newCapture;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.easymock.Capture;
@@ -67,7 +66,7 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		new DefaultVariantCallingAnalysisController();
 
 	private final User aUser = new User("login", "login@domain.com",
-			"926e27eecdbc7a18858b3798ba99bddd", ADMIN);
+		"926e27eecdbc7a18858b3798ba99bddd", ADMIN);
 	
 	private final URL aVCF = getClass().getResource("sampleVCF_31variants.vcf");
 
@@ -88,20 +87,16 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 	@Test
 	public void testGetComputations() {
 
-		final List<VariantsCandidateTherapiesComputation> expected = 
-				new ArrayList<>();
-		expected.add(
-				mockControl.createMock(
-						VariantsCandidateTherapiesComputation.class));
-		expected.add(
-				mockControl.createMock(
-						VariantsCandidateTherapiesComputation.class));
+		final VariantsCandidateTherapiesComputation[] expected = { 
+			mockControl.createMock(VariantsCandidateTherapiesComputation.class),
+			mockControl.createMock(VariantsCandidateTherapiesComputation.class)
+		};
 				
-		expect(store.retrieveComputations(aUser)).andReturn(expected);
+		expect(store.retrieveComputations(aUser)).andReturn(asList(expected));
 		replay(store);
 
 		assertThat(controller.getComputations(aUser),
-				hasTheSameItemsAs(expected));
+			containsInAnyOrder(expected));
 	}
 
 	@Test

@@ -21,17 +21,17 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
+import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyString;
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.easymock.PowerMock.expectLastCall;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockRule;
@@ -44,13 +44,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.CandidateTherapiesCalculator;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.CandidateTherapiesComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.CandidateTherapy;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsCandidateTherapiesComputer;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputation;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantEffectPredictor;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsCandidateTherapiesComputer.AbstractVariantCallingCandidateTherapiesComputation;
 
 @RunWith(PowerMockRunner.class)
@@ -94,13 +87,14 @@ public class DefaultVariantsCandidateTherapiesComputerUnitTest {
 		replay(effectPredictor);
 
 		// CandidateTherapies results mock
-		final List<CandidateTherapy> expectedResults = new ArrayList<>();
-		expectedResults.add(EasyMock.createMock(CandidateTherapy.class));
-		expectedResults.add(EasyMock.createMock(CandidateTherapy.class));
+		final CandidateTherapy[] expectedResults = new CandidateTherapy[] {
+			createMock(CandidateTherapy.class),
+			createMock(CandidateTherapy.class)
+		};
 		
 		// candidateTherapyCalculator mock
 		expect(candidateTherapyCalculator.calculateTherapies(VEPRs))
-			.andReturn(expectedResults);
+			.andReturn(asList(expectedResults));
 		replay(candidateTherapyCalculator);
 		
 		// computation mock
@@ -121,9 +115,9 @@ public class DefaultVariantsCandidateTherapiesComputerUnitTest {
 		
 		//results mock
 		expectNew(CandidateTherapiesComputationResults.class, 
-				expectedResults, VEPRs)
+				asList(expectedResults), VEPRs)
 		.andReturn(results);
-		expect(results.getCandidateTherapies()).andReturn(expectedResults);
+		expect(results.getCandidateTherapies()).andReturn(asList(expectedResults));
 		replay(results);
 		
 		// mock configuration finished		
@@ -135,8 +129,7 @@ public class DefaultVariantsCandidateTherapiesComputerUnitTest {
 		final VariantsCandidateTherapiesComputation computation = 
 				computer.createComputation(aVCF);
 		
-		assertThat(computation.get().getCandidateTherapies(), 
-				hasTheSameItemsAs(expectedResults));
+		assertThat(computation.get().getCandidateTherapies(), containsInAnyOrder(expectedResults));
 		
 		PowerMock.verifyAll();
 	}

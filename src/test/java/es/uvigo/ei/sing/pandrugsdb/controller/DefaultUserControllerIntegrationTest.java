@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameItemsAsMatcher.hasTheSameItemsAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUserPassword;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
@@ -30,6 +29,7 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -85,7 +85,7 @@ public class DefaultUserControllerIntegrationTest {
 	
 	@Test
 	public void testList() {
-		assertThat(controller.list(), hasTheSameItemsAs(users()));
+		assertThat(controller.list(), containsInAnyOrder(users()));
 	}
 	
 	@Test
