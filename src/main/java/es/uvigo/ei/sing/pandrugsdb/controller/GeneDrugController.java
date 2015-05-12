@@ -24,7 +24,10 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import java.util.List;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 public interface GeneDrugController {
-	public abstract List<GeneDrugGroup> searchForGeneDrugs(String ... geneNames);
+	public abstract List<GeneDrugGroup> searchForGeneDrugs(
+		GeneQueryParameters queryParameters, String ... geneNames
+	);
 }

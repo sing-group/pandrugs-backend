@@ -33,10 +33,27 @@ public interface GeneDrugService {
 	 * Returns a list with the genes-drugs with the provided gene symbol/s.
 	 * 
 	 * @param genes a list of gene symbol names to search in the database.
+	 * @param cancerDrugStatus a list for filtering the drug status of the 
+	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. Default value is:
+	 * CLINICAL and APPROVED.
+	 * @param nonCancerDrugStatus a list for filtering the drug status of the 
+	 * non cancer genes. Multiple values allowed. Valid values are CLINICAL,
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. Default value is:
+	 * CLINICAL, APPROVED and EXPERIMENTAL.
+	 * @param target a target field filter. Valid values are: TARGET, MARKER
+	 * and BOTH. Default value is BOTH.
+	 * @param direct a filter for direct/indirect genes. Valid values are: 
+	 * DIRECT, INDIRECT and BOTH. Default value is BOTH.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract GeneDrugGroupInfos list(List<String> genes)
-	throws BadRequestException, InternalServerErrorException;
+	public abstract GeneDrugGroupInfos list(
+		List<String> genes,
+		List<String> cancerDrugStatus,
+		List<String> nonCancerDrugStatus,
+		String target,
+		String direct
+	) throws BadRequestException, InternalServerErrorException;
 }

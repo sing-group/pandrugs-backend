@@ -19,17 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugsdb.query;
 
-import java.util.Optional;
-
-public interface Weighted {
-	public abstract double getWeight();
-	
-	public static double getWeightOf(Weighted level) {
-		return Optional.ofNullable(level)
-			.map(Weighted::getWeight)
-		.orElse(0d);
-	}
-
+public enum TargetMarkerStatus {
+	TARGET, MARKER, BOTH;
 }

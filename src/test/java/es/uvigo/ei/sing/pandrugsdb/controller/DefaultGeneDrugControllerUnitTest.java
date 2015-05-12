@@ -51,6 +51,7 @@ import org.junit.runner.RunWith;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultGeneDrugControllerUnitTest {
@@ -64,37 +65,41 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testSearchEmptyGenes() {
 		final String[] query = new String[0];
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchByGene(queryParameters, query))
 			.andThrow(new IllegalArgumentException());
 		
 		replay(dao);
 		
-		this.controller.searchForGeneDrugs(query);
+		this.controller.searchForGeneDrugs(queryParameters, query);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testSearchNullPointerException() {
 		final String[] query = null;
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchByGene(queryParameters, query))
 			.andThrow(new NullPointerException());
 		
 		replay(dao);
 		
-		this.controller.searchForGeneDrugs(query);
+		this.controller.searchForGeneDrugs(queryParameters, query);
 	}
 	
 	@Test
 	public void testSearchNoResult() {
 		final String query = "Absent gene";
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(query.toUpperCase()))
+		expect(dao.searchByGene(queryParameters, query.toUpperCase()))
 			.andReturn(emptyList());
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			queryParameters, query);
 		
 		assertThat(result, is(empty()));
 	}
@@ -102,13 +107,14 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test
 	public void testSearchSingleGeneDirect() {
 		final String query = "Direct Gene 1";
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(query.toUpperCase()))
+		expect(dao.searchByGene(queryParameters, query.toUpperCase()))
 			.andReturn(asList(singleGeneDirect()));
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(queryParameters, query);
 		
 		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
 	}
@@ -119,13 +125,14 @@ public class DefaultGeneDrugControllerUnitTest {
 		final String[] queryUpper = Stream.of(query)
 			.map(String::toUpperCase)
 		.toArray(String[]::new);
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(queryUpper))
+		expect(dao.searchByGene(queryParameters, queryUpper))
 			.andReturn(asList(multipleGeneDirect()));
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(queryParameters, query);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
 	}
@@ -133,13 +140,14 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test
 	public void testSearchSingleGeneIndirect() {
 		final String query = "IG1";
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchByGene(queryParameters, query))
 			.andReturn(asList(singleGeneIndirect()));
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(queryParameters, query);
 		
 		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
 	}
@@ -150,13 +158,14 @@ public class DefaultGeneDrugControllerUnitTest {
 		final String[] queryUpper = Stream.of(query)
 			.map(String::toUpperCase)
 		.toArray(String[]::new);
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(queryUpper))
+		expect(dao.searchByGene(queryParameters, queryUpper))
 			.andReturn(asList(multipleGeneIndirect()));
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(queryParameters, query);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
 	}
@@ -169,13 +178,14 @@ public class DefaultGeneDrugControllerUnitTest {
 		final String[] queryUpper = Stream.of(query)
 			.map(String::toUpperCase)
 		.toArray(String[]::new);
+		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
-		expect(dao.searchWithIndirects(queryUpper))
+		expect(dao.searchByGene(queryParameters, queryUpper))
 			.andReturn(asList(multipleGeneMixed()));
 		
 		replay(dao);
 		
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(query);
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(queryParameters, query);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
 	}

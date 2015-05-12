@@ -48,6 +48,7 @@ import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -64,24 +65,26 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testSearchEmptyGenes() {
-		this.controller.searchForGeneDrugs(new String[0]);
+		this.controller.searchForGeneDrugs(new GeneQueryParameters(), new String[0]);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testSearchNullGenes() {
-		this.controller.searchForGeneDrugs((String[]) null);
+		this.controller.searchForGeneDrugs(new GeneQueryParameters(), (String[]) null);
 	}
 	
 	@Test
 	public void testSearchNoResult() {
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs("Absent Gene");
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(), "Absent Gene");
 		
 		assertThat(result, is(empty()));
 	}
 	
 	@Test
 	public void testSearchSingleGeneDirect() {
-		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs("Direct Gene 1");
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(), "Direct Gene 1");
 		
 		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
 	}
@@ -89,6 +92,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(), 
 			"Direct Gene 1", "Direct Gene 2"
 		);
 		
@@ -98,7 +102,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	@Test
 	public void testSearchSingleGeneIndirect() {
 		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
-			"IG1"
+			new GeneQueryParameters(), "IG1"
 		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
@@ -107,7 +111,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneIndirect() {
 		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
-			"IG1", "IG2"
+			new GeneQueryParameters(), "IG1", "IG2"
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
@@ -116,6 +120,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneMixed() {
 		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(), 
 			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
 		);
 		

@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 /**
@@ -60,12 +61,20 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Override
-	public GeneDrugGroupInfos list(@QueryParam("gene") List<String> genes)
-	throws BadRequestException, InternalServerErrorException {
+	public GeneDrugGroupInfos list(
+		@QueryParam("gene") List<String> genes,
+		@QueryParam("cancerDrugStatus") List<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") List<String> nonCancerDrugStatus,
+		@QueryParam("target") String target,
+		@QueryParam("direct") String direct
+	) throws BadRequestException, InternalServerErrorException {
 		try {
 			requireNonEmpty(genes, "At least one gene must be provided");
 			
 			final List<GeneDrugGroup> geneDrugs = controller.searchForGeneDrugs(
+				new GeneQueryParameters(
+					cancerDrugStatus, nonCancerDrugStatus, target, direct
+				),
 				genes.toArray(new String[genes.size()])
 			);
 			

@@ -54,16 +54,14 @@ public class GeneDrugGroup {
 		requireNonEmpty(targetGenes);
 		requireNonEmpty(geneDrugs);
 		
-		final Predicate<String> isInGenes = g ->
-			Stream.of(targetGenes).anyMatch(tg -> tg.equals(g));
-		final Predicate<GeneDrug> hasIndirectInGenes = gd ->
-			Stream.of(targetGenes).anyMatch(tg -> gd.getIndirectGenes().contains(tg));
+		final Predicate<String> isInGenes =
+			gd -> Stream.of(targetGenes).anyMatch(tg -> tg.equals(gd));
+		final Predicate<GeneDrug> hasInIndirectGenes = 
+			gd -> Stream.of(targetGenes).anyMatch(tg -> gd.getIndirectGenes().contains(tg));
 		
 		final boolean checkGenes = geneDrugs.stream()
-			.allMatch(gd -> 
-				isInGenes.test(gd.getGeneSymbol())
-				|| hasIndirectInGenes.test(gd)
-			);
+			.allMatch(gd -> isInGenes.test(gd.getGeneSymbol())
+				|| hasInIndirectGenes.test(gd));
 		if (!checkGenes)
 			throw new IllegalArgumentException("Invalid geneDrugs for targetGenes");
 			

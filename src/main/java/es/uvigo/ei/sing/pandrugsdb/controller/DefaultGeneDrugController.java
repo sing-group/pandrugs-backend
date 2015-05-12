@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -43,6 +44,8 @@ import org.springframework.stereotype.Controller;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 @Controller
 @Transactional
@@ -52,14 +55,16 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	private GeneDrugDAO dao;
 
 	@Override
-	public List<GeneDrugGroup> searchForGeneDrugs(String ... geneNames) {
+	public List<GeneDrugGroup> searchForGeneDrugs(
+		GeneQueryParameters queryParameters, String ... geneNames
+	) {
 		final String[] upperGeneNames = Stream.of(geneNames)
 			.map(String::toUpperCase)
 		.toArray(String[]::new);
 		
-		final List<GeneDrug> geneDrugs = this.dao.searchWithIndirects(upperGeneNames).stream()
-			.filter(gd -> gd.getStatus().isActive())
-		.collect(toList());
+		final List<GeneDrug> geneDrugs = this.dao.searchByGene(
+			queryParameters, upperGeneNames
+		);
 
 		final List<Set<GeneDrug>> groups = 
 			groupBy(geneDrugs, GeneDrug::getStandardDrugName)
@@ -67,16 +72,30 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return groups.stream()
 			.map(gdg -> new GeneDrugGroup(
-				filterGenesInGeneDrugs(upperGeneNames, gdg), new ArrayList<>(gdg)
+				filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
+				new ArrayList<>(gdg)
 			))
 		.collect(toList());
 	}
 	
 	private final static String[] filterGenesInGeneDrugs(
-		String[] geneNames, Collection<GeneDrug> geneDrugs
+		String[] geneNames,
+		Collection<GeneDrug> geneDrugs,
+		DirectIndirectStatus directIndirectStatus
 	) {
+		final Function<GeneDrug, List<String>> getGenes = gd -> {
+			switch(directIndirectStatus) {
+			case DIRECT:
+				return asList(gd.getGeneSymbol());
+			case INDIRECT:
+				return gd.getIndirectGenes();
+			default:
+				return gd.getDirectAndIndirectGenes();
+			}
+		};
+		
 		final Set<String> geneDrugNames = geneDrugs.stream()
-			.map(GeneDrug::getDirectAndIndirectGenes)
+			.map(getGenes)
 			.flatMap(List::stream)
 		.collect(Collectors.toSet());
 		

@@ -48,6 +48,7 @@ import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -64,31 +65,34 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testSearchEmptyGenes() {
-		this.dao.searchWithIndirects(new String[0]);
+		this.dao.searchByGene(new GeneQueryParameters(), new String[0]);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testSearchNullGenes() {
-		this.dao.searchWithIndirects((String[]) null);
+		this.dao.searchByGene(new GeneQueryParameters(), (String[]) null);
 	}
 	
 	@Test
 	public void testSearchNoResult() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects("ABSENT GENE");
+		final List<GeneDrug> result = this.dao.searchByGene(new GeneQueryParameters(), "ABSENT GENE");
 		
 		assertThat(result, is(empty()));
 	}
 	
 	@Test
 	public void testSearchSingleGeneDirect() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects("DIRECT GENE 1");
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneQueryParameters(), "DIRECT GENE 1"
+		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneDirect()));
 	}
 	
 	@Test
 	public void testSearchMultipleGeneDirect() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects(
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneQueryParameters(),
 			"DIRECT GENE 1", "DIRECT GENE 2"
 		);
 		
@@ -97,8 +101,8 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	
 	@Test
 	public void testSearchSingleGeneIndirect() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects(
-			"IG1"
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneQueryParameters(), "IG1"
 		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneIndirect()));
@@ -106,8 +110,8 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	
 	@Test
 	public void testSearchMultipleGeneIndirect() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects(
-			"IG1", "IG2"
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneQueryParameters(), "IG1", "IG2"
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneIndirect()));
@@ -115,7 +119,8 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	
 	@Test
 	public void testSearchMultipleGeneMixed() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects(
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneQueryParameters(),
 			"DIRECT GENE 1", "DIRECT GENE 2", "IG1", "IG2"
 		);
 		

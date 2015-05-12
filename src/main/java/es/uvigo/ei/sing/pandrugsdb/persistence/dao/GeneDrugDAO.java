@@ -24,7 +24,10 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 import java.util.List;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 
 public interface GeneDrugDAO {
-	public abstract List<GeneDrug> searchWithIndirects(String ... geneNames);
+	public abstract List<GeneDrug> searchByGene(
+		GeneQueryParameters queryParameters, String ... geneNames
+	);
 }
