@@ -74,14 +74,14 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	
 	@Test
 	public void testSearchNoResult() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects("Absent Gene");
+		final List<GeneDrug> result = this.dao.searchWithIndirects("ABSENT GENE");
 		
 		assertThat(result, is(empty()));
 	}
 	
 	@Test
 	public void testSearchSingleGeneDirect() {
-		final List<GeneDrug> result = this.dao.searchWithIndirects("Direct Gene 1");
+		final List<GeneDrug> result = this.dao.searchWithIndirects("DIRECT GENE 1");
 		
 		assertThat(result, containsInAnyOrder(singleGeneDirect()));
 	}
@@ -89,7 +89,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneDirect() {
 		final List<GeneDrug> result = this.dao.searchWithIndirects(
-			"Direct Gene 1", "Direct Gene 2"
+			"DIRECT GENE 1", "DIRECT GENE 2"
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneDirect()));
@@ -116,7 +116,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneMixed() {
 		final List<GeneDrug> result = this.dao.searchWithIndirects(
-			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+			"DIRECT GENE 1", "DIRECT GENE 2", "IG1", "IG2"
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneMixed()));

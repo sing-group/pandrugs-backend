@@ -53,7 +53,11 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Override
 	public List<GeneDrugGroup> searchForGeneDrugs(String ... geneNames) {
-		final List<GeneDrug> geneDrugs = this.dao.searchWithIndirects(geneNames).stream()
+		final String[] upperGeneNames = Stream.of(geneNames)
+			.map(String::toUpperCase)
+		.toArray(String[]::new);
+		
+		final List<GeneDrug> geneDrugs = this.dao.searchWithIndirects(upperGeneNames).stream()
 			.filter(gd -> gd.getStatus().isActive())
 		.collect(toList());
 
@@ -63,7 +67,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return groups.stream()
 			.map(gdg -> new GeneDrugGroup(
-				filterGenesInGeneDrugs(geneNames, gdg), new ArrayList<>(gdg)
+				filterGenesInGeneDrugs(upperGeneNames, gdg), new ArrayList<>(gdg)
 			))
 		.collect(toList());
 	}

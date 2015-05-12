@@ -41,6 +41,7 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -88,7 +89,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	public void testSearchNoResult() {
 		final String query = "Absent gene";
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchWithIndirects(query.toUpperCase()))
 			.andReturn(emptyList());
 		
 		replay(dao);
@@ -102,7 +103,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	public void testSearchSingleGeneDirect() {
 		final String query = "Direct Gene 1";
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchWithIndirects(query.toUpperCase()))
 			.andReturn(asList(singleGeneDirect()));
 		
 		replay(dao);
@@ -115,8 +116,11 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test
 	public void testSearchMultipleGeneDirect() {
 		final String[] query = new String[] {"Direct Gene 1", "Direct Gene 2"};
+		final String[] queryUpper = Stream.of(query)
+			.map(String::toUpperCase)
+		.toArray(String[]::new);
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchWithIndirects(queryUpper))
 			.andReturn(asList(multipleGeneDirect()));
 		
 		replay(dao);
@@ -143,8 +147,11 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test
 	public void testSearchMultipleGeneIndirect() {
 		final String[] query = new String[] {"IG1", "IG2"};
+		final String[] queryUpper = Stream.of(query)
+			.map(String::toUpperCase)
+		.toArray(String[]::new);
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchWithIndirects(queryUpper))
 			.andReturn(asList(multipleGeneIndirect()));
 		
 		replay(dao);
@@ -159,8 +166,11 @@ public class DefaultGeneDrugControllerUnitTest {
 		final String[] query = new String[] {
 			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
 		};
+		final String[] queryUpper = Stream.of(query)
+			.map(String::toUpperCase)
+		.toArray(String[]::new);
 		
-		expect(dao.searchWithIndirects(query))
+		expect(dao.searchWithIndirects(queryUpper))
 			.andReturn(asList(multipleGeneMixed()));
 		
 		replay(dao);

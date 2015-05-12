@@ -32,19 +32,19 @@
 	<drug_source id="11" source="Source 1" source_drug_name="Drug 11" standard_drug_name="Drug 11" show_drug_name="Show Drug 11" />
 	<drug_source id="12" source="Source 2" source_drug_name="Drug 12" standard_drug_name="Drug 12" show_drug_name="Show Drug 12" />
 	
-	<gene_info gene_symbol="Direct Gene 1" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="Direct Gene 2" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="Indirect Gene 1" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="Indirect Gene 2" cgc="false" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="INDIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="INDIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
 	
-	<gene_drug id="0" gene_symbol="Direct Gene 1" standard_drug_name="Drug 1" target="false" status="APPROVED" score="0.1"/>
-	<gene_drug id="1" gene_symbol="Direct Gene 2" standard_drug_name="Drug 1" target="false" status="APPROVED" score="0.2"/>
-	<gene_drug id="2" gene_symbol="Direct Gene 2" standard_drug_name="Drug 2" target="false" status="APPROVED" score="0.3"/>
-	<gene_drug id="3" gene_symbol="Direct Gene 2" standard_drug_name="Drug 3" target="false" status="APPROVED" score="0.4"/>
-	<gene_drug id="10" gene_symbol="Indirect Gene 1" standard_drug_name="Drug 10" target="false" status="APPROVED" score="0.1"/>
-	<gene_drug id="11" gene_symbol="Indirect Gene 2" standard_drug_name="Drug 10" target="false" status="APPROVED" score="0.2"/>
-	<gene_drug id="12" gene_symbol="Indirect Gene 2" standard_drug_name="Drug 11" target="false" status="APPROVED" score="0.3"/>
-	<gene_drug id="13" gene_symbol="Indirect Gene 2" standard_drug_name="Drug 12" target="false" status="APPROVED" score="0.4"/>
+	<gene_drug id="0" gene_symbol="DIRECT GENE 1" standard_drug_name="Drug 1" target="false" status="APPROVED" score="0.1"/>
+	<gene_drug id="1" gene_symbol="DIRECT GENE 2" standard_drug_name="Drug 1" target="false" status="APPROVED" score="0.2"/>
+	<gene_drug id="2" gene_symbol="DIRECT GENE 2" standard_drug_name="Drug 2" target="false" status="APPROVED" score="0.3"/>
+	<gene_drug id="3" gene_symbol="DIRECT GENE 2" standard_drug_name="Drug 3" target="false" status="APPROVED" score="0.4"/>
+	<gene_drug id="10" gene_symbol="INDIRECT GENE 1" standard_drug_name="Drug 10" target="false" status="APPROVED" score="0.1"/>
+	<gene_drug id="11" gene_symbol="INDIRECT GENE 2" standard_drug_name="Drug 10" target="false" status="APPROVED" score="0.2"/>
+	<gene_drug id="12" gene_symbol="INDIRECT GENE 2" standard_drug_name="Drug 11" target="false" status="APPROVED" score="0.3"/>
+	<gene_drug id="13" gene_symbol="INDIRECT GENE 2" standard_drug_name="Drug 12" target="false" status="APPROVED" score="0.4"/>
 
 	<gene_drug_drug_source gene_drug_id="0" source_id="0"/>
 	<gene_drug_drug_source gene_drug_id="1" source_id="0"/>

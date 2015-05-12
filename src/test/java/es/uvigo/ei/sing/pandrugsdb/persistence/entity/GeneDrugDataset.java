@@ -46,10 +46,10 @@ public final class GeneDrugDataset {
 	
 	public static Map<String, GeneInformation> geneInfos() {
 		return Stream.of(
-			new GeneInformation("Direct Gene 1", null, false, null, 0d),
-			new GeneInformation("Direct Gene 2", null, false, null, 0d),
-			new GeneInformation("Indirect Gene 1", null, false, null, 0d),
-			new GeneInformation("Indirect Gene 2", null, false, null, 0d)
+			new GeneInformation("DIRECT GENE 1", null, false, null, 0d),
+			new GeneInformation("DIRECT GENE 2", null, false, null, 0d),
+			new GeneInformation("INDIRECT GENE 1", null, false, null, 0d),
+			new GeneInformation("INDIRECT GENE 2", null, false, null, 0d)
 		).collect(toMap(
 			GeneInformation::getGeneSymbol,
 			si -> si
@@ -83,11 +83,11 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneDirect() {
 		return new GeneDrug(
-			0, "Direct Gene 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			0, "DIRECT GENE 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
 			emptyList(),
 			asList(drugSources()[0]), 
 			emptyList(),
-			geneInfos().get("Direct Gene 1")
+			geneInfos().get("DIRECT GENE 1")
 		);
 	}
 	
@@ -97,36 +97,36 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneDirect(),
 			new GeneDrug(
-				1, "Direct Gene 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				1, "DIRECT GENE 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
 				emptyList(),
 				asList(drugSources()[0]),
 				emptyList(),
-				geneInfos.get("Direct Gene 2")
+				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				2, "Direct Gene 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				2, "DIRECT GENE 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
 				emptyList(),
 				asList(drugSources()[1]),
 				emptyList(),
-				geneInfos.get("Direct Gene 2")
+				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				3, "Direct Gene 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				3, "DIRECT GENE 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
 				emptyList(),
 				asList(drugSources()[2]),
 				emptyList(),
-				geneInfos.get("Direct Gene 2")
+				geneInfos.get("DIRECT GENE 2")
 			)
 		};
 	}
 	
 	public static GeneDrug singleGeneIndirect() {
 		return new GeneDrug(
-			10, "Indirect Gene 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			10, "INDIRECT GENE 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
 			asList("IG1"),
 			asList(drugSources()[0]), 
 			emptyList(),
-			geneInfos().get("Indirect Gene 1")
+			geneInfos().get("INDIRECT GENE 1")
 		);
 	}
 	
@@ -136,25 +136,25 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneIndirect(),
 			new GeneDrug(
-				11, "Indirect Gene 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				11, "INDIRECT GENE 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
 				asList("IG2"),
 				asList(drugSources()[0]),
 				emptyList(),
-				geneInfos.get("Indirect Gene 2")
+				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				12, "Indirect Gene 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				12, "INDIRECT GENE 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
 				asList("IG2"),
 				asList(drugSources()[1]),
 				emptyList(),
-				geneInfos.get("Indirect Gene 2")
+				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				13, "Indirect Gene 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				13, "INDIRECT GENE 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
 				asList("IG2"),
 				asList(drugSources()[2]),
 				emptyList(),
-				geneInfos.get("Indirect Gene 2")
+				geneInfos.get("INDIRECT GENE 2")
 			)
 		};
 	}
@@ -167,7 +167,7 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrugGroup singleGeneGroupDirect() {
 		return new GeneDrugGroup(
-			new String[] { "Direct Gene 1" },
+			new String[] { "DIRECT GENE 1" },
 			asList(singleGeneDirect())
 		);
 	}
@@ -177,18 +177,18 @@ public final class GeneDrugDataset {
 		
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 1", "Direct Gene 2" },
+				new String[] { "DIRECT GENE 1", "DIRECT GENE 2" },
 				asList(
 					multipleGeneDirect[0],
 					multipleGeneDirect[1]
 				)
 			),
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 2" },
+				new String[] { "DIRECT GENE 2" },
 				asList(multipleGeneDirect[2])
 			),
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 2" },
+				new String[] { "DIRECT GENE 2" },
 				asList(multipleGeneDirect[3])
 			)
 		};
@@ -228,18 +228,18 @@ public final class GeneDrugDataset {
 		
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 1", "Direct Gene 2" },
+				new String[] { "DIRECT GENE 1", "DIRECT GENE 2" },
 				asList(
 					multipleGeneMixed[0],
 					multipleGeneMixed[1]
 				)
 			),
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 2" },
+				new String[] { "DIRECT GENE 2" },
 				asList(multipleGeneMixed[2])
 			),
 			new GeneDrugGroup(
-				new String[] { "Direct Gene 2" },
+				new String[] { "DIRECT GENE 2" },
 				asList(multipleGeneMixed[3])
 			),
 			new GeneDrugGroup(

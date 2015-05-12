@@ -40,6 +40,8 @@ public class UnexpectedExceptionMapper implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable exception) {
 		if (exception instanceof WebApplicationException) {
+			LOG.error("Web application exception", exception);
+			
 			return ((WebApplicationException) exception).getResponse();
 		} else {
 			LOG.error("Unexpected exception", exception);
