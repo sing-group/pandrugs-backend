@@ -90,7 +90,7 @@ public class GeneQueryParameters {
 	) {
 		this.cancerDrugStatus = Optional.ofNullable(cancerDrugStatus)
 			.orElse(DEFAULT_CANCER_DRUG_STATUS);
-		this.nonCancerDrugStatus = Optional.ofNullable(cancerDrugStatus)
+		this.nonCancerDrugStatus = Optional.ofNullable(nonCancerDrugStatus)
 			.orElse(DEFAULT_NON_CANCER_DRUG_STATUS);
 		this.targetMarker = Optional.ofNullable(targetMarker)
 			.orElse(DEFAULT_TARGET_MARKER);

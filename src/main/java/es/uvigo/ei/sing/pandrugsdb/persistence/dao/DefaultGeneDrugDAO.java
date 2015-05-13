@@ -22,12 +22,13 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -35,12 +36,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.query.TargetMarkerStatus;
 
@@ -59,7 +62,7 @@ implements GeneDrugDAO {
 		
 		final Predicate predicate = cb().and(
 			Stream.of(
-				createDirectIndirectPredicate(root, queryParameters, geneNames),
+				createDirectIndirectPredicate(root, query, queryParameters, geneNames),
 				createDrugStatusPredicate(root, queryParameters),
 				createTargetMarkerPredicate(root, queryParameters)
 			)
@@ -123,27 +126,40 @@ implements GeneDrugDAO {
 
 	private Predicate createDirectIndirectPredicate(
 		Root<GeneDrug> root,
+		CriteriaQuery<GeneDrug> query,
 		GeneQueryParameters queryParameters,
 		String... geneNames
 	) {
 		final CriteriaBuilder cb = cb();
 		
 		final Expression<String> geneSymbolField = root.get("geneSymbol");
-		final Expression<Collection<String>> indirectGenesField =
-			root.get("indirectGenes");
 		
 		final List<Predicate> predicates = new LinkedList<>();
 		
+		final Function<Expression<String>, Predicate> isInGenes = geneNames.length == 1 ?
+			e -> cb().equal(e, geneNames[0]) :
+			e -> e.in(asList(geneNames));
+			
+		
 		if (queryParameters.areDirectIncluded()) {
-			Stream.of(geneNames)
-				.map(gn -> cb.equal(geneSymbolField, gn))
-			.forEach(predicates::add);
+			predicates.add(isInGenes.apply(geneSymbolField));
 		}
 		
 		if (queryParameters.areIndirectIncluded()) {
-			Stream.of(geneNames)
-				.map(gn -> cb.isMember(gn, indirectGenesField))
-			.forEach(predicates::add);
+			final Subquery<IndirectGene> subqueryIndirectGenes =
+				query.subquery(IndirectGene.class);
+			final Root<IndirectGene> rootIndirectGene =
+				subqueryIndirectGenes.from(IndirectGene.class);
+			
+			predicates.add(
+				cb.exists(
+					subqueryIndirectGenes.select(rootIndirectGene.get("geneSymbol"))
+					.where(cb.and(
+						cb.equal(rootIndirectGene.get("directGeneId"), root.get("id")),
+						isInGenes.apply(rootIndirectGene.get("geneSymbol"))
+					))
+				)
+			);
 		}
 		
 		return or(predicates);

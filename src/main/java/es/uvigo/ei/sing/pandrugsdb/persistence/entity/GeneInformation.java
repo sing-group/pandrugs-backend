@@ -35,7 +35,7 @@ public class GeneInformation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "gene_symbol", length = 255)
+	@Column(name = "gene_symbol", length = 255, columnDefinition = "VARCHAR(255)")
 	private String geneSymbol;
 	
 	@Enumerated(EnumType.STRING)

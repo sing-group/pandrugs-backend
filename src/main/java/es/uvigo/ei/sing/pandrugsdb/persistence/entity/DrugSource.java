@@ -29,30 +29,39 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity(name = "drug_source")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {
-	"source", "source_drug_name", "standard_drug_name", "show_drug_name"
-}))
+@Table(
+	uniqueConstraints = @UniqueConstraint(columnNames = {
+		"source", "source_drug_name", "standard_drug_name", "show_drug_name"
+	}),
+	indexes = {
+		@Index(name = "idx_source", columnList = "source"),
+		@Index(name = "idx_source_drug_name", columnList = "source_drug_name"),
+		@Index(name = "idx_standard_drug_name", columnList = "standard_drug_name"),
+		@Index(name = "idx_show_drug_name", columnList = "show_drug_name")
+	}
+)
 public class DrugSource {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@Column(name = "source", length = 255)
+	@Column(name = "source", length = 255, columnDefinition = "VARCHAR(255)")
 	private String source;
 	
-	@Column(name = "source_drug_name", length = 1000)
+	@Column(name = "source_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
 	private String sourceDrugName;
 	
-	@Column(name = "standard_drug_name", length = 1000)
+	@Column(name = "standard_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
 	private String standardDrugName;
 
-	@Column(name = "show_drug_name", length = 1000)
+	@Column(name = "show_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
 	private String showDrugName;
 	
 	@ManyToOne(fetch = FetchType.EAGER)

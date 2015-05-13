@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,10 +38,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -53,7 +53,15 @@ import org.hibernate.annotations.NotFoundAction;
 @Entity(name = "gene_drug")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {
 	"gene_symbol", "standard_drug_name", "target"
-}))
+}),
+indexes = {
+	@Index(name = "idx_gene_symbol", columnList = "gene_symbol"),
+	@Index(name = "idx_standard_drug_name", columnList = "standard_drug_name"),
+	@Index(name = "idx_cancer", columnList = "cancer"),
+	@Index(name = "idx_status", columnList = "status"),
+	@Index(name = "idx_target", columnList = "target"),
+	@Index(name = "idx_gene_query", columnList = "gene_symbol,cancer,status")
+})
 public class GeneDrug implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -61,13 +69,13 @@ public class GeneDrug implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	@Column(name = "gene_symbol", length = 255)
+	@Column(name = "gene_symbol", length = 255, columnDefinition = "VARCHAR(255)")
 	private String geneSymbol;
 	
-	@Column(name = "standard_drug_name", length = 1000)
+	@Column(name = "standard_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
 	private String standardDrugName;
 	
-	@Column(name = "target", length = 1000)
+	@Column(name = "target")
 	private boolean target;
 	
 	private String family;
@@ -80,13 +88,8 @@ public class GeneDrug implements Serializable {
 	private String alteration;
 	private double score;
 	
-	@ElementCollection
-	@CollectionTable(
-		name = "indirect_gene",
-		joinColumns = @JoinColumn(name = "direct_gene_id")
-	)
-	@Column(name = "gene_symbol")
-	private List<String> indirectGenes;
+	@OneToMany(mappedBy = "geneDrug")
+	private List<IndirectGene> indirectGenes;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "gene_drug_drug_source",
@@ -107,6 +110,7 @@ public class GeneDrug implements Serializable {
 	@JoinColumn(
 		name = "gene_symbol",
 		referencedColumnName = "gene_symbol",
+		columnDefinition = "VARCHAR(255)",
 		insertable = false, updatable = false,
 		nullable = true
 	)
@@ -144,7 +148,9 @@ public class GeneDrug implements Serializable {
 		this.resistance = resistance;
 		this.alteration = alteration;
 		this.score = score;
-		this.indirectGenes = inverseGene;
+		this.indirectGenes = inverseGene.stream()
+			.map(gs -> new IndirectGene(this, gs))
+		.collect(toList());
 		this.drugSources = drugSources;
 		this.pathways = pathways;
 		this.geneInformation = geneInformation;
@@ -199,14 +205,16 @@ public class GeneDrug implements Serializable {
 	}
 	
 	public List<String> getDirectAndIndirectGenes() {
-		final List<String> genes = new ArrayList<>(this.indirectGenes);
+		final List<String> genes = new ArrayList<>(getIndirectGenes());
 		genes.add(this.geneSymbol);
 		
 		return genes;
 	}
 	
 	public List<String> getIndirectGenes() {
-		return unmodifiableList(this.indirectGenes);
+		return this.indirectGenes.stream()
+			.map(IndirectGene::getGeneSymbol)
+		.collect(toList());
 	}
 	
 	public List<DrugSource> getDrugSources() {
