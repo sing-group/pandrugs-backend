@@ -223,7 +223,12 @@ public class GeneDrugGroup {
 	
 	public boolean isTarget() {
 		return this.geneDrugs.stream()
-			.anyMatch(gd -> gd.isTarget());
+			.anyMatch(GeneDrug::isTarget);
+	}
+	
+	public boolean hasResistance() {
+		return this.geneDrugs.stream()
+			.anyMatch(GeneDrug::isResistance);
 	}
 	
 	public String[] getTargetGeneNames(GeneDrug geneDrug) {
@@ -244,7 +249,7 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		double score = geneDrug.getScore();
+		double score = Math.abs(geneDrug.getScore());
 		
 		switch (this.getStatus()) {
 		case EXPERIMENTAL:
@@ -263,7 +268,7 @@ public class GeneDrugGroup {
 			return Double.NaN;
 		}
 		
-		return score;
+		return this.hasResistance() ? -score : score;
 	}
 
 	public double getGScore(GeneDrug geneDrug) {
@@ -299,9 +304,12 @@ public class GeneDrugGroup {
 	
 	//TODO: test d-score
 	public double getDScore() {
-		return this.geneDrugs.stream()
+		final double dScore = this.geneDrugs.stream()
 			.mapToDouble(this::getDScore)
+			.map(Math::abs)
 		.max().orElse(Double.NaN);
+		
+		return this.hasResistance() ? -dScore : dScore;
 	}
 
 	public double getGScore() {

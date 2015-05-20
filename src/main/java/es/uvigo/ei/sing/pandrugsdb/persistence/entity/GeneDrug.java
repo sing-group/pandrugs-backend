@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -194,6 +195,12 @@ public class GeneDrug implements Serializable {
 	
 	public String getResistance() {
 		return resistance;
+	}
+	
+	public boolean isResistance() {
+		return Optional.ofNullable(this.resistance)
+			.map(r -> r.equals("resistance"))
+		.orElse(Boolean.FALSE);
 	}
 
 	public String getAlteration() {
