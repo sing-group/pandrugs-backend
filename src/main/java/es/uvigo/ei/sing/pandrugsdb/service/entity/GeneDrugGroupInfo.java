@@ -39,7 +39,10 @@ public class GeneDrugGroupInfo {
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
 	private String[] genes;
-	private String drug;
+	@XmlElement(name = "standard-drug-name")
+	private String standardDrugName;
+	@XmlElement(name = "show-drug-name")
+	private String showDrugName;
 	@XmlElementWrapper(name = "families")
 	@XmlElement(name = "family")
 	private String[] families;
@@ -68,7 +71,8 @@ public class GeneDrugGroupInfo {
 	
 	public GeneDrugGroupInfo(GeneDrugGroup gdg) {
 		this.genes = gdg.getTargetGenes();
-		this.drug = gdg.getDrug();
+		this.standardDrugName = gdg.getStandardDrugName();
+		this.showDrugName = gdg.getShowDrugName();
 		this.families = gdg.getFamilies();
 		this.sourceLinks = gdg.getSourceLinks().entrySet().stream()
 			.map(e -> new SourceAndLink(e.getKey(), e.getValue()))
@@ -95,12 +99,20 @@ public class GeneDrugGroupInfo {
 		this.genes = gene;
 	}
 
-	public String getDrug() {
-		return drug;
+	public String getStandardDrugName() {
+		return standardDrugName;
 	}
 
-	public void setDrug(String drug) {
-		this.drug = drug;
+	public void setStandardDrugName(String standardDrugName) {
+		this.standardDrugName = standardDrugName;
+	}
+
+	public String getShowDrugName() {
+		return showDrugName;
+	}
+
+	public void setShowDrugName(String showDrugName) {
+		this.showDrugName = showDrugName;
 	}
 
 	public String[] getFamilies() {
@@ -200,7 +212,8 @@ public class GeneDrugGroupInfo {
 		long temp;
 		temp = Double.doubleToLongBits(dScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
+		result = prime * result + ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
+		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(families);
 		temp = Double.doubleToLongBits(gScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -240,11 +253,18 @@ public class GeneDrugGroupInfo {
 				.doubleToLongBits(other.dScore)) {
 			return false;
 		}
-		if (drug == null) {
-			if (other.drug != null) {
+		if (standardDrugName == null) {
+			if (other.standardDrugName != null) {
 				return false;
 			}
-		} else if (!drug.equals(other.drug)) {
+		} else if (!standardDrugName.equals(other.standardDrugName)) {
+			return false;
+		}
+		if (showDrugName == null) {
+			if (other.showDrugName != null) {
+				return false;
+			}
+		} else if (!showDrugName.equals(other.showDrugName)) {
 			return false;
 		}
 		if (!Arrays.equals(families, other.families)) {

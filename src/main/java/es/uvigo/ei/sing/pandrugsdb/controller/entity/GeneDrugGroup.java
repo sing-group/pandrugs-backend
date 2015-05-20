@@ -153,8 +153,12 @@ public class GeneDrugGroup {
 		return this.countDirectGenes() == 0;
 	}
 	
-	public String getDrug() {
+	public String getStandardDrugName() {
 		return this.geneDrugs.get(0).getStandardDrugName();
+	}
+	
+	public String getShowDrugName() {
+		return this.geneDrugs.get(0).getDrugSources().get(0).getShowDrugName();
 	}
 	
 	public DrugStatus getStatus() {

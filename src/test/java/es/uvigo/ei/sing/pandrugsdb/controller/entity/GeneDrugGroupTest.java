@@ -468,7 +468,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	}
 
 	@Test
-	public void testGetDrug() {
+	public void testGetStandardDrugName() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
 		final List<GeneDrug> geneDrugs = asList(
 			newGeneDrug("G1", "D1"),
@@ -481,7 +481,24 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getDrug(), is("D1"));
+		assertThat(group.getStandardDrugName(), is("D1"));
+	}
+
+	@Test
+	public void testGetShowDrugName() {
+		final String[] genes = new String[] { "G1", "G2", "G3" };
+		final List<GeneDrug> geneDrugs = asList(
+			newGeneDrugWithSources("G1", "D1", newDrugSource("DS1", "SDN1")),
+			newGeneDrugWithSources("G2", "D1", newDrugSource("DS1", "SDN1")),
+			newGeneDrugWithSources("G3", "D1", newDrugSource("DS1", "SDN1")),
+			newGeneDrugWithSources("G3", "D1", newDrugSource("DS1", "SDN1"))
+		);
+		
+		replayAll();
+		
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		
+		assertThat(group.getShowDrugName(), is("SDN1"));
 	}
 
 	@Test
@@ -802,6 +819,14 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	private final DrugSource newDrugSource(String source) {
 		final DrugSource ds = createNiceMock(DrugSource.class);
 		expect(ds.getSource()).andReturn(source).anyTimes();
+		
+		return ds;
+	}
+
+	private final DrugSource newDrugSource(String source, String showDrugName) {
+		final DrugSource ds = createNiceMock(DrugSource.class);
+		expect(ds.getSource()).andReturn(source).anyTimes();
+		expect(ds.getShowDrugName()).andReturn(showDrugName).anyTimes();
 		
 		return ds;
 	}

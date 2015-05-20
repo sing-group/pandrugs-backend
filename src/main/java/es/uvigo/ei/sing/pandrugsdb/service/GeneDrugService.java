@@ -30,7 +30,8 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 
 public interface GeneDrugService {
 	/**
-	 * Returns a list with the genes-drugs with the provided gene symbol/s.
+	 * Returns a list of genes-drug interactions with the provided gene
+	 * symbol/s.
 	 * 
 	 * @param genes a list of gene symbol names to search in the database.
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
