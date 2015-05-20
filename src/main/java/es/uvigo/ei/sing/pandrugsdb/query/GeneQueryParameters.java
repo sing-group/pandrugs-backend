@@ -96,6 +96,13 @@ public class GeneQueryParameters {
 			.orElse(DEFAULT_TARGET_MARKER);
 		this.directIndirect = Optional.ofNullable(directIndirect)
 			.orElse(DEFAULT_DIRECT_INDIRECT);
+		
+		if (!this.areCancerDrugStatusIncluded() && 
+			!this.areNonCancerDrugStatusIncluded()
+		) {
+			throw new IllegalArgumentException("NONE can't be used for cancer "
+				+ "and non cancer status at the same time");
+		}
 	}
 
 	public DrugStatus[] getCancerDrugStatus() {
@@ -104,10 +111,6 @@ public class GeneQueryParameters {
 
 	public DrugStatus[] getNonCancerDrugStatus() {
 		return nonCancerDrugStatus;
-	}
-
-	public TargetMarkerStatus getTargetMarker() {
-		return targetMarker;
 	}
 
 	public DirectIndirectStatus getDirectIndirect() {
@@ -130,6 +133,22 @@ public class GeneQueryParameters {
 		return this.targetMarker != TargetMarkerStatus.TARGET;
 	}
 	
+	public boolean areAllDrugStatusIncluded() {
+		return this.isAnyCancerDrugStatus() && this.isAnyNonCancerDrugStatus();
+	}
+	
+	public boolean areCancerDrugStatusIncluded() {
+		return this.cancerDrugStatus.length > 0;
+	}
+	
+	public boolean areNonCancerDrugStatusIncluded() {
+		return this.nonCancerDrugStatus.length > 0;
+	}
+
+	public TargetMarkerStatus getTargetMarker() {
+		return targetMarker;
+	}
+	
 	public boolean isAnyCancerDrugStatus() {
 		return hasAllDrugStatus(this.cancerDrugStatus);
 	}
@@ -143,10 +162,10 @@ public class GeneQueryParameters {
 	}
 	
 	private final static <T extends Enum<T>> T parseEnum(
-		Class<T> enumType, T defaultValue, String targetMarker, String parseErrorMessage
+		Class<T> enumType, T defaultValue, String value, String parseErrorMessage
 	) {
 		try {
-			return Optional.ofNullable(targetMarker)
+			return Optional.ofNullable(value)
 				.map(String::toUpperCase)
 				.map(name -> Enum.valueOf(enumType, name))
 			.orElse(defaultValue);
@@ -160,6 +179,13 @@ public class GeneQueryParameters {
 	) {
 		if (status == null || status.isEmpty()) {
 			return defaultValues;
+		} else if (status.contains("NONE")) {
+			if (status.size() > 1) {
+				throw new IllegalArgumentException(
+					"When used, NONE must be the unique status value");
+			} else {
+				return new DrugStatus[0];
+			}
 		} else {
 			try {
 				return status.stream()

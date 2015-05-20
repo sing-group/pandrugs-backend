@@ -102,26 +102,38 @@ implements GeneDrugDAO {
 		final Expression<DrugStatus> statusField = root.get("status");
 
 		final List<Predicate> predicates = new LinkedList<>();
-		
-		if (!queryParameters.isAnyCancerDrugStatus()) {
-			predicates.add(cb.and(
-				cb.isNotNull(cancerField),
-				cb.or(Stream.of(queryParameters.getCancerDrugStatus())
-					.map(status -> cb.equal(statusField, status))
-				.toArray(Predicate[]::new))
-			));
-		}
-		
-		if (!queryParameters.isAnyNonCancerDrugStatus()) {
-			predicates.add(cb.and(
-				cb.isNull(cancerField),
-				cb.or(Stream.of(queryParameters.getNonCancerDrugStatus())
-					.map(status -> cb.equal(statusField, status))
-				.toArray(Predicate[]::new))
-			));
-		}
 
-		return or(predicates);
+		if (queryParameters.areAllDrugStatusIncluded()) {
+			return null;
+		} else {
+			if (queryParameters.areCancerDrugStatusIncluded()) {
+				if (queryParameters.isAnyCancerDrugStatus()) {
+					predicates.add(cb.isNotNull(cancerField));
+				} else {
+					predicates.add(cb.and(
+						cb.isNotNull(cancerField),
+						cb.or(Stream.of(queryParameters.getCancerDrugStatus())
+							.map(status -> cb.equal(statusField, status))
+						.toArray(Predicate[]::new))
+					));
+				}
+			}
+			
+			if (queryParameters.areNonCancerDrugStatusIncluded()) {
+				if (queryParameters.isAnyNonCancerDrugStatus()) {
+					predicates.add(cb.isNull(cancerField));
+				} else {
+					predicates.add(cb.and(
+						cb.isNull(cancerField),
+						cb.or(Stream.of(queryParameters.getNonCancerDrugStatus())
+							.map(status -> cb.equal(statusField, status))
+						.toArray(Predicate[]::new))
+					));
+				}
+			}
+	
+			return or(predicates);
+		}
 	}
 
 	private Predicate createDirectIndirectPredicate(

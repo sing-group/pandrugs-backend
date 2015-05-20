@@ -36,12 +36,20 @@ public interface GeneDrugService {
 	 * @param genes a list of gene symbol names to search in the database.
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
-	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. Default value is:
-	 * CLINICAL and APPROVED.
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. <br/>
+	 * In addition, NONE value can be used for no cancer results but, when
+	 * used, it must be the unique value for this parameter. NONE status 
+	 * can't be used, at the same time, for cancerDrugStatus and 
+	 * nonCancerDrugStatus parameters.<br/>
+	 * Default value is: CLINICAL and APPROVED.
 	 * @param nonCancerDrugStatus a list for filtering the drug status of the 
 	 * non cancer genes. Multiple values allowed. Valid values are CLINICAL,
-	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. Default value is:
-	 * CLINICAL, APPROVED and EXPERIMENTAL.
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED.<br/>
+	 * In addition, NONE value can be used for only cancer results but, when 
+	 * used, it must be the unique value for this parameter. NONE status 
+	 * can't be used, at the same time for, cancerDrugStatus and
+	 * nonCancerDrugStatus parameters.<br/>
+	 * Default value is: CLINICAL, APPROVED and EXPERIMENTAL.
 	 * @param target a target field filter. Valid values are: TARGET, MARKER
 	 * and BOTH. Default value is BOTH.
 	 * @param direct a filter for direct/indirect genes. Valid values are: 
