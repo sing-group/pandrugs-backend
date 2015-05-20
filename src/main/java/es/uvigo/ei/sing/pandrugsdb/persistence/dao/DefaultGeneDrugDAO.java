@@ -128,7 +128,7 @@ implements GeneDrugDAO {
 		Root<GeneDrug> root,
 		CriteriaQuery<GeneDrug> query,
 		GeneQueryParameters queryParameters,
-		String... geneNames
+		String ... geneNames
 	) {
 		final CriteriaBuilder cb = cb();
 		
@@ -152,12 +152,16 @@ implements GeneDrugDAO {
 				subqueryIndirectGenes.from(IndirectGene.class);
 			
 			predicates.add(
-				cb.exists(
-					subqueryIndirectGenes.select(rootIndirectGene.get("geneSymbol"))
-					.where(cb.and(
-						cb.equal(rootIndirectGene.get("directGeneId"), root.get("id")),
-						isInGenes.apply(rootIndirectGene.get("geneSymbol"))
-					))
+				cb.and(
+					cb.notEqual(root.get("resistance"), "resistance"),
+					cb.notEqual(root.get("target"), false),
+					cb.exists(
+						subqueryIndirectGenes.select(rootIndirectGene.get("geneSymbol"))
+						.where(cb.and(
+							isInGenes.apply(rootIndirectGene.get("geneSymbol")),
+							cb.equal(rootIndirectGene.get("directGeneId"), root.get("id"))
+						))
+					)
 				)
 			);
 		}

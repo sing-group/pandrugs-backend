@@ -83,7 +83,7 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneDirect() {
 		return new GeneDrug(
-			0, "DIRECT GENE 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			0, "DIRECT GENE 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.1,
 			emptyList(),
 			asList(drugSources()[0]), 
 			emptyList(),
@@ -97,21 +97,21 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneDirect(),
 			new GeneDrug(
-				1, "DIRECT GENE 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				1, "DIRECT GENE 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.2,
 				emptyList(),
 				asList(drugSources()[0]),
 				emptyList(),
 				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				2, "DIRECT GENE 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				2, "DIRECT GENE 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.3,
 				emptyList(),
 				asList(drugSources()[1]),
 				emptyList(),
 				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				3, "DIRECT GENE 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				3, "DIRECT GENE 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.4,
 				emptyList(),
 				asList(drugSources()[2]),
 				emptyList(),
@@ -122,7 +122,7 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneIndirect() {
 		return new GeneDrug(
-			10, "INDIRECT GENE 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.1,
+			10, "INDIRECT GENE 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.1,
 			asList("IG1"),
 			asList(drugSources()[0]), 
 			emptyList(),
@@ -136,21 +136,21 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneIndirect(),
 			new GeneDrug(
-				11, "INDIRECT GENE 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.2,
+				11, "INDIRECT GENE 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.2,
 				asList("IG2"),
 				asList(drugSources()[0]),
 				emptyList(),
 				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				12, "INDIRECT GENE 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.3,
+				12, "INDIRECT GENE 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.3,
 				asList("IG2"),
 				asList(drugSources()[1]),
 				emptyList(),
 				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				13, "INDIRECT GENE 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, false, null, null, 0.4,
+				13, "INDIRECT GENE 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.4,
 				asList("IG2"),
 				asList(drugSources()[2]),
 				emptyList(),
