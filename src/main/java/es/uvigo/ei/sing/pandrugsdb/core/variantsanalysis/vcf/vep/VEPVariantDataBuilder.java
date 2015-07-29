@@ -19,16 +19,19 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf;
+package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.vep;
 
-public class DefaultVCFMetaDataBuilder extends
-		AbstractVCFMetaDataBuilder<VCFMetaData> {
+import java.util.Set;
+
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.AbstractVCFVariantDataBuilder;
+
+public class VEPVariantDataBuilder extends AbstractVCFVariantDataBuilder<VEPMetaData, VEPVariant> {
 
 	@Override
-	public VCFMetaData build() {
-
-		return new VCFMetaData(super.sampleNames, super.simpleAttributes,
-				super.complexAttributes);
+	protected VEPVariant createVariant(String seqName, long position,
+			String referenceAllele, Set<String> alternativeAlleles) {
+		return new VEPVariant(seqName, position, referenceAllele,
+				alternativeAlleles, super.metadata);
 	}
 
 }

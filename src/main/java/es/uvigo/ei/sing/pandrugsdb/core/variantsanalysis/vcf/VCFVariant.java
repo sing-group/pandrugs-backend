@@ -38,7 +38,7 @@ public class VCFVariant<M extends VCFMetaData> extends Variant {
 	private List<String> filters;
 	private Map<String, List<Object>> infoValues = new HashMap<>();
 	
-	private Map<String, Map<String, Object>> samplesData;
+	private Map<String, Map<String, Object>> samplesData = new HashMap<>();
 	
 	public VCFVariant(String sequenceName, 
 			long position, String referenceAllele,
@@ -49,6 +49,10 @@ public class VCFVariant<M extends VCFMetaData> extends Variant {
 		super(sequenceName, position, referenceAllele, alternativeAlleles);
 		
 		this.metadata = metadata;
+	}
+	
+	public M getMetadata() {
+		return metadata;
 	}
 	
 	public void setId(String id) {
@@ -104,6 +108,10 @@ public class VCFVariant<M extends VCFMetaData> extends Variant {
 	
 	public Object getSampleValue(String sampleId, String valueId) {
 		return samplesData.get(sampleId).get(valueId);
+	}
+	
+	public List<Object> getInfoValue(String id) {
+		return this.infoValues.get(id);
 	}
 	
 	public void putSampleValue(String sampleId, String valueId, Object value) {

@@ -56,7 +56,6 @@ public class VCFReader<M extends VCFMetaData, V extends VCFVariant<M>> {
 					URL vcf, 
 					VCFMetaDataBuilder<M> metadataBuilder,
 					VCFVariantDataBuilder<M, V> variantDataBuilder)	{
-
 		this.vcf = vcf;
 		this.metadataBuilder = metadataBuilder;
 		this.variantDataBuilder = variantDataBuilder;

@@ -120,6 +120,8 @@ public class VCFReaderUnitTest {
 		verify(mocks);
 	}
 	
+	
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testReadBuildsVariantsDataWithBasicVCF() 
