@@ -23,6 +23,9 @@ package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 import java.util.Collection;
 
+import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPVariant;
+
+
 public interface VariantsEffectPredictionResults {
-	public Collection<Variant> getVariants();
+	public Collection<VEPVariant> getVariants();
 }

@@ -26,27 +26,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsCandidateTherapiesComputerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.DefaultVCFMetaDataBuilderUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.DefaultVCFVariantDataBuilderUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.VCFMetaDataUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.VCFReaderUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.vep.VEPMetaDataBuilderUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.vep.VEPMetaDataUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.vep.VEPVCFReaderUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.vcf.vep.VEPVariantUnitTest;
 
 @SuiteClasses({
 	DefaultVariantsCandidateTherapiesComputerUnitTest.class,
-	VCFReaderUnitTest.class,
-	DefaultVCFMetaDataBuilderUnitTest.class,
-	DefaultVCFVariantDataBuilderUnitTest.class,
-	VCFMetaDataUnitTest.class,
-	
-	VEPMetaDataBuilderUnitTest.class,
-	VEPMetaDataUnitTest.class,
-	VEPVariantUnitTest.class,
-	VEPVCFReaderUnitTest.class
-	
 })
 @RunWith(Suite.class)
 public class VariantsAnalysisUnitTestSuite {

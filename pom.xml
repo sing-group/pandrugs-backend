@@ -114,6 +114,8 @@
 		<mail.version>1.5.2</mail.version>
 		<activation.version>1.1.1</activation.version>
 		<commons-io.version>2.4</commons-io.version>
+		<groupId>es.uvigo.sing</groupId>  
+		<vcfparser.version>1.0-SNAPSHOT</vcfparser.version>
 		
 		<!-- Testing dependencies -->
 		<junit.version>4.12</junit.version>
@@ -127,6 +129,11 @@
 	</properties>
 	
 	<dependencies>
+		<dependency>
+			<groupId>es.uvigo.ei.sing</groupId>
+			<artifactId>vcfparser</artifactId>
+			<version>${vcfparser.version}</version>
+		</dependency>
 		<!-- Jersey-Spring -->
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
@@ -350,8 +357,7 @@
 			<artifactId>guava-collections</artifactId>
 			<version>${guava-collections.version}</version>
 			<scope>test</scope>
-		</dependency>
-		
+		</dependency>		
 	</dependencies>
 
 	<reporting>

@@ -30,7 +30,12 @@ public class DefaultCandidateTherapiesCalculator implements
 	public List<CandidateTherapy> calculateTherapies(
 			VariantsEffectPredictionResults vep) {
 		
-		// TODO Auto-generated method stub
+
+		
+		
+		
+		
+		
 		return null;
 	}
 
