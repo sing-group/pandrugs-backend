@@ -115,7 +115,7 @@
 		<activation.version>1.1.1</activation.version>
 		<commons-io.version>2.4</commons-io.version>
 		<groupId>es.uvigo.sing</groupId>  
-		<vcfparser.version>1.0-SNAPSHOT</vcfparser.version>
+		<vcfparser.version>1.1</vcfparser.version>
 		
 		<!-- Testing dependencies -->
 		<junit.version>4.12</junit.version>
