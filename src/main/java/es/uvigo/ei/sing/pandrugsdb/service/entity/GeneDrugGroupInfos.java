@@ -21,7 +21,9 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
+import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -33,6 +35,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.util.Compare;
 
 
@@ -56,7 +59,10 @@ public class GeneDrugGroupInfos {
 					.thenByReverseOrderOfInt(GeneDrugGroup::countIndirectGenes)
 					.thenByArray(GeneDrugGroup::getFamilies)
 					.thenBy(GeneDrugGroup::getStatus)
-					.thenBy(GeneDrugGroup::getCancer)
+					.thenBy(gdg -> gdg.getCancers().stream()
+						.map(CancerType::name)
+						.sorted()
+					.collect(joining(", ")))
 					.thenBy(GeneDrugGroup::getExtra)
 					.thenBy(GeneDrugGroup::isTarget)
 				.andGet())
@@ -93,7 +99,7 @@ public class GeneDrugGroupInfos {
 			if (other.geneDrugs != null) {
 				return false;
 			}
-		} else if (!geneDrugs.equals(other.geneDrugs)) {
+		} else if (!equalsIgnoreOrder(geneDrugs, other.geneDrugs)) {
 			return false;
 		}
 		return true;

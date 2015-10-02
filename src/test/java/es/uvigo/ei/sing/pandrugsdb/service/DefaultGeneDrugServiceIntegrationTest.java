@@ -63,7 +63,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
 @ExpectedDatabase(
 	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
-	assertionMode = DatabaseAssertionMode.NON_STRICT
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
 )
 public class DefaultGeneDrugServiceIntegrationTest {
 	@Inject

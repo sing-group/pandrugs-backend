@@ -24,6 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller.entity;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +38,10 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Weighted;
@@ -75,12 +78,12 @@ public class GeneDrugGroup {
 			() -> new IllegalArgumentException("Different status in group")
 		);
 		
-		checkSingleValue(
-			geneDrugs, GeneDrug::getPathology,
-			() -> new IllegalArgumentException("Different pathology in group")
+		checkSameIterableValues(
+			geneDrugs, GeneDrug::getPathologies,
+			() -> new IllegalArgumentException("Different pathologies in group")
 		);
 		
-		checkSingleValue(
+		checkSameIterableValues(
 			geneDrugs, GeneDrug::getCancer,
 			() -> new IllegalArgumentException("Different cancer in group")
 		);
@@ -158,18 +161,18 @@ public class GeneDrugGroup {
 	}
 	
 	public String getShowDrugName() {
-		return this.geneDrugs.get(0).getDrugSources().get(0).getShowDrugName();
+		return this.geneDrugs.get(0).getShowDrugName();
 	}
 	
 	public DrugStatus getStatus() {
 		return this.geneDrugs.get(0).getStatus();
 	}
 
-	public String getCancer() {
+	public List<CancerType> getCancers() {
 		return this.geneDrugs.get(0).getCancer();
 	}
 
-	public String getExtra() {
+	public Extra getExtra() {
 		return this.geneDrugs.get(0).getExtra();
 	}
 
@@ -260,7 +263,7 @@ public class GeneDrugGroup {
 			score -= (this.isOnlyIndirect() ? 0.0002d : 0d);
 			break;
 		case APPROVED:
-		case CLINICAL:
+		case CLINICAL_TRIALS:
 			score -= 0.1d;
 			score += Math.min(9, this.targetGenes.length) * 0.01d;
 			if (this.isOnlyIndirect())
@@ -344,6 +347,24 @@ public class GeneDrugGroup {
 		
 		if (count != 1) 
 			throw thrower.get();
+	}
+	
+	private final static <T> void checkSameIterableValues(
+		List<GeneDrug> geneDrugs,
+		Function<GeneDrug, ? extends Iterable<T>> mapper,
+		Supplier<RuntimeException> thrower
+	) {
+		final List<? extends Iterable<T>> iterables = geneDrugs.stream()
+			.map(mapper)
+		.collect(toList());
+		
+		final Iterable<T> base = iterables.get(0);
+		
+		for (int i = 1; i < iterables.size(); i++) {
+			if (!equalsIgnoreOrder(base, iterables.get(i))) {
+				throw thrower.get();
+			}
+		}
 	}
 
 	@Override

@@ -24,7 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 public enum DrugStatus {
 	EXPERIMENTAL(true, "in pre-clinical studies"),
 	APPROVED(true, "approved by FDA"),
-	CLINICAL(true, "in Clinical Trials"),
+	CLINICAL_TRIALS(true, "in Clinical Trials"),
 	WITHDRAWN(false, null),
 	UNDEFINED(false, null);
 	

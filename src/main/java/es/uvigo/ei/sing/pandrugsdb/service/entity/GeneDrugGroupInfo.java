@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -79,8 +81,11 @@ public class GeneDrugGroupInfo {
 		.toArray(SourceAndLink[]::new);
 		this.curatedSources = gdg.getCuratedSourceNames();
 		this.status = gdg.getStatus().toString();
-		this.cancer = gdg.getCancer();
-		this.therapy = gdg.getExtra();
+		this.cancer = gdg.getCancers().stream()
+			.map(CancerType::name)
+		.collect(joining(", "));
+		
+		this.therapy = gdg.getExtra() == null ? null : gdg.getExtra().name();
 		this.indirect = gdg.getIndirectGenes();
 		this.target = gdg.isTarget();
 		this.dScore = gdg.getDScore();

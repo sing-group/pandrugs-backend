@@ -32,7 +32,7 @@ public class SourceInformation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "source", length = 255, columnDefinition = "VARCHAR(255)")
+	@Column(name = "source", length = 50, columnDefinition = "VARCHAR(50)")
 	private String source;
 	
 	@Column(name = "url_template", length = 1000, columnDefinition = "VARCHAR(1000)")
@@ -41,8 +41,7 @@ public class SourceInformation implements Serializable {
 	@Column(name = "curated")
 	private boolean curated;
 	
-	SourceInformation() {
-	}
+	SourceInformation() {}
 
 	public SourceInformation(
 		String source, String urlTemplate, boolean curated

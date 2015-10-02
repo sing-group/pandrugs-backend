@@ -35,7 +35,7 @@ public class GeneInformation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "gene_symbol", length = 255, columnDefinition = "VARCHAR(255)")
+	@Column(name = "gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
 	private String geneSymbol;
 	
 	@Enumerated(EnumType.STRING)
@@ -95,56 +95,51 @@ public class GeneInformation implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (cgc ? 1231 : 1237);
-		result = prime * result
-				+ ((driverLevel == null) ? 0 : driverLevel.hashCode());
-		result = prime
-				* result
-				+ ((geneEssentialityScore == null) ? 0 : geneEssentialityScore
-						.hashCode());
-		result = prime * result
-				+ ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
-		result = prime
-				* result
-				+ ((tumorPortalMutationLevel == null) ? 0
-						: tumorPortalMutationLevel.hashCode());
+		result = prime * result + ((driverLevel == null) ? 0 : driverLevel.hashCode());
+		result = prime * result + ((geneEssentialityScore == null) ? 0 : geneEssentialityScore.hashCode());
+		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
+		result = prime * result + ((tumorPortalMutationLevel == null) ? 0 : tumorPortalMutationLevel.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		GeneInformation other = (GeneInformation) obj;
-		if (cgc != other.cgc) {
+		if (cgc != other.cgc)
 			return false;
-		}
-		if (driverLevel != other.driverLevel) {
+		if (driverLevel != other.driverLevel)
 			return false;
-		}
 		if (geneEssentialityScore == null) {
-			if (other.geneEssentialityScore != null) {
+			if (other.geneEssentialityScore != null)
 				return false;
-			}
-		} else if (!geneEssentialityScore.equals(other.geneEssentialityScore)) {
+		} else if (!geneEssentialityScore.equals(other.geneEssentialityScore))
 			return false;
-		}
 		if (geneSymbol == null) {
-			if (other.geneSymbol != null) {
+			if (other.geneSymbol != null)
 				return false;
-			}
-		} else if (!geneSymbol.equals(other.geneSymbol)) {
+		} else if (!geneSymbol.equals(other.geneSymbol))
 			return false;
-		}
-		if (tumorPortalMutationLevel != other.tumorPortalMutationLevel) {
+		if (tumorPortalMutationLevel != other.tumorPortalMutationLevel)
 			return false;
-		}
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(this.geneSymbol);
+		
+		sb.append(" [TPML: ").append(this.tumorPortalMutationLevel)
+			.append(", CGC: ").append(this.cgc)
+			.append(", DL: ").append(this.driverLevel)
+			.append(", GES: ").append(this.geneEssentialityScore)
+			.append("]");
+		
+		return sb.toString();
 	}
 }

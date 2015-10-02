@@ -46,6 +46,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
@@ -58,6 +60,10 @@ import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultGeneDrugControllerIntegrationTest {
 	@Inject
 	@Named("defaultGeneDrugController")

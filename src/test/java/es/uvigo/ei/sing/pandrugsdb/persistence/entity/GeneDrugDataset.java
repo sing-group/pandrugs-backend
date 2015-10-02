@@ -56,36 +56,54 @@ public final class GeneDrugDataset {
 		));
 	}
 	
+	public static Drug[] drugs() {
+		return new Drug[] {
+			new Drug("Drug 1", "Show Drug 1", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 2", "Show Drug 2", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 3", "Show Drug 3", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 10", "Show Drug 10", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 11", "Show Drug 11", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 12", "Show Drug 12", DrugStatus.APPROVED, null, null, null),
+		};
+	}
+	
 	public static DrugSource[] drugSources() {
 		final Map<String, SourceInformation> sourceInfos = sourceInfos();
+		final Drug[] drugs = drugs();
 		
 		return new DrugSource[] {
-			new DrugSource(0, "Source 1", "Drug 1", "Drug 1", "Show Drug 1",
+			new DrugSource("Source 1", "Source Drug 1", drugs[0],
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource(1, "Source 1", "Drug 2", "Drug 2", "Show Drug 2",
+			new DrugSource("Source 1", "Source Drug 2", drugs[1],
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource(2, "Source 2", "Drug 3", "Drug 3", "Show Drug 3",
+			new DrugSource("Source 2", "Source Drug 3", drugs[2],
 				sourceInfos.get("Source 2")
 			),
-			new DrugSource(10, "Source 1", "Drug 10", "Drug 10", "Show Drug 10",
+			new DrugSource("Source 1", "Source Drug 10", drugs[3],
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource(11, "Source 1", "Drug 11", "Drug 11", "Show Drug 11",
+			new DrugSource("Source 1", "Source Drug 11", drugs[4],
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource(12, "Source 2", "Drug 12", "Drug 12", "Show Drug 12",
+			new DrugSource("Source 2", "Source Drug 12", drugs[5],
 				sourceInfos.get("Source 2")
 			)
 		};
 	}
 	
-	public static GeneDrug singleGeneDirect() {
+	public static GeneDrug singleGeneDrugDirect() {
 		return new GeneDrug(
-			0, "DIRECT GENE 1", "Drug 1", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.1,
+			"DIRECT GENE 1",
+			drugs()[0],
+			null,
+			true,
+			ResistanceType.SENSITIVITY,
+			null,
+			0.1,
 			emptyList(),
-			asList(drugSources()[0]), 
+			asList(drugSources()[0]),
 			emptyList(),
 			geneInfos().get("DIRECT GENE 1")
 		);
@@ -93,25 +111,44 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug[] multipleGeneDirect() {
 		final Map<String, GeneInformation> geneInfos = geneInfos();
+		final Drug[] drugs = drugs();
 		
 		return new GeneDrug[] {
-			singleGeneDirect(),
+			singleGeneDrugDirect(),
 			new GeneDrug(
-				1, "DIRECT GENE 2", "Drug 1", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.2,
+				"DIRECT GENE 2",
+				drugs[0],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.2,
 				emptyList(),
 				asList(drugSources()[0]),
 				emptyList(),
 				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				2, "DIRECT GENE 2", "Drug 2", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.3,
+				"DIRECT GENE 2",
+				drugs[1],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.3,
 				emptyList(),
 				asList(drugSources()[1]),
 				emptyList(),
 				geneInfos.get("DIRECT GENE 2")
 			),
 			new GeneDrug(
-				3, "DIRECT GENE 2", "Drug 3", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.4,
+				"DIRECT GENE 2",
+				drugs[2],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.4,
 				emptyList(),
 				asList(drugSources()[2]),
 				emptyList(),
@@ -122,9 +159,15 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneIndirect() {
 		return new GeneDrug(
-			10, "INDIRECT GENE 1", "Drug 10", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.1,
+			"INDIRECT GENE 1",
+			drugs()[3],
+			null,
+			true,
+			ResistanceType.SENSITIVITY,
+			null,
+			0.1,
 			asList("IG1"),
-			asList(drugSources()[0]), 
+			asList(drugSources()[3]),
 			emptyList(),
 			geneInfos().get("INDIRECT GENE 1")
 		);
@@ -132,27 +175,46 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug[] multipleGeneIndirect() {
 		final Map<String, GeneInformation> geneInfos = geneInfos();
+		final Drug[] drugs = drugs();
 		
 		return new GeneDrug[] {
 			singleGeneIndirect(),
 			new GeneDrug(
-				11, "INDIRECT GENE 2", "Drug 10", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.2,
+				"INDIRECT GENE 2",
+				drugs[3],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.2,
 				asList("IG2"),
-				asList(drugSources()[0]),
+				asList(drugSources()[3]),
 				emptyList(),
 				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				12, "INDIRECT GENE 2", "Drug 11", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.3,
+				"INDIRECT GENE 2",
+				drugs[4],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.3,
 				asList("IG2"),
-				asList(drugSources()[1]),
+				asList(drugSources()[4]),
 				emptyList(),
 				geneInfos.get("INDIRECT GENE 2")
 			),
 			new GeneDrug(
-				13, "INDIRECT GENE 2", "Drug 12", null, DrugStatus.APPROVED, null, null, null, true, "sensitivity", null, 0.4,
+				"INDIRECT GENE 2",
+				drugs[5],
+				null,
+				true,
+				ResistanceType.SENSITIVITY,
+				null,
+				0.4,
 				asList("IG2"),
-				asList(drugSources()[2]),
+				asList(drugSources()[5]),
 				emptyList(),
 				geneInfos.get("INDIRECT GENE 2")
 			)
@@ -168,7 +230,7 @@ public final class GeneDrugDataset {
 	public static GeneDrugGroup singleGeneGroupDirect() {
 		return new GeneDrugGroup(
 			new String[] { "DIRECT GENE 1" },
-			asList(singleGeneDirect())
+			asList(singleGeneDrugDirect())
 		);
 	}
 	

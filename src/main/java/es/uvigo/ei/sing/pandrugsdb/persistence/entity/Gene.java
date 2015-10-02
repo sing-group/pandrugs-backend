@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +35,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.UniqueConstraint;
 
 @Entity(name = "gene")
-public class Gene {
+public class Gene implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "symbol")
 	private String symbol;
@@ -75,5 +78,48 @@ public class Gene {
 	
 	public List<Pathway> getPathways() {
 		return Collections.unmodifiableList(this.pathways);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((approvedSymbol == null) ? 0 : approvedSymbol.hashCode());
+		result = prime * result + ((entrezGene == null) ? 0 : entrezGene.hashCode());
+		result = prime * result + ((previousSymbols == null) ? 0 : previousSymbols.hashCode());
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Gene other = (Gene) obj;
+		if (approvedSymbol == null) {
+			if (other.approvedSymbol != null)
+				return false;
+		} else if (!approvedSymbol.equals(other.approvedSymbol))
+			return false;
+		if (entrezGene == null) {
+			if (other.entrezGene != null)
+				return false;
+		} else if (!entrezGene.equals(other.entrezGene))
+			return false;
+		if (previousSymbols == null) {
+			if (other.previousSymbols != null)
+				return false;
+		} else if (!previousSymbols.equals(other.previousSymbols))
+			return false;
+		if (symbol == null) {
+			if (other.symbol != null)
+				return false;
+		} else if (!symbol.equals(other.symbol))
+			return false;
+		return true;
 	}
 }

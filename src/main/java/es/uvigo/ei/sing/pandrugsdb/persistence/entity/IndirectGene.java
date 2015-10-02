@@ -28,59 +28,76 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity(name = "indirect_gene")
-@Table(
-	indexes = @Index(name = "idx_gene_symbol", columnList = "gene_symbol")
-)
 @IdClass(IndirectGeneId.class)
 public class IndirectGene implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "indirect_gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
+	private String indirectGeneSymbol;
 	
 	@Id
-	@Column(name = "direct_gene_id")
-	private int directGeneId;
+	@Column(name = "direct_gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
+	private String directGeneSymbol;
 	
 	@Id
-	@Column(name = "gene_symbol", length = 255, columnDefinition = "VARCHAR(255)")
-	private String geneSymbol;
+	@Column(name = "drug_id")
+	private int drugId;
+	
+	@Id
+	private boolean target;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(
-		name = "direct_gene_id", referencedColumnName = "id",
-		insertable = false, updatable = false
-	)
+	@JoinColumns({
+		@JoinColumn(
+			name = "direct_gene_symbol", referencedColumnName = "gene_symbol",
+			insertable = false, updatable = false
+		),
+		@JoinColumn(
+			name = "drug_id", referencedColumnName = "drug_id",
+			insertable = false, updatable = false
+		),
+		@JoinColumn(
+			name = "target", referencedColumnName = "target",
+			insertable = false, updatable = false
+		)
+	})
 	private GeneDrug geneDrug;
 	
 	IndirectGene() {
 	}
 	
 	public IndirectGene(GeneDrug geneDrug, String geneSymbol) {
-		this.directGeneId = geneDrug.getId();
-		this.geneSymbol = geneSymbol;
+		this.indirectGeneSymbol = geneSymbol;
+		
+		this.directGeneSymbol = geneDrug.getGeneSymbol();
+		this.drugId = geneDrug.getDrug().getId();
+		this.target = geneDrug.isTarget();
+		
 		this.geneDrug = geneDrug;
-	}
-	
-	public int getDirectGeneId() {
-		return directGeneId;
-	}
-
-	public void setDirectGeneId(int id) {
-		this.directGeneId = id;
 	}
 
 	public String getGeneSymbol() {
-		return geneSymbol;
+		return indirectGeneSymbol;
 	}
 
-	public void setGeneSymbol(String geneSymbol) {
-		this.geneSymbol = geneSymbol;
+	public String getDirectGeneSymbol() {
+		return directGeneSymbol;
+	}
+
+	public int getDrugId() {
+		return drugId;
 	}
 	
+	public boolean isTarget() {
+		return target;
+	}
+
 	public GeneDrug getGeneDrug() {
 		return geneDrug;
 	}
@@ -89,34 +106,36 @@ public class IndirectGene implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + directGeneId;
-		result = prime * result
-				+ ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
+		result = prime * result + ((directGeneSymbol == null) ? 0 : directGeneSymbol.hashCode());
+		result = prime * result + drugId;
+		result = prime * result + ((indirectGeneSymbol == null) ? 0 : indirectGeneSymbol.hashCode());
+		result = prime * result + (target ? 1231 : 1237);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		IndirectGene other = (IndirectGene) obj;
-		if (directGeneId != other.directGeneId) {
-			return false;
-		}
-		if (geneSymbol == null) {
-			if (other.geneSymbol != null) {
+		if (directGeneSymbol == null) {
+			if (other.directGeneSymbol != null)
 				return false;
-			}
-		} else if (!geneSymbol.equals(other.geneSymbol)) {
+		} else if (!directGeneSymbol.equals(other.directGeneSymbol))
 			return false;
-		}
+		if (drugId != other.drugId)
+			return false;
+		if (indirectGeneSymbol == null) {
+			if (other.indirectGeneSymbol != null)
+				return false;
+		} else if (!indirectGeneSymbol.equals(other.indirectGeneSymbol))
+			return false;
+		if (target != other.target)
+			return false;
 		return true;
 	}
 }

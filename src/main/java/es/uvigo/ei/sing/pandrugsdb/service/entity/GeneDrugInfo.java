@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,6 +31,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
@@ -60,14 +62,17 @@ public class GeneDrugInfo {
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group) {
 		this.genes = group.getTargetGeneNames(geneDrug);
 		this.drug = geneDrug.getStandardDrugName();
-		this.sources = geneDrug.getDrugSourceNames().stream().toArray(String[]::new);
+		this.sources = geneDrug.getDrugSourceNames().stream()
+			.toArray(String[]::new);
 		this.family = geneDrug.getFamily();
 		this.status = geneDrug.getStatus().toString();
-		this.cancer = geneDrug.getCancer();
-		this.therapy = geneDrug.getExtra();
+		this.cancer = geneDrug.getCancer().stream()
+			.map(CancerType::name)
+		.collect(Collectors.joining(", "));
+		this.therapy = geneDrug.getExtra() == null ? null : geneDrug.getExtra().name();
 		this.indirect = group.getIndirectGeneName(geneDrug);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
-		this.sensitivity = geneDrug.getResistance();
+		this.sensitivity = geneDrug.getResistance().name();
 		this.alteration = geneDrug.getAlteration();
 		
 		if (geneDrug.isTarget()) {

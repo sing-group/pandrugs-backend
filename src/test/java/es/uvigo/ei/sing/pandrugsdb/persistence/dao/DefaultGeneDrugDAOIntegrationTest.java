@@ -24,7 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDrugDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -46,6 +46,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
@@ -58,6 +60,10 @@ import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultGeneDrugDAOIntegrationTest {
 	@Inject
 	@Named("defaultGeneDrugDAO")
@@ -85,8 +91,8 @@ public class DefaultGeneDrugDAOIntegrationTest {
 		final List<GeneDrug> result = this.dao.searchByGene(
 			new GeneQueryParameters(), "DIRECT GENE 1"
 		);
-		
-		assertThat(result, containsInAnyOrder(singleGeneDirect()));
+
+		assertThat(result, containsInAnyOrder(singleGeneDrugDirect()));
 	}
 	
 	@Test

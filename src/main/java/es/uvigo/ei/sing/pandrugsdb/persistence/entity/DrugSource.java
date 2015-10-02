@@ -21,85 +21,63 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity(name = "drug_source")
-@Table(
-	uniqueConstraints = @UniqueConstraint(columnNames = {
-		"source", "source_drug_name", "standard_drug_name", "show_drug_name"
-	}),
-	indexes = {
-		@Index(name = "idx_source", columnList = "source"),
-		@Index(name = "idx_source_drug_name", columnList = "source_drug_name"),
-		@Index(name = "idx_standard_drug_name", columnList = "standard_drug_name"),
-		@Index(name = "idx_show_drug_name", columnList = "show_drug_name")
-	}
-)
-public class DrugSource {
+@IdClass(DrugSourceId.class)
+public class DrugSource implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
-	
-	@Column(name = "source", length = 255, columnDefinition = "VARCHAR(255)")
+	@Column(name = "source", length = 50, columnDefinition = "VARCHAR(50)")
 	private String source;
 	
-	@Column(name = "source_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
+	@Id
+	@Column(name = "source_drug_name", length = 200, columnDefinition = "VARCHAR(200)")
 	private String sourceDrugName;
 	
-	@Column(name = "standard_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
-	private String standardDrugName;
-
-	@Column(name = "show_drug_name", length = 1000, columnDefinition = "VARCHAR(1000)")
-	private String showDrugName;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "source", referencedColumnName = "source", insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "source", referencedColumnName = "source",
+		insertable = false, updatable = false)
 	private SourceInformation sourceInformation;
+	
+	@ManyToOne
+	@JoinColumn(name = "drug_id", referencedColumnName = "id", insertable = false, updatable = false)
+	private Drug drug;
 	
 	DrugSource() {}
 	
 	DrugSource(
-		int id,
 		String source,
 		String sourceDrugName,
-		String standardDrugName,
-		String showDrugName,
+		Drug drug,
 		SourceInformation sourceInformation
 	) {
-		this.id = id;
 		this.source = source;
 		this.sourceDrugName = sourceDrugName;
-		this.standardDrugName = standardDrugName;
-		this.showDrugName = showDrugName;
+		this.drug = drug;
 		this.sourceInformation = sourceInformation;
 	}
 	
 	public String getSource() {
-		return source;
+		return this.source;
 	}
 	
 	public String getSourceDrugName() {
-		return sourceDrugName;
+		return this.sourceDrugName;
 	}
 
 	public String getStandardDrugName() {
-		return standardDrugName;
-	}
-	
-	public String getShowDrugName() {
-		return showDrugName;
+		return this.drug.getStandardName();
 	}
 	
 	public SourceInformation getSourceInformation() {
@@ -116,7 +94,7 @@ public class DrugSource {
 		return Optional.ofNullable(this.sourceInformation)
 			.map(SourceInformation::getUrlTemplate)
 			.map(template -> template.replaceAll("\\[GENES\\]", geneNames))
-			.map(template -> template.replaceAll("\\[DRUG\\]", this.standardDrugName))
+			.map(template -> template.replaceAll("\\[DRUG\\]", this.getStandardDrugName()))
 		.orElse(null);
 	}
 
@@ -124,68 +102,36 @@ public class DrugSource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((showDrugName == null) ? 0 : showDrugName.hashCode());
+		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		result = prime * result
-				+ ((sourceDrugName == null) ? 0 : sourceDrugName.hashCode());
-		result = prime
-				* result
-				+ ((sourceInformation == null) ? 0 : sourceInformation
-						.hashCode());
-		result = prime
-				* result
-				+ ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
+		result = prime * result + ((sourceDrugName == null) ? 0 : sourceDrugName.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		DrugSource other = (DrugSource) obj;
-		if (showDrugName == null) {
-			if (other.showDrugName != null) {
+		if (drug == null) {
+			if (other.drug != null)
 				return false;
-			}
-		} else if (!showDrugName.equals(other.showDrugName)) {
+		} else if (!drug.equals(other.drug))
 			return false;
-		}
 		if (source == null) {
-			if (other.source != null) {
+			if (other.source != null)
 				return false;
-			}
-		} else if (!source.equals(other.source)) {
+		} else if (!source.equals(other.source))
 			return false;
-		}
 		if (sourceDrugName == null) {
-			if (other.sourceDrugName != null) {
+			if (other.sourceDrugName != null)
 				return false;
-			}
-		} else if (!sourceDrugName.equals(other.sourceDrugName)) {
+		} else if (!sourceDrugName.equals(other.sourceDrugName))
 			return false;
-		}
-		if (sourceInformation == null) {
-			if (other.sourceInformation != null) {
-				return false;
-			}
-		} else if (!sourceInformation.equals(other.sourceInformation)) {
-			return false;
-		}
-		if (standardDrugName == null) {
-			if (other.standardDrugName != null) {
-				return false;
-			}
-		} else if (!standardDrugName.equals(other.standardDrugName)) {
-			return false;
-		}
 		return true;
 	}
 }

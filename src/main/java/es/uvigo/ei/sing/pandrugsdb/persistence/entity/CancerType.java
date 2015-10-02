@@ -1,0 +1,33 @@
+package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+
+public enum CancerType {
+	ADRENAL_GLAND,
+	BLADDER,
+	BLOOD,
+	BONE,
+	BONE_MARROW,
+	BRAIN,
+	BREAST,
+	CANCER, // Added
+	CERVIX,
+	CLINICAL_CANCER, // Added
+	COLON,
+	HEAD,
+	INTESTINE,
+	KIDNEY,
+	LIVER,
+	LUNG,
+	NECK,
+	NERVOUS_SYSTEM,
+	OVARY,
+	PANCREAS,
+	PROSTATE,
+	RECTUM,
+	RETINA,
+	SKIN,
+	SOFT_TISSUE,
+	STOMACH,
+	TESTIS,
+	THYROID,
+	UTERUS;
+}

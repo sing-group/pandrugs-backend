@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedList;
@@ -41,9 +40,12 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ResistanceType;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.query.TargetMarkerStatus;
 
@@ -63,7 +65,7 @@ implements GeneDrugDAO {
 		final Predicate predicate = cb().and(
 			Stream.of(
 				createDirectIndirectPredicate(root, query, queryParameters, geneNames),
-				createDrugStatusPredicate(root, queryParameters),
+				createDrugStatusPredicate(root, query, queryParameters),
 				createTargetMarkerPredicate(root, queryParameters)
 			)
 				.filter(Objects::nonNull)
@@ -71,7 +73,8 @@ implements GeneDrugDAO {
 		);
 		
 		return em.createQuery(
-			query.select(root).where(predicate)
+			query.select(root).distinct(true)
+				.where(predicate)
 		).getResultList();
 	}
 	
@@ -94,45 +97,60 @@ implements GeneDrugDAO {
 	
 	private Predicate createDrugStatusPredicate(
 		Root<GeneDrug> root,
+		CriteriaQuery<GeneDrug> query,
 		GeneQueryParameters queryParameters
 	) {
-		final CriteriaBuilder cb = cb();
-		
-		final Expression<String> cancerField = root.get("cancer");
-		final Expression<DrugStatus> statusField = root.get("status");
-
-		final List<Predicate> predicates = new LinkedList<>();
-
 		if (queryParameters.areAllDrugStatusIncluded()) {
 			return null;
 		} else {
+			final CriteriaBuilder cb = cb();
+
+			final Subquery<Drug> subqueryDrug = query.subquery(Drug.class);
+			final Root<Drug> rootDrug = subqueryDrug.from(Drug.class);
+			
+			final Expression<List<CancerType>> cancerField = rootDrug.get("cancer");
+			final Expression<DrugStatus> statusField = rootDrug.get("status");
+
+			final List<Predicate> predicates = new LinkedList<>();
+			
 			if (queryParameters.areCancerDrugStatusIncluded()) {
+				final Predicate isCancer = cb.gt(cb.size(cancerField), 0);
+				
 				if (queryParameters.isAnyCancerDrugStatus()) {
-					predicates.add(cb.isNotNull(cancerField));
+					predicates.add(isCancer);
 				} else {
+					final DrugStatus[] cancerDrugStatus =
+						queryParameters.getCancerDrugStatus();
+					
 					predicates.add(cb.and(
-						cb.isNotNull(cancerField),
-						cb.or(Stream.of(queryParameters.getCancerDrugStatus())
-							.map(status -> cb.equal(statusField, status))
-						.toArray(Predicate[]::new))
+						isCancer,
+						statusField.in((Object[]) cancerDrugStatus)
 					));
 				}
 			}
 			
 			if (queryParameters.areNonCancerDrugStatusIncluded()) {
+				final Predicate isNotCancer = cb.equal(cb.size(cancerField), 0);
+				
 				if (queryParameters.isAnyNonCancerDrugStatus()) {
-					predicates.add(cb.isNull(cancerField));
+					predicates.add(isNotCancer);
 				} else {
+					final DrugStatus[] nonCancerDrugStatus =
+						queryParameters.getNonCancerDrugStatus();
+					
 					predicates.add(cb.and(
-						cb.isNull(cancerField),
-						cb.or(Stream.of(queryParameters.getNonCancerDrugStatus())
-							.map(status -> cb.equal(statusField, status))
-						.toArray(Predicate[]::new))
+						isNotCancer,
+						statusField.in((Object[]) nonCancerDrugStatus)
 					));
 				}
 			}
-	
-			return or(predicates);
+			
+			return cb.exists(subqueryDrug.select(rootDrug)
+				.where(cb.and(
+					cb.equal(rootDrug.get("id"), root.get("drugId")),
+					or(predicates)
+				))
+			);
 		}
 	}
 
@@ -150,7 +168,7 @@ implements GeneDrugDAO {
 		
 		final Function<Expression<String>, Predicate> isInGenes = geneNames.length == 1 ?
 			e -> cb().equal(e, geneNames[0]) :
-			e -> e.in(asList(geneNames));
+			e -> e.in((Object[]) geneNames);
 			
 		
 		if (queryParameters.areDirectIncluded()) {
@@ -165,13 +183,15 @@ implements GeneDrugDAO {
 			
 			predicates.add(
 				cb.and(
-					cb.notEqual(root.get("resistance"), "resistance"),
+					cb.notEqual(root.get("resistance"), ResistanceType.RESISTANCE),
 					cb.notEqual(root.get("target"), false),
 					cb.exists(
-						subqueryIndirectGenes.select(rootIndirectGene.get("geneSymbol"))
+						subqueryIndirectGenes.select(rootIndirectGene.get("indirectGeneSymbol"))
 						.where(cb.and(
-							isInGenes.apply(rootIndirectGene.get("geneSymbol")),
-							cb.equal(rootIndirectGene.get("directGeneId"), root.get("id"))
+							isInGenes.apply(rootIndirectGene.get("indirectGeneSymbol")),
+							cb.equal(rootIndirectGene.get("directGeneSymbol"), root.get("geneSymbol")),
+							cb.equal(rootIndirectGene.get("drugId"), root.get("drugId")),
+							cb.equal(rootIndirectGene.get("target"), root.get("target"))
 						))
 					)
 				)

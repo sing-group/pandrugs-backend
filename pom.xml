@@ -93,7 +93,6 @@
 		<miredot-plugin.version>1.6.0</miredot-plugin.version>
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		
-		
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato</license.copyrightOwners>
@@ -113,6 +112,7 @@
 		<jcloverslf4j.version>1.7.10</jcloverslf4j.version>
 		<mail.version>1.5.2</mail.version>
 		<activation.version>1.1.1</activation.version>
+		<powermock.version>1.6.2</powermock.version>
 		<commons-io.version>2.4</commons-io.version>
 		<groupId>es.uvigo.sing</groupId>  
 		<vcfparser.version>1.1</vcfparser.version>
@@ -345,12 +345,12 @@
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-easymock</artifactId>
-			<version>1.6.2</version>
+			<version>${powermock.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.6.2</version>
+			<version>${powermock.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

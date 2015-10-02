@@ -27,7 +27,7 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.mul
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDrugDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
@@ -110,7 +110,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		final GeneQueryParameters queryParameters = new GeneQueryParameters();
 		
 		expect(dao.searchByGene(queryParameters, query.toUpperCase()))
-			.andReturn(asList(singleGeneDirect()));
+			.andReturn(asList(singleGeneDrugDirect()));
 		
 		replay(dao);
 		

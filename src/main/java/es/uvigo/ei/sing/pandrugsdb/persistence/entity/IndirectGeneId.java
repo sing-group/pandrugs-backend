@@ -23,29 +23,74 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class IndirectGeneId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private int directGeneId;
+	private String indirectGeneSymbol;
 	
-	private String geneSymbol;
+	private String directGeneSymbol;
+
+	private int drugId;
+
+	private boolean target;
+	
 	
 	IndirectGeneId() {
 	}
-
-	public int getDirectGeneId() {
-		return directGeneId;
+	
+	public String getIndirectGeneSymbol() {
+		return indirectGeneSymbol;
+	}
+	
+	public String getDirectGeneSymbol() {
+		return directGeneSymbol;
 	}
 
-	public void setDirectGeneId(int directGeneId) {
-		this.directGeneId = directGeneId;
+	public int getDrugId() {
+		return drugId;
+	}
+	
+	public boolean isTarget() {
+		return target;
 	}
 
-	public String getGeneSymbol() {
-		return geneSymbol;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((directGeneSymbol == null) ? 0 : directGeneSymbol.hashCode());
+		result = prime * result + drugId;
+		result = prime * result + ((indirectGeneSymbol == null) ? 0 : indirectGeneSymbol.hashCode());
+		result = prime * result + (target ? 1231 : 1237);
+		return result;
 	}
 
-	public void setGeneSymbol(String geneSymbol) {
-		this.geneSymbol = geneSymbol;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IndirectGeneId other = (IndirectGeneId) obj;
+		if (directGeneSymbol == null) {
+			if (other.directGeneSymbol != null)
+				return false;
+		} else if (!directGeneSymbol.equals(other.directGeneSymbol))
+			return false;
+		if (drugId != other.drugId)
+			return false;
+		if (indirectGeneSymbol == null) {
+			if (other.indirectGeneSymbol != null)
+				return false;
+		} else if (!indirectGeneSymbol.equals(other.indirectGeneSymbol))
+			return false;
+		if (target != other.target)
+			return false;
+		return true;
 	}
 }

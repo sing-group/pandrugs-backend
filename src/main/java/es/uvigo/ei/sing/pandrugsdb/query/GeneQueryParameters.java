@@ -32,9 +32,9 @@ public class GeneQueryParameters {
 	private static final DirectIndirectStatus DEFAULT_DIRECT_INDIRECT = DirectIndirectStatus.BOTH;
 	private static final TargetMarkerStatus DEFAULT_TARGET_MARKER = TargetMarkerStatus.BOTH;
 	private static final DrugStatus[] DEFAULT_CANCER_DRUG_STATUS =
-		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL };
+		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL_TRIALS };
 	private static final DrugStatus[] DEFAULT_NON_CANCER_DRUG_STATUS =
-		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL, DrugStatus.EXPERIMENTAL };
+		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL_TRIALS, DrugStatus.EXPERIMENTAL };
 
 	private final DrugStatus[] cancerDrugStatus;
 	private final DrugStatus[] nonCancerDrugStatus;
