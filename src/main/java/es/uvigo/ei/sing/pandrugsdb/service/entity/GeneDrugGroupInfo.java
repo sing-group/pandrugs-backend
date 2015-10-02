@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
-import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 
@@ -34,6 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -54,9 +55,11 @@ public class GeneDrugGroupInfo {
 	@XmlElementWrapper(name = "curated-sources")
 	@XmlElement(name = "curated-source")
 	private String[] curatedSources;
-	private String status;
-	private String cancer;
-	private String therapy;
+	private DrugStatus status;
+	@XmlElementWrapper(name = "cancers")
+	@XmlElement(name = "cancer")
+	private CancerType[] cancers;
+	private Extra therapy;
 	@XmlElementWrapper(name = "indirect-genes")
 	@XmlElement(name = "indirect-gene")
 	private String[] indirect;
@@ -80,12 +83,10 @@ public class GeneDrugGroupInfo {
 			.map(e -> new SourceAndLink(e.getKey(), e.getValue()))
 		.toArray(SourceAndLink[]::new);
 		this.curatedSources = gdg.getCuratedSourceNames();
-		this.status = gdg.getStatus().toString();
-		this.cancer = gdg.getCancers().stream()
-			.map(CancerType::name)
-		.collect(joining(", "));
+		this.status = gdg.getStatus();
+		this.cancers = gdg.getCancers().stream().toArray(CancerType[]::new);
 		
-		this.therapy = gdg.getExtra() == null ? null : gdg.getExtra().name();
+		this.therapy = gdg.getExtra();
 		this.indirect = gdg.getIndirectGenes();
 		this.target = gdg.isTarget();
 		this.dScore = gdg.getDScore();
@@ -144,20 +145,20 @@ public class GeneDrugGroupInfo {
 		this.curatedSources = curatedSources;
 	}
 
-	public String getStatus() {
+	public DrugStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(DrugStatus status) {
 		this.status = status;
 	}
 
-	public String getCancer() {
-		return cancer;
+	public CancerType[] getCancers() {
+		return cancers;
 	}
 
-	public void setCancer(String cancer) {
-		this.cancer = cancer;
+	public void setCancers(CancerType[] cancer) {
+		this.cancers = cancer;
 	}
 
 	public String[] getIndirect() {
@@ -192,11 +193,11 @@ public class GeneDrugGroupInfo {
 		this.gScore = gScore;
 	}
 	
-	public String getTherapy() {
+	public Extra getTherapy() {
 		return therapy;
 	}
 
-	public void setTherapy(String therapy) {
+	public void setTherapy(Extra therapy) {
 		this.therapy = therapy;
 	}
 	
@@ -212,7 +213,7 @@ public class GeneDrugGroupInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((cancer == null) ? 0 : cancer.hashCode());
+		result = prime * result + Arrays.hashCode(cancers);
 		result = prime * result + Arrays.hashCode(curatedSources);
 		long temp;
 		temp = Double.doubleToLongBits(dScore);
@@ -244,11 +245,11 @@ public class GeneDrugGroupInfo {
 			return false;
 		}
 		GeneDrugGroupInfo other = (GeneDrugGroupInfo) obj;
-		if (cancer == null) {
-			if (other.cancer != null) {
+		if (cancers == null) {
+			if (other.cancers != null) {
 				return false;
 			}
-		} else if (!cancer.equals(other.cancer)) {
+		} else if (!equalsIgnoreOrder(cancers, other.cancers)) {
 			return false;
 		}
 		if (!Arrays.equals(curatedSources, other.curatedSources)) {
