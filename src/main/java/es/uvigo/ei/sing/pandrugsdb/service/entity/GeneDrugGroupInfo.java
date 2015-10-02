@@ -24,6 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.service.entity;
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 
 import java.util.Arrays;
+import java.util.SortedMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -79,8 +80,10 @@ public class GeneDrugGroupInfo {
 		this.standardDrugName = gdg.getStandardDrugName();
 		this.showDrugName = gdg.getShowDrugName();
 		this.families = gdg.getFamilies();
+		final SortedMap<String, String> sourceShortNames = 
+			gdg.getSourceShortNames();
 		this.sourceLinks = gdg.getSourceLinks().entrySet().stream()
-			.map(e -> new SourceAndLink(e.getKey(), e.getValue()))
+			.map(e -> new SourceAndLink(e.getKey(), sourceShortNames.get(e.getKey()), e.getValue()))
 		.toArray(SourceAndLink[]::new);
 		this.curatedSources = gdg.getCuratedSourceNames();
 		this.status = gdg.getStatus();

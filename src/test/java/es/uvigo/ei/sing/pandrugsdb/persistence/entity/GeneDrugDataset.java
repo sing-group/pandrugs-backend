@@ -36,8 +36,8 @@ public final class GeneDrugDataset {
 	
 	public static Map<String, SourceInformation> sourceInfos() {
 		return Stream.of(
-			new SourceInformation("Source 1", "http://source1.org", false),
-			new SourceInformation("Source 2", "http://source2.org", false)
+			new SourceInformation("Source 1", "S1", "http://source1.org", false),
+			new SourceInformation("Source 2", "S2", "http://source2.org", false)
 		).collect(toMap(
 			SourceInformation::getSource,
 			si -> si

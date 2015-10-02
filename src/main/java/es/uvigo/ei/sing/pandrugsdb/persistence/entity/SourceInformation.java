@@ -35,6 +35,9 @@ public class SourceInformation implements Serializable {
 	@Column(name = "source", length = 50, columnDefinition = "VARCHAR(50)")
 	private String source;
 	
+	@Column(name = "short_name", length = 10, columnDefinition = "VARCHAR(10)", unique = true, nullable = false)
+	private String shortName;
+	
 	@Column(name = "url_template", length = 1000, columnDefinition = "VARCHAR(1000)")
 	private String urlTemplate;
 	
@@ -44,15 +47,20 @@ public class SourceInformation implements Serializable {
 	SourceInformation() {}
 
 	public SourceInformation(
-		String source, String urlTemplate, boolean curated
+		String source, String shortName, String urlTemplate, boolean curated
 	) {
 		this.source = source;
+		this.shortName = shortName;
 		this.urlTemplate = urlTemplate;
 		this.curated = curated;
 	}
 
 	public String getSource() {
 		return source;
+	}
+	
+	public String getShortName() {
+		return shortName;
 	}
 
 	public String getUrlTemplate() {
@@ -68,9 +76,9 @@ public class SourceInformation implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (curated ? 1231 : 1237);
+		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		result = prime * result
-				+ ((urlTemplate == null) ? 0 : urlTemplate.hashCode());
+		result = prime * result + ((urlTemplate == null) ? 0 : urlTemplate.hashCode());
 		return result;
 	}
 
@@ -84,6 +92,11 @@ public class SourceInformation implements Serializable {
 			return false;
 		SourceInformation other = (SourceInformation) obj;
 		if (curated != other.curated)
+			return false;
+		if (shortName == null) {
+			if (other.shortName != null)
+				return false;
+		} else if (!shortName.equals(other.shortName))
 			return false;
 		if (source == null) {
 			if (other.source != null)

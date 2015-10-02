@@ -211,6 +211,17 @@ public class GeneDrugGroup {
 		);
 	}
 	
+	public SortedMap<String, String> getSourceShortNames() {
+		return new TreeMap<>(
+			Stream.of(this.getSources())
+			.collect(Collectors.toMap(
+				DrugSource::getSource,
+				ds -> ds.getSourceInformation().getShortName(),
+				(v1, v2) -> v1
+			))
+		);
+	}
+	
 	public DrugSource[] getCuratedSources() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getDrugSources)

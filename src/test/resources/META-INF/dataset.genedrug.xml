@@ -22,8 +22,8 @@
  -->
 
 <dataset>
-	<source_info source="Source 1" url_template="http://source1.org" curated="false"/>
-	<source_info source="Source 2" url_template="http://source2.org" curated="false"/>
+	<source_info source="Source 1" short_name="S1" url_template="http://source1.org" curated="false"/>
+	<source_info source="Source 2" short_name="S2" url_template="http://source2.org" curated="false"/>
 	
 	<gene_info gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
 	<gene_info gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>

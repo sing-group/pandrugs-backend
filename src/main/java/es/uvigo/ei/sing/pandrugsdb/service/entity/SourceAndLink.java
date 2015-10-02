@@ -31,12 +31,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SourceAndLink {
 	@XmlAttribute(name = "name")
 	private String source;
+	private String shortName;
 	private String link;
 	
 	SourceAndLink() {}
 
-	public SourceAndLink(String source, String link) {
+	public SourceAndLink(String source, String shortName, String link) {
 		this.source = source;
+		this.shortName = shortName;
 		this.link = link;
 	}
 
@@ -46,6 +48,14 @@ public class SourceAndLink {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+	
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 	public String getLink() {
@@ -61,36 +71,35 @@ public class SourceAndLink {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((link == null) ? 0 : link.hashCode());
+		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		SourceAndLink other = (SourceAndLink) obj;
 		if (link == null) {
-			if (other.link != null) {
+			if (other.link != null)
 				return false;
-			}
-		} else if (!link.equals(other.link)) {
+		} else if (!link.equals(other.link))
 			return false;
-		}
+		if (shortName == null) {
+			if (other.shortName != null)
+				return false;
+		} else if (!shortName.equals(other.shortName))
+			return false;
 		if (source == null) {
-			if (other.source != null) {
+			if (other.source != null)
 				return false;
-			}
-		} else if (!source.equals(other.source)) {
+		} else if (!source.equals(other.source))
 			return false;
-		}
 		return true;
 	}
 }
