@@ -108,13 +108,13 @@ implements GeneDrugDAO {
 			final Subquery<Drug> subqueryDrug = query.subquery(Drug.class);
 			final Root<Drug> rootDrug = subqueryDrug.from(Drug.class);
 			
-			final Expression<List<CancerType>> cancerField = rootDrug.get("cancer");
+			final Expression<List<CancerType>> cancersField = rootDrug.get("cancers");
 			final Expression<DrugStatus> statusField = rootDrug.get("status");
 
 			final List<Predicate> predicates = new LinkedList<>();
 			
 			if (queryParameters.areCancerDrugStatusIncluded()) {
-				final Predicate isCancer = cb.gt(cb.size(cancerField), 0);
+				final Predicate isCancer = cb.gt(cb.size(cancersField), 0);
 				
 				if (queryParameters.isAnyCancerDrugStatus()) {
 					predicates.add(isCancer);
@@ -130,7 +130,7 @@ implements GeneDrugDAO {
 			}
 			
 			if (queryParameters.areNonCancerDrugStatusIncluded()) {
-				final Predicate isNotCancer = cb.equal(cb.size(cancerField), 0);
+				final Predicate isNotCancer = cb.equal(cb.size(cancersField), 0);
 				
 				if (queryParameters.isAnyNonCancerDrugStatus()) {
 					predicates.add(isNotCancer);

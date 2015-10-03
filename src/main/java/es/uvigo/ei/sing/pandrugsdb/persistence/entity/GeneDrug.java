@@ -214,8 +214,8 @@ public class GeneDrug implements Serializable {
 		return this.drug.getPathologies();
 	}
 
-	public List<CancerType> getCancer() {
-		return this.drug.getCancer();
+	public List<CancerType> getCancers() {
+		return this.drug.getCancers();
 	}
 
 	public Extra getExtra() {

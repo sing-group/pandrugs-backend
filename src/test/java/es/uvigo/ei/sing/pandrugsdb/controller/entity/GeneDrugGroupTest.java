@@ -299,7 +299,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 
-		assertThat(group.getIndirectGenes(), is(arrayContaining("G3")));
+		assertThat(group.getIndirectGenes(), is(arrayContaining("IG1")));
 	}
 
 	@Test
@@ -753,9 +753,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getTargetGeneNames(gd1), is(arrayContaining("G1")));
-		assertThat(group.getTargetGeneNames(gd2), is(arrayContaining("G2")));
-		assertThat(group.getTargetGeneNames(gd3), is(arrayContaining("IG1", "IG2")));
+		assertThat(group.getTargetGeneNames(gd1, false), is(arrayContaining("G1")));
+		assertThat(group.getTargetGeneNames(gd2, false), is(arrayContaining("G2")));
+		assertThat(group.getTargetGeneNames(gd3, false), is(arrayContaining("IG1", "IG2")));
 	}
 
 	@Test
@@ -772,9 +772,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getIndirectGeneName(gd1), is(nullValue()));
-		assertThat(group.getIndirectGeneName(gd2), is(nullValue()));
-		assertThat(group.getIndirectGeneName(gd3), is("G3"));
+		assertThat(group.getIndirectGeneName(gd1, false), is(nullValue()));
+		assertThat(group.getIndirectGeneName(gd2, false), is(nullValue()));
+		assertThat(group.getIndirectGeneName(gd3, false), is("G3"));
 	}
 	
 	@Test
@@ -851,7 +851,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
 		expect(gd.getStatus()).andReturn(status).anyTimes();
 		expect(gd.getPathologies()).andReturn(pathology).anyTimes();
-		expect(gd.getCancer()).andReturn(cancer).anyTimes();
+		expect(gd.getCancers()).andReturn(cancer).anyTimes();
 		expect(gd.getExtra()).andReturn(extra).anyTimes();
 		expect(gd.getFamily()).andReturn(family).anyTimes();
 		

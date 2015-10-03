@@ -23,12 +23,17 @@ package es.uvigo.ei.sing.pandrugsdb.controller.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -52,7 +57,7 @@ public class GeneDrugGroup {
 
 	public GeneDrugGroup(
 		String[] targetGenes,
-		List<GeneDrug> geneDrugs
+		Collection<GeneDrug> geneDrugs
 	) {
 		requireNonEmpty(targetGenes);
 		requireNonEmpty(geneDrugs);
@@ -84,7 +89,7 @@ public class GeneDrugGroup {
 		);
 		
 		checkSameIterableValues(
-			geneDrugs, GeneDrug::getCancer,
+			geneDrugs, GeneDrug::getCancers,
 			() -> new IllegalArgumentException("Different cancer in group")
 		);
 
@@ -94,7 +99,7 @@ public class GeneDrugGroup {
 		);
 		
 		this.targetGenes = targetGenes;
-		this.geneDrugs = geneDrugs;
+		this.geneDrugs = new ArrayList<>(geneDrugs);
 	}
 	
 	public List<GeneDrug> getGeneDrugs() {
@@ -116,8 +121,9 @@ public class GeneDrugGroup {
 
 	public String[] getIndirectGenes() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getGeneSymbol)
-			.filter(this::isNotInTargetGenes)
+			.map(GeneDrug::getIndirectGenes)
+			.flatMap(List::stream)
+			.filter(this::isInTargetGenes)
 			.distinct()
 			.sorted()
 		.toArray(String[]::new);
@@ -131,7 +137,18 @@ public class GeneDrugGroup {
 	}
 
 	public boolean isIndirect(GeneDrug geneDrug) {
-		return !this.isDirect(geneDrug);
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
+		
+		final Set<String> indirect = stream(this.getIndirectGenes())
+			.collect(toSet());
+		indirect.retainAll(geneDrug.getIndirectGenes());
+		
+		return !indirect.isEmpty();
+	}
+	
+	public boolean isDirectAndIndirect(GeneDrug geneDrug) {
+		return this.isDirect(geneDrug) && this.isIndirect(geneDrug);
 	}
 
 	public int countTargetGenes() {
@@ -169,7 +186,7 @@ public class GeneDrugGroup {
 	}
 
 	public List<CancerType> getCancers() {
-		return this.geneDrugs.get(0).getCancer();
+		return this.geneDrugs.get(0).getCancers();
 	}
 
 	public Extra getExtra() {
@@ -249,16 +266,16 @@ public class GeneDrugGroup {
 			.anyMatch(GeneDrug::isResistance);
 	}
 	
-	public String[] getTargetGeneNames(GeneDrug geneDrug) {
-		return this.isDirect(geneDrug) ?
+	public String[] getTargetGeneNames(GeneDrug geneDrug, boolean forceIndirect) {
+		return !forceIndirect && this.isDirect(geneDrug) ?
 			new String[] { geneDrug.getGeneSymbol() } :
 			geneDrug.getIndirectGenes().stream()
 				.filter(this::isInTargetGenes)
 			.toArray(String[]::new);
 	}
 
-	public String getIndirectGeneName(GeneDrug geneDrug) {
-		return this.isDirect(geneDrug) ?
+	public String getIndirectGeneName(GeneDrug geneDrug, boolean forceIndirect) {
+		return !forceIndirect && this.isDirect(geneDrug) ?
 			null : geneDrug.getGeneSymbol();
 	}
 	
@@ -347,7 +364,7 @@ public class GeneDrugGroup {
 	}
 	
 	private final static <T> void checkSingleValue(
-		List<GeneDrug> geneDrugs,
+		Collection<GeneDrug> geneDrugs,
 		Function<GeneDrug, T> mapper,
 		Supplier<RuntimeException> thrower
 	) {
@@ -361,7 +378,7 @@ public class GeneDrugGroup {
 	}
 	
 	private final static <T> void checkSameIterableValues(
-		List<GeneDrug> geneDrugs,
+		Collection<GeneDrug> geneDrugs,
 		Function<GeneDrug, ? extends Iterable<T>> mapper,
 		Supplier<RuntimeException> thrower
 	) {

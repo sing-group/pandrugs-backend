@@ -65,7 +65,7 @@ public class Drug {
 	@CollectionTable(name = "cancer", joinColumns = @JoinColumn(name = "drug_id"))
 	@Column(name = "name", length = 15, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private List<CancerType> cancer;
+	private List<CancerType> cancers;
 	
 	@Column(name = "extra", nullable = true)
 	@Enumerated(EnumType.STRING)
@@ -81,12 +81,12 @@ public class Drug {
 	
 	Drug() {}
 
-	Drug(String standardName, String showName, DrugStatus status, List<CancerType> cancer,
+	Drug(String standardName, String showName, DrugStatus status, List<CancerType> cancers,
 			Extra extra, List<String> pathologies) {
 		this.standardName = standardName;
 		this.showName = showName;
 		this.status = status;
-		this.cancer = cancer == null ? emptyList() : cancer;
+		this.cancers = cancers == null ? emptyList() : cancers;
 		this.extra = extra;
 		this.pathologies = pathologies == null ? emptyList() : pathologies;
 	}
@@ -103,8 +103,8 @@ public class Drug {
 		return showName;
 	}
 
-	public List<CancerType> getCancer() {
-		return cancer;
+	public List<CancerType> getCancers() {
+		return cancers;
 	}
 
 	public Extra getExtra() {
@@ -123,7 +123,7 @@ public class Drug {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((cancer == null) ? 0 : cancer.hashCode());
+		result = prime * result + ((cancers == null) ? 0 : cancers.hashCode());
 		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
 		result = prime * result + ((extraDetails == null) ? 0 : extraDetails.hashCode());
 		result = prime * result + ((pathologies == null) ? 0 : pathologies.hashCode());
@@ -142,10 +142,10 @@ public class Drug {
 		if (getClass() != obj.getClass())
 			return false;
 		Drug other = (Drug) obj;
-		if (cancer == null) {
-			if (other.cancer != null)
+		if (cancers == null) {
+			if (other.cancers != null)
 				return false;
-		} else if (!equalsIgnoreOrder(cancer, other.cancer))
+		} else if (!equalsIgnoreOrder(cancers, other.cancers))
 			return false;
 		if (extra != other.extra)
 			return false;

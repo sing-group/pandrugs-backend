@@ -23,8 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -73,7 +72,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return groups.stream()
 			.map(gdg -> new GeneDrugGroup(
 				filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
-				new ArrayList<>(gdg)
+				gdg
 			))
 		.collect(toList());
 	}
@@ -83,21 +82,24 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		Collection<GeneDrug> geneDrugs,
 		DirectIndirectStatus directIndirectStatus
 	) {
-		final Function<GeneDrug, List<String>> getGenes = gd -> {
-			switch(directIndirectStatus) {
-			case DIRECT:
-				return asList(gd.getGeneSymbol());
-			case INDIRECT:
-				return gd.getIndirectGenes();
-			default:
-				return gd.getDirectAndIndirectGenes();
-			}
-		};
+		final Function<GeneDrug, List<String>> getGenes;
+		
+		switch(directIndirectStatus) {
+		case DIRECT:
+			getGenes = gd -> asList(gd.getGeneSymbol());
+			break;
+		case INDIRECT:
+			getGenes = GeneDrug::getIndirectGenes;
+			break;
+		default:
+			getGenes = GeneDrug::getDirectAndIndirectGenes;
+			break;
+		}
 		
 		final Set<String> geneDrugNames = geneDrugs.stream()
 			.map(getGenes)
 			.flatMap(List::stream)
-		.collect(Collectors.toSet());
+		.collect(toSet());
 		
 		return Stream.of(geneNames)
 			.filter(geneDrugNames::contains)

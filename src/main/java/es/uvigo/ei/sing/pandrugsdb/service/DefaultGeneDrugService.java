@@ -80,6 +80,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			
 			return new GeneDrugGroupInfos(geneDrugs);
 		} catch (IllegalArgumentException | NullPointerException iae) {
+			iae.printStackTrace();
 			throw createBadRequestException(iae.getMessage());
 		}
 	}

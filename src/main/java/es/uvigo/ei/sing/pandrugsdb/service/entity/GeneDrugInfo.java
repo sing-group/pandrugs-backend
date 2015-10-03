@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,6 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
@@ -42,9 +43,9 @@ public class GeneDrugInfo {
 	private String[] genes;
 	private String drug;
 	private String family;
-	private String status;
-	private String cancer;
-	private String therapy;
+	private DrugStatus status;
+	private CancerType[] cancers;
+	private Extra therapy;
 	private String indirect;
 	private String target;
 	private String sensitivity;
@@ -60,35 +61,45 @@ public class GeneDrugInfo {
 	}
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group) {
-		this.genes = group.getTargetGeneNames(geneDrug);
+		this(geneDrug, group, false);
+	}
+
+	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group, boolean forceIndirect) {
+		this.genes = group.getTargetGeneNames(geneDrug, forceIndirect);
 		this.drug = geneDrug.getStandardDrugName();
 		this.sources = geneDrug.getDrugSourceNames().stream()
 			.toArray(String[]::new);
 		this.family = geneDrug.getFamily();
-		this.status = geneDrug.getStatus().toString();
-		this.cancer = geneDrug.getCancer().stream()
-			.map(CancerType::name)
-		.collect(Collectors.joining(", "));
-		this.therapy = geneDrug.getExtra() == null ? null : geneDrug.getExtra().name();
-		this.indirect = group.getIndirectGeneName(geneDrug);
+		this.status = geneDrug.getStatus();
+		this.cancers = geneDrug.getCancers().stream().toArray(CancerType[]::new);
+		this.therapy = geneDrug.getExtra();
+		this.indirect = group.getIndirectGeneName(geneDrug, forceIndirect);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
 		this.sensitivity = geneDrug.getResistance().name();
 		this.alteration = geneDrug.getAlteration();
 		
 		if (geneDrug.isTarget()) {
-			if (group.isDirect(geneDrug)) {
+			if (!forceIndirect && group.isDirect(geneDrug)) {
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s",
 					this.drug, geneDrug.getStatus().getDescription(), this.genes[0]
 				);
-			} else {
+			} else if (group.isIndirect(geneDrug)) {
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s, a protein downstream to %s",
 					this.drug, geneDrug.getStatus().getDescription(),
 					this.indirect, joinGeneNames(this.genes)
 				);
-				
+			} else {
+				System.out.println(geneDrug.getGeneSymbol());
+				System.out.println(geneDrug.getIndirectGenes());
+				throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is not indirect but indirect mode was forced.");
 			}
+		} else if (forceIndirect) {
+			this.drugStatusInfo = String.format(
+				"Molecular alterations in %s, a protein downstream to %s, are associated to response to %s, a drug %s",
+				this.indirect, joinGeneNames(this.genes), this.drug, geneDrug.getStatus().getDescription() 
+			);
 		} else if (group.isDirect(geneDrug)) {
 			this.drugStatusInfo = String.format(
 				"Molecular alterations in %s are associated to response to %s, a drug %s",
@@ -118,15 +129,15 @@ public class GeneDrugInfo {
 		return family;
 	}
 	
-	public String getStatus() {
+	public DrugStatus getStatus() {
 		return status;
 	}
 	
-	public String getCancer() {
-		return cancer;
+	public CancerType[] getCancers() {
+		return cancers;
 	}
 	
-	public String getTherapy() {
+	public Extra getTherapy() {
 		return therapy;
 	}
 	
@@ -161,7 +172,7 @@ public class GeneDrugInfo {
 			return String.join(" and ", geneNames);
 		} else {
 			final String[] subGeneNames = new String[geneNames.length - 1];
-			System.arraycopy(geneNames, 0, subGeneNames, 0, subGeneNames.length - 1);
+			System.arraycopy(geneNames, 0, subGeneNames, 0, subGeneNames.length);
 			final String lastGene = geneNames[geneNames.length - 1];
 			
 			return String.join(", ", subGeneNames) + " and " + lastGene;
@@ -172,21 +183,19 @@ public class GeneDrugInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((alteration == null) ? 0 : alteration.hashCode());
-		result = prime * result + ((cancer == null) ? 0 : cancer.hashCode());
+		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
+		result = prime * result + Arrays.hashCode(cancers);
 		long temp;
 		temp = Double.doubleToLongBits(dScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
+		result = prime * result + ((drugStatusInfo == null) ? 0 : drugStatusInfo.hashCode());
 		result = prime * result + ((family == null) ? 0 : family.hashCode());
 		temp = Double.doubleToLongBits(gScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
-		result = prime * result
-				+ ((indirect == null) ? 0 : indirect.hashCode());
-		result = prime * result
-				+ ((sensitivity == null) ? 0 : sensitivity.hashCode());
+		result = prime * result + ((indirect == null) ? 0 : indirect.hashCode());
+		result = prime * result + ((sensitivity == null) ? 0 : sensitivity.hashCode());
 		result = prime * result + Arrays.hashCode(sources);
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
@@ -196,93 +205,65 @@ public class GeneDrugInfo {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		GeneDrugInfo other = (GeneDrugInfo) obj;
 		if (alteration == null) {
-			if (other.alteration != null) {
+			if (other.alteration != null)
 				return false;
-			}
-		} else if (!alteration.equals(other.alteration)) {
+		} else if (!alteration.equals(other.alteration))
 			return false;
-		}
-		if (cancer == null) {
-			if (other.cancer != null) {
-				return false;
-			}
-		} else if (!cancer.equals(other.cancer)) {
+		if (!Arrays.equals(cancers, other.cancers))
 			return false;
-		}
-		if (Double.doubleToLongBits(dScore) != Double
-				.doubleToLongBits(other.dScore)) {
+		if (Double.doubleToLongBits(dScore) != Double.doubleToLongBits(other.dScore))
 			return false;
-		}
 		if (drug == null) {
-			if (other.drug != null) {
+			if (other.drug != null)
 				return false;
-			}
-		} else if (!drug.equals(other.drug)) {
+		} else if (!drug.equals(other.drug))
 			return false;
-		}
+		if (drugStatusInfo == null) {
+			if (other.drugStatusInfo != null)
+				return false;
+		} else if (!drugStatusInfo.equals(other.drugStatusInfo))
+			return false;
 		if (family == null) {
-			if (other.family != null) {
+			if (other.family != null)
 				return false;
-			}
-		} else if (!family.equals(other.family)) {
+		} else if (!family.equals(other.family))
 			return false;
-		}
-		if (Double.doubleToLongBits(gScore) != Double
-				.doubleToLongBits(other.gScore)) {
+		if (Double.doubleToLongBits(gScore) != Double.doubleToLongBits(other.gScore))
 			return false;
-		}
-		if (!Arrays.equals(genes, other.genes)) {
+		if (!Arrays.equals(genes, other.genes))
 			return false;
-		}
 		if (indirect == null) {
-			if (other.indirect != null) {
+			if (other.indirect != null)
 				return false;
-			}
-		} else if (!indirect.equals(other.indirect)) {
+		} else if (!indirect.equals(other.indirect))
 			return false;
-		}
 		if (sensitivity == null) {
-			if (other.sensitivity != null) {
+			if (other.sensitivity != null)
 				return false;
-			}
-		} else if (!sensitivity.equals(other.sensitivity)) {
+		} else if (!sensitivity.equals(other.sensitivity))
 			return false;
-		}
-		if (!Arrays.equals(sources, other.sources)) {
+		if (!Arrays.equals(sources, other.sources))
 			return false;
-		}
 		if (status == null) {
-			if (other.status != null) {
+			if (other.status != null)
 				return false;
-			}
-		} else if (!status.equals(other.status)) {
+		} else if (!status.equals(other.status))
 			return false;
-		}
 		if (target == null) {
-			if (other.target != null) {
+			if (other.target != null)
 				return false;
-			}
-		} else if (!target.equals(other.target)) {
+		} else if (!target.equals(other.target))
 			return false;
-		}
-		if (therapy == null) {
-			if (other.therapy != null) {
-				return false;
-			}
-		} else if (!therapy.equals(other.therapy)) {
+		if (therapy != other.therapy)
 			return false;
-		}
 		return true;
 	}
 }
