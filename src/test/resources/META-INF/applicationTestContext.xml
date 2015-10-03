@@ -89,4 +89,5 @@
 	<bean id="defaultRegistrationService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService"/>
 	<bean id="defaultUserService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService"/>
 	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService"/>
+	<bean id="defaultCancerService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService"/>
 </beans>

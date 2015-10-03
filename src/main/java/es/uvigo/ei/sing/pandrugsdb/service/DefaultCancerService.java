@@ -19,37 +19,32 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugsdb.service;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-public enum CancerType {
-	ADRENAL_GLAND,
-	BLADDER,
-	BLOOD,
-	BONE,
-	BONE_MARROW,
-	BRAIN,
-	BREAST,
-	CANCER, // Added
-	CERVIX,
-	CLINICAL_CANCER, // Added
-	COLON,
-	HEAD,
-	INTESTINE,
-	KIDNEY,
-	LIVER,
-	LUNG,
-	NECK,
-	NERVOUS_SYSTEM,
-	OVARY,
-	PANCREAS,
-	PROSTATE,
-	RECTUM,
-	RETINA,
-	SKIN,
-	SOFT_TISSUE,
-	STOMACH,
-	TESTIS,
-	THYROID,
-	UTERUS;
+import org.springframework.stereotype.Service;
+
+import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
+
+/**
+ * Service to get information about the cancer types used in the application.
+ * 
+ * @author Miguel Reboiro-Jato
+ *
+ */
+@Path("cancer")
+@Service
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+public class DefaultCancerService implements CancerService {
+	@GET
+	@Override
+	public CancerTypeNames list() {
+		return new CancerTypeNames();
+	}
 }

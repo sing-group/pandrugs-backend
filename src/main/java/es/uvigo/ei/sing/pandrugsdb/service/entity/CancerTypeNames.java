@@ -19,49 +19,47 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
-import java.io.Serializable;
+import static java.util.stream.Collectors.toList;
 
-import javax.persistence.Embeddable;
+import java.util.Arrays;
+import java.util.List;
 
-@Embeddable
-public class GeneDrugId implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	private String geneSymbol;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-	private int drugId;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+
+@XmlRootElement(name = "cancer-names", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CancerTypeNames {
+	@XmlElement(name = "name", nillable = false)
+	@NotNull
+	private List<String> names;
 	
-	private boolean target;
-	
-	GeneDrugId() {}
-	
-	public GeneDrugId(String geneSymbol, int drugId, boolean target) {
-		this.geneSymbol = geneSymbol;
-		this.drugId = drugId;
-		this.target = target;
+	public CancerTypeNames() {
+		this.names = Arrays.stream(CancerType.values())
+			.map(CancerType::name)
+		.collect(toList());
 	}
 
-	public String getGeneSymbol() {
-		return geneSymbol;
+	public List<String> getNames() {
+		return names;
 	}
 
-	public int getDrugId() {
-		return drugId;
-	}
-	
-	public boolean isTarget() {
-		return target;
+	public void setNames(List<String> names) {
+		this.names = names;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + drugId;
-		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
-		result = prime * result + (target ? 1231 : 1237);
+		result = prime * result + ((names == null) ? 0 : names.hashCode());
 		return result;
 	}
 
@@ -73,15 +71,11 @@ public class GeneDrugId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneDrugId other = (GeneDrugId) obj;
-		if (drugId != other.drugId)
-			return false;
-		if (geneSymbol == null) {
-			if (other.geneSymbol != null)
+		CancerTypeNames other = (CancerTypeNames) obj;
+		if (names == null) {
+			if (other.names != null)
 				return false;
-		} else if (!geneSymbol.equals(other.geneSymbol))
-			return false;
-		if (target != other.target)
+		} else if (!names.equals(other.names))
 			return false;
 		return true;
 	}

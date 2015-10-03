@@ -19,37 +19,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugsdb.service;
 
+import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
 
-public enum CancerType {
-	ADRENAL_GLAND,
-	BLADDER,
-	BLOOD,
-	BONE,
-	BONE_MARROW,
-	BRAIN,
-	BREAST,
-	CANCER, // Added
-	CERVIX,
-	CLINICAL_CANCER, // Added
-	COLON,
-	HEAD,
-	INTESTINE,
-	KIDNEY,
-	LIVER,
-	LUNG,
-	NECK,
-	NERVOUS_SYSTEM,
-	OVARY,
-	PANCREAS,
-	PROSTATE,
-	RECTUM,
-	RETINA,
-	SKIN,
-	SOFT_TISSUE,
-	STOMACH,
-	TESTIS,
-	THYROID,
-	UTERUS;
+public interface CancerService {
+	/**
+	 * Returns the list of cancer types to which the drugs can be associated.
+	 * 
+	 * @return the list of cancer types to which the drugs can be associated.
+	 */
+	public abstract CancerTypeNames list();
 }

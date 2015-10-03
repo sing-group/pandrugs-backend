@@ -19,25 +19,31 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-	DefaultSessionServiceIntegrationTest.class,
-	DefaultRegistrationServiceIntegrationTest.class,
-	DefaultUserServiceIntegrationTest.class,
-	DefaultGeneDrugServiceIntegrationTest.class,
-	DefaultCancerServiceIntegrationTest.class
-})
-public class ServiceIntegrationTestSuite {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
+public class DefaultCancerServiceIntegrationTest {
+	@Inject
+	@Named("defaultCancerService")
+	private CancerService service;
+	
+	@Test
+	public void testListWithNullGenes() {
+		assertThat(service.list(), is(equalTo(new CancerTypeNames())));
+	}
 }

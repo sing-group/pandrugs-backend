@@ -28,6 +28,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService;
@@ -38,7 +39,8 @@ public class PanDrugsDBPublicApplication extends ResourceConfig {
 		super(
 			DefaultRegistrationService.class,
 			DefaultGeneDrugService.class,
-			DefaultSessionService.class
+			DefaultSessionService.class,
+			DefaultCancerService.class
 		);
 		
 		register(RequestContextFilter.class);
