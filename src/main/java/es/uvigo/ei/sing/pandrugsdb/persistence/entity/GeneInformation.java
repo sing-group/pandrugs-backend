@@ -90,6 +90,28 @@ public class GeneInformation implements Serializable {
 			.orElse(0d);
 	}
 
+	public double getGScore() {
+		double gScore = 0d;
+		
+		if (this.tumorPortalMutationLevel != null) {
+			gScore += this.tumorPortalMutationLevel.getWeight();
+		}
+		
+		if (this.cgc) {
+			gScore += 0.2d;
+		}
+		
+		if (this.driverLevel != null) {
+			gScore += this.driverLevel.getWeight();
+		}
+		
+		if (this.geneEssentialityScore != null) {
+			gScore += this.geneEssentialityScore * 0.4d;
+		}
+		
+		return gScore;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

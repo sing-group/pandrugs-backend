@@ -32,14 +32,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,7 +48,6 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Weighted;
 
 public class GeneDrugGroup {
 	private final String[] targetGenes;
@@ -309,37 +307,6 @@ public class GeneDrugGroup {
 		
 		return this.hasResistance() ? -score : score;
 	}
-
-	public double getGScore(GeneDrug geneDrug) {
-		if (!this.geneDrugs.contains(geneDrug))
-			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
-		
-		final ToDoubleFunction<GeneInformation> tpScore = gi -> Optional.ofNullable(gi)
-			.map(GeneInformation::getTumorPortalMutationLevel)
-			.map(Weighted::getWeightOf)
-		.orElse(0d);
-			
-		final ToDoubleFunction<GeneInformation> cgcScore = gi -> Optional.ofNullable(gi)
-			.map(GeneInformation::isCgc)
-			.map(x -> x ? 0.2d : 0d)
-		.orElse(0d);
-			
-		final ToDoubleFunction<GeneInformation> driverScore = gi -> Optional.ofNullable(gi)
-			.map(GeneInformation::getDriverLevel)
-			.map(Weighted::getWeightOf)
-		.orElse(0d);
-			
-		final ToDoubleFunction<GeneInformation> geScore = gi -> Optional.ofNullable(gi)
-			.map(GeneInformation::getGeneEssentialityScore)
-			.map(score -> score * 0.4d)
-		.orElse(0d);
-		
-		final GeneInformation geneInformation = geneDrug.getGeneInformation();
-		return tpScore.applyAsDouble(geneInformation)
-			+ cgcScore.applyAsDouble(geneInformation)
-			+ driverScore.applyAsDouble(geneInformation)
-			+ geScore.applyAsDouble(geneInformation);
-	}
 	
 	//TODO: test d-score
 	public double getDScore() {
@@ -352,9 +319,20 @@ public class GeneDrugGroup {
 	}
 
 	public double getGScore() {
-		return this.geneDrugs.stream()
-			.mapToDouble(this::getGScore)
-		.max().orElse(Double.NaN);
+		final double maxDirect = this.geneDrugs.stream()
+			.filter(this::isDirect)
+			.map(GeneDrug::getGeneInformation)
+			.filter(Objects::nonNull)
+			.mapToDouble(GeneInformation::getGScore)
+		.max().orElse(0d);
+		
+		final double maxIndirect = this.geneDrugs.stream()
+			.filter(this::isIndirect)
+			.flatMapToDouble(gd -> stream(this.targetGenes)
+				.mapToDouble(gd::getIndirectGeneScore))
+		.max().orElse(0d);
+		
+		return Math.max(maxDirect, maxIndirect);
 	}
 	
 	private boolean isInTargetGenes(String geneSymbol) {

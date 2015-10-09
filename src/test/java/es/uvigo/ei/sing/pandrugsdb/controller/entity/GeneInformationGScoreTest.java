@@ -26,8 +26,6 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CO
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
-import static java.util.Arrays.asList;
-import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
@@ -39,18 +37,17 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel;
 
 @RunWith(Parameterized.class)
-public class GeneDrugGroupGScoreTest extends EasyMockSupport {
+public class GeneInformationGScoreTest extends EasyMockSupport {
 	private final static double ALLOWED_ERROR = 0.00001d;
 	
 	private final GeneInformation geneInfo;
 	private final double gScore;
 
-	public GeneDrugGroupGScoreTest(
+	public GeneInformationGScoreTest(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -86,20 +83,6 @@ public class GeneDrugGroupGScoreTest extends EasyMockSupport {
 	
 	@Test
 	public void testSingle() {
-		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol())
-			.andReturn(this.geneInfo.getGeneSymbol())
-		.atLeastOnce();
-		expect(gd.getGeneInformation())
-			.andReturn(this.geneInfo)
-			.atLeastOnce();
-		
-		replayAll();
-		
-		final GeneDrugGroup group = new GeneDrugGroup(
-			new String[] {this.geneInfo.getGeneSymbol()}, asList(gd)
-		);
-		
-		assertThat(group.getGScore(gd), is(closeTo(gScore, ALLOWED_ERROR)));
+		assertThat(this.geneInfo.getGScore(), is(closeTo(gScore, ALLOWED_ERROR)));
 	}
 }

@@ -27,6 +27,8 @@ import static java.util.stream.Collectors.toList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -205,6 +207,22 @@ public class GeneDrug implements Serializable {
 
 	public String getAlteration() {
 		return alteration;
+	}
+	
+	public double getGScore() {
+		return Optional.ofNullable(this.getGeneInformation())
+			.map(GeneInformation::getGScore)
+		.orElse(0d);
+	}
+	
+	public double getIndirectGeneScore(String indirectGeneName) {
+		return this.indirectGenes.stream()
+			.filter(indirect -> indirect.getGeneSymbol().equals(indirectGeneName))
+			.map(IndirectGene::getGeneInformation)
+			.filter(Objects::nonNull)
+			.mapToDouble(GeneInformation::getGScore)
+			.findFirst()
+		.orElse(0d);
 	}
 
 	public double getScore() {

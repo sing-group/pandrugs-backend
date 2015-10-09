@@ -32,6 +32,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity(name = "indirect_gene")
 @IdClass(IndirectGeneId.class)
 public class IndirectGene implements Serializable {
@@ -69,6 +72,17 @@ public class IndirectGene implements Serializable {
 	})
 	private GeneDrug geneDrug;
 	
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(
+		name = "indirect_gene_symbol",
+		referencedColumnName = "gene_symbol",
+		columnDefinition = "VARCHAR(50)",
+		insertable = false, updatable = false,
+		nullable = true
+	)
+	private GeneInformation geneInformation;
+	
 	IndirectGene() {
 	}
 	
@@ -100,6 +114,10 @@ public class IndirectGene implements Serializable {
 
 	public GeneDrug getGeneDrug() {
 		return geneDrug;
+	}
+	
+	public GeneInformation getGeneInformation() {
+		return geneInformation;
 	}
 
 	@Override

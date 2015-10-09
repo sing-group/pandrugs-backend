@@ -802,6 +802,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			newGeneDrug("G_HIGH", "D1", giHigh),
 			newGeneDrug("G_MED", "D1", giMedium)
 		);
+		geneDrugs.forEach(gd -> expect(gd.getIndirectGenes()).andReturn(emptyList()).anyTimes());
 		
 		replayAll();
 		
