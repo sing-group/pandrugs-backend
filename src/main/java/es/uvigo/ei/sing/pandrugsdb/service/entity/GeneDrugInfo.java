@@ -71,7 +71,7 @@ public class GeneDrugInfo {
 			.toArray(String[]::new);
 		this.family = geneDrug.getFamily();
 		this.status = geneDrug.getStatus();
-		this.cancers = geneDrug.getCancers().stream().toArray(CancerType[]::new);
+		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
 		this.indirect = group.getIndirectGeneName(geneDrug, forceIndirect);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
@@ -153,16 +153,16 @@ public class GeneDrugInfo {
 		return alteration;
 	}
 	
+	public String getDrugStatusInfo() {
+		return drugStatusInfo;
+	}
+	
 	public double getDScore() {
 		return dScore;
 	}
 	
 	public double getgScore() {
 		return gScore;
-	}
-	
-	public String getStatusInfoText() {
-		return this.drugStatusInfo;
 	}
 	
 	private final static String joinGeneNames(String ... geneNames) {
@@ -252,10 +252,7 @@ public class GeneDrugInfo {
 			return false;
 		if (!Arrays.equals(sources, other.sources))
 			return false;
-		if (status == null) {
-			if (other.status != null)
-				return false;
-		} else if (!status.equals(other.status))
+		if (status != other.status)
 			return false;
 		if (target == null) {
 			if (other.target != null)

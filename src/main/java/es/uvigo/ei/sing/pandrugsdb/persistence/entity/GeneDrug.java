@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
@@ -152,40 +151,6 @@ public class GeneDrug implements Serializable {
 		this.geneInformation = geneInformation;
 	}
 	
-	GeneDrug(
-		String geneSymbol,
-		String standardDrugName,
-		String showDrugName,
-		String family, 
-		DrugStatus status,
-		String pathology,
-		CancerType cancer,
-		Extra extra,
-		boolean target,
-		ResistanceType resistance,
-		String alteration,
-		double score,
-		List<String> inverseGene,
-		List<DrugSource> drugSources, 
-		List<Pathway> pathways,
-		GeneInformation geneInformation
-	) {
-		this.geneSymbol = geneSymbol;
-		this.drugId = drug.getId();
-		this.drug = new Drug(standardDrugName, showDrugName, status, asList(cancer), extra, asList(pathology));
-		this.family = family;
-		this.target = target;
-		this.resistance = resistance;
-		this.alteration = alteration;
-		this.score = score;
-		this.indirectGenes = inverseGene.stream()
-			.map(gs -> new IndirectGene(this, gs))
-		.collect(toList());
-		this.drugSources = drugSources;
-		this.pathways = pathways;
-		this.geneInformation = geneInformation;
-	}
-	
 	public Drug getDrug() {
 		return drug;
 	}
@@ -210,12 +175,16 @@ public class GeneDrug implements Serializable {
 		return this.drug.getStatus();
 	}
 
-	public List<String> getPathologies() {
+	public String[] getPathologies() {
 		return this.drug.getPathologies();
 	}
 
-	public List<CancerType> getCancers() {
+	public CancerType[] getCancers() {
 		return this.drug.getCancers();
+	}
+	
+	public int[] getPubMedIds() {
+		return this.drug.getPubChemIds();
 	}
 
 	public Extra getExtra() {

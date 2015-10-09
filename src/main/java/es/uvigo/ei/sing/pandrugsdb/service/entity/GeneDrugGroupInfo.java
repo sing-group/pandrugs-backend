@@ -67,6 +67,7 @@ public class GeneDrugGroupInfo {
 	@XmlElement(name = "indirect-gene")
 	private String[] indirect;
 	private boolean target;
+	private int[] pubchemId;
 	private double dScore;
 	private double gScore;
 
@@ -89,11 +90,12 @@ public class GeneDrugGroupInfo {
 		.toArray(SourceAndLink[]::new);
 		this.curatedSources = gdg.getCuratedSourceNames();
 		this.status = gdg.getStatus();
-		this.cancers = gdg.getCancers().stream().toArray(CancerType[]::new);
+		this.cancers = gdg.getCancers();
 		
 		this.therapy = gdg.getExtra();
 		this.indirect = gdg.getIndirectGenes();
 		this.target = gdg.isTarget();
+		this.pubchemId = gdg.getPubchemId();
 		this.dScore = gdg.getDScore();
 		this.gScore = gdg.getGScore();
 		
@@ -188,6 +190,14 @@ public class GeneDrugGroupInfo {
 	public void setTarget(boolean target) {
 		this.target = target;
 	}
+	
+	public int[] getPubchemId() {
+		return pubchemId;
+	}
+	
+	public void setPubchemId(int[] pubchemId) {
+		this.pubchemId = pubchemId;
+	}
 
 	public double getDScore() {
 		return dScore;
@@ -230,15 +240,16 @@ public class GeneDrugGroupInfo {
 		long temp;
 		temp = Double.doubleToLongBits(dScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
-		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(families);
 		temp = Double.doubleToLongBits(gScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(geneDrugs);
 		result = prime * result + Arrays.hashCode(genes);
 		result = prime * result + Arrays.hashCode(indirect);
+		result = prime * result + Arrays.hashCode(pubchemId);
+		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(sourceLinks);
+		result = prime * result + ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + (target ? 1231 : 1237);
 		result = prime * result + ((therapy == null) ? 0 : therapy.hashCode());
@@ -247,80 +258,49 @@ public class GeneDrugGroupInfo {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		GeneDrugGroupInfo other = (GeneDrugGroupInfo) obj;
-		if (cancers == null) {
-			if (other.cancers != null) {
-				return false;
-			}
-		} else if (!equalsIgnoreOrder(cancers, other.cancers)) {
+		if (!equalsIgnoreOrder(cancers, other.cancers))
 			return false;
-		}
-		if (!Arrays.equals(curatedSources, other.curatedSources)) {
+		if (!Arrays.equals(curatedSources, other.curatedSources))
 			return false;
-		}
-		if (Double.doubleToLongBits(dScore) != Double
-				.doubleToLongBits(other.dScore)) {
+		if (Double.doubleToLongBits(dScore) != Double.doubleToLongBits(other.dScore))
 			return false;
-		}
-		if (standardDrugName == null) {
-			if (other.standardDrugName != null) {
-				return false;
-			}
-		} else if (!standardDrugName.equals(other.standardDrugName)) {
+		if (!Arrays.equals(families, other.families))
 			return false;
-		}
+		if (Double.doubleToLongBits(gScore) != Double.doubleToLongBits(other.gScore))
+			return false;
+		if (!equalsIgnoreOrder(geneDrugs, other.geneDrugs))
+			return false;
+		if (!Arrays.equals(genes, other.genes))
+			return false;
+		if (!Arrays.equals(indirect, other.indirect))
+			return false;
+		if (!Arrays.equals(pubchemId, other.pubchemId))
+			return false;
 		if (showDrugName == null) {
-			if (other.showDrugName != null) {
+			if (other.showDrugName != null)
 				return false;
-			}
-		} else if (!showDrugName.equals(other.showDrugName)) {
+		} else if (!showDrugName.equals(other.showDrugName))
 			return false;
-		}
-		if (!Arrays.equals(families, other.families)) {
+		if (!Arrays.equals(sourceLinks, other.sourceLinks))
 			return false;
-		}
-		if (Double.doubleToLongBits(gScore) != Double
-				.doubleToLongBits(other.gScore)) {
-			return false;
-		}
-		if (!equalsIgnoreOrder(geneDrugs, other.geneDrugs)) {
-			return false;
-		}
-		if (!Arrays.equals(genes, other.genes)) {
-			return false;
-		}
-		if (!Arrays.equals(indirect, other.indirect)) {
-			return false;
-		}
-		if (!Arrays.equals(sourceLinks, other.sourceLinks)) {
-			return false;
-		}
-		if (status == null) {
-			if (other.status != null) {
+		if (standardDrugName == null) {
+			if (other.standardDrugName != null)
 				return false;
-			}
-		} else if (!status.equals(other.status)) {
+		} else if (!standardDrugName.equals(other.standardDrugName))
 			return false;
-		}
-		if (target != other.target) {
+		if (status != other.status)
 			return false;
-		}
-		if (therapy == null) {
-			if (other.therapy != null) {
-				return false;
-			}
-		} else if (!therapy.equals(other.therapy)) {
+		if (target != other.target)
 			return false;
-		}
+		if (therapy != other.therapy)
+			return false;
 		return true;
 	}
 }

@@ -50,6 +50,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableSortedMap;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
@@ -173,15 +174,23 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorDifferentDrugs() {
 		final String[] genes = new String[] { "G1", "G2", "G3" };
-		final List<GeneDrug> geneDrugs = asList(
+		
+		final Drug drug1 = createNiceMock(Drug.class);
+		final Drug drug2 = createNiceMock(Drug.class);
+		
+		final GeneDrug[] gd = new GeneDrug[] {
 			newGeneDrug("G1", "D1"),
 			newGeneDrug("G2", "D1"),
 			newGeneDrug("G3", "D2", "IG1", "IG2")
-		);
+		};
+
+		expect(gd[0].getDrug()).andReturn(drug1);
+		expect(gd[1].getDrug()).andReturn(drug1);
+		expect(gd[2].getDrug()).andReturn(drug2);
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, asList(gd));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -201,8 +210,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testConstructorDifferentPathology() {
 		final String[] genes = new String[] { "G1", "G2" };
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, asList("P1"), null, null, null),
-			newGeneDrug("G2", "D1", null, asList("P2"), null, null, null)
+			newGeneDrug("G1", "D1", null, new String[] { "P1" }, null, null, null),
+			newGeneDrug("G2", "D1", null, new String[] { "P2" }, null, null, null)
 		);
 		
 		replayAll();
@@ -214,8 +223,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testConstructorDifferentCancer() {
 		final String[] genes = new String[] { "G1", "G2" };
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, asList(CancerType.ADRENAL_GLAND), null, null),
-			newGeneDrug("G2", "D1", null, null, asList(CancerType.BLADDER), null, null)
+			newGeneDrug("G1", "D1", null, null, new CancerType[] { CancerType.ADRENAL_GLAND }, null, null),
+			newGeneDrug("G2", "D1", null, null, new CancerType[] { CancerType.BLADDER }, null, null)
 		);
 		
 		replayAll();
@@ -504,18 +513,18 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testGetCancer() {
-		final CancerType cancer = CancerType.CANCER;
+		final CancerType[] cancers = new CancerType[] { CancerType.CANCER };
 		final String[] genes = new String[] { "G1", "G2" };
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, asList(cancer), null, null),
-			newGeneDrug("G2", "D1", null, null, asList(cancer), null, null)
+			newGeneDrug("G1", "D1", null, null, cancers, null, null),
+			newGeneDrug("G2", "D1", null, null, cancers, null, null)
 		);
 		
 		replayAll();
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getCancers(), containsInAnyOrder(cancer));
+		assertThat(group.getCancers(), arrayContainingInAnyOrder(cancers));
 	}
 
 	@Test
@@ -841,8 +850,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	private final GeneDrug newGeneDrug(
 		String gene, String drug,
 		DrugStatus status,
-		List<String> pathology,
-		List<CancerType> cancer,
+		String[] pathology,
+		CancerType[] cancer,
 		Extra extra,
 		String family
 	) {

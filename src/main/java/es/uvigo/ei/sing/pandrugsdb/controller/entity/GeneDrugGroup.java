@@ -74,8 +74,8 @@ public class GeneDrugGroup {
 			throw new IllegalArgumentException("Invalid geneDrugs for targetGenes");
 			
 		checkSingleValue(
-			geneDrugs, GeneDrug::getStandardDrugName,
-			() -> new IllegalArgumentException("Different standard drug names in group")
+			geneDrugs, GeneDrug::getDrug,
+			() -> new IllegalArgumentException("Different drugs in group")
 		);
 		
 		checkSingleValue(
@@ -83,12 +83,12 @@ public class GeneDrugGroup {
 			() -> new IllegalArgumentException("Different status in group")
 		);
 		
-		checkSameIterableValues(
+		checkSameArrayValues(
 			geneDrugs, GeneDrug::getPathologies,
 			() -> new IllegalArgumentException("Different pathologies in group")
 		);
 		
-		checkSameIterableValues(
+		checkSameArrayValues(
 			geneDrugs, GeneDrug::getCancers,
 			() -> new IllegalArgumentException("Different cancer in group")
 		);
@@ -185,7 +185,11 @@ public class GeneDrugGroup {
 		return this.geneDrugs.get(0).getStatus();
 	}
 
-	public List<CancerType> getCancers() {
+	public int[] getPubchemId() {
+		return this.geneDrugs.get(0).getDrug().getPubChemIds();
+	}
+
+	public CancerType[] getCancers() {
 		return this.geneDrugs.get(0).getCancers();
 	}
 
@@ -377,16 +381,16 @@ public class GeneDrugGroup {
 			throw thrower.get();
 	}
 	
-	private final static <T> void checkSameIterableValues(
+	private final static <T> void checkSameArrayValues(
 		Collection<GeneDrug> geneDrugs,
-		Function<GeneDrug, ? extends Iterable<T>> mapper,
+		Function<GeneDrug, T[]> mapper,
 		Supplier<RuntimeException> thrower
 	) {
-		final List<? extends Iterable<T>> iterables = geneDrugs.stream()
+		final List<T[]> iterables = geneDrugs.stream()
 			.map(mapper)
 		.collect(toList());
 		
-		final Iterable<T> base = iterables.get(0);
+		final T[] base = iterables.get(0);
 		
 		for (int i = 1; i < iterables.size(); i++) {
 			if (!equalsIgnoreOrder(base, iterables.get(i))) {

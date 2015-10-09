@@ -22,9 +22,12 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -46,7 +49,9 @@ import javax.persistence.UniqueConstraint;
 		name = "unique_standard_name", columnNames = "standard_name"
 	)
 )
-public class Drug {
+public class Drug implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	private int id;
@@ -60,12 +65,6 @@ public class Drug {
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private DrugStatus status;
-
-	@ElementCollection(fetch = FetchType.LAZY)
-	@CollectionTable(name = "cancer", joinColumns = @JoinColumn(name = "drug_id"))
-	@Column(name = "name", length = 15, nullable = false)
-	@Enumerated(EnumType.STRING)
-	private List<CancerType> cancers;
 	
 	@Column(name = "extra", nullable = true)
 	@Enumerated(EnumType.STRING)
@@ -73,6 +72,17 @@ public class Drug {
 	
 	@Column(name = "extra_details", length = 1000, columnDefinition = "VARCHAR(1000)", nullable = true)
 	private String extraDetails;
+	
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "pubchem", joinColumns = @JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_name"))
+	@Column(name = "pubchem_id", nullable = false)
+	private List<Integer> pubChemIds;
+
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "cancer", joinColumns = @JoinColumn(name = "drug_id"))
+	@Column(name = "name", length = 15, nullable = false)
+	@Enumerated(EnumType.STRING)
+	private List<CancerType> cancers;
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "pathology", joinColumns = @JoinColumn(name = "drug_id"))
@@ -81,14 +91,24 @@ public class Drug {
 	
 	Drug() {}
 
-	Drug(String standardName, String showName, DrugStatus status, List<CancerType> cancers,
-			Extra extra, List<String> pathologies) {
+	Drug(
+		String standardName,
+		String showName,
+		DrugStatus status,
+		Extra extra,
+		String extraDetails,
+		int[] pubChemIds,
+		CancerType[] cancers,
+		String[] pathologies
+	) {
 		this.standardName = standardName;
 		this.showName = showName;
 		this.status = status;
-		this.cancers = cancers == null ? emptyList() : cancers;
 		this.extra = extra;
-		this.pathologies = pathologies == null ? emptyList() : pathologies;
+		this.extraDetails = extraDetails;
+		this.pubChemIds = pubChemIds == null ? emptyList() : stream(pubChemIds).boxed().collect(toList());
+		this.cancers = cancers == null ? emptyList() : asList(cancers);
+		this.pathologies = pathologies == null ? emptyList() : asList(pathologies);
 	}
 	
 	public int getId() {
@@ -103,20 +123,35 @@ public class Drug {
 		return showName;
 	}
 
-	public List<CancerType> getCancers() {
-		return cancers;
+	public DrugStatus getStatus() {
+		return status;
 	}
-
+	
 	public Extra getExtra() {
 		return extra;
 	}
-
-	public List<String> getPathologies() {
-		return unmodifiableList(this.pathologies);
+	
+	public String getExtraDetails() {
+		return extraDetails;
 	}
 
-	public DrugStatus getStatus() {
-		return status;
+	public int[] getPubChemIds() {
+		return pubChemIds.stream()
+			.mapToInt(Integer::intValue)
+			.sorted()
+		.toArray();
+	}
+
+	public CancerType[] getCancers() {
+		return cancers.stream()
+			.sorted()
+		.toArray(CancerType[]::new);
+	}
+
+	public String[] getPathologies() {
+		return pathologies.stream()
+			.sorted()
+		.toArray(String[]::new);
 	}
 
 	@Override
@@ -127,6 +162,7 @@ public class Drug {
 		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
 		result = prime * result + ((extraDetails == null) ? 0 : extraDetails.hashCode());
 		result = prime * result + ((pathologies == null) ? 0 : pathologies.hashCode());
+		result = prime * result + ((pubChemIds == null) ? 0 : pubChemIds.hashCode());;
 		result = prime * result + ((showName == null) ? 0 : showName.hashCode());
 		result = prime * result + ((standardName == null) ? 0 : standardName.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -158,6 +194,11 @@ public class Drug {
 			if (other.pathologies != null)
 				return false;
 		} else if (!equalsIgnoreOrder(pathologies, other.pathologies))
+			return false;
+		if (pubChemIds == null) {
+			if (other.pubChemIds != null)
+				return false;
+		} else if (!equalsIgnoreOrder(pubChemIds, other.pubChemIds))
 			return false;
 		if (showName == null) {
 			if (other.showName != null)

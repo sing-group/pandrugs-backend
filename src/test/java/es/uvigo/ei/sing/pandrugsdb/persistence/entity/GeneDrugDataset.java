@@ -58,12 +58,12 @@ public final class GeneDrugDataset {
 	
 	public static Drug[] drugs() {
 		return new Drug[] {
-			new Drug("Drug 1", "Show Drug 1", DrugStatus.APPROVED, null, null, null),
-			new Drug("Drug 2", "Show Drug 2", DrugStatus.APPROVED, null, null, null),
-			new Drug("Drug 3", "Show Drug 3", DrugStatus.APPROVED, null, null, null),
-			new Drug("Drug 10", "Show Drug 10", DrugStatus.APPROVED, null, null, null),
-			new Drug("Drug 11", "Show Drug 11", DrugStatus.APPROVED, null, null, null),
-			new Drug("Drug 12", "Show Drug 12", DrugStatus.APPROVED, null, null, null),
+			new Drug("Drug 1", "Show Drug 1", DrugStatus.APPROVED, null, null, null, null, null),
+			new Drug("Drug 2", "Show Drug 2", DrugStatus.APPROVED, null, null, null, null, null),
+			new Drug("Drug 3", "Show Drug 3", DrugStatus.APPROVED, null, null, null, null, null),
+			new Drug("Drug 10", "Show Drug 10", DrugStatus.APPROVED, null, null, null, null, null),
+			new Drug("Drug 11", "Show Drug 11", DrugStatus.APPROVED, null, null, null, null, null),
+			new Drug("Drug 12", "Show Drug 12", DrugStatus.APPROVED, null, null, null, null, null),
 		};
 	}
 	
