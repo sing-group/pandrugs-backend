@@ -38,6 +38,7 @@ import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -105,8 +106,9 @@ public class GeneDrugGroupInfo {
 		
 		gdg.getGeneDrugs().stream()
 			.filter(gdg::isDirectAndIndirect)
+			.filter(GeneDrug::isTarget)
 			.map(gd -> new GeneDrugInfo(gd, gdg, true))
-		.forEach(gdInfos::add);;
+		.forEach(gdInfos::add);
 		
 		this.geneDrugs = gdInfos.toArray(new GeneDrugInfo[0]);
 	}

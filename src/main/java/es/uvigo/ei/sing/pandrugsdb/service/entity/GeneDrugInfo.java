@@ -91,22 +91,15 @@ public class GeneDrugInfo {
 					this.indirect, joinGeneNames(this.genes)
 				);
 			} else {
-				System.out.println(geneDrug.getGeneSymbol());
-				System.out.println(geneDrug.getIndirectGenes());
 				throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is not indirect but indirect mode was forced.");
 			}
-		} else if (forceIndirect) {
-			this.drugStatusInfo = String.format(
-				"Molecular alterations in %s, a protein downstream to %s, are associated to response to %s, a drug %s",
-				this.indirect, joinGeneNames(this.genes), this.drug, geneDrug.getStatus().getDescription() 
-			);
 		} else if (group.isDirect(geneDrug)) {
 			this.drugStatusInfo = String.format(
 				"Molecular alterations in %s are associated to response to %s, a drug %s",
 				this.genes[0], this.drug, geneDrug.getStatus().getDescription() 
 			);
 		} else {
-			this.drugStatusInfo = "";
+			throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is indirect and marker.");
 		}
 		
 		this.dScore = group.getDScore(geneDrug);

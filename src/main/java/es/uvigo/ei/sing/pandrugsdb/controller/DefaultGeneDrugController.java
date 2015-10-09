@@ -92,7 +92,9 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			getGenes = GeneDrug::getIndirectGenes;
 			break;
 		default:
-			getGenes = GeneDrug::getDirectAndIndirectGenes;
+			getGenes = gd -> gd.isTarget() ?
+				gd.getDirectAndIndirectGenes() :
+				asList(gd.getGeneSymbol());
 			break;
 		}
 		
