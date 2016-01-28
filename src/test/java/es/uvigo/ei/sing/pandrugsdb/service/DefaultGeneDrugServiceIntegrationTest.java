@@ -27,10 +27,14 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.mul
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -77,13 +81,13 @@ public class DefaultGeneDrugServiceIntegrationTest {
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
-		service.list(emptyList(), null, null, null, null);
+		service.list(emptySet(), null, null, null, null);
 	}
 	
 	@Test
 	public void testSearchNoResult() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("Absent Gene"), null, null, null, null
+			singleton("Absent Gene"), null, null, null, null
 		);
 		
 		assertThat(result.getGeneDrugs(), is(empty()));
@@ -92,7 +96,7 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testSearchSingleGeneDirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("Direct Gene 1"), null, null, null, null
+			singleton("Direct Gene 1"), null, null, null, null
 		);
 		
 		assertThat(result, is(singleGeneGroupInfosDirect()));
@@ -101,7 +105,8 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneDirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("Direct Gene 1", "Direct Gene 2"), null, null, null, null
+			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2")),
+			null, null, null, null
 		);
 		
 		assertThat(result, is(multipleGeneGroupInfosDirect()));
@@ -110,7 +115,7 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testSearchSingleGeneIndirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("IG1"), null, null, null, null);
+				singleton("IG1"), null, null, null, null);
 		
 		assertThat(result, is(singleGeneGroupInfosIndirect()));
 	}
@@ -118,7 +123,7 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneIndirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("IG1", "IG2"), null, null, null, null
+			new HashSet<>(asList("IG1", "IG2")), null, null, null, null
 		);
 		
 		assertThat(result, is(multipleGeneGroupInfosIndirect()));
@@ -127,9 +132,21 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testSearchMultipleGeneMixed() {
 		final GeneDrugGroupInfos result = this.service.list(
-			asList("Direct Gene 1", "Direct Gene 2", "IG1", "IG2"),
+			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2", "IG1", "IG2")),
 			null, null, null, null
 		);
+		
+		assertThat(result, is(multipleGeneGroupInfosMixed()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixedRepeatedGenes() {
+		final String[] query = new String[] {
+			"Direct Gene 1", "Direct Gene 1", "Direct Gene 2", "IG1", "Direct Gene 1", "IG2", "IG1", "IG2"
+		};
+
+		final GeneDrugGroupInfos result = this.service.list(
+			new LinkedHashSet<>(asList(query)), null, null, null, null);
 		
 		assertThat(result, is(multipleGeneGroupInfosMixed()));
 	}

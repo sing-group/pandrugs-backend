@@ -33,6 +33,8 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.sin
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
@@ -40,6 +42,9 @@ import static org.easymock.EasyMock.replay;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.ws.rs.BadRequestException;
 
@@ -77,7 +82,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		
 		replay(controller);
 		
-		service.list(emptyList(), null, null, null, null);
+		service.list(emptySet(), null, null, null, null);
 	}
 	
 	@Test
@@ -90,7 +95,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 		
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			singleton(query), null, null, null, null);
 		
 		assertThat(result.getGeneDrugs(), is(empty()));
 	}
@@ -105,7 +110,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 		
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			singleton(query), null, null, null, null);
 		
 		assertThat(result, is(singleGeneGroupInfosDirect()));
 	}
@@ -120,7 +125,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			new HashSet<>(asList(query)), null, null, null, null);
 		
 		assertThat(result, is(multipleGeneGroupInfosDirect()));
 	}
@@ -135,7 +140,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			singleton(query), null, null, null, null);
 		
 		assertThat(result, is(singleGeneGroupInfosIndirect()));
 	}
@@ -150,7 +155,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			new HashSet<>(asList(query)), null, null, null, null);
 		
 		assertThat(result, is(multipleGeneGroupInfosIndirect()));
 	}
@@ -168,7 +173,25 @@ public class DefaultGeneDrugServiceUnitTest {
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			asList(query), null, null, null, null);
+			new LinkedHashSet<>(asList(query)), null, null, null, null);
+		
+		assertThat(result, is(multipleGeneGroupInfosMixed()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixedRepeatedGenes() {
+		final String[] query = new String[] {
+			"Direct Gene 1", "Direct Gene 1", "Direct Gene 2", "IG1", "Direct Gene 1", "IG2", "IG1", "IG2"
+		};
+		
+		expect(controller.searchForGeneDrugs(
+			anyObject(), eq("Direct Gene 1"), eq("Direct Gene 2"), eq("IG1"), eq("IG2")
+		)).andReturn(asList(multipleGeneGroupMixed()));
+		
+		replay(controller);
+
+		final GeneDrugGroupInfos result = this.service.list(
+			new LinkedHashSet<>(asList(query)), null, null, null, null);
 		
 		assertThat(result, is(multipleGeneGroupInfosMixed()));
 	}

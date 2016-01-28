@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestE
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -62,9 +63,9 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@Consumes(MediaType.WILDCARD)
 	@Override
 	public GeneDrugGroupInfos list(
-		@QueryParam("gene") List<String> genes,
-		@QueryParam("cancerDrugStatus") List<String> cancerDrugStatus,
-		@QueryParam("nonCancerDrugStatus") List<String> nonCancerDrugStatus,
+		@QueryParam("gene") Set<String> genes,
+		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
 	) throws BadRequestException, InternalServerErrorException {

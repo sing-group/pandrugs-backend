@@ -23,8 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.query;
 
 import static java.util.Arrays.asList;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 
@@ -51,8 +51,8 @@ public class GeneQueryParameters {
 	}
 	
 	public GeneQueryParameters(
-		List<String> cancerDrugStatus,
-		List<String> nonCancerDrugStatus,
+		Set<String> cancerDrugStatus,
+		Set<String> nonCancerDrugStatus,
 		String targetMarker,
 		String directIndirect
 	) {
@@ -175,7 +175,7 @@ public class GeneQueryParameters {
 	}
 	
 	private final static DrugStatus[] parseDrugStatus(
-		List<String> status, DrugStatus[] defaultValues, String parseErrorMessage
+		Set<String> status, DrugStatus[] defaultValues, String parseErrorMessage
 	) {
 		if (status == null || status.isEmpty()) {
 			return defaultValues;

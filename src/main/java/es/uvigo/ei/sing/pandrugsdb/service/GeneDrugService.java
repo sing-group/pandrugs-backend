@@ -21,7 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -59,9 +59,9 @@ public interface GeneDrugService {
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
 	public abstract GeneDrugGroupInfos list(
-		List<String> genes,
-		List<String> cancerDrugStatus,
-		List<String> nonCancerDrugStatus,
+		Set<String> genes,
+		Set<String> cancerDrugStatus,
+		Set<String> nonCancerDrugStatus,
 		String target,
 		String direct
 	) throws BadRequestException, InternalServerErrorException;
