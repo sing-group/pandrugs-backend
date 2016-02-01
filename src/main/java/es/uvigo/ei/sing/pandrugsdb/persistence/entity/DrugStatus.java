@@ -22,18 +22,20 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 public enum DrugStatus {
-	EXPERIMENTAL(true, "in pre-clinical studies"),
-	APPROVED(true, "approved by FDA"),
-	CLINICAL_TRIALS(true, "in Clinical Trials"),
-	WITHDRAWN(false, null),
-	UNDEFINED(false, null);
+	EXPERIMENTAL(true, "in pre-clinical studies", "Experimental"),
+	APPROVED(true, "approved by FDA", "Approved"),
+	CLINICAL_TRIALS(true, "in Clinical Trials", "Cancer Clinical Trials"),
+	WITHDRAWN(false, null, "Withdrawn"),
+	UNDEFINED(false, null, "Undefined");
 	
 	private final boolean active;
 	private final String description;
+	private final String title;
 	
-	private DrugStatus(boolean active, String description) {
+	private DrugStatus(boolean active, String description, String title) {
 		this.active = active;
 		this.description = description;
+		this.title = title;
 	}
 	
 	public boolean isActive() {
@@ -42,6 +44,10 @@ public enum DrugStatus {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 	
 	@Override

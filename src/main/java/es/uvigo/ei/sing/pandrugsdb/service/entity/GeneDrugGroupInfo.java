@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.newStringFormatter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.util.StringJoiner;
 
 @XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -60,6 +62,8 @@ public class GeneDrugGroupInfo {
 	@XmlElement(name = "curated-source")
 	private String[] curatedSources;
 	private DrugStatus status;
+	@XmlElement(name = "status-description")
+	private String statusDescription;
 	@XmlElementWrapper(name = "cancers")
 	@XmlElement(name = "cancer")
 	private CancerType[] cancers;
@@ -92,13 +96,45 @@ public class GeneDrugGroupInfo {
 		this.curatedSources = gdg.getCuratedSourceNames();
 		this.status = gdg.getStatus();
 		this.cancers = gdg.getCancers();
-		
 		this.therapy = gdg.getExtra();
 		this.indirect = gdg.getIndirectGenes();
 		this.target = gdg.isTarget();
 		this.pubchemId = gdg.getPubchemId();
 		this.dScore = gdg.getDScore();
 		this.gScore = gdg.getGScore();
+		
+		switch (this.status) {
+		case APPROVED:
+			if (this.cancers.length == 0) {
+				this.statusDescription = this.status.getTitle();
+			} else if (this.cancers[0] == CancerType.CLINICAL_CANCER) {
+				this.statusDescription = "Cancer Clinical Trials and approved for other pathologies";
+			} else {
+				final String[] cancerNames = Arrays.stream(this.cancers)
+					.map(CancerType::name)
+				.toArray(String[]::new);
+				
+				final String cancers = StringJoiner.join(cancerNames)
+					.withSeparator(", ")
+					.withLastSeparator(" and ")
+					.withFormatter(
+						newStringFormatter()
+							.replaceAll("_", " ")
+							.toLowerCase()
+						.build()
+					)
+				.andGet();
+				
+				this.statusDescription = String.format("%s for %s cancer",
+					this.status.getTitle(), cancers
+				);
+			}
+			
+			break;
+		default:
+			this.statusDescription = this.status.getTitle();
+			break;
+		}
 		
 		final List<GeneDrugInfo> gdInfos = gdg.getGeneDrugs().stream()
 			.map(gd -> new GeneDrugInfo(gd, gdg))
@@ -167,6 +203,14 @@ public class GeneDrugGroupInfo {
 
 	public void setStatus(DrugStatus status) {
 		this.status = status;
+	}
+	
+	public String getStatusDescription() {
+		return statusDescription;
+	}
+	
+	public void setStatusDescription(String statusDescription) {
+		this.statusDescription = statusDescription;
 	}
 
 	public CancerType[] getCancers() {
