@@ -50,6 +50,7 @@ public class GeneDrugGroupInfos {
 		this.geneDrugs = geneDrugs.stream()
 			.sorted((g1, g2) -> Compare.objects(g1, g2)
 				.byReverseOrderOfDouble(GeneDrugGroup::getDScore)
+					.thenByReverseOrderOf(GeneDrugGroup::getGScore)
 					.thenBy(GeneDrugGroup::getShowDrugName)
 					.thenBy(GeneDrugGroup::getStandardDrugName)
 					.thenByReverseOrderOfInt(GeneDrugGroup::countTargetGenes)

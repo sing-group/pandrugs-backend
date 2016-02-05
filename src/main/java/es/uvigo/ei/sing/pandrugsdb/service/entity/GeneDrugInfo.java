@@ -161,7 +161,7 @@ public class GeneDrugInfo {
 		return dScore;
 	}
 	
-	public double getgScore() {
+	public double getGScore() {
 		return gScore;
 	}
 	
