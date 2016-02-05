@@ -36,9 +36,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;

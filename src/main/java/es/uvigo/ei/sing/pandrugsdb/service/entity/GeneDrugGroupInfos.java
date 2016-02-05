@@ -100,4 +100,15 @@ public class GeneDrugGroupInfos {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("GeneDrugGroupInfos [geneDrugs=")
+			.append(geneDrugs)
+			.append("]")
+		.toString();
+	}
+	
+	
 }

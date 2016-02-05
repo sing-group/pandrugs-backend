@@ -32,6 +32,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService;
+import es.uvigo.ei.sing.pandrugsdb.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("public")
 public class PanDrugsDBPublicApplication extends ResourceConfig {
@@ -47,5 +48,6 @@ public class PanDrugsDBPublicApplication extends ResourceConfig {
 		register(JacksonFeature.class);
 		register(ValidationFeature.class);
 		register(UnexpectedExceptionMapper.class);
+		register(GeneRankingMessageBodyReader.class);
 	}
 }

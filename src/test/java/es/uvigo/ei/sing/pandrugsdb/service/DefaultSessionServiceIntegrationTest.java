@@ -28,7 +28,6 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.present
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.junit.Test;
@@ -38,6 +37,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;

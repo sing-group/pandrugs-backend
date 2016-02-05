@@ -40,6 +40,7 @@ public interface UserService {
 	 * </p>
 	 * 
 	 * @param login login of the user.
+	 * @param security the security context of the application.
 	 * @param security security context object. Should be provided by the
 	 * container.
 	 * @return the information of the user with a 200 OK HTTP status if the 
@@ -62,7 +63,7 @@ public interface UserService {
 	 * </p>
 	 * 
 	 * @param userMetadata new profile data of the user.
-	 * @param security
+	 * @param security the security context of the application.
 	 * @return the information of the user updated with a 200 OK HTTP status if
 	 * the client has permission to access that user information.
 	 * @throws NotAuthorizedException if the client doesn't have permission to 

@@ -29,8 +29,8 @@ import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneInformationGScoreTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroupTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneInformationGScoreTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerUnitTest.class,

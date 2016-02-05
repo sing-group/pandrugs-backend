@@ -26,9 +26,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,16 +41,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 @Entity(name = "gene_drug")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {
-	"gene_symbol", "drug_id", "target"
-}))
 @IdClass(GeneDrugId.class)
 public class GeneDrug implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -121,27 +115,28 @@ public class GeneDrug implements Serializable {
 		nullable = true
 	)
 	private GeneInformation geneInformation;
-	
-	GeneDrug() {}
+
+	GeneDrug() {
+	}
 	
 	GeneDrug(
-		String geneSymbol,
+		GeneInformation geneInformation,
 		Drug drug,
+		boolean isTarget,
 		String family,
-		boolean target,
-		ResistanceType resistance,
 		String alteration,
+		ResistanceType resistance,
 		double score,
 		List<String> inverseGene,
 		List<DrugSource> drugSources, 
-		List<Pathway> pathways,
-		GeneInformation geneInformation
+		List<Pathway> pathways
 	) {
-		this.geneSymbol = geneSymbol;
+		this.geneSymbol = geneInformation.getGeneSymbol();
+		this.geneInformation = geneInformation;
 		this.drugId = drug.getId();
 		this.drug = drug;
 		this.family = family;
-		this.target = target;
+		this.target = isTarget;
 		this.resistance = resistance;
 		this.alteration = alteration;
 		this.score = score;
@@ -150,7 +145,6 @@ public class GeneDrug implements Serializable {
 		.collect(toList());
 		this.drugSources = drugSources;
 		this.pathways = pathways;
-		this.geneInformation = geneInformation;
 	}
 	
 	public Drug getDrug() {
@@ -208,35 +202,23 @@ public class GeneDrug implements Serializable {
 	public String getAlteration() {
 		return alteration;
 	}
-	
-	public double getGScore() {
-		return Optional.ofNullable(this.getGeneInformation())
-			.map(GeneInformation::getGScore)
-		.orElse(0d);
-	}
-	
-	public double getIndirectGeneScore(String indirectGeneName) {
-		return this.indirectGenes.stream()
-			.filter(indirect -> indirect.getGeneSymbol().equals(indirectGeneName))
-			.map(IndirectGene::getGeneInformation)
-			.filter(Objects::nonNull)
-			.mapToDouble(GeneInformation::getGScore)
-			.findFirst()
-		.orElse(0d);
-	}
 
 	public double getScore() {
 		return score;
 	}
 	
 	public List<String> getDirectAndIndirectGenes() {
-		final List<String> genes = new ArrayList<>(getIndirectGenes());
+		final List<String> genes = new ArrayList<>(getIndirectGeneSymbols());
 		genes.add(this.getGeneSymbol());
 		
 		return genes;
 	}
 	
-	public List<String> getIndirectGenes() {
+	public List<IndirectGene> getIndirectGenes() {
+		return Collections.unmodifiableList(indirectGenes);
+	}
+	
+	public List<String> getIndirectGeneSymbols() {
 		return this.indirectGenes.stream()
 			.map(IndirectGene::getGeneSymbol)
 		.collect(toList());

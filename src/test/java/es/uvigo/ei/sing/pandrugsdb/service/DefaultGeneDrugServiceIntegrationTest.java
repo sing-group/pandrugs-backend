@@ -21,24 +21,28 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalsToGeneDrugGroupInfos;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 
 import org.junit.Test;
@@ -48,6 +52,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -55,6 +60,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
@@ -69,6 +75,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",
 	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
 )
+//TODO: compare dscore and gscore
 public class DefaultGeneDrugServiceIntegrationTest {
 	@Inject
 	@Named("defaultGeneDrugService")
@@ -98,8 +105,8 @@ public class DefaultGeneDrugServiceIntegrationTest {
 		final GeneDrugGroupInfos result = this.service.list(
 			singleton("Direct Gene 1"), null, null, null, null
 		);
-		
-		assertThat(result, is(singleGeneGroupInfosDirect()));
+
+		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosDirect()));
 	}
 	
 	@Test
@@ -108,16 +115,16 @@ public class DefaultGeneDrugServiceIntegrationTest {
 			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2")),
 			null, null, null, null
 		);
-		
-		assertThat(result, is(multipleGeneGroupInfosDirect()));
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosDirect()));
 	}
 	
 	@Test
 	public void testSearchSingleGeneIndirect() {
 		final GeneDrugGroupInfos result = this.service.list(
 				singleton("IG1"), null, null, null, null);
-		
-		assertThat(result, is(singleGeneGroupInfosIndirect()));
+
+		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect()));
 	}
 	
 	@Test
@@ -125,8 +132,8 @@ public class DefaultGeneDrugServiceIntegrationTest {
 		final GeneDrugGroupInfos result = this.service.list(
 			new HashSet<>(asList("IG1", "IG2")), null, null, null, null
 		);
-		
-		assertThat(result, is(multipleGeneGroupInfosIndirect()));
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect()));
 	}
 	
 	@Test
@@ -135,8 +142,8 @@ public class DefaultGeneDrugServiceIntegrationTest {
 			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2", "IG1", "IG2")),
 			null, null, null, null
 		);
-		
-		assertThat(result, is(multipleGeneGroupInfosMixed()));
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
 	}
 	
 	@Test
@@ -147,7 +154,117 @@ public class DefaultGeneDrugServiceIntegrationTest {
 
 		final GeneDrugGroupInfos result = this.service.list(
 			new LinkedHashSet<>(asList(query)), null, null, null, null);
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+	}
+	
+	
+	
+	
+
+	
+	@Test(expected = BadRequestException.class)
+	public void testListRankedWithNullGenes() {
+		service.listRanked(null, null, null, null, null);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListRankedWithEmptyGenes() {
+		service.listRanked(new GeneRanking(emptyMap()), null, null, null, null);
+	}
+	
+	@Test
+	public void testRankedSearchNoResult() {
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			new GeneRanking(singletonMap("Absent Gene", 1d)), null, null, null, null
+		);
 		
-		assertThat(result, is(multipleGeneGroupInfosMixed()));
+		assertThat(result.getGeneDrugs(), is(empty()));
+	}
+	
+	@Test
+	public void testRankedSearchSingleGeneDirect() {
+		final GeneRanking ranking = new GeneRanking(singletonMap("Direct Gene 1", 1d));
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+		
+		assertThat(result, is(singleGeneGroupInfosDirect()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleGeneDirect() {
+		final Map<String, Double> rank = new LinkedHashMap<>();
+		rank.put("Direct Gene 1", 1d);
+		rank.put("Direct Gene 2", 2d);
+		final GeneRanking ranking = new GeneRanking(rank);
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+		
+		assertThat(result, is(multipleGeneGroupInfosDirect()));
+	}
+	
+	@Test
+	public void testRankedSearchSingleGeneIndirect() {
+		final GeneRanking ranking = new GeneRanking(singletonMap("IG1", 1d));
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+		
+		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleGeneIndirect() {
+		final Map<String, Double> rank = new LinkedHashMap<>();
+		rank.put("IG1", 1d);
+		rank.put("IG2", 2d);
+		final GeneRanking ranking = new GeneRanking(rank);
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleGeneMixed() {
+		final Map<String, Double> rank = new LinkedHashMap<>();
+		rank.put("Direct Gene 1", 1d);
+		rank.put("Direct Gene 2", 1d);
+		rank.put("IG1", 1d);
+		rank.put("IG2", 1d);
+		final GeneRanking ranking = new GeneRanking(rank);
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleGeneMixedRepeatedGenes() {
+		final Map<String, Double> rank = new LinkedHashMap<>();
+		rank.put("Direct Gene 1", 1d);
+		rank.put("Direct Gene 1", 1d);
+		rank.put("Direct Gene 2", 2d);
+		rank.put("IG1", 3d);
+		rank.put("Direct Gene 1", 1d);
+		rank.put("IG2", 4d);
+		rank.put("IG1", 3d);
+		rank.put("IG2", 4d);
+		final GeneRanking ranking = new GeneRanking(rank);
+		
+		final GeneDrugGroupInfos result = this.service.listRanked(
+			ranking, null, null, null, null
+		);
+
+		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
 	}
 }

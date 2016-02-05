@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -47,23 +48,35 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneInformationGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
 
 public class GeneDrugGroup {
 	private final String[] targetGenes;
 	private final List<GeneDrug> geneDrugs;
+	private final GeneScoreCalculator geneScoreCalculator;
 
 	public GeneDrugGroup(
 		String[] targetGenes,
 		Collection<GeneDrug> geneDrugs
 	) {
+		this(targetGenes, geneDrugs, new GeneInformationGeneScoreCalculator());
+	}
+
+	public GeneDrugGroup(
+		String[] targetGenes,
+		Collection<GeneDrug> geneDrugs,
+		GeneScoreCalculator geneScoreCalculator
+	) {
 		requireNonEmpty(targetGenes);
 		requireNonEmpty(geneDrugs);
+		
+		this.geneScoreCalculator = requireNonNull(geneScoreCalculator);
 		
 		final Predicate<String> isInGenes =
 			gd -> Stream.of(targetGenes).anyMatch(tg -> tg.equals(gd));
 		final Predicate<GeneDrug> hasInIndirectGenes = 
-			gd -> Stream.of(targetGenes).anyMatch(tg -> gd.getIndirectGenes().contains(tg));
+			gd -> Stream.of(targetGenes).anyMatch(tg -> gd.getIndirectGeneSymbols().contains(tg));
 		
 		final boolean checkGenes = geneDrugs.stream()
 			.allMatch(gd -> isInGenes.test(gd.getGeneSymbol())
@@ -119,7 +132,7 @@ public class GeneDrugGroup {
 
 	public String[] getIndirectGenes() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getIndirectGenes)
+			.map(GeneDrug::getIndirectGeneSymbols)
 			.flatMap(List::stream)
 			.filter(this::isInTargetGenes)
 			.distinct()
@@ -140,7 +153,7 @@ public class GeneDrugGroup {
 		
 		final Set<String> indirect = stream(this.getIndirectGenes())
 			.collect(toSet());
-		indirect.retainAll(geneDrug.getIndirectGenes());
+		indirect.retainAll(geneDrug.getIndirectGeneSymbols());
 		
 		return !indirect.isEmpty();
 	}
@@ -271,7 +284,7 @@ public class GeneDrugGroup {
 	public String[] getTargetGeneNames(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			new String[] { geneDrug.getGeneSymbol() } :
-			geneDrug.getIndirectGenes().stream()
+			geneDrug.getIndirectGeneSymbols().stream()
 				.filter(this::isInTargetGenes)
 			.toArray(String[]::new);
 	}
@@ -317,19 +330,31 @@ public class GeneDrugGroup {
 		
 		return this.hasResistance() ? -dScore : dScore;
 	}
+	
+	public double getGScore(GeneDrug geneDrug) {
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
+		
+		return this.geneScoreCalculator.directGScore(geneDrug);
+	}
+	
+	public Map<String, Double> getIndirectGScores(GeneDrug geneDrug) {
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
+		
+		return this.geneScoreCalculator.indirectGScores(geneDrug);
+	}
 
 	public double getGScore() {
 		final double maxDirect = this.geneDrugs.stream()
 			.filter(this::isDirect)
-			.map(GeneDrug::getGeneInformation)
-			.filter(Objects::nonNull)
-			.mapToDouble(GeneInformation::getGScore)
+			.mapToDouble(this.geneScoreCalculator::directGScore)
 		.max().orElse(0d);
 		
 		final double maxIndirect = this.geneDrugs.stream()
 			.filter(this::isIndirect)
 			.flatMapToDouble(gd -> stream(this.targetGenes)
-				.mapToDouble(gd::getIndirectGeneScore))
+				.mapToDouble(tg -> this.geneScoreCalculator.indirectGScore(gd, tg)))
 		.max().orElse(0d);
 		
 		return Math.max(maxDirect, maxIndirect);

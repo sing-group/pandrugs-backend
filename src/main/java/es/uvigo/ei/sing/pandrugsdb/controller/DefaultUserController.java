@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;

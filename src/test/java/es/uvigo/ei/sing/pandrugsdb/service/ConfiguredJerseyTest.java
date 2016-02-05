@@ -65,7 +65,7 @@ import es.uvigo.ei.sing.pandrugsdb.UnexpectedExceptionMapper;
 	DirtiesContextTestExecutionListener.class
 })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class ConfiguredJerseyTest extends JerseyTest {
+public abstract class ConfiguredJerseyTest extends JerseyTest {
 	@Inject
 	@Named("securityContextFilter")
 	protected ContainerRequestFilter securityFilter;

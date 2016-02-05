@@ -21,30 +21,39 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneInformationGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.StaticGeneScoreCalculator;
 
 @Controller
 @Transactional
@@ -52,12 +61,45 @@ import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 public class DefaultGeneDrugController implements GeneDrugController {
 	@Inject
 	private GeneDrugDAO dao;
-
+	
 	@Override
 	public List<GeneDrugGroup> searchForGeneDrugs(
 		GeneQueryParameters queryParameters, String ... geneNames
 	) {
-		final String[] upperGeneNames = Stream.of(geneNames)
+		requireNonNull(queryParameters);
+		requireNonEmpty(geneNames);
+		
+		return searchForGeneDrugs(
+			queryParameters,
+			new LinkedHashSet<>(asList(geneNames)),
+			new GeneInformationGeneScoreCalculator()
+		);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchForGeneDrugs(
+		GeneQueryParameters queryParameters,
+		GeneRanking geneRanking
+	) {
+		requireNonNull(queryParameters);
+		requireNonNull(geneRanking);
+		
+		final Map<String, Double> geneRank = geneRanking.asMap();
+		requireNonEmpty(geneRank);
+		
+		return searchForGeneDrugs(
+			queryParameters,
+			new LinkedHashSet<>(geneRank.keySet()),
+			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
+		);
+	}
+	
+	private List<GeneDrugGroup> searchForGeneDrugs(
+		GeneQueryParameters queryParameters,
+		Set<String> geneNames,
+		GeneScoreCalculator gScoreCalculator
+	) {
+		final String[] upperGeneNames = geneNames.stream()
 			.map(String::toUpperCase)
 		.toArray(String[]::new);
 		
@@ -72,9 +114,30 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return groups.stream()
 			.map(gdg -> new GeneDrugGroup(
 				filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
-				gdg
+				gdg,
+				gScoreCalculator
 			))
 		.collect(toList());
+	}
+	
+	private final static Map<String, Double> normalizeGeneRank(
+		Map<String, Double> unnormalizedGeneRank
+	) {
+		final double min = unnormalizedGeneRank.values().stream()
+			.reduce(Double.MAX_VALUE, Math::min)
+		.doubleValue();
+		final double max = unnormalizedGeneRank.values().stream()
+			.reduce(Double.MIN_VALUE, Math::max)
+		.doubleValue();
+		final double diff = max - min;
+		
+		return unnormalizedGeneRank.entrySet().stream()
+			.collect(toMap(
+				Entry::getKey,
+				diff == 0d
+					? e -> 1d
+					: e -> (e.getValue() - min) / diff
+			));
 	}
 	
 	private final static String[] filterGenesInGeneDrugs(
@@ -89,7 +152,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			getGenes = gd -> asList(gd.getGeneSymbol());
 			break;
 		case INDIRECT:
-			getGenes = GeneDrug::getIndirectGenes;
+			getGenes = GeneDrug::getIndirectGeneSymbols;
 			break;
 		default:
 			getGenes = gd -> gd.isTarget() ?

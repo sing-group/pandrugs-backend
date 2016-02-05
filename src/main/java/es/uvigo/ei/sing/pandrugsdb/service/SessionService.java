@@ -32,7 +32,6 @@ public interface SessionService {
 	 * OK if the credentials are valid or a 401 Unauthorized otherwise.
 	 * 
 	 * @param login the login credentials to check.
-	 * @return a HTTP status code 200 OK if the credentials are valid.
 	 * @throws NotAuthorizedException if the credentials are not valid.
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */

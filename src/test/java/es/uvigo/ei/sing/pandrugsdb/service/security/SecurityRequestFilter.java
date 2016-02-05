@@ -26,11 +26,12 @@ import java.util.Base64;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
 

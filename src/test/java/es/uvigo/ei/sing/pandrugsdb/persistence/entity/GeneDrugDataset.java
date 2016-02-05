@@ -26,6 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
@@ -40,7 +41,7 @@ public final class GeneDrugDataset {
 			new SourceInformation("Source 2", "S2", "http://source2.org", false)
 		).collect(toMap(
 			SourceInformation::getSource,
-			si -> si
+			Function.identity()
 		));
 	}
 	
@@ -52,7 +53,7 @@ public final class GeneDrugDataset {
 			new GeneInformation("INDIRECT GENE 2", null, false, null, 0d)
 		).collect(toMap(
 			GeneInformation::getGeneSymbol,
-			si -> si
+			Function.identity()
 		));
 	}
 	
@@ -95,17 +96,16 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneDrugDirect() {
 		return new GeneDrug(
-			"DIRECT GENE 1",
+			geneInfos().get("DIRECT GENE 1"),
 			drugs()[0],
-			null,
 			true,
-			ResistanceType.SENSITIVITY,
 			null,
+			null,
+			ResistanceType.SENSITIVITY,
 			0.1,
 			emptyList(),
 			asList(drugSources()[0]),
-			emptyList(),
-			geneInfos().get("DIRECT GENE 1")
+			emptyList()
 		);
 	}
 	
@@ -116,60 +116,56 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneDrugDirect(),
 			new GeneDrug(
-				"DIRECT GENE 2",
+				geneInfos.get("DIRECT GENE 2"),
 				drugs[0],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.2,
 				emptyList(),
 				asList(drugSources()[0]),
-				emptyList(),
-				geneInfos.get("DIRECT GENE 2")
+				emptyList()
 			),
 			new GeneDrug(
-				"DIRECT GENE 2",
+				geneInfos.get("DIRECT GENE 2"),
 				drugs[1],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.3,
 				emptyList(),
 				asList(drugSources()[1]),
-				emptyList(),
-				geneInfos.get("DIRECT GENE 2")
+				emptyList()
 			),
 			new GeneDrug(
-				"DIRECT GENE 2",
+				geneInfos.get("DIRECT GENE 2"),
 				drugs[2],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.4,
 				emptyList(),
 				asList(drugSources()[2]),
-				emptyList(),
-				geneInfos.get("DIRECT GENE 2")
+				emptyList()
 			)
 		};
 	}
 	
 	public static GeneDrug singleGeneIndirect() {
 		return new GeneDrug(
-			"INDIRECT GENE 1",
+			geneInfos().get("INDIRECT GENE 1"),
 			drugs()[3],
-			null,
 			true,
-			ResistanceType.SENSITIVITY,
 			null,
+			null,
+			ResistanceType.SENSITIVITY,
 			0.1,
 			asList("IG1"),
 			asList(drugSources()[3]),
-			emptyList(),
-			geneInfos().get("INDIRECT GENE 1")
+			emptyList()
 		);
 	}
 	
@@ -180,43 +176,40 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			singleGeneIndirect(),
 			new GeneDrug(
-				"INDIRECT GENE 2",
+				geneInfos.get("INDIRECT GENE 2"),
 				drugs[3],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.2,
 				asList("IG2"),
 				asList(drugSources()[3]),
-				emptyList(),
-				geneInfos.get("INDIRECT GENE 2")
+				emptyList()
 			),
 			new GeneDrug(
-				"INDIRECT GENE 2",
+				geneInfos.get("INDIRECT GENE 2"),
 				drugs[4],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.3,
 				asList("IG2"),
 				asList(drugSources()[4]),
-				emptyList(),
-				geneInfos.get("INDIRECT GENE 2")
+				emptyList()
 			),
 			new GeneDrug(
-				"INDIRECT GENE 2",
+				geneInfos.get("INDIRECT GENE 2"),
 				drugs[5],
-				null,
 				true,
-				ResistanceType.SENSITIVITY,
 				null,
+				null,
+				ResistanceType.SENSITIVITY,
 				0.4,
 				asList("IG2"),
 				asList(drugSources()[5]),
-				emptyList(),
-				geneInfos.get("INDIRECT GENE 2")
+				emptyList()
 			)
 		};
 	}

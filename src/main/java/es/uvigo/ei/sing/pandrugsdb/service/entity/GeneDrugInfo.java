@@ -24,6 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.service.entity;
 import static java.util.Arrays.stream;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -82,14 +83,17 @@ public class GeneDrugInfo {
 		
 		if (geneDrug.isTarget()) {
 			if (!forceIndirect && group.isDirect(geneDrug)) {
-				this.gScore = geneDrug.getGScore();
+				this.gScore = group.getGScore(geneDrug);
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s",
 					this.drug, geneDrug.getStatus().getDescription(), this.genes[0]
 				);
 			} else if (group.isIndirect(geneDrug)) {
+				final Map<String, Double> indirectGScores =
+					group.getIndirectGScores(geneDrug);
+				
 				this.gScore = stream(this.genes)
-					.mapToDouble(geneDrug::getIndirectGeneScore)
+					.mapToDouble(indirectGScores::get)
 				.max().orElse(0d);
 				
 				this.drugStatusInfo = String.format(
@@ -101,7 +105,8 @@ public class GeneDrugInfo {
 				throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is not indirect but indirect mode was forced.");
 			}
 		} else if (group.isDirect(geneDrug)) {
-			this.gScore = geneDrug.getGScore();
+			this.gScore = group.getGScore(geneDrug);
+			
 			this.drugStatusInfo = String.format(
 				"Molecular alterations in %s are associated to response to %s, a drug %s",
 				this.genes[0], this.drug, geneDrug.getStatus().getDescription() 
@@ -147,6 +152,10 @@ public class GeneDrugInfo {
 	
 	public String getTarget() {
 		return target;
+	}
+	
+	public String getSensitivity() {
+		return sensitivity;
 	}
 	
 	public String getAlteration() {

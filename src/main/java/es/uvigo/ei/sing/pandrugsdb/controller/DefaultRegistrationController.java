@@ -22,11 +22,10 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.mail.Mailer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.RegistrationDAO;
@@ -35,7 +34,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 
 @Controller
-@Transactional(value = TxType.REQUIRED)
+@Transactional
 @Lazy
 public class DefaultRegistrationController
 implements RegistrationController {

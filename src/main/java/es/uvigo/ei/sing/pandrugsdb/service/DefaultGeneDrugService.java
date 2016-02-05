@@ -23,27 +23,30 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
 /**
  * Service to query the gene drugs lists.
@@ -77,6 +80,33 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					cancerDrugStatus, nonCancerDrugStatus, target, direct
 				),
 				genes.toArray(new String[genes.size()])
+			);
+			
+			return new GeneDrugGroupInfos(geneDrugs);
+		} catch (IllegalArgumentException | NullPointerException iae) {
+			throw createBadRequestException(iae.getMessage());
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Override
+	public GeneDrugGroupInfos listRanked(
+		GeneRanking geneRanking,
+		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("target") String target,
+		@QueryParam("direct") String direct
+	) throws BadRequestException, InternalServerErrorException {
+		try {
+			requireNonNull(geneRanking, "geneRanking can't be null");
+			requireNonEmpty(geneRanking.getGeneRank(), "At least one gene must be provided");
+			
+			final List<GeneDrugGroup> geneDrugs = controller.searchForGeneDrugs(
+				new GeneQueryParameters(
+					cancerDrugStatus, nonCancerDrugStatus, target, direct
+				),
+				geneRanking
 			);
 			
 			return new GeneDrugGroupInfos(geneDrugs);

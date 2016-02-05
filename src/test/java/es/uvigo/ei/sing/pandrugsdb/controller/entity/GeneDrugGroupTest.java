@@ -802,7 +802,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			newGeneDrug("G_HIGH", "D1", giHigh),
 			newGeneDrug("G_MED", "D1", giMedium)
 		);
-		geneDrugs.forEach(gd -> expect(gd.getIndirectGenes()).andReturn(emptyList()).anyTimes());
+		geneDrugs.forEach(gd -> expect(gd.getIndirectGeneSymbols()).andReturn(emptyList()).anyTimes());
 		
 		replayAll();
 		
@@ -832,7 +832,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final GeneDrug gd = createNiceMock(GeneDrug.class);
 		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
 		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
-		expect(gd.getIndirectGenes()).andReturn(asList(indirect)).anyTimes();
+		expect(gd.getIndirectGeneSymbols()).andReturn(asList(indirect)).anyTimes();
 		
 		return gd;
 	}

@@ -365,4 +365,21 @@ public class GeneDrugGroupInfo {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder()
+			.append("GeneDrugGroupInfo [genes=")
+			.append(Arrays.toString(genes))
+			.append(", standardDrugName=")
+			.append(standardDrugName)
+			.append(", statusDescription=")
+			.append(statusDescription)
+			.append(", dScore=")
+			.append(dScore)
+			.append(", gScore=")
+			.append(gScore)
+			.append("]")
+		.toString();
+	}
 }

@@ -23,15 +23,13 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 
 @Repository
-@Transactional(value = TxType.REQUIRED)
+@Transactional
 public class DefaultRegistrationDAO
 extends DAO<String, Registration>
 implements RegistrationDAO {

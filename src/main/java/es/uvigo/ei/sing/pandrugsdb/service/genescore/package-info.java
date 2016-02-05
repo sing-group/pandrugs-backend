@@ -2,7 +2,7 @@
  * #%L
  * PanDrugsDB Backend
  * %%
- * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -19,20 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
-
-import java.util.List;
-
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-
-public interface GeneDrugController {
-	public abstract List<GeneDrugGroup> searchForGeneDrugs(
-		GeneQueryParameters queryParameters, String ... geneNames
-	);
-	
-	public abstract List<GeneDrugGroup> searchForGeneDrugs(
-		GeneQueryParameters queryParameters, GeneRanking geneRanking
-	);
-}
+/**
+ * 
+ */
+/**
+ * @author michi
+ *
+ */
+package es.uvigo.ei.sing.pandrugsdb.service.genescore;
