@@ -34,7 +34,7 @@ public enum CancerType {
 	CERVIX,
 	CLINICAL_CANCER, // Added
 	COLON,
-	HEAD,
+	HEAD_AND_NECK,
 	INTESTINE,
 	KIDNEY,
 	LIVER,
