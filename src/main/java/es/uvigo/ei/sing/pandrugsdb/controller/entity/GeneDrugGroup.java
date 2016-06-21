@@ -23,6 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.controller.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
@@ -299,7 +301,7 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		double score = Math.abs(geneDrug.getScore());
+		double score = abs(geneDrug.getScore());
 		
 		switch (this.getStatus()) {
 		case EXPERIMENTAL:
@@ -308,11 +310,11 @@ public class GeneDrugGroup {
 		case APPROVED:
 		case CLINICAL_TRIALS:
 			score -= 0.1d;
-			score += Math.min(9, this.targetGenes.length) * 0.01d;
+			score += min(9, this.targetGenes.length) * 0.01d;
 			if (this.isOnlyIndirect())
 				score -= 0.01d;
 			
-			score += geneDrug.getCuratedDrugSourceNames().size() * 0.001d + 0.001d;
+			score += min(9, geneDrug.getCuratedDrugSourceNames().size()) * 0.001d + 0.001d;
 			break;
 		default:
 			return Double.NaN;

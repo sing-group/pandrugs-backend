@@ -21,9 +21,10 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.genescore;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
@@ -40,7 +41,7 @@ public class GeneInformationGeneScoreCalculator implements GeneScoreCalculator {
 	@Override
 	public Map<String, Double> indirectGScores(GeneDrug geneDrug) {
 		return geneDrug.getIndirectGenes().stream()
-			.collect(Collectors.toMap(
+			.collect(toMap(
 				IndirectGene::getGeneSymbol,
 				indirect -> Optional.ofNullable(indirect.getGeneInformation())
 					.map(GeneInformation::getGScore)

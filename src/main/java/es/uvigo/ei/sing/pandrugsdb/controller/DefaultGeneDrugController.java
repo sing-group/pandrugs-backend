@@ -24,13 +24,12 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +83,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		requireNonNull(queryParameters);
 		requireNonNull(geneRanking);
 		
-		final Map<String, Double> geneRank = geneRanking.asMap();
-		requireNonEmpty(geneRank);
+		final Map<String, Double> geneRank = requireNonEmpty(geneRanking.asMap());
 		
 		return searchForGeneDrugs(
 			queryParameters,
@@ -106,10 +104,10 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		final List<GeneDrug> geneDrugs = this.dao.searchByGene(
 			queryParameters, upperGeneNames
 		);
-
-		final List<Set<GeneDrug>> groups = 
-			groupBy(geneDrugs, GeneDrug::getStandardDrugName)
-		.collect(toList());
+		
+		final Collection<Set<GeneDrug>> groups = geneDrugs.stream()
+			.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
+		.values();
 		
 		return groups.stream()
 			.map(gdg -> new GeneDrugGroup(
@@ -169,21 +167,5 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return Stream.of(geneNames)
 			.filter(geneDrugNames::contains)
 		.toArray(String[]::new);
-	}
-	
-	private final static <T> Stream<Set<GeneDrug>> groupBy(
-		Collection<GeneDrug> geneDrugs, Function<GeneDrug, T> criteria
-	) {
-		final Map<T, Set<GeneDrug>> groups = new HashMap<>();
-		
-		for (GeneDrug gd : geneDrugs) {
-			final T cValue = criteria.apply(gd);
-			
-			if (!groups.containsKey(cValue))
-				groups.put(cValue, new HashSet<>());
-			groups.get(cValue).add(gd);
-		}
-		
-		return groups.values().stream();
 	}
 }
