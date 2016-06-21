@@ -21,14 +21,18 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static java.util.Collections.unmodifiableSet;
+
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 @Entity(name = "gene_info")
 public class GeneInformation implements Serializable {
@@ -51,6 +55,9 @@ public class GeneInformation implements Serializable {
 
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
+	
+	@ManyToMany(mappedBy = "genes")
+	private Set<Protein> proteins;
 	
 	GeneInformation() {
 	}
@@ -110,6 +117,10 @@ public class GeneInformation implements Serializable {
 		}
 		
 		return gScore;
+	}
+	
+	public Set<Protein> getProteins() {
+		return unmodifiableSet(proteins);
 	}
 
 	@Override
