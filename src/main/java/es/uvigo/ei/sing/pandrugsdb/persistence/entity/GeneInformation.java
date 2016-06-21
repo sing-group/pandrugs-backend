@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -122,6 +123,19 @@ public class GeneInformation implements Serializable {
 	public Set<Protein> getProteins() {
 		return unmodifiableSet(proteins);
 	}
+	
+	public Set<GeneInformation> getInteractingGenes() {
+		final Set<GeneInformation> interactions = this.proteins.stream()
+			.map(Protein::getInteractions)
+			.flatMap(Set::stream)
+			.map(Protein::getGenes)
+			.flatMap(Set::stream)
+		.collect(toSet());
+		
+		interactions.remove(this);
+		
+		return interactions;
+	}
 
 	@Override
 	public int hashCode() {
@@ -165,14 +179,12 @@ public class GeneInformation implements Serializable {
 	
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder(this.geneSymbol);
-		
-		sb.append(" [TPML: ").append(this.tumorPortalMutationLevel)
+		return new StringBuilder(this.geneSymbol)
+			.append(" [TPML: ").append(this.tumorPortalMutationLevel)
 			.append(", CGC: ").append(this.cgc)
 			.append(", DL: ").append(this.driverLevel)
 			.append(", GES: ").append(this.geneEssentialityScore)
-			.append("]");
-		
-		return sb.toString();
+			.append("]")
+		.toString();
 	}
 }
