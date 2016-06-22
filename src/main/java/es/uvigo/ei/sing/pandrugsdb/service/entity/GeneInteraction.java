@@ -21,22 +21,32 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
+import static java.util.stream.Collectors.groupingBy;
+
+import java.util.Set;
+import java.util.stream.Stream;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
 
 @XmlRootElement(name = "gene-interaction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneInteraction {
 	private String geneSymbol;
-	@XmlElementWrapper(name = "interactions")
-	@XmlElement(name = "interaction")
+	
+	@XmlElementWrapper(name = "gene-interactions")
+	@XmlElement(name = "gene-interaction")
 	private String[] interactions;
-
+	
+	@XmlElementWrapper(name = "drug-interactions")
+	private DrugInteraction[] drugInteractions;
+	
 	GeneInteraction() {}
 	
 	public GeneInteraction(GeneInformation geneInfo) {
@@ -45,6 +55,30 @@ public class GeneInteraction {
 		this.interactions = geneInfo.getInteractingGenes().stream()
 			.map(GeneInformation::getGeneSymbol)
 		.toArray(String[]::new);
+		
+		final Stream<DrugInteraction> directInteractions = geneInfo.getGeneDrugs().stream()
+			.map(DrugInteraction::new);
+		
+		final Stream<DrugInteraction> indirectInteractions = geneInfo.getInteractingGenes().stream()
+			.map(GeneInformation::getGeneDrugs)
+			.flatMap(Set::stream)
+			.collect(groupingBy(DrugInteraction::new))
+			.entrySet().stream()
+			.map(entry -> {
+				final String[] indirect = entry.getValue().stream()
+					.map(GeneDrug::getGeneSymbol)
+				.toArray(String[]::new);
+				
+				if (indirect.length > 1)
+					System.out.println(entry.getKey().getShowDrugName());
+				
+				entry.getKey().setIndirect(indirect);
+				
+				return entry.getKey();
+			});
+		
+		this.drugInteractions = Stream.concat(directInteractions, indirectInteractions)
+			.toArray(DrugInteraction[]::new);
 	}
 	
 	public String[] getInteractions() {

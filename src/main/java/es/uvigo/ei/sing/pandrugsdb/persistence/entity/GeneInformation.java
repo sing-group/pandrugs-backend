@@ -32,8 +32,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity(name = "gene_info")
 public class GeneInformation implements Serializable {
@@ -56,6 +58,9 @@ public class GeneInformation implements Serializable {
 
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
+	
+	@OneToMany(mappedBy = "geneInformation", fetch = FetchType.LAZY)
+	private Set<GeneDrug> geneDrugs;
 	
 	@ManyToMany(mappedBy = "genes")
 	private Set<Protein> proteins;
@@ -135,6 +140,10 @@ public class GeneInformation implements Serializable {
 		interactions.remove(this);
 		
 		return interactions;
+	}
+	
+	public Set<GeneDrug> getGeneDrugs() {
+		return unmodifiableSet(geneDrugs);
 	}
 
 	@Override
