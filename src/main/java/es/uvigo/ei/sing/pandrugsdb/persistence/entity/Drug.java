@@ -62,7 +62,7 @@ public class Drug implements Serializable {
 	@Column(name = "show_name", length = 2000, columnDefinition = "VARCHAR(2000)", unique = true, nullable = false)
 	private String showName;
 	
-	@Column(name = "status", nullable = false)
+	@Column(name = "status", nullable = false, length = 16)
 	@Enumerated(EnumType.STRING)
 	private DrugStatus status;
 	

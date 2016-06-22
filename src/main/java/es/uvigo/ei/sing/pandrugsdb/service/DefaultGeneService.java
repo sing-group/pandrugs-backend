@@ -24,6 +24,8 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requirePositive;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -48,16 +50,32 @@ public class DefaultGeneService implements GeneService {
 	private GeneInformationController controller;
 	
 	@GET
-	@Path("/{geneSymbol}/interactions")
+	@Path("/{gene}/interactions")
 	@Override
-	public GeneInteraction[] interactions(
-		@PathParam("geneSymbol") String geneSymbol,
+	public GeneInteraction[] getGeneInteractions(
+		@PathParam("gene") String geneSymbol,
 		@QueryParam("degree") @DefaultValue("1") int degree
 	) {
 		requireNonEmpty(geneSymbol);
 		requirePositive(degree);
 		
-		return controller.interactions(geneSymbol, degree).stream()
+		return controller.interactions(degree, geneSymbol).stream()
+			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))
+			.map(GeneInteraction::new)
+		.toArray(GeneInteraction[]::new);
+	}
+	
+	@GET
+	@Path("/interactions")
+	@Override
+	public GeneInteraction[] getGenesInteractions(
+		@QueryParam("gene") List<String> geneSymbols,
+		@QueryParam("degree") @DefaultValue("1") int degree
+	) {
+		requireNonEmpty(geneSymbols);
+		requirePositive(degree);
+		
+		return controller.interactions(degree, geneSymbols.stream().toArray(String[]::new)).stream()
 			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))
 			.map(GeneInteraction::new)
 		.toArray(GeneInteraction[]::new);

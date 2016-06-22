@@ -65,14 +65,9 @@ public class GeneInteraction {
 			.collect(groupingBy(DrugInteraction::new))
 			.entrySet().stream()
 			.map(entry -> {
-				final String[] indirect = entry.getValue().stream()
+				entry.getKey().setIndirect(entry.getValue().stream()
 					.map(GeneDrug::getGeneSymbol)
-				.toArray(String[]::new);
-				
-				if (indirect.length > 1)
-					System.out.println(entry.getKey().getShowDrugName());
-				
-				entry.getKey().setIndirect(indirect);
+				.toArray(String[]::new));
 				
 				return entry.getKey();
 			});

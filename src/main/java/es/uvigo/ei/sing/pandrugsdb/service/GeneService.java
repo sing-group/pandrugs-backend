@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import java.util.List;
+
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 public interface GeneService {
@@ -32,5 +34,15 @@ public interface GeneService {
 	 * @param degree the maximum degree of distance.
 	 * @return a list of gene interactions including the provided gene.
 	 */
-	public abstract GeneInteraction[] interactions(String geneSymbol, int degree);
+	public abstract GeneInteraction[] getGeneInteractions(String geneSymbol, int degree);
+
+	/**
+	 * Returns a list of genes that interact with a provided list of genes
+	 * with a certain degree of distance.
+	 * 
+	 * @param geneSymbol the gene symbols of the reference genes.
+	 * @param degree the maximum degree of distance.
+	 * @return a list of gene interactions including the provided genes.
+	 */
+	public abstract GeneInteraction[] getGenesInteractions(List<String> geneSymbol, int degree);
 }

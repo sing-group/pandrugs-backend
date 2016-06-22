@@ -23,9 +23,9 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requirePositive;
-import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toSet;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,14 +46,15 @@ public class DefaultGeneInformationController implements GeneInformationControll
 	private GeneInformationDAO dao;
 
 	@Override
-	public Set<GeneInformation> interactions(String geneSymbol, int degree) {
+	public Set<GeneInformation> interactions(int degree, String ... geneSymbol) {
 		requireNonEmpty(geneSymbol);
 		requirePositive(degree);
 		
-		final GeneInformation geneInformation = requireNonNull(dao.get(geneSymbol));
+		final Set<GeneInformation> genes = Arrays.stream(geneSymbol)
+			.map(dao::get)
+		.collect(toSet());
 		
-		final Set<GeneInformation> genes = new HashSet<>();
-		genes.add(geneInformation);
+		requireNonEmpty(genes);
 		
 		for (int i = 0; i < degree; i++) {
 			genes.addAll(genes.stream()
