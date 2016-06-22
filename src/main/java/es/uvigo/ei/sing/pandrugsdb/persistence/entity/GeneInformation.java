@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static java.util.Collections.unmodifiableSet;
-import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -34,6 +33,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
@@ -64,6 +64,10 @@ public class GeneInformation implements Serializable {
 	
 	@ManyToMany(mappedBy = "genes")
 	private Set<Protein> proteins;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "interactionGeneSymbol", referencedColumnName = "geneSymbol")
+	private Set<GeneInformation> interactingGene;
 	
 	GeneInformation() {
 	}
@@ -130,16 +134,7 @@ public class GeneInformation implements Serializable {
 	}
 	
 	public Set<GeneInformation> getInteractingGenes() {
-		final Set<GeneInformation> interactions = this.proteins.stream()
-			.map(Protein::getInteractions)
-			.flatMap(Set::stream)
-			.map(Protein::getGenes)
-			.flatMap(Set::stream)
-		.collect(toSet());
-		
-		interactions.remove(this);
-		
-		return interactions;
+		return unmodifiableSet(interactingGene);
 	}
 	
 	public Set<GeneDrug> getGeneDrugs() {
