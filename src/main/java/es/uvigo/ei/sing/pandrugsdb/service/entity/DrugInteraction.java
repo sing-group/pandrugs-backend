@@ -34,8 +34,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 @XmlRootElement(name = "drug-interaction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugInteraction {
-	private String showDrugName;
+	@XmlElement(name = "standard-drug-name")
 	private String standardDrugName;
+	@XmlElement(name = "show-drug-name")
+	private String showDrugName;
 	
 	private String target;
 	

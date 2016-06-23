@@ -42,9 +42,10 @@ public class GeneInteraction {
 	
 	@XmlElementWrapper(name = "gene-interactions")
 	@XmlElement(name = "gene-interaction")
-	private String[] interactions;
+	private String[] geneInteractions;
 	
 	@XmlElementWrapper(name = "drug-interactions")
+	@XmlElement(name = "drug-interaction")
 	private DrugInteraction[] drugInteractions;
 	
 	GeneInteraction() {}
@@ -52,7 +53,7 @@ public class GeneInteraction {
 	public GeneInteraction(GeneInformation geneInfo) {
 		this.geneSymbol = geneInfo.getGeneSymbol();
 		
-		this.interactions = geneInfo.getInteractingGenes().stream()
+		this.geneInteractions = geneInfo.getInteractingGenes().stream()
 			.map(GeneInformation::getGeneSymbol)
 		.toArray(String[]::new);
 		
@@ -76,12 +77,12 @@ public class GeneInteraction {
 			.toArray(DrugInteraction[]::new);
 	}
 	
-	public String[] getInteractions() {
-		return interactions;
+	public String[] getGeneInteractions() {
+		return geneInteractions;
 	}
 	
-	public void setInteractions(String[] interactions) {
-		this.interactions = interactions;
+	public void setGeneInteractions(String[] interactions) {
+		this.geneInteractions = interactions;
 	}
 	
 	public String getGeneSymbol() {
@@ -90,5 +91,13 @@ public class GeneInteraction {
 
 	public void setGeneSymbol(String geneSymbol) {
 		this.geneSymbol = geneSymbol;
+	}
+	
+	public DrugInteraction[] getDrugInteractions() {
+		return drugInteractions;
+	}
+	
+	public void setDrugInteractions(DrugInteraction[] drugInteractions) {
+		this.drugInteractions = drugInteractions;
 	}
 }
