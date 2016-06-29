@@ -22,7 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requirePositive;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
 
 import java.util.List;
 
@@ -54,10 +54,10 @@ public class DefaultGeneService implements GeneService {
 	@Override
 	public GeneInteraction[] getGeneInteractions(
 		@PathParam("gene") String geneSymbol,
-		@QueryParam("degree") @DefaultValue("1") int degree
+		@QueryParam("degree") @DefaultValue("0") int degree
 	) {
 		requireNonEmpty(geneSymbol);
-		requirePositive(degree);
+		requireNonNegative(degree);
 		
 		return controller.interactions(degree, geneSymbol).stream()
 			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))
@@ -70,10 +70,10 @@ public class DefaultGeneService implements GeneService {
 	@Override
 	public GeneInteraction[] getGenesInteractions(
 		@QueryParam("gene") List<String> geneSymbols,
-		@QueryParam("degree") @DefaultValue("1") int degree
+		@QueryParam("degree") @DefaultValue("0") int degree
 	) {
 		requireNonEmpty(geneSymbols);
-		requirePositive(degree);
+		requireNonNegative(degree);
 		
 		return controller.interactions(degree, geneSymbols.stream().toArray(String[]::new)).stream()
 			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))

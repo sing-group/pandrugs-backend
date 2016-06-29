@@ -22,12 +22,11 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requirePositive;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -48,7 +47,7 @@ public class DefaultGeneInformationController implements GeneInformationControll
 	@Override
 	public Set<GeneInformation> interactions(int degree, String ... geneSymbol) {
 		requireNonEmpty(geneSymbol);
-		requirePositive(degree);
+		requireNonNegative(degree);
 		
 		final Set<GeneInformation> genes = Arrays.stream(geneSymbol)
 			.map(dao::get)
@@ -60,7 +59,7 @@ public class DefaultGeneInformationController implements GeneInformationControll
 			genes.addAll(genes.stream()
 				.map(GeneInformation::getInteractingGenes)
 				.flatMap(Set::stream)
-			.collect(Collectors.toSet()));
+			.collect(toSet()));
 		}
 		
 		return genes;
