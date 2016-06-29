@@ -21,6 +21,13 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
+import static java.util.Objects.requireNonNull;
+
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,4 +44,28 @@ implements GeneInformationDAO {
 		return super.get(geneSymbol);
 	}
 
+	@Override
+	public String[] listGeneSymbols(String queryFilter, int maxResults) {
+		requireNonNull(queryFilter);
+		
+		final CriteriaQuery<String> cq = cb().createQuery(String.class);
+		final Root<GeneInformation> root = cq.from(getEntityType());
+		
+		final Path<String> geneSymbolField = root.get("geneSymbol");
+		
+		final TypedQuery<String> query = em.createQuery(
+			cq.select(geneSymbolField).distinct(true)
+				.where(cb().like(geneSymbolField, queryFilter + "%"))
+				.orderBy(cb().asc(root.get("geneSymbol")))
+		);
+		
+		if (maxResults > 0)
+			query.setMaxResults(maxResults);
+		
+		return query
+			.getResultList()
+			.stream()
+		.toArray(String[]::new);
+	}
+	
 }

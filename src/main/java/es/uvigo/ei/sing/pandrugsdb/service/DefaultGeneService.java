@@ -48,6 +48,16 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 public class DefaultGeneService implements GeneService {
 	@Inject
 	private GeneInformationController controller;
+
+	@GET
+	@Path("symbol")
+	@Override
+	public String[] listGeneSymbols(
+		@QueryParam("query") @DefaultValue("") String query,
+		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
+	) {
+		return controller.listGeneSymbols(query, maxResults);
+	}
 	
 	@GET
 	@Path("/{gene}/interactions")

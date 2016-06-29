@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
@@ -43,6 +44,13 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
 public class DefaultGeneInformationController implements GeneInformationController {
 	@Inject
 	private GeneInformationDAO dao;
+	
+	@Override
+	public String[] listGeneSymbols(String query, int maxResults) {
+		requireNonNull(query);
+		
+		return dao.listGeneSymbols(query, maxResults);
+	}
 
 	@Override
 	public Set<GeneInformation> interactions(int degree, String ... geneSymbol) {
