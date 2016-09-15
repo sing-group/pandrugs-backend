@@ -21,9 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb;
 
-import javax.inject.Singleton;
-
-@Singleton
 public final class Configuration {
 	private String emailFrom;
 	private String serverURL;
