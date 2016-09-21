@@ -63,7 +63,7 @@ public class ClinicalGenomeVariation implements Serializable {
 	@Column(name = "accession", length = 50, columnDefinition = "VARCHAR(50)")
 	private String accession;
 	
-	@Column(name = "clinical_significance", length = 50, columnDefinition = "VARCHAR(50)", nullable = false)
+	@Column(name = "clinical_significance", length = 100, columnDefinition = "VARCHAR(100)", nullable = false)
 	private String clinicalSignificance;
 	
 	@Column(name = "db_snp", length = 50, columnDefinition = "VARCHAR(50)", nullable = true)
