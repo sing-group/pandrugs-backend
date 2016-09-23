@@ -41,12 +41,10 @@ public class ClinicalGenomeVariationId implements Serializable {
 	
 	private String accession;
 	
-	ClinicalGenomeVariationId() {
-	}
+	ClinicalGenomeVariationId() {}
 	
 	public ClinicalGenomeVariationId(String chromosome, int start, int end, String hgvs, String disease,
 			String accession) {
-		super();
 		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;

@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+ #%L
+ PanDrugsDB Backend
+ %%
+ Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ %%
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public
+ License along with this program. If not, see
+ <http://www.gnu.org/licenses/gpl-3.0.html>.
+ #L%
+ -->
+
+<dataset>
+	<somatic_mutation_in_cancer gene_symbol="KRAS" sample_id="1106715"
+		mutation_id="520" mutation_aa="p.G12V" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="JAK2" sample_id="1171692"
+		mutation_id="12600" mutation_aa="p.V617F" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="JAK2" sample_id="1191791"
+		mutation_id="12600" mutation_aa="p.V617F" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="JAK2" sample_id="1253988"
+		mutation_id="12600" mutation_aa="p.V617F" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="KRAS" sample_id="1243570"
+		mutation_id="520" mutation_aa="p.G12V" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="PIK3CA" sample_id="1278874"
+		mutation_id="29325" mutation_aa="p.H1047R" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="BRAF" sample_id="1297208"
+		mutation_id="1131" mutation_aa="p.V600E" fathmm_prediction="CANCER"
+		status="Reported in another cancer sample as somatic" />
+	<somatic_mutation_in_cancer gene_symbol="NUFIP2" sample_id="2062380"
+		mutation_id="1723202" mutation_aa="p.H51delH" fathmm_prediction="NONE"
+		status="Confirmed somatic variant" />
+	<somatic_mutation_in_cancer gene_symbol="C8A" sample_id="2062380"
+		mutation_id="911094" mutation_aa="p.D169N" fathmm_prediction="PASSENGER_OTHER"
+		status="Confirmed somatic variant" />
+</dataset>

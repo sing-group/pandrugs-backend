@@ -72,6 +72,10 @@ public class GeneInformation implements Serializable {
 	GeneInformation() {
 	}
 	
+	public GeneInformation(String geneSymbol) {
+		this(geneSymbol, null, false, null, null);
+	}
+	
 	public GeneInformation(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
