@@ -83,6 +83,7 @@
 	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAO"/>
 	<bean id="defaultGeneDrugDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAO"/>
 	<bean id="defaultClinicalGenomeVariationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAO"/>
+	<bean id="defaultPrincipalSpliceIsoformDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAO"/>
 	<bean id="defaultRegistrationController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationController"/>
 	<bean id="defaultUserController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserController"/>
 	<bean id="defaultGeneDrugController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugController"/>

@@ -211,6 +211,40 @@ public final class Checks {
 	}
 	
 	/**
+	 * Checks the exact length of a string.
+	 * 
+	 * @param string string to be checked.
+	 * @param size the exact length of the string.
+	 * @return the provided string.
+	 * @throws NullPointerException if {@code string} is {@code null}.
+	 * @throws IllegalArgumentException if {@code string} does not have the 
+	 * required length.
+	 */
+	public static String requireStringSize(String string, int size) {
+		return requireStringSize(string, size, size,
+			String.format("string length must be %d", size)
+		);
+	}
+	
+	/**
+	 * Checks the exact length of a string.
+	 * 
+	 * @param string string to be checked.
+	 * @param size the exact length of the string.
+	 * @param message the error message.
+	 * @return the provided string.
+	 * @throws NullPointerException if {@code string} is {@code null}.
+	 * @throws IllegalArgumentException if {@code string} does not have the 
+	 * required length.
+	 */
+	public static String requireStringSize(String string, int size, String message) {
+		return check(requireNonNull(string, message), 
+			s -> s.length() == size,
+			message
+		);
+	}
+	
+	/**
 	 * Checks if the length of a string is between two values.
 	 * 
 	 * @param string string to be checked.
