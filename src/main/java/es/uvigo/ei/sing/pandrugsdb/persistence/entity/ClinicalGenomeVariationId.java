@@ -55,7 +55,9 @@ public class ClinicalGenomeVariationId implements Serializable {
 		this.accession = accession;
 	}
 
-
+	public static ClinicalGenomeVariationId of(ClinicalGenomeVariation cgv) {
+		return new ClinicalGenomeVariationId(cgv.getChromosome(), cgv.getStart(), cgv.getEnd(), cgv.getHgvs(), cgv.getDisease(), cgv.getAccession());
+	}
 
 	public String getChromosome() {
 		return chromosome;
