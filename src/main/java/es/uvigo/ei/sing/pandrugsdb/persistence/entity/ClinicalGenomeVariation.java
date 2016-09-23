@@ -34,7 +34,7 @@ import javax.persistence.Table;
 @IdClass(ClinicalGenomeVariationId.class)
 @Table(indexes = {
 	@Index(name = "dbSnpIndex", columnList = "db_snp", unique = false),
-	@Index(name = "chromosomePositionsIndex", columnList = "chromosome,start,end", unique = false)
+	@Index(name = "chromosomePositionsIndex", columnList = "chromosome,start,hgvs", unique = false)
 })
 public class ClinicalGenomeVariation implements Serializable {
 	private static final long serialVersionUID = 1L;
