@@ -62,6 +62,7 @@ public abstract class IsEqualToEntity<T> extends TypeSafeMatcher<T> {
 	 */
 	public IsEqualToEntity(final T entity) {
 		this.expected = requireNonNull(entity);
+		this.describeTo = description -> description.appendValue(this.expected);
 	}
 
 	@Override
@@ -381,5 +382,10 @@ public abstract class IsEqualToEntity<T> extends TypeSafeMatcher<T> {
         	.collect(toList());
         
 		return contains(matchersList);
+    }
+    
+    @Override
+    public String toString() {
+    	return this.expected.toString();
     }
 }

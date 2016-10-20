@@ -25,14 +25,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAOTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAOTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultSomaticMutationInCancerDAOTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAOIntegrationTest;
 
 @SuiteClasses({
 	DefaultRegistrationDAOIntegrationTest.class,
 	DefaultUserDAOIntegrationTest.class,
-	DefaultGeneDrugDAOIntegrationTest.class
+	DefaultGeneDrugDAOIntegrationTest.class,
+	DefaultClinicalGenomeVariationDAOTest.class,
+	DefaultPrincipalSpliceIsoformDAOTest.class,
+	DefaultSomaticMutationInCancerDAOTest.class
 })
 @RunWith(Suite.class)
 public class DAOIntegrationTestSuite {

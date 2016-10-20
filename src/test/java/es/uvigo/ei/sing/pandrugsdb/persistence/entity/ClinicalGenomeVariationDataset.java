@@ -31,8 +31,8 @@ public final class ClinicalGenomeVariationDataset {
 	public static ClinicalGenomeVariation[] clinicalGenomeVariations() {
 		return new ClinicalGenomeVariation[] {
 			new ClinicalGenomeVariation("1", 123456789, 123456789, "c.321G>A", "Disease 1", "ACC00001", "Pathogenic", "rs1000000"),
-			new ClinicalGenomeVariation("1", 123456789, 123456789, "c.321G>A", "Disease 2", "ACC00001", "Pathogenic", "rs1000000"),
-			new ClinicalGenomeVariation("1", 123456789, 123456789, "c.321G>A", "Disease 3", "ACC00001", "Pathogenic", "rs1000000"),
+			new ClinicalGenomeVariation("1", 123456789, 123456789, "c.321G>A", "Disease 2", "ACC00001", "Pathogenic", "rs2000000"),
+			new ClinicalGenomeVariation("1", 123456789, 123456789, "c.321G>A", "Disease 3", "ACC00001", "Pathogenic", "rs3000000"),
 			new ClinicalGenomeVariation("2", 222222222, 222222223, "c.4727_4753del2", "Disease 1", "ACC00002", "Pathogenic", "rs2000000"),
 			new ClinicalGenomeVariation("1", 123456789, 123456790, "c.321del2", "Disease 1", "ACC00001", "Pathogenic", "rs3000000")
 		};
