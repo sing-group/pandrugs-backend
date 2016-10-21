@@ -26,6 +26,8 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.ws.rs.BadRequestException;
@@ -69,11 +71,15 @@ public final class ServiceUtils {
 	}
 	
 	public static <T extends WebApplicationException> T createErrorException(
-		Function<Response, T> exceptionBuilder,
+		BiFunction<Response, Throwable, T> exceptionBuilder,
 		Response.Status status,
-		Exception exception
+		Throwable exception
 	) {
-		return createErrorException(exceptionBuilder, status, exception.getMessage());
+		final Response response = Response.status(status).entity(new ErrorMessage(
+			status.getStatusCode(), Optional.ofNullable(exception.getMessage()).orElse("Unexpected exception thrown")
+		)).build();
+		
+		return exceptionBuilder.apply(response, exception);
 	}
 
 	public static <T extends WebApplicationException> T createErrorException(
