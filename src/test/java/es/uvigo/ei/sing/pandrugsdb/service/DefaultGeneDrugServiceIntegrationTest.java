@@ -54,7 +54,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
@@ -68,7 +68,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
 @ExpectedDatabase(

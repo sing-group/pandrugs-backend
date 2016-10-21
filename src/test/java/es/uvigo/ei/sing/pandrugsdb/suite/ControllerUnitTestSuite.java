@@ -26,6 +26,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneInformationControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerUnitTest;
@@ -36,6 +37,7 @@ import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneInformationGScoreTest;
 	DefaultRegistrationControllerUnitTest.class,
 	DefaultUserControllerUnitTest.class,
 	DefaultGeneDrugControllerUnitTest.class,
+	DefaultGeneInformationControllerUnitTest.class,
 	DefaultVariantsAnalysisControllerUnitTest.class,
 	GeneDrugGroupTest.class,
 	GeneInformationGScoreTest.class

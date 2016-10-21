@@ -58,6 +58,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.user.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultUserControllerIntegrationTest {
 	@Inject
 	@Named("defaultUserController")

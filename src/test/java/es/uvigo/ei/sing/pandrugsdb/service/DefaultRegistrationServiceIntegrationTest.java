@@ -41,8 +41,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
@@ -54,34 +56,36 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.registration.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.registration.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultRegistrationServiceIntegrationTest {
 	@Inject
 	@Named("defaultRegistrationService")
 	private RegistrationService service;
 	
-	//TODO: Add database checks
 	@Test
-	public void testRegisterAbsentRegistration() {
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration-create.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterAbsentUser() {
 		final Registration registration = absentRegistration();
 
 		assertNotNull(service.register(registration));
 	}
 	
-	@Test(expected = BadRequestException.class)
-	public void testRegisterPresentRegistrationLogin() {
-		final Registration registration = absentRegistration();
-		registration.setLogin(presentRegistration().getLogin());
-		
-		service.register(registration);
-	}
-	
 	@Test
-	public void testRegisterPresentRegistrationEmail() {
-		final Registration registration = absentRegistration();
-		registration.setEmail(presentRegistration().getEmail());
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterPresentRegistration() {
+		final Registration registration = presentRegistration();
 		
 		assertNotNull(service.register(registration));
 	}
@@ -94,8 +98,50 @@ public class DefaultRegistrationServiceIntegrationTest {
 		
 		service.register(registration);
 	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testRegisterPresentRegistrationLogin() {
+		final Registration registration = absentRegistration();
+		registration.setLogin(presentRegistration().getLogin());
+		
+		service.register(registration);
+	}
+	
+	@Test
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration-change.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterPresentRegistrationEmail() {
+		final Registration registration = absentRegistration();
+		registration.setEmail(presentRegistration().getEmail());
+		
+		assertNotNull(service.register(registration));
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testRegisterPresentUserLogin() {
+		final User user = presentUser();
+		final Registration registration = absentRegistration();
+		registration.setLogin(user.getLogin());
+		
+		assertNotNull(service.register(registration));
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testRegisterPresentUserEmail() {
+		final User user = presentUser();
+		final Registration registration = absentRegistration();
+		registration.setEmail(user.getEmail());
+
+		assertNotNull(service.register(registration));
+	}
 
 	@Test
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration-confirm.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
 	public void testConfirm() throws Exception {
 		final Registration registration = presentRegistration();
 		final String uuid = registration.getUuid();

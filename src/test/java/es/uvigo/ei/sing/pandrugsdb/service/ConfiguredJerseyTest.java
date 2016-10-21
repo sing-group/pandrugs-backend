@@ -53,7 +53,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 
 import es.uvigo.ei.sing.pandrugsdb.UnexpectedExceptionMapper;
 
@@ -61,7 +61,7 @@ import es.uvigo.ei.sing.pandrugsdb.UnexpectedExceptionMapper;
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
-	DbUnitTestExecutionListener.class,
+	TransactionDbUnitTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class
 })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)

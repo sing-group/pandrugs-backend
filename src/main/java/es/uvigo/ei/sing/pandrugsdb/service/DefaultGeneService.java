@@ -56,6 +56,8 @@ public class DefaultGeneService implements GeneService {
 		@QueryParam("query") @DefaultValue("") String query,
 		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
 	) {
+		requireNonEmpty(query);
+		
 		return controller.listGeneSymbols(query, maxResults);
 	}
 	

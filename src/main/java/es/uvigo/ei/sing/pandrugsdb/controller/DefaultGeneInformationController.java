@@ -23,10 +23,12 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -47,18 +49,20 @@ public class DefaultGeneInformationController implements GeneInformationControll
 	
 	@Override
 	public String[] listGeneSymbols(String query, int maxResults) {
-		requireNonNull(query);
+		requireNonNull(query, "query can't be null");
 		
 		return dao.listGeneSymbols(query, maxResults);
 	}
 
 	@Override
 	public Set<GeneInformation> interactions(int degree, String ... geneSymbol) {
-		requireNonEmpty(geneSymbol);
-		requireNonNegative(degree);
+		requireNonNegative(degree, "degree can't be negative");
+		requireNonEmpty(geneSymbol, "geneSymbol can't be empty");
+		requireNonNullArray(geneSymbol);
 		
-		final Set<GeneInformation> genes = Arrays.stream(geneSymbol)
+		final Set<GeneInformation> genes = stream(geneSymbol)
 			.map(dao::get)
+			.filter(Objects::nonNull)
 		.collect(toSet());
 		
 		requireNonEmpty(genes);

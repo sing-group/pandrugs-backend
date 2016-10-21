@@ -27,6 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerServiceIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneServiceIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationServiceIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionServiceIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceIntegrationTest;
@@ -37,6 +38,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceIntegrationTest;
 	DefaultRegistrationServiceIntegrationTest.class,
 	DefaultUserServiceIntegrationTest.class,
 	DefaultGeneDrugServiceIntegrationTest.class,
+	DefaultGeneServiceIntegrationTest.class,
 	DefaultCancerServiceIntegrationTest.class
 })
 public class ServiceIntegrationTestSuite {

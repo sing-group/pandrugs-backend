@@ -46,7 +46,7 @@ implements GeneInformationDAO {
 
 	@Override
 	public String[] listGeneSymbols(String queryFilter, int maxResults) {
-		requireNonNull(queryFilter);
+		requireNonNull(queryFilter, "queryFilter can't be null");
 		
 		final CriteriaQuery<String> cq = cb().createQuery(String.class);
 		final Root<GeneInformation> root = cq.from(getEntityType());

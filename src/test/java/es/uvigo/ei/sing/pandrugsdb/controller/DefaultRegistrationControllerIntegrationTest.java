@@ -25,7 +25,6 @@ import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMat
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,13 +57,21 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.registration.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.registration.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultRegistrationControllerIntegrationTest {
 	@Inject
 	@Named("defaultRegistrationController")
 	private RegistrationController controller;
 	
 	@Test
-	public void testRegister() {
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration-create.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterAbsentUser() {
 		final User user = absentUser();
 		final String login = user.getLogin();
 		final String email = user.getEmail();
@@ -76,28 +83,22 @@ public class DefaultRegistrationControllerIntegrationTest {
 		assertThat(registration, hasTheSameUserDataAs(user));
 		assertThat(registration.getUuid(), is(anUUID()));
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testRegisterPresentLoginRegistration() {
-		final Registration registration = presentRegistration();
-		final String login = registration.getLogin();
-		final String email = anyRegistration().getEmail();
-		final String password = registration.getPassword();
-		
-		controller.register(login, email, password);
-	}
 	
 	@Test
-	public void testRegisterPresentEmailRegistration() {
-		final Registration user = presentRegistration();
-		final String login = user.getLogin();
-		final String email = user.getEmail();
-		final String password = user.getPassword();
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterPresentRegistration() {
+		final Registration presentRegistration = presentRegistration();
+		final String login = presentRegistration.getLogin();
+		final String email = presentRegistration.getEmail();
+		final String password = presentRegistration.getPassword();
 		
 		final Registration registration =
 			controller.register(login, email, password);
 
-		assertThat(registration, hasTheSameUserDataAs(user));
+		assertThat(registration, hasTheSameUserDataAs(presentRegistration));
 		assertThat(registration.getUuid(), is(anUUID()));
 	}
 	
@@ -110,14 +111,38 @@ public class DefaultRegistrationControllerIntegrationTest {
 		
 		controller.register(login, email, password);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testRegisterPresentRegistrationLogin() {
+		final Registration absentRegistration = absentRegistration();
+		final String login = presentRegistration().getLogin();
+		final String email = absentRegistration.getEmail();
+		final String password = absentRegistration.getPassword();
+		
+		controller.register(login, email, password);
+	}
+
+	@Test
+	@ExpectedDatabase(
+		value = "file:src/test/resources/META-INF/dataset.registration-change.no-uuids.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+	)
+	public void testRegisterPresentRegistrationEmail() {
+		final Registration absentRegistration = absentRegistration();
+		final String login = absentRegistration.getLogin();
+		final String email = presentRegistration().getEmail();
+		final String password = absentRegistration.getPassword();
+		
+		controller.register(login, email, password);
+	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testRegisterPresentUserLogin() {
 		final User user = presentUser();
-		final User absentUser = absentUser();
+		final Registration absentRegistration = absentRegistration();
 		final String login = user.getLogin();
-		final String email = absentUser.getEmail();
-		final String password = absentUser.getPassword();
+		final String email = absentRegistration.getEmail();
+		final String password = absentRegistration.getPassword();
 		
 		controller.register(login, email, password);
 	}
@@ -125,44 +150,24 @@ public class DefaultRegistrationControllerIntegrationTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testRegisterPresentUserEmail() {
 		final User user = presentUser();
-		final User absentUser = absentUser();
-		final String login = absentUser.getLogin();
+		final Registration absentRegistration = absentRegistration();
+		final String login = absentRegistration.getLogin();
 		final String email = user.getEmail();
-		final String password = absentUser.getPassword();
+		final String password = absentRegistration.getPassword();
 		
 		controller.register(login, email, password);
 	}
 	
 	@Test
 	@ExpectedDatabase(
-		value = "dataset.registration.register.xml",
-		table = "user",
-		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED,
-		override = false
-	)
-	@ExpectedDatabase(
-		value = "dataset.registration.register.xml",
-		table = "registration",
-		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED,
-		override = false
+		value = "file:src/test/resources/META-INF/dataset.registration-confirm.xml",
+		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
 	)
 	public void testConfirm() {
 		controller.confirm(presentRegistration().getUuid());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	@ExpectedDatabase(
-		value = "file:src/test/resources/META-INF/dataset.registration.xml",
-		table = "user",
-		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED,
-		override = false
-	)
-	@ExpectedDatabase(
-		value = "file:src/test/resources/META-INF/dataset.registration.xml",
-		table = "registration",
-		assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED,
-		override = false
-	)
 	public void testConfirmAbsent() {
 		controller.confirm(absentRegistration().getUuid());
 	}

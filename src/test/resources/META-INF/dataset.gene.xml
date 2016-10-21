@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+ #%L
+ PanDrugsDB Backend
+ %%
+ Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ %%
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public
+ License along with this program. If not, see
+ <http://www.gnu.org/licenses/gpl-3.0.html>.
+ #L%
+ -->
+
+<dataset>
+	<gene_info gene_symbol="GATA2" cgc="1" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="ADAMTS19" cgc="0" gene_essentiality_score="0.3556896485"/>
+	<gene_info gene_symbol="CDC42BPA" cgc="0" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0.8202555173"/>
+	<gene_info gene_symbol="PRKAG2" cgc="0" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="PTGS1" cgc="0" gene_essentiality_score="0.4277512382"/>
+	<gene_info gene_symbol="PPP3R1" cgc="0" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="MAX" cgc="1" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0.626823283"/>
+	<gene_info gene_symbol="CX3CR1" cgc="0" gene_essentiality_score="0"/>
+	<gene_info gene_symbol="DMD" cgc="0" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0"/>
+
+	<!-- Degree 1: GATA2 -> ADAMTS19 | CDC42BPA | PRKAG2 -->	
+	<!-- Degree 1: CDC42BPA -> ADAMTS19 | PTGS1 | PPP3R1 -->
+	<!-- Degree 1: PPP3R1 -> DMD -->
+	<!-- Degree 1: PRKAG2 -> MAX -->
+	<!-- Degree 2: GATA2 -> ADAMTS19 | PTGS1 | PPP3R1 | MAX -->
+	<!-- Degree 2: CDC42BPA -> DMD -->
+	<!-- Degree 3: GATA2 -> DMD -->
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="ADAMTS19"/>
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="CDC42BPA"/>
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="PRKAG2"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="ADAMTS19"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="PTGS1"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="PPP3R1"/>
+	<gene_info_gene_info gene_info_gene_symbol="PPP3R1" interactingGene_gene_symbol="DMD"/>
+	<gene_info_gene_info gene_info_gene_symbol="PRKAG2" interactingGene_gene_symbol="MAX"/>
+</dataset>

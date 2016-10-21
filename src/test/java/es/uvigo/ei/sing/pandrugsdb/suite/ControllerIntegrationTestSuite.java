@@ -26,13 +26,15 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneInformationControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerIntegrationTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerIntegrationTest.class,
 	DefaultUserControllerIntegrationTest.class,
-	DefaultGeneDrugControllerIntegrationTest.class
+	DefaultGeneDrugControllerIntegrationTest.class,
+	DefaultGeneInformationControllerIntegrationTest.class
 })
 @RunWith(Suite.class)
 public class ControllerIntegrationTestSuite {

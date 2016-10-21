@@ -56,6 +56,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.registration.xml")
+@ExpectedDatabase(
+	value = "file:src/test/resources/META-INF/dataset.registration.xml",
+	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
+)
 public class DefaultRegistrationDAOIntegrationTest {
 	@Inject
 	@Named("defaultRegistrationDAO")

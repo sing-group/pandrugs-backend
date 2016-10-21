@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.Serializable;
@@ -83,11 +84,37 @@ public class GeneInformation implements Serializable {
 		DriverLevel driverLevel,
 		Double geneEssentialityScore
 	) {
+		this(
+			geneSymbol,
+			tumorPortalMutationLevel,
+			cgc,
+			driverLevel,
+			geneEssentialityScore,
+			emptySet(),
+			emptySet(),
+			emptySet()
+		);
+	}
+
+	
+	public GeneInformation(
+		String geneSymbol,
+		TumorPortalMutationLevel tumorPortalMutationLevel,
+		boolean cgc,
+		DriverLevel driverLevel,
+		Double geneEssentialityScore,
+		Set<GeneDrug> geneDrugs,
+		Set<Protein> proteins,
+		Set<GeneInformation> interactingGene
+	) {
 		this.geneSymbol = geneSymbol;
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
 		this.cgc = cgc;
 		this.driverLevel = driverLevel;
 		this.geneEssentialityScore = geneEssentialityScore;
+		this.geneDrugs = geneDrugs;
+		this.proteins = proteins;
+		this.interactingGene = interactingGene;
 	}
 
 	public String getGeneSymbol() {

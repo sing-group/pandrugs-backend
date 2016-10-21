@@ -54,6 +54,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
@@ -205,6 +206,36 @@ public class DefaultGeneDrugControllerIntegrationTest {
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixedOnlyDirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(
+				GeneQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneQueryParameters.DEFAULT_TARGET_MARKER,
+				DirectIndirectStatus.DIRECT
+			), 
+			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
+	}
+	
+	@Test
+	public void testSearchMultipleGeneMixedOnlyIndirect() {
+		final List<GeneDrugGroup> result = this.controller.searchForGeneDrugs(
+			new GeneQueryParameters(
+				GeneQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneQueryParameters.DEFAULT_TARGET_MARKER,
+				DirectIndirectStatus.INDIRECT
+			), 
+			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
 	}
 	
 	@Test

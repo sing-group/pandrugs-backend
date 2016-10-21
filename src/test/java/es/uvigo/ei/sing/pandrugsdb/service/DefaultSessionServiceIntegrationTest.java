@@ -39,7 +39,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
@@ -51,7 +51,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
 public class DefaultSessionServiceIntegrationTest {

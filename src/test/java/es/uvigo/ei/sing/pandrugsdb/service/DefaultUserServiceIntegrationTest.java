@@ -46,7 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
@@ -61,7 +61,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
 public class DefaultUserServiceIntegrationTest {

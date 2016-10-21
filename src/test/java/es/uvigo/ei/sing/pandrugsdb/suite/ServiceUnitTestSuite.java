@@ -26,6 +26,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugServiceUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneServiceUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationServiceUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionServiceUnitTest;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceUnitTest;
@@ -35,7 +36,8 @@ import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceUnitTest;
 	DefaultSessionServiceUnitTest.class,
 	DefaultRegistrationServiceUnitTest.class,
 	DefaultUserServiceUnitTest.class,
-	DefaultGeneDrugServiceUnitTest.class
+	DefaultGeneDrugServiceUnitTest.class,
+	DefaultGeneServiceUnitTest.class
 })
 public class ServiceUnitTestSuite {
 }
