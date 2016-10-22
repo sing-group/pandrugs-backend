@@ -19,12 +19,22 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
 
-public interface CandidateTherapiesCalculator {
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 
-	public List<CandidateTherapy> calculateTherapies(
-			VariantsEffectPredictionResults vep);
+public interface VariantsScoreUserComputationDAO {
+
+	void storeComputation(VariantsScoreUserComputation computation);
+
+	List<VariantsScoreUserComputation> retrieveComputationsBy(User user);
+
+	List<VariantsScoreUserComputation> list();
+	
+	VariantsScoreUserComputation update(VariantsScoreUserComputation computation);
+
+	VariantsScoreUserComputation get(int id);
 }

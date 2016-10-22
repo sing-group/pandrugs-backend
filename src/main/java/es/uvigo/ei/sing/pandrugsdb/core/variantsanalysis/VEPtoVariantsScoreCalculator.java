@@ -21,22 +21,13 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.util.List;
+import java.nio.file.Path;
 
-public class DefaultCandidateTherapiesCalculator implements
-		CandidateTherapiesCalculator {
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 
-	@Override
-	public List<CandidateTherapy> calculateTherapies(
-			VariantsEffectPredictionResults vep) {
-		
+public interface VEPtoVariantsScoreCalculator {
 
-		
-		
-		
-		
-		
-		return null;
-	}
-
+	public VariantsScoreComputationResults calculateVariantsScore(
+			VariantsEffectPredictionResults vep, Path outPath);
 }

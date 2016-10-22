@@ -21,14 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.suite;
 
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultFileSystemConfigurationUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculatorUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsEffectPredictorUnitTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsCandidateTherapiesComputerUnitTest;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsScoreComputerUnitTest;
 
 @SuiteClasses({
-	DefaultVariantsCandidateTherapiesComputerUnitTest.class,
+	DefaultVariantsScoreComputerUnitTest.class,
+	DefaultVariantsEffectPredictorUnitTest.class,
+	DefaultVEPtoVariantsScoreCalculatorUnitTest.class,
+	DefaultFileSystemConfigurationUnitTest.class
 })
 @RunWith(Suite.class)
 public class VariantsAnalysisUnitTestSuite {

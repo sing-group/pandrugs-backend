@@ -21,9 +21,11 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.net.URL;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 
-public interface VariantEffectPredictor {
-
-	public VariantsEffectPredictionResults predictEffect(URL vcfFile);
+public interface VariantsScoreComputer {
+	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters);
+	
+	public VariantsScoreComputation resumeComputation(VariantsScoreComputationDetails computation);
 }

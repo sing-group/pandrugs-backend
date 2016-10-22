@@ -55,9 +55,11 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
+@WebAppConfiguration
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,

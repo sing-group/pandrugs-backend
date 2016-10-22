@@ -19,10 +19,38 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public interface VariantsCandidateTherapiesComputer {
-	public VariantsCandidateTherapiesComputation createComputation(URL vcfFile); 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
+
+
+@Embeddable
+public class VariantsEffectPredictionResults {
+
+	@Column(name="results_vep_file")
+	private String fileName;
+	
+	@Transient
+	private Path filePath;
+	
+	protected VariantsEffectPredictionResults() {}
+	
+	public VariantsEffectPredictionResults(Path filePath) {
+		this.fileName = filePath.toString();
+		this.filePath = filePath;
+	}
+
+	public Path getFilePath() {		
+		return (this.fileName != null) ? Paths.get(this.fileName) : null;
+	}
+	
+	public void setFilePath(Path filePath) {
+		this.fileName = filePath.toString();
+		this.filePath = filePath;
+	}
 }

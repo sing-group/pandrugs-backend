@@ -21,22 +21,32 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputation;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
-/**
- * @author Daniel Glez-Peña
- *
- */
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
 public interface VariantsAnalysisController {
-	
-	public VariantsCandidateTherapiesComputation 
-		startCandidateTherapiesComputation(User user, URL vcfFile);
-	
-	public List<VariantsCandidateTherapiesComputation>
-		getComputations(User user);
 
+	public UserMetadata getUserOfComputation(Integer computationId);
+
+	public GeneRanking getGeneRankingForComputation(int computationId);
+
+	public int startVariantsScopeUserComputation(
+			UserLogin userLogin,
+			InputStream vcfFile
+	) throws IOException;
+
+	public ComputationStatusMetadata getComputationsStatus(Integer computationId);
 }

@@ -23,16 +23,12 @@ package es.uvigo.ei.sing.pandrugsdb;
 
 import javax.ws.rs.ApplicationPath;
 
+import es.uvigo.ei.sing.pandrugsdb.service.*;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService;
 import es.uvigo.ei.sing.pandrugsdb.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("public")

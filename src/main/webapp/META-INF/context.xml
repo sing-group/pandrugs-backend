@@ -62,4 +62,7 @@
 			localDataSource="true"
 		/>
 	</Realm>
+
+	<Parameter name="user.data.directory" value="/tmp" override = "false"/>
+
 </Context>

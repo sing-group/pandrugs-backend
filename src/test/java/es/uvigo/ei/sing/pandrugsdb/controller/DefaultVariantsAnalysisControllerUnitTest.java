@@ -23,103 +23,248 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
 import static java.util.Arrays.asList;
-import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.createControl;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.newCapture;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.*;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMockRunner;
 import org.easymock.IMocksControl;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.CandidateTherapiesComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.ComputationsStore;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputation;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsCandidateTherapiesComputer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.FileSystemConfiguration;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultVariantsAnalysisControllerUnitTest {
 
 	@Mock
-	private ComputationsStore store;
+	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
 
 	@Mock
-	private VariantsCandidateTherapiesComputer computer;
+	private GeneInformationDAO geneInformationDAO;
+
+	@Mock
+	private UserDAO userDAO;
+
+	@Mock
+	private VariantsScoreComputer computer;
+	
+	@Mock
+	private FileSystemConfiguration fileSystemConfiguration;
+	
+	private File aBaseDirectory = new File(System.getProperty("java.io.tmpdir"));
 	
 	private IMocksControl mockControl = createControl();
 	
 	@TestSubject
 	private VariantsAnalysisController controller = 
-		new DefaultVariantCallingAnalysisController();
+		new DefaultVariantsAnalysisController();
 
 	private final User aUser = new User("login", "login@domain.com",
 		"926e27eecdbc7a18858b3798ba99bddd", ADMIN);
 	
-	private final URL aVCF = getClass().getResource("sampleVCF_31variants.vcf");
 
+	@Before
+	public void configureBasePathMock() {
+		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(aBaseDirectory).anyTimes();
+		replay(fileSystemConfiguration);
+	}
+
+	@Before
+	public void configureUserDAOMock() {
+		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
+		replay(userDAO);
+	}
 	@Test
-	public void testExperimentIsStoredWhenStart() {
+	public void testExperimentIsStoredWhenStart() throws Exception {
 
-		Capture<VariantsCandidateTherapiesComputation> capturedArgument = 
+		Capture<VariantsScoreUserComputation> capturedArgument = 
 				newCapture();
-		store.storeComputation(capture(capturedArgument), eq(aUser));
-		replay(store);
+		Capture<VariantsScoreComputationParameters> capturedParameters =
+				newCapture();
+		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
+		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
+		replay(variantsScoreUserComputationDAO);
 
-		final VariantsCandidateTherapiesComputation computation = 
-				controller.startCandidateTherapiesComputation(aUser, aVCF);
+		final VariantsScoreComputation expectedComputation =
+				mockControl.createMock(
+						VariantsScoreComputation.class);
+		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
+		
+		
+		//expect(parameters.getVcfFile()).andReturn(aVCF);
+		//replay(parameters);
+		
+		expect(computer.createComputation(capture(capturedParameters))).andReturn(expectedComputation);
+		replay(computer);
+		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
+		replay(expectedComputation);
 
-		assertEquals(computation, capturedArgument.getValue());
+		//controller.startVariantsScoreComputation(aUser, parameters);
+		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
+			@Override
+			public int read() throws IOException {
+				return -1;
+			}
+		});
+
+		assertEquals(aUser, capturedArgument.getValue().getUser());
+		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
+	}
+	
+	@Test
+	public void testExperimentResultsAreStoredWhenFinish() throws InterruptedException, ExecutionException, IOException {
+
+		Capture<VariantsScoreUserComputation> capturedArgument = 
+				newCapture();
+		
+		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
+		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
+		replay(variantsScoreUserComputationDAO);
+
+		final VariantsScoreComputation expectedComputation =
+				mockControl.createMock(
+						VariantsScoreComputation.class);
+		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
+		
+		final VariantsScoreComputationResults expectedResults = mockControl.createMock(
+				VariantsScoreComputationResults.class);
+		
+		//expect(parameters.getVcfFile()).andReturn(aVCF);
+		//replay(parameters);
+		
+		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
+		replay(computer);
+		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
+		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
+		replay(expectedComputation);
+
+		//controller.startVariantsScoreComputation(aUser, parameters);
+		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
+			@Override
+			public int read() throws IOException {
+				return -1;
+			}
+		});
+
+		aStatus.setOverallProgress(1.0f);
+		assertEquals(expectedResults, capturedArgument.getValue().getComputationDetails().getResults());
 	}
 
 	@Test
 	public void testGetComputations() {
 
-		final VariantsCandidateTherapiesComputation[] expected = { 
-			mockControl.createMock(VariantsCandidateTherapiesComputation.class),
-			mockControl.createMock(VariantsCandidateTherapiesComputation.class)
+		final VariantsScoreUserComputation[] expected = { 
+			mockControl.createMock(VariantsScoreUserComputation.class),
+			mockControl.createMock(VariantsScoreUserComputation.class)
 		};
 				
-		expect(store.retrieveComputations(aUser)).andReturn(asList(expected));
-		replay(store);
+		expect(variantsScoreUserComputationDAO.retrieveComputationsBy(aUser)).andReturn(asList(expected));
+		replay(variantsScoreUserComputationDAO);
 
-		assertThat(controller.getComputations(aUser),
-			containsInAnyOrder(expected));
+		//assertThat(controller.getComputations(aUser),
+		//	containsInAnyOrder(expected));
 	}
 
 	@Test
-	public void testComputerCallAndResults() throws InterruptedException, ExecutionException {
+	public void testComputerCallAndResults() throws InterruptedException, ExecutionException, IOException {
+		final VariantsScoreComputationResults expectedResults = 
+				mockControl.createMock(
+						VariantsScoreComputationResults.class);
+		
+		final VariantsScoreComputation expectedComputation = 
+				mockControl.createMock(
+						VariantsScoreComputation.class);
+		
 
-		final CandidateTherapiesComputationResults expectedDrugs = 
-				mockControl.createMock(
-						CandidateTherapiesComputationResults.class);
+		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
-		final VariantsCandidateTherapiesComputation expectedComputation = 
-				mockControl.createMock(
-						VariantsCandidateTherapiesComputation.class);
+		Capture<VariantsScoreUserComputation> capturedArgument = 
+				newCapture();
+
+		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
+		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
+		expect(variantsScoreUserComputationDAO.get(anyInt())).andStubAnswer(()->capturedArgument.getValue());
+		replay(variantsScoreUserComputationDAO);
 		
-		expect(expectedComputation.get()).andReturn(expectedDrugs);
+		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
+		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
 		replay(expectedComputation);
-		
-		expect(computer.createComputation(aVCF)).andReturn(expectedComputation);
+		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
 		replay(computer);
-		
-		final VariantsCandidateTherapiesComputation computation = controller
-				.startCandidateTherapiesComputation(aUser, aVCF);
-		
-		assertEquals(expectedDrugs, computation.get());
-		
+
+
+		//controller.startVariantsScoreComputation(aUser, parameters);
+		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
+			@Override
+			public int read() throws IOException {
+				return -1;
+			}
+		});
+
+		// provoke finish of computation, listeners will be called and computation
+		// and the results should be setted in usercomputation.details
+		aStatus.setOverallProgress(1.0);
+
+		System.out.println(capturedArgument.getValue().getComputationDetails().getStatus());
+		System.out.println(controller.getComputationsStatus(id).getOverallProgress());
+		assertTrue(controller.getComputationsStatus(id).isFinished());
+	}
+
+	@Test
+	public void testGetRankingForComputation() throws IOException {
+		int anyId = 1;
+		String affectedGenesFileName = "affected_genes.txt";
+		File genesAffectedFile = new File(
+				aBaseDirectory+File.separator+"results"+
+				File.separator+
+				affectedGenesFileName);
+
+		genesAffectedFile.deleteOnExit();
+
+		FileUtils.write(genesAffectedFile, "GENE1\t1.0\nGENE2\t2.4");
+
+		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
+		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation();
+		aComputation.getComputationDetails().getStatus().setOverallProgress(1.0);
+
+		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get("results"));
+
+		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
+				Paths.get("vscore.txt"),
+				Paths.get("affected_genes.txt"));
+
+		aComputation.getComputationDetails().setResults(results);
+
+		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
+		replay(this.variantsScoreUserComputationDAO);
+
+		GeneRanking ranking = controller.getGeneRankingForComputation(anyId);
+
+		Assert.assertEquals(2, ranking.getGeneRank().size());
+		Assert.assertEquals(1.0d, ranking.getGeneRank().get(0).getRank(), 0.01d);
+		Assert.assertEquals(2.4d, ranking.getGeneRank().get(1).getRank(), 0.01d);
 	}
 }

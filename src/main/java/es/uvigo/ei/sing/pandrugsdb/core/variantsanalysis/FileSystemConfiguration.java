@@ -2,7 +2,7 @@
  * #%L
  * PanDrugsDB Backend
  * %%
- * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,5 +21,9 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-public class CandidateTherapy {
+import java.io.File;
+
+public interface FileSystemConfiguration {
+
+	public File getUserDataBaseDirectory();
 }

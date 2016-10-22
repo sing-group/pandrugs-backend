@@ -21,15 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.util.List;
+import java.util.concurrent.Future;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 
-public interface ComputationsStore {
+public interface VariantsScoreComputation extends
+		Future<VariantsScoreComputationResults> {
 
-	void storeComputation(VariantsCandidateTherapiesComputation computation,
-			User user);
-
-	List<VariantsCandidateTherapiesComputation> retrieveComputations(User user);
-
+	VariantsScoreComputationStatus getStatus();
+	
+		
 }
