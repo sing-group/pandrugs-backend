@@ -52,10 +52,10 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 	}
 
 	@Override
-	public VariantsEffectPredictionResults predictEffect(Path vcfFile, Path outPath) {
-		Path resultsPath = Paths.get(VEP_FILE_NAME);
-		Path outFilePath = outPath.resolve(resultsPath);
-		File outFile = configuration.getUserDataBaseDirectory().toPath().resolve(outFilePath).toFile();
+	public VariantsEffectPredictionResults predictEffect(Path vcfFile, Path userPath) {
+		Path resultsFilePath = Paths.get(VEP_FILE_NAME);
+		File outFile = configuration.getUserDataBaseDirectory().toPath().resolve(
+							userPath.resolve(resultsFilePath)).toFile();
 		
 		//write to outFile ...
 		try {
@@ -66,7 +66,7 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 			throw new RuntimeException(e);
 		}
 
-		return new VariantsEffectPredictionResults(resultsPath);
+		return new VariantsEffectPredictionResults(resultsFilePath);
 	}
 
 }

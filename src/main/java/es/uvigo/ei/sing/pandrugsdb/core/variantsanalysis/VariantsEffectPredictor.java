@@ -27,5 +27,5 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionRe
 
 public interface VariantsEffectPredictor {
 
-	public VariantsEffectPredictionResults predictEffect(Path vcfFile, Path outPath);
+	public VariantsEffectPredictionResults predictEffect(Path vcfFile, Path userPath);
 }

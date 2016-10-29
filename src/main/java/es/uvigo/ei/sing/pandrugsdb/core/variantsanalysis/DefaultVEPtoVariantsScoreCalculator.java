@@ -54,9 +54,9 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 
 	@Override
 	public VariantsScoreComputationResults calculateVariantsScore (
-			VariantsEffectPredictionResults vep, Path outPath) {
+			VariantsEffectPredictionResults vep, Path userPath) {
 		Path vscoreResultsPath = Paths.get(VARIANT_SCORES_FILE_NAME);
-		Path vscoreFilePath = outPath.resolve(vscoreResultsPath);
+		Path vscoreFilePath = userPath.resolve(vscoreResultsPath);
 		File vscoresFile = configuration.getUserDataBaseDirectory().toPath().resolve(vscoreFilePath).toFile();
 		
 		//write to outFile ...
@@ -69,7 +69,7 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 		}
 		
 		Path affectedGenesPath = Paths.get(AFFECTED_GENES_FILE_NAME);
-		Path affectedGenesFilePath = outPath.resolve(affectedGenesPath);
+		Path affectedGenesFilePath = userPath.resolve(affectedGenesPath);
 		File affectedGenesFile = configuration.getUserDataBaseDirectory().toPath().resolve(affectedGenesFilePath).toFile();
 		
 		//write to outFile ...

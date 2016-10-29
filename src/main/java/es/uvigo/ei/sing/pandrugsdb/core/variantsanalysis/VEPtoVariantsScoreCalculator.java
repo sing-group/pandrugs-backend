@@ -29,5 +29,5 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationRe
 public interface VEPtoVariantsScoreCalculator {
 
 	public VariantsScoreComputationResults calculateVariantsScore(
-			VariantsEffectPredictionResults vep, Path outPath);
+			VariantsEffectPredictionResults vep, Path userPath);
 }
