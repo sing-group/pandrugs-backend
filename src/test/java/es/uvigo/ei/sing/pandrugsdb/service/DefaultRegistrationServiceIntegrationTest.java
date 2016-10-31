@@ -22,9 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -77,6 +75,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 	)
 	public void testRegisterAbsentUser() {
 		final Registration registration = absentRegistration();
+		registration.setPassword(plainPassword(registration));
 
 		assertNotNull(service.register(registration));
 	}
@@ -88,7 +87,8 @@ public class DefaultRegistrationServiceIntegrationTest {
 	)
 	public void testRegisterPresentRegistration() {
 		final Registration registration = presentRegistration();
-		
+		registration.setPassword(plainPassword(registration));
+
 		assertNotNull(service.register(registration));
 	}
 
@@ -105,7 +105,8 @@ public class DefaultRegistrationServiceIntegrationTest {
 	public void testRegisterPresentRegistrationLogin() {
 		final Registration registration = absentRegistration();
 		registration.setLogin(presentRegistration().getLogin());
-		
+		registration.setPassword(plainPassword(registration));
+
 		service.register(registration);
 	}
 	
@@ -116,6 +117,8 @@ public class DefaultRegistrationServiceIntegrationTest {
 	)
 	public void testRegisterPresentRegistrationEmail() {
 		final Registration registration = absentRegistration();
+		registration.setPassword(plainPassword(registration));
+
 		registration.setEmail(presentRegistration().getEmail());
 		
 		assertNotNull(service.register(registration));
@@ -126,6 +129,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final User user = presentUser();
 		final Registration registration = absentRegistration();
 		registration.setLogin(user.getLogin());
+		registration.setPassword(plainPassword(registration));
 		
 		assertNotNull(service.register(registration));
 	}
@@ -135,6 +139,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final User user = presentUser();
 		final Registration registration = absentRegistration();
 		registration.setEmail(user.getEmail());
+		registration.setPassword(plainPassword(registration));
 
 		assertNotNull(service.register(registration));
 	}

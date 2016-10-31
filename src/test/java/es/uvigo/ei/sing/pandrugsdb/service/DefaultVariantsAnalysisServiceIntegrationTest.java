@@ -30,6 +30,9 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,12 +48,17 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
@@ -140,9 +148,30 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 
-		Response response = service.startVariantsScoreUserComputation(new UserLogin(login), emptyInputStream(), security);
+		final UriInfo currentUri = EasyMock.createNiceMock(UriInfo.class);
+		final UriBuilder uriBuilder = EasyMock.createNiceMock(UriBuilder.class);
+		Capture<String> capture = EasyMock.newCapture();
 
-		assertThat(response.getEntity(), instanceOf(Integer.class));
+		EasyMock.expect(currentUri.getAbsolutePathBuilder()).andReturn(uriBuilder);
+		EasyMock.expect(uriBuilder.path(EasyMock.capture(capture))).andReturn(uriBuilder);
+		EasyMock.expect(uriBuilder.build()).andAnswer(() -> new URI(
+						"http://testhost/api/variantsanalysis/"+login+capture.getValue()));
+
+		EasyMock.replay(currentUri);
+		EasyMock.replay(uriBuilder);
+		Response response = service.startVariantsScoreUserComputation(new UserLogin(login), emptyInputStream(),
+				security,
+				currentUri
+				);
+
+		assertThat(response.getStatus(), CoreMatchers.is(201));
+
+		try {
+			assertThat(response.getLocation(), CoreMatchers.equalTo(new URI(
+					"http://testhost/api/variantsanalysis/"+login+capture.getValue())));
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private InputStream emptyInputStream() {

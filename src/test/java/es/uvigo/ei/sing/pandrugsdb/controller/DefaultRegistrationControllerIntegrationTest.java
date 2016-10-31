@@ -23,10 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -77,7 +74,7 @@ public class DefaultRegistrationControllerIntegrationTest {
 		final User user = absentUser();
 		final String login = user.getLogin();
 		final String email = user.getEmail();
-		final String password = user.getPassword();
+		final String password = plainPassword(user);
 		
 		final Registration registration =
 			controller.register(login, email, password);
@@ -95,7 +92,7 @@ public class DefaultRegistrationControllerIntegrationTest {
 		final Registration presentRegistration = presentRegistration();
 		final String login = presentRegistration.getLogin();
 		final String email = presentRegistration.getEmail();
-		final String password = presentRegistration.getPassword();
+		final String password = plainPassword(presentRegistration);
 		
 		final Registration registration =
 			controller.register(login, email, password);
@@ -133,7 +130,7 @@ public class DefaultRegistrationControllerIntegrationTest {
 		final Registration absentRegistration = absentRegistration();
 		final String login = absentRegistration.getLogin();
 		final String email = presentRegistration().getEmail();
-		final String password = absentRegistration.getPassword();
+		final String password = plainPassword(absentRegistration);
 		
 		controller.register(login, email, password);
 	}

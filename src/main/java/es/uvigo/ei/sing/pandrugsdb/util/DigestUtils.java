@@ -39,7 +39,7 @@ public final class DigestUtils {
 			
 			final StringBuilder sb = new StringBuilder();
 			for (byte db : digested) {
-				sb.append(String.format("%02X", db));
+				sb.append(String.format("%02x", db));
 			}
 			
 			return sb.toString();

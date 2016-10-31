@@ -62,8 +62,16 @@ public final class RegistrationDataset {
 			"144c9defac04969c7bfad8efaa8ea194",
 			"00000000-1111-2222-3333-444444444444");
 	}
-	
+
 	public final static Registration anyRegistration() {
 		return absentRegistration();
+	}
+
+	public final static String plainPassword(User user) {
+		return user.getLogin();
+	}
+
+	public final static String plainPassword(Registration registration) {
+		return registration.getLogin();
 	}
 }

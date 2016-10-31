@@ -63,8 +63,6 @@ public class Registration implements Serializable {
 	
 	@Column(length = 32)
 	@NotNull
-	@Size(min = 32, max = 32, message = "Password must be MD5 digested")
-	@Pattern(regexp = MD5_PATTERN, message = "Password must be MD5 digested")
 	private String password;
 	
 	Registration() {
@@ -102,7 +100,7 @@ public class Registration implements Serializable {
 	}
 
 	public void setPassword(String password) {
-		this.password = requireMD5(password, "Password must be MD5 digested");
+		this.password = password;
 	}
 	
 	public String getUuid() {

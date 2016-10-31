@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import javax.inject.Inject;
 
+import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +55,9 @@ implements RegistrationController {
 		checkIfRegistrationAlreadyExists(login);
 		
 		deleteRegistrationWithEmail(email);
-		
-		final Registration registration = registrationDAO.persist(login, email, password);
-		
+
+		final Registration registration = registrationDAO.persist(login, email, DigestUtils.md5Digest(password));
+
 		mailer.sendConfirmSingUp(email, login, registration.getUuid());
 		
 		return registration;

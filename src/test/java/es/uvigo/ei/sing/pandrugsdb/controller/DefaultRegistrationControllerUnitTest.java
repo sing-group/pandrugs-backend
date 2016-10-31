@@ -26,6 +26,7 @@ import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMat
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -34,6 +35,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -67,13 +69,13 @@ public class DefaultRegistrationControllerUnitTest {
 		final User user = anyUser();
 		final String login = user.getLogin();
 		final String email = user.getEmail();
-		final String password = user.getPassword();
+		final String password = plainPassword(user);
 		
 		expect(userDAO.get(login)).andReturn(null);
 		expect(userDAO.getByEmail(email)).andReturn(null);
 		
-		expect(registrationDAO.persist(login, email, password))
-			.andReturn(new Registration(login, email, password));
+		expect(registrationDAO.persist(login, email, DigestUtils.md5Digest(password)))
+			.andReturn(new Registration(login, email, DigestUtils.md5Digest(password)));
 		expect(registrationDAO.get(login)).andReturn(null);
 		expect(registrationDAO.getByEmail(email)).andReturn(null);
 		
@@ -110,14 +112,14 @@ public class DefaultRegistrationControllerUnitTest {
 		final User user = anyUser();
 		final String login = user.getLogin();
 		final String email = user.getEmail();
-		final String password = user.getPassword();
+		final String password = plainPassword(user);
 		
 		expect(userDAO.get(login)).andReturn(null);
 		expect(userDAO.getByEmail(email)).andReturn(null);
 		expect(registrationDAO.get(login)).andReturn(null);
 		
-		final Registration newRegistration = new Registration(login, email, password);
-		expect(registrationDAO.persist(login, email, password))
+		final Registration newRegistration = new Registration(login, email, DigestUtils.md5Digest(password));
+		expect(registrationDAO.persist(login, email, DigestUtils.md5Digest(password)))
 			.andReturn(newRegistration);
 		
 		final Registration previousRegistration = new Registration(login, email, password);
