@@ -27,6 +27,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 
 public interface VariantsAnalysisService {
@@ -37,6 +38,7 @@ public interface VariantsAnalysisService {
 	 * @param login login of the user.
 	 * @param vcfFile variants in VCF format to analyze.
 	 * @param security security context object. Should be provided by the container.
+	 * @param currentUri the current URI information
 	 * @return the computation id as an integer value
 	 * @throws ForbiddenException if the authenticated user does not have permissions to create the computation.
 	 * @throws NotAuthorizedException if provided login has not been correctly authenticated.
@@ -45,7 +47,8 @@ public interface VariantsAnalysisService {
 	public Response startVariantsScoreUserComputation(
 			UserLogin login,
 			InputStream vcfFile,
-			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+			SecurityContext security,
+			UriInfo currentUri) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
 
 	/**
 	 * Obtains the current status of a previously submitted computation.

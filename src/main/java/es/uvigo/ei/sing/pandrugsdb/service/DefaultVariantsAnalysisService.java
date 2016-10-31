@@ -34,10 +34,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.*;
 import java.io.InputStream;
 
 /**
@@ -56,7 +53,6 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	@Inject
 	private VariantsAnalysisController controller;
 
-
 	@POST
 	@Override
 	@Path("/{login}")
@@ -65,20 +61,23 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	public Response startVariantsScoreUserComputation(
 			@PathParam("login") UserLogin login,
 			InputStream vcfFile,
-			@Context SecurityContext security) throws ForbiddenException, NotAuthorizedException {
+			@Context SecurityContext security,
+			@Context UriInfo currentUri) throws ForbiddenException,
+			NotAuthorizedException {
 
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker =
 				new SecurityContextUserAccessChecker(security);
-		System.out.println("INSIDE");
 			return
 				checker.doIfPrivileged(
 					userLogin,
-					() ->
-						Response.ok(
-							controller.startVariantsScopeUserComputation(login, vcfFile)
-						).build()
-					,
+					() -> {
+						int computationId = controller.startVariantsScopeUserComputation(login, vcfFile);
+						return Response.created(
+							currentUri.getAbsolutePathBuilder()
+									.path("/"+computationId).build())
+							.build();
+					},
 					() -> {
 						LOG.error(String.format(
 								"Illegal access to create a computation as user %s on behalf of user %s",
