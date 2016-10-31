@@ -27,17 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +48,16 @@ import org.springframework.stereotype.Controller;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
 @Controller
 @Lazy
@@ -67,9 +71,6 @@ public class DefaultVariantsAnalysisController implements
 
 	@Inject
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
-
-	@Inject
-	private GeneInformationDAO geneInformationDAO;
 
 	@Inject
 	private UserDAO userDAO;
@@ -133,17 +134,14 @@ public class DefaultVariantsAnalysisController implements
 
 		Map<String, Double> geneRankingMap = new LinkedHashMap<>();
 
-		try {
-
-			Scanner sc = new Scanner(affectedGenesFile);
+		try (Scanner sc = new Scanner(affectedGenesFile)) {
 			while (sc.hasNext()) {
 				geneRankingMap.put(sc.next(), sc.nextDouble());
 			}
-
-
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+		
 		return new GeneRanking(geneRankingMap);
 	}
 
@@ -184,12 +182,6 @@ public class DefaultVariantsAnalysisController implements
 		processStatus(userComputation, computation, computation.getStatus());
 
 		return userComputation;
-	}
-
-
-	private List<VariantsScoreUserComputation> getComputations(
-			User user) {
-		return variantsScoreUserComputationDAO.retrieveComputationsBy(user);
 	}
 
 	private void addChangeListener(VariantsScoreUserComputation userComputation, VariantsScoreComputation computation) {

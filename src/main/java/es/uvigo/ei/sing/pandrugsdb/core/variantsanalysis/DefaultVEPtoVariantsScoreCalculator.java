@@ -30,7 +30,6 @@ import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;

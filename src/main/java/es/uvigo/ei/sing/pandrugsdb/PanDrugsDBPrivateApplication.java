@@ -23,7 +23,6 @@ package es.uvigo.ei.sing.pandrugsdb;
 
 import javax.ws.rs.ApplicationPath;
 
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisService;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
@@ -31,6 +30,7 @@ import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisService;
 
 @ApplicationPath("api")
 public class PanDrugsDBPrivateApplication extends ResourceConfig {

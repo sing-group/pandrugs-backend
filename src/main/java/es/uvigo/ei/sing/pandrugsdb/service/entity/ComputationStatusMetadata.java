@@ -21,11 +21,11 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 
 /**
  * Created by lipido on 10/20/16.
@@ -64,7 +64,7 @@ public class ComputationStatusMetadata {
 
 
 	public boolean isFinished() {
-		return overallProgress == 1.0;
+		return isFinished;
 	}
 
 }

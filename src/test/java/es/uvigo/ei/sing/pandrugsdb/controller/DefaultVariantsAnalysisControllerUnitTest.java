@@ -23,10 +23,14 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
 import static java.util.Arrays.asList;
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createControl;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.newCapture;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -35,11 +39,6 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.*;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMockRunner;
@@ -54,7 +53,17 @@ import org.junit.runner.RunWith;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultVariantsAnalysisControllerUnitTest {
@@ -113,17 +122,12 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 						VariantsScoreComputation.class);
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
-		
-		//expect(parameters.getVcfFile()).andReturn(aVCF);
-		//replay(parameters);
-		
 		expect(computer.createComputation(capture(capturedParameters))).andReturn(expectedComputation);
 		replay(computer);
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
 		replay(expectedComputation);
 
-		//controller.startVariantsScoreComputation(aUser, parameters);
-		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
+		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
 			@Override
 			public int read() throws IOException {
 				return -1;

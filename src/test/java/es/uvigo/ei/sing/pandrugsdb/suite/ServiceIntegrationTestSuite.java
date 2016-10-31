@@ -21,10 +21,17 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.suite;
 
-import es.uvigo.ei.sing.pandrugsdb.service.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisServiceIntegrationTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({

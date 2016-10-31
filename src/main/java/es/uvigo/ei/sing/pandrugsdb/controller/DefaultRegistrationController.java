@@ -23,7 +23,6 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import javax.inject.Inject;
 
-import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +32,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.dao.RegistrationDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 
 @Controller
 @Transactional

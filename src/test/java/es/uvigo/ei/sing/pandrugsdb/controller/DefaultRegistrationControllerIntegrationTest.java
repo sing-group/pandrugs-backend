@@ -23,7 +23,11 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.*;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

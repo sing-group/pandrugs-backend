@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.suite;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,6 +29,7 @@ import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerIntegrati
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneInformationControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerIntegrationTest.class,

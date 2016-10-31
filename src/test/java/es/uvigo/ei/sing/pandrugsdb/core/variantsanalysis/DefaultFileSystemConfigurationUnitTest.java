@@ -21,19 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+
+import javax.servlet.ServletContext;
+
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.servlet.ServletContext;
-import java.io.File;
-
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultFileSystemConfigurationUnitTest {

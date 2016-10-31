@@ -22,10 +22,8 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.EMAIL_PATTERN;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.MD5_PATTERN;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.UUID_PATTERN;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireEmail;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireMD5;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireUUID;
 

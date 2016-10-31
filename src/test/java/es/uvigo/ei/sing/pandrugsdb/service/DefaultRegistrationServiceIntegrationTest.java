@@ -22,7 +22,10 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.*;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -38,6 +41,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -48,7 +52,6 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

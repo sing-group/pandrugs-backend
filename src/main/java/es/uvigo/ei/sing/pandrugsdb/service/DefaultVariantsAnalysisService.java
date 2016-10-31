@@ -21,21 +21,33 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import com.qmino.miredot.annotations.ReturnType;
-import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
+import java.io.InputStream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.io.InputStream;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.qmino.miredot.annotations.ReturnType;
+
+import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
 
 /**
  * Service to submit VCF Analysis computations, as well as to follow their status

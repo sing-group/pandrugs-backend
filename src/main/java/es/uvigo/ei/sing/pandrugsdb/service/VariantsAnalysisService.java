@@ -21,14 +21,16 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import java.io.InputStream;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import java.io.InputStream;
+
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
 public interface VariantsAnalysisService {
 

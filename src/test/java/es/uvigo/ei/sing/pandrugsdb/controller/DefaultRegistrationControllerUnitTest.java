@@ -35,7 +35,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -48,6 +47,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultRegistrationControllerUnitTest {

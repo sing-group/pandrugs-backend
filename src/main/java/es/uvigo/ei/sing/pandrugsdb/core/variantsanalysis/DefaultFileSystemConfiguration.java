@@ -21,16 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
-import java.util.Objects;
 
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import static java.util.Objects.requireNonNull;
 
 @Component
 public class DefaultFileSystemConfiguration implements FileSystemConfiguration {

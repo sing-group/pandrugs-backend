@@ -23,19 +23,11 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 public interface VariantsAnalysisController {
 
