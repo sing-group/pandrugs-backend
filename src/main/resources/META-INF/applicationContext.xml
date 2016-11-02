@@ -65,8 +65,8 @@
 	
 	<bean id="threadExecutor"
 		class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
-		<property name="corePoolSize" value="10" />
-		<property name="maxPoolSize" value="10" />
+		<property name="corePoolSize" value="2" />
+		<property name="maxPoolSize" value="2" />
 	</bean>
 	<bean id="configuration" class="es.uvigo.ei.sing.pandrugsdb.Configuration" scope="singleton">
         <property name="emailFrom" value="noreply@pandrugsdb.es"/>

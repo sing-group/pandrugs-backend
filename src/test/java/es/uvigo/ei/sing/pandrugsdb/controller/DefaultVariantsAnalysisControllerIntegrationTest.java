@@ -21,24 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.function.BooleanSupplier;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.ServletContext;
-
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,24 +42,22 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
-import com.github.springtestdbunit.annotation.ExpectedDatabase;
-import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.function.BooleanSupplier;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
-@WebAppConfiguration
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
@@ -78,20 +72,20 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
 public class DefaultVariantsAnalysisControllerIntegrationTest {
 	@Inject
-	@Named("defaultVariantsAnalysisController")
-	private DefaultVariantsAnalysisController controller;
-	
-	private String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
+	private ServletContext context;
 
 	@Inject
-	private ServletContext context;
-	
+	@Named("defaultVariantsAnalysisController")
+	private DefaultVariantsAnalysisController controller;
+
+
+	private String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
+
 	@Before
 	public void prepareComputationFilesStorage() throws IOException {
 		String systemTmpDir = System.getProperty("java.io.tmpdir");
 
 
-		context.setInitParameter("user.data.directory", systemTmpDir);
 
 		// extracts the files available as resources and copies them
 		// to a temporary directory

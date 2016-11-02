@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
@@ -47,7 +48,9 @@ public class DefaultVariantsScoreComputer implements
 
 	@Inject
 	private ExecutorService executorService;
-	
+
+	private ExecutorService notificationExecutorService = Executors.newSingleThreadExecutor();
+
 	protected DefaultVariantsScoreComputer() {}
 	
 	public DefaultVariantsScoreComputer(VariantsEffectPredictor effectPredictor,
@@ -69,37 +72,38 @@ public class DefaultVariantsScoreComputer implements
 	
 	public DefaultVariantsScoreComputation createAndStartWholeComputation(VariantsScoreComputationParameters parameters) {
 		final CompletableFuture<VariantsScoreComputationParameters> input = new CompletableFuture<VariantsScoreComputationParameters>();
-		
-		
+
 		final DefaultVariantsScoreComputation  computation =
 				new DefaultVariantsScoreComputation();
-		
+
 		computation.getStatus().setOverallProgress(0f);
-		computation.getStatus().setTaskName("Computing VEP");
+		computation.getStatus().setTaskName("Submitted");
 		computation.getStatus().setTaskProgress(0f);
-		
-		
+
 		// compute VEP
 		CompletableFuture<VariantsScoreComputationResults> tasks = 
 				input
 				.thenApply((params) -> {
+					//use another thread to notify status, because if listeners try to call
+					//get() they will lock, because they are in the same thread as the computation.
+					notificationExecutorService.execute( () -> {
+						computation.getStatus().setTaskName("Computing VEP");
+					});
 					return effectPredictor.predictEffect(params.getVcfFile(), params.getResultsBasePath());
 				})
 				.whenComplete((result, exception) -> {
 					if (exception == null) {
-						//use another thread to notify status, because if listeners try to call
-						//get() they will lock, because they are in the same thread as the computation.
-						this.executorService.execute( ()-> {
+						notificationExecutorService.execute( () -> {
 							computation.getStatus().setOverallProgress(0.5f);
 							computation.getStatus().setTaskName("Computing Variant Scores");
 							computation.getStatus().setTaskProgress(0f);
 						});
 					} else {
-						System.err.println("on exception of vep");
-						computation.getStatus().setOverallProgress(1.0f);
-						computation.getStatus().setTaskName("Finished-Error");
-						computation.getStatus().setTaskProgress(0f);
-						//exception.printStackTrace();
+						notificationExecutorService.execute( () -> {
+							computation.getStatus().setOverallProgress(1.0f);
+							computation.getStatus().setTaskName("Finished-Error");
+							computation.getStatus().setTaskProgress(0f);
+						});
 					}
 				})
 				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(vepResults, parameters.getResultsBasePath()))
@@ -107,16 +111,17 @@ public class DefaultVariantsScoreComputer implements
 					if (exception == null) {
 						//use another thread to notify status, because if listeners try to call
 						//get() they will lock, because they are in the same thread as the computation.
-						this.executorService.execute( ()-> {
+						notificationExecutorService.execute( () -> {
 							computation.getStatus().setOverallProgress(1.0f);
 							computation.getStatus().setTaskName("Finished");
 							computation.getStatus().setTaskProgress(0f);
 						});
 					}  else {
-						System.err.println("on exception of vscore");
-						computation.getStatus().setOverallProgress(1.0f);
-						computation.getStatus().setTaskName("Finished-Error");
-						computation.getStatus().setTaskProgress(0f);
+						notificationExecutorService.execute( () -> {
+							computation.getStatus().setOverallProgress(1.0f);
+							computation.getStatus().setTaskName("Finished-Error");
+							computation.getStatus().setTaskProgress(0f);
+						});
 					}
 				});
 		

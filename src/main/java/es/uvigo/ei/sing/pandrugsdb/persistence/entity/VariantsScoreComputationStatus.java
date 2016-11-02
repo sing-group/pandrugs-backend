@@ -92,5 +92,4 @@ public class VariantsScoreComputationStatus {
 	public boolean isFinished() {
 		return this.overallProgress == 1.0f;
 	}
-	
 }

@@ -21,27 +21,35 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static java.util.Objects.requireNonNull;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameter;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameterName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
-import javax.servlet.ServletContext;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static java.util.Objects.requireNonNull;
 
 @Component
 public class DefaultFileSystemConfiguration implements FileSystemConfiguration {
 
 	@Autowired
-	private ServletContext context;
+	@ContextParameter
+	@ContextParameterName(USER_DATA_DIRECTORY_PARAMETER)
+	private String userDataBaseDirectory;
 
 	public static final String USER_DATA_DIRECTORY_PARAMETER = "user.data.directory";
+
 	@Override
 	public File getUserDataBaseDirectory() {
+
 		return new File(requireNonNull(
-				context.getInitParameter(USER_DATA_DIRECTORY_PARAMETER),
+				userDataBaseDirectory,
 				"The context init parameter "+USER_DATA_DIRECTORY_PARAMETER+" was not found. Please" +
 						" configure it in your server configuration"));
+	}
+
+	public void setUserDataBaseDirectory(String userDataBaseDirectory) {
+		this.userDataBaseDirectory = userDataBaseDirectory;
 	}
 }

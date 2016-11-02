@@ -122,7 +122,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		expectLastCall().anyTimes();
 		
 		status.setTaskName(anyString());
-		expectLastCall().times(3);
+		expectLastCall().times(4);
 		status.setTaskProgress(EasyMock.anyDouble());
 		expectLastCall().times(3);
 		status.setOverallProgress(EasyMock.anyDouble());

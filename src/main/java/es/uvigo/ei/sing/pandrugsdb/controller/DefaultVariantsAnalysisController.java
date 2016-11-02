@@ -60,7 +60,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
 @Controller
-@Lazy
 public class DefaultVariantsAnalysisController implements
 		VariantsAnalysisController, ApplicationListener<ContextRefreshedEvent> {
 
@@ -157,10 +156,7 @@ public class DefaultVariantsAnalysisController implements
 	private VariantsScoreUserComputation
 	startVariantsScoreComputation(User user, VariantsScoreComputationParameters parameters) {
 
-		Path userPath = Paths.get(user.getLogin());
-		parameters.setResultsBasePath(userPath);
-
-		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(userPath).toFile();
+		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(parameters.getResultsBasePath()).toFile();
 
 		if (!userDir.exists()) {
 			userDir.mkdir();
@@ -198,12 +194,13 @@ public class DefaultVariantsAnalysisController implements
 		if (computation.getStatus().isFinished()) {
 			try {
 				userComputation.getComputationDetails().setResults(computation.get());
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
+			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
+			} catch (ExecutionException e) {
+				userComputation.getComputationDetails().setResults(null);
 			}
 		}
-		
+
 		variantsScoreUserComputationDAO.update(userComputation);
 	}
 	
@@ -222,6 +219,9 @@ public class DefaultVariantsAnalysisController implements
 				variantsScoreComputer.resumeComputation(userComputation.getComputationDetails());
 				
 				addChangeListener(userComputation, computation);
+
+				//speculate if the computation has already finished before the listener could be added...
+				processStatus(userComputation, computation, computation.getStatus());
 			}
 		}
 	}
@@ -231,5 +231,4 @@ public class DefaultVariantsAnalysisController implements
 				File.separator+
 				computation.getComputationDetails().getParameters().getResultsBasePath().resolve(elementPath).toString());
 	}
-
 }

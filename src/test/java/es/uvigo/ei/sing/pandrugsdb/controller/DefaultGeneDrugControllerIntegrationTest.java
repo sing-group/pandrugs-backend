@@ -46,7 +46,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
@@ -62,7 +61,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
-@WebAppConfiguration
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	TransactionDbUnitTestExecutionListener.class

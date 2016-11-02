@@ -21,37 +21,24 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Paths;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DefaultFileSystemConfigurationUnitTest {
+public class DefaultVEPConfigurationUnitTest {
 
-	private DefaultFileSystemConfiguration fileSystemConfiguration =
-			new DefaultFileSystemConfiguration();
-
-
-	@Test(expected = NullPointerException.class)
-	public void testNoUserDirIsConfigured() {
-		setContextUserDataDirTo(null);
-
-		fileSystemConfiguration.getUserDataBaseDirectory();
-	}
+	private DefaultVEPConfiguration configuration = new DefaultVEPConfiguration();
 
 	@Test
-	public void testUserDataBaseDirectory() {
-		setContextUserDataDirTo(System.getProperty("java.io.tmpdir"));
+	public void testCreateVEPCommand() {
+		configuration.setVepCommandTemplate("foo %2$s bar %1$s");
 
-		assertThat(
-				fileSystemConfiguration.getUserDataBaseDirectory(),
-				is(new File(System.getProperty("java.io.tmpdir")))
-		);
-	}
+		String command = configuration.createVEPCommand(Paths.get("/a/b/input.vcf"), Paths.get("/b/c/output.vcf"));
 
-	private void setContextUserDataDirTo(String value) {
-		fileSystemConfiguration.setUserDataBaseDirectory(value);
+		assertThat(command, is("foo /b/c/output.vcf bar /a/b/input.vcf"));
 	}
 }

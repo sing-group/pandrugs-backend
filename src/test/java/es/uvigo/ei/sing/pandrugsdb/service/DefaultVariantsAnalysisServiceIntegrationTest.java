@@ -21,25 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.ServletContext;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.hamcrest.CoreMatchers;
@@ -51,22 +41,25 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.ServletContext;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
-@WebAppConfiguration
 @TestExecutionListeners({
 		DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
@@ -79,17 +72,11 @@ import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
 public class DefaultVariantsAnalysisServiceIntegrationTest {
+
+
 	@Inject
 	@Named("defaultVariantsAnalysisService")
 	private VariantsAnalysisService service;
-
-	@Inject
-	private ServletContext context;
-
-	@Before
-	public void configureContext() {
-		context.setInitParameter("user.data.directory", System.getProperty("java.io.tmpdir"));
-	}
 
 	@Test(expected = ForbiddenException.class)
 	public void testCreateComputationForOtherUser() {

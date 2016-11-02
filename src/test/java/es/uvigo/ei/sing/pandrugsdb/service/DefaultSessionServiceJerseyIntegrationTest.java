@@ -31,7 +31,6 @@ import static org.junit.Assert.assertThat;
 import javax.ws.rs.core.Response;
 
 import org.junit.Test;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -39,7 +38,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.ErrorMessage;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
-@WebAppConfiguration
 public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJerseyTest {
 	@Override
 	protected Class<?>[] getServiceClasses() {

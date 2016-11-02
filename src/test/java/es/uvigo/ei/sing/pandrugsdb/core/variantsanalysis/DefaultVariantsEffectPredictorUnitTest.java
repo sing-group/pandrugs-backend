@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
@@ -56,7 +57,9 @@ public class DefaultVariantsEffectPredictorUnitTest {
 	
 	@Mock
 	private FileSystemConfiguration fileSystemConfiguration;
-	
+
+	@Mock
+	private VEPConfiguration vepConfiguration;
 	
 	@TestSubject
 	private DefaultVariantsEffectPredictor vepPredictor = 
@@ -101,9 +104,13 @@ public class DefaultVariantsEffectPredictorUnitTest {
 	@Test
 	public void testResultsFileAreCreatedAndReferenced() {
 		
-		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory);
+		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
 		replay(fileSystemConfiguration);
-		
+
+		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("touch "+expectedResultsFile
+				.getAbsolutePath());
+		replay(vepConfiguration);
+
 		VariantsEffectPredictionResults results = vepPredictor.predictEffect(Paths.get(inputVCFName), Paths.get(computationBasePath));
 
 		assertEquals(DefaultVariantsEffectPredictor.VEP_FILE_NAME, results.getFilePath().toString());

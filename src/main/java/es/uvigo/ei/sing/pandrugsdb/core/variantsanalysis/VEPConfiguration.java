@@ -2,7 +2,7 @@
  * #%L
  * PanDrugsDB Backend
  * %%
- * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -19,21 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.nio.file.Path;
 
-@SuiteClasses({
-	DefaultVariantsScoreComputerUnitTest.class,
-	DefaultVariantsEffectPredictorUnitTest.class,
-	DefaultVEPtoVariantsScoreCalculatorUnitTest.class,
-	DefaultFileSystemConfigurationUnitTest.class,
-	DefaultVEPConfigurationUnitTest.class
-})
-@RunWith(Suite.class)
-public class VariantsAnalysisUnitTestSuite {
-
+public interface VEPConfiguration {
+	public String createVEPCommand(Path inputVCF, Path outputFileName);
 }

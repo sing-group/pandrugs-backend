@@ -21,30 +21,31 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.inject.Inject;
-
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import javax.inject.Inject;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Component
 public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsEffectPredictor.class);
 	public static final String VEP_FILE_NAME = "ensembl_vep.csv";
 	
 	@Inject
 	private FileSystemConfiguration configuration;
-	
+
+	@Inject
+	private VEPConfiguration vepConfiguration;
+
 	protected DefaultVariantsEffectPredictor() { }
-	
-	
+
+
 	public DefaultVariantsEffectPredictor(FileSystemConfiguration configuration) {
 		super();
 		this.configuration = configuration;
@@ -55,13 +56,21 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 		Path resultsFilePath = Paths.get(VEP_FILE_NAME);
 		File outFile = configuration.getUserDataBaseDirectory().toPath().resolve(
 							userPath.resolve(resultsFilePath)).toFile();
-		
-		//write to outFile ...
+
+		File inputFile = configuration.getUserDataBaseDirectory().toPath().resolve(
+				userPath.resolve(vcfFile)).toFile();
 		try {
-			PrintStream out = new PrintStream(new FileOutputStream(outFile));
-			out.println("caca");
-			out.close();
-		} catch (FileNotFoundException e) {
+			String command = vepConfiguration.createVEPCommand(inputFile.toPath(), outFile.toPath());
+			LOG.info("Starting VEP computation with command: "+command);
+			Process p = Runtime.getRuntime().exec(command);
+			int retValue = p.waitFor();
+			if (retValue != 0) {
+				LOG.error("Error during VEP computation due to non-zero exit status");
+				throw new RuntimeException("VEP process had non 0 exit status, exit status: "+retValue);
+			}
+			LOG.info("Finished VEP computation with command: "+command);
+		} catch (IOException | InterruptedException e) {
+			LOG.error("Exception during VEP computation. Exception: "+e);
 			throw new RuntimeException(e);
 		}
 
