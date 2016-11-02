@@ -30,7 +30,9 @@ import static org.easymock.EasyMock.createControl;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.newCapture;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -39,12 +41,12 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.*;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import org.apache.commons.io.FileUtils;
-import org.easymock.Capture;
-import org.easymock.EasyMockRunner;
-import org.easymock.IMocksControl;
-import org.easymock.Mock;
-import org.easymock.TestSubject;
+import org.easymock.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,17 +58,11 @@ import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
 @RunWith(EasyMockRunner.class)
-public class DefaultVariantsAnalysisControllerUnitTest {
+public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Mock
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
@@ -98,14 +94,18 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 	@Before
 	public void configureBasePathMock() {
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(aBaseDirectory).anyTimes();
-		replay(fileSystemConfiguration);
 	}
 
 	@Before
 	public void configureUserDAOMock() {
-		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
-		replay(userDAO);
+
 	}
+
+	@After
+	public void verifyAll() {
+		super.verifyAll();
+	}
+
 	@Test
 	public void testExperimentIsStoredWhenStart() throws Exception {
 
@@ -113,9 +113,11 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 				newCapture();
 		Capture<VariantsScoreComputationParameters> capturedParameters =
 				newCapture();
+
+		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
+
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
 		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
-		replay(variantsScoreUserComputationDAO);
 
 		final VariantsScoreComputation expectedComputation =
 				mockControl.createMock(
@@ -123,9 +125,9 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
 		expect(computer.createComputation(capture(capturedParameters))).andReturn(expectedComputation);
-		replay(computer);
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
-		replay(expectedComputation);
+
+		super.replayAll();
 
 		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
 			@Override
@@ -143,10 +145,11 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 
 		Capture<VariantsScoreUserComputation> capturedArgument = 
 				newCapture();
-		
+
+		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
+
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
 		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
-		replay(variantsScoreUserComputationDAO);
 
 		final VariantsScoreComputation expectedComputation =
 				mockControl.createMock(
@@ -160,10 +163,10 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		//replay(parameters);
 		
 		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
-		replay(computer);
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
-		replay(expectedComputation);
+
+		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
 		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
@@ -178,18 +181,21 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 	}
 
 	@Test
-	public void testGetComputations() {
+	public void testGetComputationStatus() {
+		VariantsScoreComputationDetails details = new VariantsScoreComputationDetails();
+		details.getStatus().setTaskName("a task");
+		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation(1, null, details);
 
-		final VariantsScoreUserComputation[] expected = { 
-			mockControl.createMock(VariantsScoreUserComputation.class),
-			mockControl.createMock(VariantsScoreUserComputation.class)
-		};
-				
-		expect(variantsScoreUserComputationDAO.retrieveComputationsBy(aUser)).andReturn(asList(expected));
-		replay(variantsScoreUserComputationDAO);
+		int anId = 1;
 
-		//assertThat(controller.getComputations(aUser),
-		//	containsInAnyOrder(expected));
+		expect(variantsScoreUserComputationDAO.get(anId)).andReturn(aComputation);
+
+		super.replayAll();
+
+		ComputationStatusMetadata metadata = controller.getComputationsStatus(anId);
+
+		assertThat(metadata.getTaskName(), is("a task"));
+
 	}
 
 	@Test
@@ -208,17 +214,17 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		Capture<VariantsScoreUserComputation> capturedArgument = 
 				newCapture();
 
+		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
+
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
 		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
 		expect(variantsScoreUserComputationDAO.get(anyInt())).andStubAnswer(()->capturedArgument.getValue());
-		replay(variantsScoreUserComputationDAO);
-		
+
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
-		replay(expectedComputation);
 		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
-		replay(computer);
 
+		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
 		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
@@ -232,9 +238,7 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		// and the results should be setted in usercomputation.details
 		aStatus.setOverallProgress(1.0);
 
-		System.out.println(capturedArgument.getValue().getComputationDetails().getStatus());
-		System.out.println(controller.getComputationsStatus(id).getOverallProgress());
-		assertTrue(controller.getComputationsStatus(id).isFinished());
+		assertThat(controller.getComputationsStatus(id).isFinished(), is(true));
 	}
 
 	@Test
@@ -263,12 +267,13 @@ public class DefaultVariantsAnalysisControllerUnitTest {
 		aComputation.getComputationDetails().setResults(results);
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
-		replay(this.variantsScoreUserComputationDAO);
+
+		super.replayAll();
 
 		GeneRanking ranking = controller.getGeneRankingForComputation(anyId);
 
-		Assert.assertEquals(2, ranking.getGeneRank().size());
-		Assert.assertEquals(1.0d, ranking.getGeneRank().get(0).getRank(), 0.01d);
-		Assert.assertEquals(2.4d, ranking.getGeneRank().get(1).getRank(), 0.01d);
+		assertThat(ranking.getGeneRank().size(), is(2));
+		assertThat(ranking.getGeneRank().get(0).getRank(), is(1.0d));
+		assertThat(ranking.getGeneRank().get(1).getRank(), is(2.4d));
 	}
 }

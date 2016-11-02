@@ -21,24 +21,23 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static org.easymock.EasyMock.anyString;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.powermock.api.easymock.PowerMock.expectLastCall;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import org.easymock.EasyMock;
-import org.easymock.EasyMockRule;
-import org.easymock.Mock;
+import org.easymock.*;
+import org.easymock.internal.RuntimeExceptionWrapper;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -55,7 +54,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationSt
 		DefaultVariantsScoreComputation.class,
 		DefaultVariantsScoreComputer.class
 		})
-public class DefaultVariantsScoreComputerUnitTest {
+public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 	@Rule	
 	public EasyMockRule rule = new EasyMockRule(this);
@@ -78,38 +77,47 @@ public class DefaultVariantsScoreComputerUnitTest {
 
 	private DefaultVariantsScoreComputer computer;
 
+	private Path aBasePath = Paths.get("/tmp");
 	private Path aVCF = Paths.get("input.vcf");
 	
 	@Before
 	public void createComputer() {
 		computer = new DefaultVariantsScoreComputer(effectPredictor, vEPtoVariantsScoreCalculator, Executors.newFixedThreadPool(1));
 	}
-	
+
+	@After
+	public void verifyAll() {
+		super.verifyAll(); //verify easy mocks
+		PowerMock.verifyAll();
+	}
+
 	@Test
 	public void testCreateComputation() throws Exception {
-		
-		Path aBasePath = Paths.get("/tmp");
+
 		// VEP results mock
 		VariantsEffectPredictionResults VEPRs = 
 				EasyMock.createMock(VariantsEffectPredictionResults.class);
 		
 		// effectPredictor mock
-		expect(effectPredictor.predictEffect(aVCF, aBasePath)).andReturn(VEPRs);
-		replay(effectPredictor);
+		expect(effectPredictor.predictEffect(aVCF, aBasePath)).andAnswer(() -> {
+			Thread.sleep(200);
+			return VEPRs;
+		});
 
 		
 		// variants score calculator mock
 		expect(vEPtoVariantsScoreCalculator.calculateVariantsScore(VEPRs, aBasePath))
 			.andReturn(results);
-		replay(vEPtoVariantsScoreCalculator);
-		
-		
-		expectNew(VariantsScoreComputationStatus.class).andReturn(status);
+
 
 		// computation
-		computation.wrapFuture(EasyMock.anyObject());		
+		expectNew(DefaultVariantsScoreComputation.class).andReturn(computation);
+		Capture<Future> capturedTasks = EasyMock.newCapture();
+		computation.wrapFuture(capture(capturedTasks));
 		expectLastCall().times(1);
-		
+		expect(computation.get()).andReturn(results).anyTimes();
+
+
 		expect(computation.getStatus()).andReturn(status);
 		expectLastCall().anyTimes();
 		
@@ -118,17 +126,19 @@ public class DefaultVariantsScoreComputerUnitTest {
 		status.setTaskProgress(EasyMock.anyDouble());
 		expectLastCall().times(3);
 		status.setOverallProgress(EasyMock.anyDouble());
-		expectLastCall().times(2);		
+		expectLastCall().times(2);
 		status.setOverallProgress(1.0f);
 		expectLastCall().times(1);
-		replay(computation);
-		replay(status);
-		
-		// mock configuration finished		
+
+		// easy mock replay
+		super.replayAll();
+
+		// power mock replay
 		PowerMock.replay(
-				VariantsScoreComputationStatus.class,
-				VariantsScoreComputationResults.class 
-				);
+			DefaultVariantsScoreComputation.class,
+			VariantsScoreComputationStatus.class,
+			VariantsScoreComputationResults.class
+		);
 		
 		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
 		parameters.setVcfFile(aVCF);
@@ -137,9 +147,39 @@ public class DefaultVariantsScoreComputerUnitTest {
 		final VariantsScoreComputation computation = 
 				computer.createComputation(parameters);
 		
-		assertThat(results, CoreMatchers.is(computation.get()));
-		
-		PowerMock.verifyAll();
+		assertThat(results, is(computation.get()));
+
+		// wait in get()
+		assertThat(capturedTasks.getValue().get(), is(results));
 	}
-	
+
+	@Test
+	public void testVEPError() throws ExecutionException, InterruptedException {
+		// effectPredictor mock
+		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
+				.andAnswer(() -> {
+					Thread.sleep(200);
+					throw new RuntimeException(new RuntimeException("exception in VEP"));
+				});
+
+		super.replayAll();
+
+		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
+		parameters.setVcfFile(aVCF);
+		parameters.setResultsBasePath(aBasePath);
+
+		VariantsScoreComputation computation = computer.createComputation(parameters);
+
+		try	{
+			// wait
+			computation.get();
+			fail("We expect the computation to throw an exception in get");
+
+		} catch(ExecutionException e) {
+			//we expect to be here
+			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
+			assertThat(computation.getStatus().getTaskName(), is("Finished-Error"));
+			assertThat(computation.getStatus().isFinished(), is(true));
+		}
+	}
 }

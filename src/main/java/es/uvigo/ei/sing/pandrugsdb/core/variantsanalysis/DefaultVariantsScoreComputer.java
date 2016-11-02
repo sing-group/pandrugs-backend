@@ -95,7 +95,11 @@ public class DefaultVariantsScoreComputer implements
 							computation.getStatus().setTaskProgress(0f);
 						});
 					} else {
-						exception.printStackTrace();
+						System.err.println("on exception of vep");
+						computation.getStatus().setOverallProgress(1.0f);
+						computation.getStatus().setTaskName("Finished-Error");
+						computation.getStatus().setTaskProgress(0f);
+						//exception.printStackTrace();
 					}
 				})
 				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(vepResults, parameters.getResultsBasePath()))
@@ -109,12 +113,14 @@ public class DefaultVariantsScoreComputer implements
 							computation.getStatus().setTaskProgress(0f);
 						});
 					}  else {
-						exception.printStackTrace();
+						System.err.println("on exception of vscore");
+						computation.getStatus().setOverallProgress(1.0f);
+						computation.getStatus().setTaskName("Finished-Error");
+						computation.getStatus().setTaskProgress(0f);
 					}
 				});
 		
 		computation.wrapFuture(tasks);
-		
 		
 		this.executorService.execute(() -> {
 			input.complete(parameters);
