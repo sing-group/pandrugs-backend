@@ -61,16 +61,26 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 				userPath.resolve(vcfFile)).toFile();
 		try {
 			String command = vepConfiguration.createVEPCommand(inputFile.toPath(), outFile.toPath());
-			LOG.info("Starting VEP computation with command: "+command);
+			LOG.info("Starting VEP computation over "+inputFile+" with command: "+command);
 			Process p = Runtime.getRuntime().exec(command);
 			int retValue = p.waitFor();
+
+			if (retValue == 130) {
+				// bash exit code for CTRL+C (Interruption)
+				// When the server stops, these child processes are interrupted also
+				// In this case, we will throw an InterruptedException, indicating that
+				// this process has no inherent-error, it was deliberately interrupted, so
+				// it maybe restarted with the same parameters in the future.
+				LOG.error("VEP process over "+inputFile+" was interrupted");
+				throw new InterruptedException("VEP process was interrupted");
+			}
 			if (retValue != 0) {
-				LOG.error("Error during VEP computation due to non-zero exit status");
+				LOG.error("Error during VEP computation over "+inputFile+" due to non-zero ("+retValue+") exit status");
 				throw new RuntimeException("VEP process had non 0 exit status, exit status: "+retValue);
 			}
-			LOG.info("Finished VEP computation with command: "+command);
+			LOG.info("Finished VEP computation over "+inputFile);
 		} catch (IOException | InterruptedException e) {
-			LOG.error("Exception during VEP computation. Exception: "+e);
+			LOG.error("Exception during VEP computation over "+inputFile+". Exception: "+e);
 			throw new RuntimeException(e);
 		}
 

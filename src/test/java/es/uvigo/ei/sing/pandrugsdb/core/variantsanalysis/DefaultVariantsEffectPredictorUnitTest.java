@@ -21,36 +21,36 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.easymock.*;
+import org.easymock.internal.MocksControl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.easymock.EasyMockRule;
-import org.easymock.Mock;
-import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.easymock.EasyMock.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
-	DefaultVariantsEffectPredictor.class,
-		})
-public class DefaultVariantsEffectPredictorUnitTest {
+	Runtime.class,
+	DefaultVariantsEffectPredictor.class
+})
+public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 
 	@Rule	
 	public EasyMockRule rule = new EasyMockRule(this);
@@ -60,7 +60,13 @@ public class DefaultVariantsEffectPredictorUnitTest {
 
 	@Mock
 	private VEPConfiguration vepConfiguration;
-	
+
+	@Mock
+	private Process vepProcess;
+
+	@Mock
+	private Runtime runtime;
+
 	@TestSubject
 	private DefaultVariantsEffectPredictor vepPredictor = 
 		new DefaultVariantsEffectPredictor();
@@ -87,9 +93,14 @@ public class DefaultVariantsEffectPredictorUnitTest {
 		computationDir.mkdir();
 		copyVCF();
 	}
-	
+
+	@After
+	public void verifyMocks() throws IOException {
+		//PowerMock.verifyAll();
+		super.verifyAll();
+	}
+
 	private void copyVCF() throws IOException {
-		
 		copyInputStreamToFile(getClass().getResourceAsStream(aVCFResourcePath), vcfFile);
 	}
 
@@ -103,18 +114,37 @@ public class DefaultVariantsEffectPredictorUnitTest {
 	
 	@Test
 	public void testResultsFileAreCreatedAndReferenced() {
-		
-		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
-		replay(fileSystemConfiguration);
 
+		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
 		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("touch "+expectedResultsFile
 				.getAbsolutePath());
-		replay(vepConfiguration);
+
+		super.replayAll();
 
 		VariantsEffectPredictionResults results = vepPredictor.predictEffect(Paths.get(inputVCFName), Paths.get(computationBasePath));
 
 		assertEquals(DefaultVariantsEffectPredictor.VEP_FILE_NAME, results.getFilePath().toString());
 		assertTrue(expectedResultsFile.exists());
-		
+	}
+
+	@Test
+	public void testInterruptedException() throws InterruptedException, IOException {
+
+		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
+		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("");
+		expect(runtime.exec(anyString())).andReturn(vepProcess);
+		PowerMock.mockStatic(Runtime.class);
+		expect(Runtime.getRuntime()).andReturn(runtime);
+		expect(vepProcess.waitFor()).andReturn(130); // interrupted code
+
+		super.replayAll();
+		PowerMock.replay(Runtime.class);
+
+		try {
+			vepPredictor.predictEffect(Paths.get(inputVCFName), Paths.get(computationBasePath));
+			fail();
+		} catch (Exception e) {
+			assertThat(ExceptionUtils.getRootCause(e), is(instanceOf(InterruptedException.class)));
+		}
 	}
 }

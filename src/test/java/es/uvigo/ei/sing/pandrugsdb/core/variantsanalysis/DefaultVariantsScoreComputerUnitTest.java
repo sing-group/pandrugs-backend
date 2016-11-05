@@ -178,8 +178,38 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
-			assertThat(computation.getStatus().getTaskName(), is("Finished-Error"));
+			assertThat(computation.getStatus().getTaskName(), is("Error"));
 			assertThat(computation.getStatus().isFinished(), is(true));
+		}
+	}
+
+	@Test
+	public void testVEPInterrupted() throws ExecutionException, InterruptedException {
+		// effectPredictor mock
+		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
+				.andAnswer(() -> {
+					Thread.sleep(200);
+					throw new RuntimeException(new InterruptedException("exception in VEP"));
+				});
+
+		super.replayAll();
+
+		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
+		parameters.setVcfFile(aVCF);
+		parameters.setResultsBasePath(aBasePath);
+
+		VariantsScoreComputation computation = computer.createComputation(parameters);
+
+		try	{
+			// wait
+			computation.get();
+			fail("We expect the computation to throw an exception in get");
+
+		} catch(ExecutionException e) {
+			//we expect to be here
+			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
+			assertThat(computation.getStatus().getTaskName(), is("Interrupted"));
+			assertThat(computation.getStatus().isFinished(), is(false));
 		}
 	}
 }

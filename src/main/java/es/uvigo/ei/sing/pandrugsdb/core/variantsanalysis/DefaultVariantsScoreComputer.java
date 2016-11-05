@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
@@ -98,12 +99,6 @@ public class DefaultVariantsScoreComputer implements
 							computation.getStatus().setTaskName("Computing Variant Scores");
 							computation.getStatus().setTaskProgress(0f);
 						});
-					} else {
-						notificationExecutorService.execute( () -> {
-							computation.getStatus().setOverallProgress(1.0f);
-							computation.getStatus().setTaskName("Finished-Error");
-							computation.getStatus().setTaskProgress(0f);
-						});
 					}
 				})
 				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(vepResults, parameters.getResultsBasePath()))
@@ -117,11 +112,17 @@ public class DefaultVariantsScoreComputer implements
 							computation.getStatus().setTaskProgress(0f);
 						});
 					}  else {
-						notificationExecutorService.execute( () -> {
-							computation.getStatus().setOverallProgress(1.0f);
-							computation.getStatus().setTaskName("Finished-Error");
-							computation.getStatus().setTaskProgress(0f);
-						});
+						if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException){
+							notificationExecutorService.execute( () -> {
+								computation.getStatus().setTaskName("Interrupted");
+							});
+						} else {
+							notificationExecutorService.execute(() -> {
+								computation.getStatus().setOverallProgress(1.0f);
+								computation.getStatus().setTaskName("Error");
+								computation.getStatus().setTaskProgress(0f);
+							});
+						}
 					}
 				});
 		
