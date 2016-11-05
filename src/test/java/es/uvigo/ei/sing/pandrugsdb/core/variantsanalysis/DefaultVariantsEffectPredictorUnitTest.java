@@ -95,9 +95,9 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 	}
 
 	@After
-	public void verifyMocks() throws IOException {
-		//PowerMock.verifyAll();
+	public void verifyAll() {
 		super.verifyAll();
+		PowerMock.verifyAll();
 	}
 
 	private void copyVCF() throws IOException {

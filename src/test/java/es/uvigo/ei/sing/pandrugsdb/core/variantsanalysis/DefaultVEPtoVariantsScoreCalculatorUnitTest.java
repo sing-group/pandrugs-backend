@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.After;
@@ -42,7 +43,7 @@ import org.junit.Test;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 
-public class DefaultVEPtoVariantsScoreCalculatorUnitTest {
+public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport {
 	@Rule	
 	public EasyMockRule rule = new EasyMockRule(this);
 	
@@ -67,7 +68,12 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest {
 		this.expectedResultsFile = new File(userDir.getAbsolutePath()+File.separator+DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME);
 		userDir.mkdir();
 	}
-	
+
+	@After
+	public void verifyAll() {
+		super.verifyAll();
+	}
+
 	@After
 	public void removeUserDir() throws IOException {
 		this.expectedResultsFile.delete();
@@ -76,17 +82,14 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest {
 	
 	@Test
 	public void testResultsFileAreCreatedAndReferenced() {
-		
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(aBaseDirectory).anyTimes();
-		replay(fileSystemConfiguration);
-		
+
+		super.replayAll();
+
 		VariantsEffectPredictionResults vepResults = new VariantsEffectPredictionResults(Paths.get(DefaultVariantsEffectPredictor.VEP_FILE_NAME));
 		VariantsScoreComputationResults results = defaultVEPToVariantsScoreCalculator.calculateVariantsScore(vepResults, Paths.get(userName));
 
 		assertEquals(DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME, results.getVscorePath().toString());
 		assertTrue(expectedResultsFile.exists());
-		
-		
 	}
-
 }
