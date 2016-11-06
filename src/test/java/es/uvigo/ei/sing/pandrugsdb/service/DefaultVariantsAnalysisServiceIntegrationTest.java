@@ -25,17 +25,23 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -49,6 +55,7 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -65,6 +72,7 @@ import static org.junit.Assert.assertThat;
 		DirtiesContextTestExecutionListener.class,
 		DbUnitTestExecutionListener.class
 })
+@DirtiesContext
 @DatabaseSetup(value = {
 		"file:src/test/resources/META-INF/dataset.user.xml",
 		"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
@@ -72,7 +80,12 @@ import static org.junit.Assert.assertThat;
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
 public class DefaultVariantsAnalysisServiceIntegrationTest {
-
+	@BeforeClass
+	public static void initContext() {
+		TestServletContext.INIT_PARAMETERS.put("user.data.directory", System.getProperty("java.io.tmpdir"));
+		TestServletContext.INIT_PARAMETERS.put(DefaultVEPConfiguration.VEP_COMMAND_TEMPLATE_PARAMETER,"touch %s %s");
+		new TestServletContext();
+	}
 
 	@Inject
 	@Named("defaultVariantsAnalysisService")

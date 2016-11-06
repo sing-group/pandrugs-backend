@@ -36,10 +36,12 @@ import javax.inject.Named;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
@@ -55,8 +57,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
-	TransactionDbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class,
+	DirtiesContextTestExecutionListener.class
 })
+@DirtiesContext
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.registration.xml")
 @ExpectedDatabase(
 	value = "file:src/test/resources/META-INF/dataset.registration.xml",

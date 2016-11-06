@@ -47,6 +47,7 @@ import javax.ws.rs.BadRequestException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -70,6 +71,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 	DirtiesContextTestExecutionListener.class,
 	TransactionDbUnitTestExecutionListener.class
 })
+@DirtiesContext
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.genedrug.xml")
 @ExpectedDatabase(
 	value = "file:src/test/resources/META-INF/dataset.genedrug.xml",

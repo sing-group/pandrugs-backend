@@ -29,6 +29,8 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
@@ -40,6 +42,7 @@ import es.uvigo.ei.sing.pandrugsdb.util.FutureProxy;
 @Component
 public class DefaultVariantsScoreComputer implements
 		VariantsScoreComputer {
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsScoreComputer.class);
 
 	@Inject
 	private VariantsEffectPredictor effectPredictor;
@@ -85,6 +88,7 @@ public class DefaultVariantsScoreComputer implements
 		CompletableFuture<VariantsScoreComputationResults> tasks = 
 				input
 				.thenApply((params) -> {
+					LOG.info("Starting computation. Path: "+parameters.getResultsBasePath());
 					//use another thread to notify status, because if listeners try to call
 					//get() they will lock, because they are in the same thread as the computation.
 					notificationExecutorService.execute( () -> {
@@ -94,18 +98,20 @@ public class DefaultVariantsScoreComputer implements
 				})
 				.whenComplete((result, exception) -> {
 					if (exception == null) {
+						LOG.info("Completed VEP computation. Path: "+parameters.getResultsBasePath());
 						notificationExecutorService.execute( () -> {
 							computation.getStatus().setOverallProgress(0.5f);
 							computation.getStatus().setTaskName("Computing Variant Scores");
 							computation.getStatus().setTaskProgress(0f);
 						});
+					} else {
+						LOG.error("Error in VEP computation. Path: "+parameters.getResultsBasePath());
 					}
 				})
-				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(vepResults, parameters.getResultsBasePath()))
+				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(parameters, vepResults))
 				.whenComplete((result, exception) -> {
 					if (exception == null) {
-						//use another thread to notify status, because if listeners try to call
-						//get() they will lock, because they are in the same thread as the computation.
+						LOG.info("Finished VEP computation. Path: "+parameters.getResultsBasePath());
 						notificationExecutorService.execute( () -> {
 							computation.getStatus().setOverallProgress(1.0f);
 							computation.getStatus().setTaskName("Finished");
@@ -113,10 +119,14 @@ public class DefaultVariantsScoreComputer implements
 						});
 					}  else {
 						if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException){
+							LOG.warn("Interrupted computation in path "+parameters.getResultsBasePath());
 							notificationExecutorService.execute( () -> {
 								computation.getStatus().setTaskName("Interrupted");
 							});
 						} else {
+							LOG.error("Error during computation in path "+parameters.getResultsBasePath()+": " +
+									""+exception+". Root cause: "+ExceptionUtils.getRootCause(exception));
+							exception.printStackTrace();
 							notificationExecutorService.execute(() -> {
 								computation.getStatus().setOverallProgress(1.0f);
 								computation.getStatus().setTaskName("Error");
@@ -127,7 +137,9 @@ public class DefaultVariantsScoreComputer implements
 				});
 		
 		computation.wrapFuture(tasks);
-		
+
+		LOG.info("Submitted computation. Path: "+parameters.getResultsBasePath());
+
 		this.executorService.execute(() -> {
 			input.complete(parameters);
 		});

@@ -24,10 +24,11 @@ package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 import java.nio.file.Path;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 
 public interface VEPtoVariantsScoreCalculator {
 
 	public VariantsScoreComputationResults calculateVariantsScore(
-			VariantsEffectPredictionResults vep, Path userPath);
+			VariantsScoreComputationParameters parameters, VariantsEffectPredictionResults vep);
 }

@@ -28,14 +28,24 @@ import static org.junit.Assert.assertThat;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+	DependencyInjectionTestExecutionListener.class,
+	DirtiesContextTestExecutionListener.class
+})
+@DirtiesContext
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
 public class DefaultCancerServiceIntegrationTest {
 	@Inject

@@ -21,29 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneSymbolsForQuery;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithInteractionDegreeUpTo;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithMaxInteractionDegree;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.interactions;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbols;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,13 +37,18 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.ExpectedDatabase;
-import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.List;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
+import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
@@ -67,6 +58,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 	DirtiesContextTestExecutionListener.class,
 	TransactionDbUnitTestExecutionListener.class
 })
+@DirtiesContext
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.gene.xml")
 @ExpectedDatabase(
 	value = "file:src/test/resources/META-INF/dataset.gene.xml",

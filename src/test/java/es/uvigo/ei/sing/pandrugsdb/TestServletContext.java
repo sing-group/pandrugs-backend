@@ -22,14 +22,22 @@
 package es.uvigo.ei.sing.pandrugsdb;
 
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
+@Scope("prototype")
 public class TestServletContext extends MockServletContext {
 
+	public static Map<String, String> INIT_PARAMETERS = new HashMap<>();
+
 	public TestServletContext() {
-		this.setInitParameter("user.data.directory", System.getProperty("java.io.tmpdir"));
-		this.setInitParameter(DefaultVEPConfiguration.VEP_COMMAND_TEMPLATE_PARAMETER, "touch %s %s");
+		INIT_PARAMETERS.entrySet().forEach((e)->
+			this.setInitParameter(e.getKey(), e.getValue())
+		);
 	}
 }

@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
@@ -56,16 +58,19 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 	private DefaultVEPtoVariantsScoreCalculator defaultVEPToVariantsScoreCalculator = 
 		new DefaultVEPtoVariantsScoreCalculator();
 
+	private File vepFile;
 	private File expectedResultsFile;
+
 	private File userDir;
-	
 	private String userName;
-	
+
 	@Before
-	public void createUserDir() {
+	public void createUserDir() throws IOException {
 		this.userName = UUID.randomUUID().toString();
 		this.userDir = new File(aBaseDirectory.getAbsolutePath()+File.separator+userName);
 		this.expectedResultsFile = new File(userDir.getAbsolutePath()+File.separator+DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME);
+		this.vepFile = new File(userDir.getAbsolutePath()+File.separator+DefaultVariantsEffectPredictor.VEP_FILE_NAME);
+		FileUtils.copyInputStreamToFile(getClass().getResourceAsStream("ensembl_vep-small.csv"), this.vepFile);
 		userDir.mkdir();
 	}
 
@@ -76,6 +81,7 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 
 	@After
 	public void removeUserDir() throws IOException {
+		this.vepFile.delete();
 		this.expectedResultsFile.delete();
 		this.userDir.delete();
 	}
@@ -86,8 +92,12 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 
 		super.replayAll();
 
+		VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
+		parameters.setResultsBasePath(Paths.get(userName));
 		VariantsEffectPredictionResults vepResults = new VariantsEffectPredictionResults(Paths.get(DefaultVariantsEffectPredictor.VEP_FILE_NAME));
-		VariantsScoreComputationResults results = defaultVEPToVariantsScoreCalculator.calculateVariantsScore(vepResults, Paths.get(userName));
+
+		VariantsScoreComputationResults results = defaultVEPToVariantsScoreCalculator.calculateVariantsScore
+				(parameters, vepResults);
 
 		assertEquals(DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME, results.getVscorePath().toString());
 		assertTrue(expectedResultsFile.exists());

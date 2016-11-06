@@ -27,6 +27,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
@@ -37,6 +39,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,14 +66,15 @@ import static org.junit.Assert.*;
 	DirtiesContextTestExecutionListener.class,
 	TransactionDbUnitTestExecutionListener.class
 })
+@DirtiesContext
 @DatabaseSetup(value = {
 		"file:src/test/resources/META-INF/dataset.user.xml",
 		"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
 })
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
-
 public class DefaultVariantsAnalysisControllerIntegrationTest {
+
 	@Inject
 	private ServletContext context;
 
@@ -78,14 +82,30 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	@Named("defaultVariantsAnalysisController")
 	private DefaultVariantsAnalysisController controller;
 
+	private static final String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
+	private static final String aVEPResourcePath = "../core/variantsanalysis/ensembl_vep-small.csv";
 
-	private String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
+	@BeforeClass
+	public static void initContext() {
+		try {
+
+			TestServletContext.INIT_PARAMETERS.put("user.data.directory", System.getProperty("java.io.tmpdir"));
+
+			// the vep command template is mocked as a simple "cp [test.vep] %2$s"
+			File tempVepFile = File.createTempFile("vep-small", ".csv");
+			FileUtils.copyInputStreamToFile(DefaultVariantsAnalysisControllerIntegrationTest.class.getResourceAsStream
+					(aVEPResourcePath), tempVepFile);
+			TestServletContext.INIT_PARAMETERS.put(DefaultVEPConfiguration.VEP_COMMAND_TEMPLATE_PARAMETER,
+							"cp "+tempVepFile.getAbsolutePath()+" %2$s");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Before
 	public void prepareComputationFilesStorage() throws IOException {
 		String systemTmpDir = System.getProperty("java.io.tmpdir");
-
-
 
 		// extracts the files available as resources and copies them
 		// to a temporary directory

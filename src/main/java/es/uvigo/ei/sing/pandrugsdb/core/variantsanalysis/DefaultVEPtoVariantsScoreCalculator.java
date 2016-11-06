@@ -21,19 +21,27 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.inject.Inject;
-
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFParseException;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFReader;
+import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPMetaData;
+import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPMetaDataBuilder;
+import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPVariant;
+import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPVariantDataBuilder;
 import org.springframework.stereotype.Component;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import javax.inject.Inject;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 @Component
 public class DefaultVEPtoVariantsScoreCalculator implements
@@ -41,6 +49,7 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 
 	public static final String VARIANT_SCORES_FILE_NAME = "vep_data.csv";
 	public static final String AFFECTED_GENES_FILE_NAME = "genes_affected.csv";
+
 	@Inject
 	private FileSystemConfiguration configuration;
 	
@@ -53,34 +62,66 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 
 	@Override
 	public VariantsScoreComputationResults calculateVariantsScore (
-			VariantsEffectPredictionResults vep, Path userPath) {
-		Path vscoreResultsPath = Paths.get(VARIANT_SCORES_FILE_NAME);
-		Path vscoreFilePath = userPath.resolve(vscoreResultsPath);
-		File vscoresFile = configuration.getUserDataBaseDirectory().toPath().resolve(vscoreFilePath).toFile();
-		
-		//write to outFile ...
-		try {
-			PrintStream out = new PrintStream(new FileOutputStream(vscoresFile));
-			out.println("caca");
-			out.close();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		
+			VariantsScoreComputationParameters parameters, VariantsEffectPredictionResults vep) {
+
+
 		Path affectedGenesPath = Paths.get(AFFECTED_GENES_FILE_NAME);
-		Path affectedGenesFilePath = userPath.resolve(affectedGenesPath);
+		Path affectedGenesFilePath = parameters.getResultsBasePath().resolve(affectedGenesPath);
 		File affectedGenesFile = configuration.getUserDataBaseDirectory().toPath().resolve(affectedGenesFilePath).toFile();
-		
-		//write to outFile ...
-		try {
-			PrintStream out = new PrintStream(new FileOutputStream(affectedGenesFile));
-			out.println("caca");
-			out.close();
-		} catch (FileNotFoundException e) {
+
+		try (
+				PrintStream genesAffectedOut = new PrintStream(new FileOutputStream(affectedGenesFile)))
+		{
+
+			Map<String, Double> geneScores = computeGeneScores(parameters, vep);
+
+			geneScores.entrySet().stream().forEach(
+					(e) -> genesAffectedOut.println(e.getKey() + "\t" + e.getValue())
+			);
+
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
-		return new VariantsScoreComputationResults(vep, vscoreResultsPath, affectedGenesPath);
+
+		return new VariantsScoreComputationResults(vep, Paths.get(VARIANT_SCORES_FILE_NAME), affectedGenesPath);
+	}
+
+	private Map<String, Double> computeGeneScores(VariantsScoreComputationParameters parameters, VariantsEffectPredictionResults vep) throws IOException, VCFParseException {
+		VCFReader<VEPMetaData, VEPVariant> reader = createVCFReader(vep, parameters.getResultsBasePath());
+
+		Path vscoreResultsPath = Paths.get(VARIANT_SCORES_FILE_NAME);
+		Path vscoreFilePath = parameters.getResultsBasePath().resolve(vscoreResultsPath);
+		File vscoresFile = configuration.getUserDataBaseDirectory().toPath().resolve(vscoreFilePath).toFile();
+
+		try (PrintStream vScoresOut = new PrintStream(new FileOutputStream(vscoresFile))) {
+
+			return reader.getVariants().stream().filter( v -> this.getGeneName(v) != null).collect(toMap(
+					v -> getGeneName(v),
+					v -> computeVScore(v, vScoresOut),
+					(score1, score2) -> Math.max(score1, score2)));
+		}
+	}
+
+	private double computeVScore(VEPVariant vepVariant, PrintStream vScoresOut) {
+
+		return 0.5;
+	}
+
+	private String getGeneName(VEPVariant vepVariant) {
+		Object attValue = vepVariant.getCSQAttribute(0, "SYMBOL");
+		System.out.println(attValue);
+		return attValue == null? null : attValue.toString();
+	}
+
+	private VCFReader<VEPMetaData, VEPVariant> createVCFReader(VariantsEffectPredictionResults vep, Path userPath)
+			throws MalformedURLException {
+		Path vepFilePath = userPath.resolve(vep.getFilePath());
+		File vepFile = configuration.getUserDataBaseDirectory().toPath().resolve(vepFilePath).toFile();
+
+		System.out.println("created vcf reader for file "+vepFile.toURI().toURL());
+		return new VCFReader<>(
+				vepFile.toURI().toURL(), new VEPMetaDataBuilder(),
+				new VEPVariantDataBuilder());
 	}
 
 }

@@ -104,9 +104,12 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			return VEPRs;
 		});
 
-		
+		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
+		parameters.setVcfFile(aVCF);
+		parameters.setResultsBasePath(aBasePath);
+
 		// variants score calculator mock
-		expect(vEPtoVariantsScoreCalculator.calculateVariantsScore(VEPRs, aBasePath))
+		expect(vEPtoVariantsScoreCalculator.calculateVariantsScore(parameters, VEPRs))
 			.andReturn(results);
 
 
@@ -139,11 +142,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			VariantsScoreComputationStatus.class,
 			VariantsScoreComputationResults.class
 		);
-		
-		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
-		parameters.setVcfFile(aVCF);
-		parameters.setResultsBasePath(aBasePath);
-		
+
 		final VariantsScoreComputation computation = 
 				computer.createComputation(parameters);
 		

@@ -40,6 +40,7 @@ import javax.ws.rs.NotFoundException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,6 +65,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 	TransactionDbUnitTestExecutionListener.class
 })
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
+@DirtiesContext
 public class DefaultUserServiceIntegrationTest {
 	@Inject
 	@Named("defaultUserService")

@@ -36,7 +36,13 @@ public class VariantsScoreComputationParameters {
 	
 	@Column(name="parameter_base_path")
 	private String basePath;
-	
+
+	@Column(name="parameter_consequence_filter_active")
+	private boolean consequenceFilterActive = true;
+
+	@Column(name="parameter_gene_frequency_threshold")
+	private double geneFrequencyThreshold = 0.0d;
+
 	@Transient
 	private Path resultsBasePath;
 
@@ -62,5 +68,21 @@ public class VariantsScoreComputationParameters {
 	
 	public Path getResultsBasePath() {
 		return Paths.get(this.basePath);
+	}
+
+	public boolean isConsequenceFilterActive() {
+		return consequenceFilterActive;
+	}
+
+	public void setConsequenceFilterActive(boolean consequenceFilterActive) {
+		this.consequenceFilterActive = consequenceFilterActive;
+	}
+
+	public double getGeneFrequencyThreshold() {
+		return geneFrequencyThreshold;
+	}
+
+	public void setGeneFrequencyThreshold(double geneFrequencyThreshold) {
+		this.geneFrequencyThreshold = geneFrequencyThreshold;
 	}
 }

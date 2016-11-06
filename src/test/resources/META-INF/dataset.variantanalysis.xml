@@ -28,6 +28,8 @@
 
 			parameter_vcf_file="inputVCF.vcf"
 			parameter_base_path="pepe-1"
+			parameter_consequence_filter_active = "true"
+			parameter_gene_frequency_threshold = "0.0"
 
 			status_task_name="Computing Variant Scores"
 			status_task_progress="0.0"
@@ -41,6 +43,8 @@
 
 			parameter_vcf_file="inputVCF.vcf"
 			parameter_base_path="pepe-2"
+			parameter_consequence_filter_active = "true"
+			parameter_gene_frequency_threshold = "0.0"
 
 			status_task_name="Finished"
 			status_task_progress="1.0"
