@@ -46,15 +46,29 @@ public final class GeneInformationDataset {
 		final Set<GeneInformation> ppp3r1Interactions = new HashSet<>();
 		final Set<GeneInformation> prkag2Interactions = new HashSet<>();
 		
-		final GeneInformation gata2 = new GeneInformation("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, emptySet(), emptySet(), gata2Interactions);
-		final GeneInformation adamts19 = new GeneInformation("ADAMTS19", null, false, null, 0.3556896485d);
-		final GeneInformation cdc42bpa = new GeneInformation("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, emptySet(), emptySet(), cdc42bpaInteractions);
-		final GeneInformation prkag2 = new GeneInformation("PRKAG2", null, false, null, 0d, emptySet(), emptySet(), prkag2Interactions);
-		final GeneInformation ptgs1 = new GeneInformation("PTGS1", null, false, null, 0.4277512382d);
-		final GeneInformation ppp3r1 = new GeneInformation("PPP3R1", null, false, null, 0d, emptySet(), emptySet(), ppp3r1Interactions);
+		final Set<GeneInformation> pathwayGenes000002 = new HashSet<>();
+		final Set<GeneInformation> pathwayGenes000003 = new HashSet<>();
+		final Set<GeneInformation> pathwayGenes000004 = new HashSet<>();
+		
+		final Set<Pathway> gata2Pathways = new HashSet<>();
+		final Set<Pathway> adamts19Pathways = new HashSet<>();
+		final Set<Pathway> cdc42bpaPathways = new HashSet<>();
+		final Set<Pathway> prkag2Pathways = new HashSet<>();
+		final Set<Pathway> ptgs1Pathways = new HashSet<>();
+		
+		final GeneInformation gata2 = new GeneInformation("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, emptySet(), emptySet(), gata2Interactions, gata2Pathways);
+		final GeneInformation adamts19 = new GeneInformation("ADAMTS19", null, false, null, 0.3556896485d, emptySet(), emptySet(), emptySet(), adamts19Pathways);
+		final GeneInformation cdc42bpa = new GeneInformation("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, emptySet(), emptySet(), cdc42bpaInteractions, cdc42bpaPathways);
+		final GeneInformation prkag2 = new GeneInformation("PRKAG2", null, false, null, 0d, emptySet(), emptySet(), prkag2Interactions, prkag2Pathways);
+		final GeneInformation ptgs1 = new GeneInformation("PTGS1", null, false, null, 0.4277512382d, emptySet(), emptySet(), emptySet(), ptgs1Pathways);
+		final GeneInformation ppp3r1 = new GeneInformation("PPP3R1", null, false, null, 0d, emptySet(), emptySet(), ppp3r1Interactions, emptySet());
 		final GeneInformation max = new GeneInformation("MAX", null, true, HIGH_CONFIDENCE_DRIVER, 0.626823283d);
 		final GeneInformation cx3cr1 = new GeneInformation("CX3CR1", null, false, null, 0d);
 		final GeneInformation dmd = new GeneInformation("DMD", null, false, HIGH_CONFIDENCE_DRIVER, 0d);
+		
+		final Pathway pathway00002 = new Pathway("hsa00002", "Single Gene Pathway", pathwayGenes000002);
+		final Pathway pathway00003 = new Pathway("hsa00003", "Multiple Gene Pathway 1", pathwayGenes000003);
+		final Pathway pathway00004 = new Pathway("hsa00004", "Multiple Gene Pathway 2", pathwayGenes000004);
 		
 		gata2Interactions.add(adamts19);
 		gata2Interactions.add(cdc42bpa);
@@ -64,6 +78,22 @@ public final class GeneInformationDataset {
 		cdc42bpaInteractions.add(ppp3r1);
 		ppp3r1Interactions.add(dmd);
 		prkag2Interactions.add(max);
+		
+		pathwayGenes000002.add(gata2);
+		pathwayGenes000003.add(gata2);
+		pathwayGenes000003.add(adamts19);
+		pathwayGenes000003.add(cdc42bpa);
+		pathwayGenes000004.add(cdc42bpa);
+		pathwayGenes000004.add(prkag2);
+		pathwayGenes000004.add(ptgs1);
+		
+		gata2Pathways.add(pathway00002);
+		gata2Pathways.add(pathway00003);
+		adamts19Pathways.add(pathway00003);
+		cdc42bpaPathways.add(pathway00003);
+		cdc42bpaPathways.add(pathway00004);
+		prkag2Pathways.add(pathway00004);
+		ptgs1Pathways.add(pathway00004);
 		
 		return new GeneInformation[] {
 			gata2, adamts19, cdc42bpa, prkag2, ptgs1, ppp3r1, max, cx3cr1, dmd
@@ -174,5 +204,17 @@ public final class GeneInformationDataset {
 		return stream(geneInformations())
 			.map(GeneInformation::getGeneSymbol)
 		.toArray(String[]::new);
+	}
+	
+	public static GeneInformation[] geneInformationsWithPathway() {
+		return stream(geneInformations())
+			.filter(gi -> !gi.getPathways().isEmpty())
+		.toArray(GeneInformation[]::new);
+	}
+	
+	public static GeneInformation[] geneInformationsWithoutPathway() {
+		return stream(geneInformations())
+			.filter(gi -> gi.getPathways().isEmpty())
+		.toArray(GeneInformation[]::new);
 	}
 }

@@ -35,6 +35,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
@@ -67,8 +68,20 @@ public class GeneInformation implements Serializable {
 	private Set<Protein> proteins;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interactionGeneSymbol", referencedColumnName = "geneSymbol")
+	@JoinTable(
+		name = "gene_info_gene_info",
+		joinColumns = @JoinColumn(name = "gene_info_gene_symbol", referencedColumnName = "gene_symbol"),
+		inverseJoinColumns = @JoinColumn(name = "gene_info_interacting_gene_symbol", referencedColumnName = "gene_symbol")
+	)
 	private Set<GeneInformation> interactingGene;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "gene_info_pathway",
+		joinColumns = @JoinColumn(name = "gene_info_gene_symbol", referencedColumnName = "gene_symbol"),
+		inverseJoinColumns = @JoinColumn(name = "pathway_kegg_id", referencedColumnName = "kegg_id")
+	)
+	private Set<Pathway> pathways;
 	
 	GeneInformation() {
 	}
@@ -92,6 +105,7 @@ public class GeneInformation implements Serializable {
 			geneEssentialityScore,
 			emptySet(),
 			emptySet(),
+			emptySet(),
 			emptySet()
 		);
 	}
@@ -105,7 +119,8 @@ public class GeneInformation implements Serializable {
 		Double geneEssentialityScore,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
-		Set<GeneInformation> interactingGene
+		Set<GeneInformation> interactingGene,
+		Set<Pathway> pathways
 	) {
 		this.geneSymbol = geneSymbol;
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
@@ -115,6 +130,7 @@ public class GeneInformation implements Serializable {
 		this.geneDrugs = geneDrugs;
 		this.proteins = proteins;
 		this.interactingGene = interactingGene;
+		this.pathways = pathways;
 	}
 
 	public String getGeneSymbol() {
@@ -170,6 +186,10 @@ public class GeneInformation implements Serializable {
 	
 	public Set<GeneDrug> getGeneDrugs() {
 		return unmodifiableSet(geneDrugs);
+	}
+
+	public Set<Pathway> getPathways() {
+		return unmodifiableSet(pathways);
 	}
 
 	@Override

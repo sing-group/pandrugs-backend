@@ -22,18 +22,22 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInformation.equalsToGeneInformation;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPathway.containsPathways;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformations;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformationsWithPathway;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformationsWithoutPathway;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneSymbolsForQuery;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +52,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Pathway;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -75,7 +80,7 @@ public class DefaultGeneInformationDAOIntegrationTest {
 	
 	@Test
 	public void testGetAbsent() {
-		assertThat(dao.get(absentGeneSymbol()), is(CoreMatchers.nullValue()));
+		assertThat(dao.get(absentGeneSymbol()), is(nullValue()));
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -116,5 +121,30 @@ public class DefaultGeneInformationDAOIntegrationTest {
 	@Test(expected = NullPointerException.class)
 	public void testListGeneSymbolsNullQuery() {
 		dao.listGeneSymbols(null, 0);
+	}
+	
+	@Test
+	public void testGetNoPathways() {
+		final GeneInformation[] geneInformations = geneInformationsWithoutPathway();
+		
+		for (GeneInformation expectedGI : geneInformations) {
+			final GeneInformation actualGI = dao.get(expectedGI.getGeneSymbol());
+			
+			assertThat(actualGI, is(equalsToGeneInformation(expectedGI)));
+			assertThat(actualGI.getPathways(), is(empty()));
+		}
+	}
+	
+	@Test
+	public void testGetPathways() {
+		final GeneInformation[] geneInformations = geneInformationsWithPathway();
+		
+		for (GeneInformation expectedGI : geneInformations) {
+			final GeneInformation actualGI = dao.get(expectedGI.getGeneSymbol());
+			final Pathway[] expectedPathways = expectedGI.getPathways().stream().toArray(Pathway[]::new);
+			
+			assertThat(actualGI, is(equalsToGeneInformation(expectedGI)));
+			assertThat(actualGI.getPathways(), containsPathways(expectedPathways));
+		}
 	}
 }

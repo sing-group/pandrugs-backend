@@ -104,8 +104,7 @@ public final class GeneDrugDataset {
 			ResistanceType.SENSITIVITY,
 			0.1,
 			emptyList(),
-			asList(drugSources()[0]),
-			emptyList()
+			asList(drugSources()[0])
 		);
 	}
 	
@@ -124,8 +123,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.2,
 				emptyList(),
-				asList(drugSources()[0]),
-				emptyList()
+				asList(drugSources()[0])
 			),
 			new GeneDrug(
 				geneInfos.get("DIRECT GENE 2"),
@@ -136,8 +134,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.3,
 				emptyList(),
-				asList(drugSources()[1]),
-				emptyList()
+				asList(drugSources()[1])
 			),
 			new GeneDrug(
 				geneInfos.get("DIRECT GENE 2"),
@@ -148,8 +145,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.4,
 				emptyList(),
-				asList(drugSources()[2]),
-				emptyList()
+				asList(drugSources()[2])
 			)
 		};
 	}
@@ -164,8 +160,7 @@ public final class GeneDrugDataset {
 			ResistanceType.SENSITIVITY,
 			0.1,
 			asList("IG1"),
-			asList(drugSources()[3]),
-			emptyList()
+			asList(drugSources()[3])
 		);
 	}
 	
@@ -184,8 +179,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.2,
 				asList("IG2"),
-				asList(drugSources()[3]),
-				emptyList()
+				asList(drugSources()[3])
 			),
 			new GeneDrug(
 				geneInfos.get("INDIRECT GENE 2"),
@@ -196,8 +190,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.3,
 				asList("IG2"),
-				asList(drugSources()[4]),
-				emptyList()
+				asList(drugSources()[4])
 			),
 			new GeneDrug(
 				geneInfos.get("INDIRECT GENE 2"),
@@ -208,8 +201,7 @@ public final class GeneDrugDataset {
 				ResistanceType.SENSITIVITY,
 				0.4,
 				asList("IG2"),
-				asList(drugSources()[5]),
-				emptyList()
+				asList(drugSources()[5])
 			)
 		};
 	}

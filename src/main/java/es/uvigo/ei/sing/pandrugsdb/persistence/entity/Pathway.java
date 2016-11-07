@@ -21,9 +21,10 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static java.util.Collections.unmodifiableSet;
+
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,19 +37,22 @@ public class Pathway implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "id")
+	@Column(name = "kegg_id", length = 8, columnDefinition = "CHAR(8)")
 	private String id;
 	
-	@Column(name = "name")
+	@Column(name = "name", length = 150, columnDefinition = "VARCHAR(150)")
 	private String name;
 	
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "pathways")
-	private List<Gene> genes;
-	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "pathways")
-	private List<GeneDrug> geneDrugs;
+	private Set<GeneInformation> genes;
 	
 	Pathway() {}
+	
+	Pathway(String id, String name, Set<GeneInformation> genes) {
+		this.id = id;
+		this.name = name;
+		this.genes = genes;
+	}
 	
 	public String getId() {
 		return id;
@@ -58,11 +62,38 @@ public class Pathway implements Serializable {
 		return name;
 	}
 	
-	public List<Gene> getGenes() {
-		return Collections.unmodifiableList(genes);
+	public Set<GeneInformation> getGenes() {
+		return unmodifiableSet(genes);
 	}
-	
-	public List<GeneDrug> getGeneDrugs() {
-		return Collections.unmodifiableList(geneDrugs);
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pathway other = (Pathway) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

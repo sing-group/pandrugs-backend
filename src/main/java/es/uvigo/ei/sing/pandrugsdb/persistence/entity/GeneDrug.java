@@ -94,17 +94,6 @@ public class GeneDrug implements Serializable {
 	)
 	private List<DrugSource> drugSources;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "gene_drug_pathway",
-		joinColumns = {
-			@JoinColumn(name = "gene_symbol_id", referencedColumnName = "gene_symbol"),
-			@JoinColumn(name = "drug_id", referencedColumnName = "drug_id"),
-			@JoinColumn(name = "target", referencedColumnName = "target")
-		},
-		inverseJoinColumns = @JoinColumn(name = "pathway_id", referencedColumnName = "id")
-	)
-	private List<Pathway> pathways;
-	
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
@@ -128,8 +117,7 @@ public class GeneDrug implements Serializable {
 		ResistanceType resistance,
 		double score,
 		List<String> inverseGene,
-		List<DrugSource> drugSources, 
-		List<Pathway> pathways
+		List<DrugSource> drugSources
 	) {
 		this.geneSymbol = geneInformation.getGeneSymbol();
 		this.geneInformation = geneInformation;
@@ -144,7 +132,6 @@ public class GeneDrug implements Serializable {
 			.map(gs -> new IndirectGene(this, gs))
 		.collect(toList());
 		this.drugSources = drugSources;
-		this.pathways = pathways;
 	}
 	
 	public Drug getDrug() {
@@ -248,10 +235,6 @@ public class GeneDrug implements Serializable {
 			.map(DrugSource::getSource)
 			.distinct()
 		.collect(toList());
-	}
-	
-	public List<Pathway> getPathways() {
-		return unmodifiableList(pathways);
 	}
 	
 	public GeneInformation getGeneInformation() {

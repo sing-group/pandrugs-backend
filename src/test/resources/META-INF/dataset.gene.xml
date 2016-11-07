@@ -39,12 +39,24 @@
 	<!-- Degree 2: GATA2 -> ADAMTS19 | PTGS1 | PPP3R1 | MAX -->
 	<!-- Degree 2: CDC42BPA -> DMD -->
 	<!-- Degree 3: GATA2 -> DMD -->
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="ADAMTS19"/>
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="CDC42BPA"/>
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" interactingGene_gene_symbol="PRKAG2"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="ADAMTS19"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="PTGS1"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" interactingGene_gene_symbol="PPP3R1"/>
-	<gene_info_gene_info gene_info_gene_symbol="PPP3R1" interactingGene_gene_symbol="DMD"/>
-	<gene_info_gene_info gene_info_gene_symbol="PRKAG2" interactingGene_gene_symbol="MAX"/>
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="ADAMTS19"/>
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="CDC42BPA"/>
+	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="PRKAG2"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="ADAMTS19"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="PTGS1"/>
+	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="PPP3R1"/>
+	<gene_info_gene_info gene_info_gene_symbol="PPP3R1" gene_info_interacting_gene_symbol="DMD"/>
+	<gene_info_gene_info gene_info_gene_symbol="PRKAG2" gene_info_interacting_gene_symbol="MAX"/>
+	
+	<pathway kegg_id="hsa00002" name="Single Gene Pathway"/>
+	<pathway kegg_id="hsa00003" name="Multiple Gene Pathway 1"/>
+	<pathway kegg_id="hsa00004" name="Multiple Gene Pathway 2"/>
+	
+	<gene_info_pathway pathway_kegg_id="hsa00002" gene_info_gene_symbol="GATA2" />
+	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="GATA2" />
+	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="ADAMTS19" />
+	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="CDC42BPA" />
+	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="CDC42BPA" />
+	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="PRKAG2" />
+	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="PTGS1" />
 </dataset>
