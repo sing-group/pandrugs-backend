@@ -21,8 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import java.nio.file.Path;
-
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;

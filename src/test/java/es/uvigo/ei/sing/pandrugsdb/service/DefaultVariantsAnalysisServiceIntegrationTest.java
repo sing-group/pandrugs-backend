@@ -21,23 +21,31 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
-import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
-import org.apache.commons.io.FileUtils;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
+import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.newCapture;
+import static org.easymock.EasyMock.replay;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+
 import org.easymock.Capture;
-import org.easymock.EasyMock;
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,34 +56,30 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.ServletContext;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
+import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
 @TestExecutionListeners({
-		DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class,
-		DbUnitTestExecutionListener.class
+	DependencyInjectionTestExecutionListener.class,
+	DirtiesContextTestExecutionListener.class,
+	DbUnitTestExecutionListener.class
 })
 @DirtiesContext
 @DatabaseSetup(value = {
-		"file:src/test/resources/META-INF/dataset.user.xml",
-		"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
+	"file:src/test/resources/META-INF/dataset.user.xml",
+	"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
 })
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
@@ -138,7 +142,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 
-		Response response = service.getComputationStatus(new UserLogin(login), computationId, security);
+		final Response response = service.getComputationStatus(new UserLogin(login), computationId, security);
 
 		assertThat(response.getEntity(), instanceOf(ComputationStatusMetadata.class));
 	}
@@ -152,38 +156,29 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 
-		final UriInfo currentUri = EasyMock.createNiceMock(UriInfo.class);
-		final UriBuilder uriBuilder = EasyMock.createNiceMock(UriBuilder.class);
-		Capture<String> capture = EasyMock.newCapture();
+		final UriInfo currentUri = createNiceMock(UriInfo.class);
+		final UriBuilder uriBuilder = createNiceMock(UriBuilder.class);
+		final Capture<String> capture = newCapture();
 
-		EasyMock.expect(currentUri.getAbsolutePathBuilder()).andReturn(uriBuilder);
-		EasyMock.expect(uriBuilder.path(EasyMock.capture(capture))).andReturn(uriBuilder);
-		EasyMock.expect(uriBuilder.build()).andAnswer(() -> new URI(
-						"http://testhost/api/variantsanalysis/"+login+capture.getValue()));
+		expect(currentUri.getAbsolutePathBuilder()).andReturn(uriBuilder);
+		expect(uriBuilder.path(capture(capture))).andReturn(uriBuilder);
+		expect(uriBuilder.build()).andAnswer(() -> new URI(
+			"http://testhost/api/variantsanalysis/" + login + capture.getValue()));
 
-		EasyMock.replay(currentUri);
-		EasyMock.replay(uriBuilder);
-		Response response = service.startVariantsScoreUserComputation(new UserLogin(login), emptyInputStream(),
-				security,
-				currentUri
-				);
+		replay(currentUri);
+		replay(uriBuilder);
+		final Response response = service.startVariantsScoreUserComputation(
+			new UserLogin(login), emptyInputStream(), security, currentUri
+		);
 
-		assertThat(response.getStatus(), CoreMatchers.is(201));
+		assertThat(response.getStatus(), is(201));
 
 		try {
-			assertThat(response.getLocation(), CoreMatchers.equalTo(new URI(
-					"http://testhost/api/variantsanalysis/"+login+capture.getValue())));
+			assertThat(response.getLocation(), is(equalTo(new URI(
+				"http://testhost/api/variantsanalysis/" + login + capture.getValue()))
+			));
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private InputStream emptyInputStream() {
-		return new InputStream() {
-			@Override
-			public int read() throws IOException {
-				return -1;
-			}
-		};
 	}
 }

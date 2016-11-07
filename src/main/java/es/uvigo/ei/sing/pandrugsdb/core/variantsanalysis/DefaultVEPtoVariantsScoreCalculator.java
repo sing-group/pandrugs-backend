@@ -21,6 +21,23 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
@@ -30,22 +47,10 @@ import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPMetaData;
 import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPMetaDataBuilder;
 import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPVariant;
 import es.uvigo.ei.sing.vcfparser.vcf.vep.VEPVariantDataBuilder;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toMap;
 
 @Component
-public class DefaultVEPtoVariantsScoreCalculator implements
-		VEPtoVariantsScoreCalculator {
+public class DefaultVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalculator {
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultVEPtoVariantsScoreCalculator.class);
 
 	public static final String VARIANT_SCORES_FILE_NAME = "vep_data.csv";
 	public static final String AFFECTED_GENES_FILE_NAME = "genes_affected.csv";
@@ -69,16 +74,12 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 		Path affectedGenesFilePath = parameters.getResultsBasePath().resolve(affectedGenesPath);
 		File affectedGenesFile = configuration.getUserDataBaseDirectory().toPath().resolve(affectedGenesFilePath).toFile();
 
-		try (
-				PrintStream genesAffectedOut = new PrintStream(new FileOutputStream(affectedGenesFile)))
-		{
-
+		try (PrintStream genesAffectedOut = new PrintStream(new FileOutputStream(affectedGenesFile))) {
 			Map<String, Double> geneScores = computeGeneScores(parameters, vep);
 
 			geneScores.entrySet().stream().forEach(
-					(e) -> genesAffectedOut.println(e.getKey() + "\t" + e.getValue())
+				(e) -> genesAffectedOut.println(e.getKey() + "\t" + e.getValue())
 			);
-
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -108,17 +109,20 @@ public class DefaultVEPtoVariantsScoreCalculator implements
 	}
 
 	private String getGeneName(VEPVariant vepVariant) {
-		Object attValue = vepVariant.getCSQAttribute(0, "SYMBOL");
-		System.out.println(attValue);
-		return attValue == null? null : attValue.toString();
+		final Object attValue = vepVariant.getCSQAttribute(0, "SYMBOL");
+		final String attValueString = attValue == null? null : attValue.toString();
+		
+		LOG.debug(attValueString);
+		
+		return attValueString;
 	}
 
 	private VCFReader<VEPMetaData, VEPVariant> createVCFReader(VariantsEffectPredictionResults vep, Path userPath)
-			throws MalformedURLException {
+	throws MalformedURLException {
 		Path vepFilePath = userPath.resolve(vep.getFilePath());
 		File vepFile = configuration.getUserDataBaseDirectory().toPath().resolve(vepFilePath).toFile();
 
-		System.out.println("created vcf reader for file "+vepFile.toURI().toURL());
+		LOG.debug("created vcf reader for file " + vepFile.toURI().toURL());
 		return new VCFReader<>(
 				vepFile.toURI().toURL(), new VEPMetaDataBuilder(),
 				new VEPVariantDataBuilder());

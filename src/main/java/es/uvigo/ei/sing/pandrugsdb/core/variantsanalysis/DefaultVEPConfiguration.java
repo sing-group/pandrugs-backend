@@ -21,15 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import es.uvigo.ei.sing.pandrugsdb.util.ContextParameter;
-import es.uvigo.ei.sing.pandrugsdb.util.ContextParameterName;
+import static java.util.Objects.requireNonNull;
+
+import java.nio.file.Path;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletContext;
-import java.nio.file.Path;
-
-import static java.util.Objects.requireNonNull;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameter;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameterName;
 
 @Component
 public class DefaultVEPConfiguration implements VEPConfiguration {

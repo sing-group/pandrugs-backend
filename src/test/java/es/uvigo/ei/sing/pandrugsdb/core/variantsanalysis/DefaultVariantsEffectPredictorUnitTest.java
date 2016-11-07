@@ -21,10 +21,27 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.anyString;
+import static org.easymock.EasyMock.expect;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.UUID;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.easymock.*;
-import org.easymock.internal.MocksControl;
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,16 +51,7 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.UUID;
-
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -84,11 +92,11 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 	
 	@Before
 	public void createUserDir() throws IOException {
-		System.out.println("creating user dir: "+computationBasePath);
-		
-		this.computationDir = new File(userStorageDirectory.getAbsolutePath()+File.separator+this.computationBasePath);
-		this.expectedResultsFile = new File(computationDir.getAbsolutePath()+File.separator+DefaultVariantsEffectPredictor.VEP_FILE_NAME);
-		this.vcfFile = new File(this.computationDir+File.separator+inputVCFName);
+		this.computationDir = new File(
+			userStorageDirectory.getAbsolutePath() + File.separator + this.computationBasePath);
+		this.expectedResultsFile = new File(
+			computationDir.getAbsolutePath() + File.separator + DefaultVariantsEffectPredictor.VEP_FILE_NAME);
+		this.vcfFile = new File(this.computationDir + File.separator + inputVCFName);
 		
 		computationDir.mkdir();
 		copyVCF();
@@ -106,7 +114,6 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 
 	@After
 	public void removeUserDir() throws IOException {
-		System.out.println("removing user dir: "+computationBasePath);
 		this.expectedResultsFile.delete();
 		this.vcfFile.delete();
 		this.computationDir.delete();
@@ -114,10 +121,9 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 	
 	@Test
 	public void testResultsFileAreCreatedAndReferenced() {
-
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
 		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("touch "+expectedResultsFile
-				.getAbsolutePath());
+			.getAbsolutePath());
 
 		super.replayAll();
 
@@ -129,7 +135,6 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testInterruptedException() throws InterruptedException, IOException {
-
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
 		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("");
 		expect(runtime.exec(anyString())).andReturn(vepProcess);

@@ -21,7 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyDouble;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.anyString;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.newCapture;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -34,10 +39,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.easymock.*;
-import org.easymock.internal.RuntimeExceptionWrapper;
-import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import org.easymock.Capture;
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -51,9 +60,9 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationSt
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
-		DefaultVariantsScoreComputation.class,
-		DefaultVariantsScoreComputer.class
-		})
+	DefaultVariantsScoreComputation.class,
+	DefaultVariantsScoreComputer.class
+})
 public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 	@Rule	
@@ -93,10 +102,8 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testCreateComputation() throws Exception {
-
 		// VEP results mock
-		VariantsEffectPredictionResults VEPRs = 
-				EasyMock.createMock(VariantsEffectPredictionResults.class);
+		VariantsEffectPredictionResults VEPRs = createMock(VariantsEffectPredictionResults.class);
 		
 		// effectPredictor mock
 		expect(effectPredictor.predictEffect(aVCF, aBasePath)).andAnswer(() -> {
@@ -115,7 +122,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 		// computation
 		expectNew(DefaultVariantsScoreComputation.class).andReturn(computation);
-		Capture<Future> capturedTasks = EasyMock.newCapture();
+		Capture<Future<VariantsScoreComputationResults>> capturedTasks = newCapture();
 		computation.wrapFuture(capture(capturedTasks));
 		expectLastCall().times(1);
 		expect(computation.get()).andReturn(results).anyTimes();
@@ -126,9 +133,9 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		
 		status.setTaskName(anyString());
 		expectLastCall().times(4);
-		status.setTaskProgress(EasyMock.anyDouble());
+		status.setTaskProgress(anyDouble());
 		expectLastCall().times(3);
-		status.setOverallProgress(EasyMock.anyDouble());
+		status.setOverallProgress(anyDouble());
 		expectLastCall().times(2);
 		status.setOverallProgress(1.0f);
 		expectLastCall().times(1);
@@ -143,8 +150,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			VariantsScoreComputationResults.class
 		);
 
-		final VariantsScoreComputation computation = 
-				computer.createComputation(parameters);
+		final VariantsScoreComputation computation = computer.createComputation(parameters);
 		
 		assertThat(results, is(computation.get()));
 
@@ -156,10 +162,10 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 	public void testVEPError() throws ExecutionException, InterruptedException {
 		// effectPredictor mock
 		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
-				.andAnswer(() -> {
-					Thread.sleep(200);
-					throw new RuntimeException(new RuntimeException("exception in VEP"));
-				});
+			.andAnswer(() -> {
+				Thread.sleep(200);
+				throw new RuntimeException(new RuntimeException("exception in VEP"));
+			});
 
 		super.replayAll();
 
@@ -173,7 +179,6 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			// wait
 			computation.get();
 			fail("We expect the computation to throw an exception in get");
-
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
@@ -186,10 +191,10 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 	public void testVEPInterrupted() throws ExecutionException, InterruptedException {
 		// effectPredictor mock
 		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
-				.andAnswer(() -> {
-					Thread.sleep(200);
-					throw new RuntimeException(new InterruptedException("exception in VEP"));
-				});
+			.andAnswer(() -> {
+				Thread.sleep(200);
+				throw new RuntimeException(new InterruptedException("exception in VEP"));
+			});
 
 		super.replayAll();
 
@@ -203,7 +208,6 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			// wait
 			computation.get();
 			fail("We expect the computation to throw an exception in get");
-
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));

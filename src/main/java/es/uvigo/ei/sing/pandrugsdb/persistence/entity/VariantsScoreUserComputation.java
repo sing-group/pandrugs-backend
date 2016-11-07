@@ -21,7 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity(name = "variants_score_user_computation")
 public class VariantsScoreUserComputation {

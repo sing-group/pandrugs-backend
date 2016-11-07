@@ -22,32 +22,29 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
-import static java.util.Arrays.asList;
+import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.createControl;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.newCapture;
-import static org.easymock.EasyMock.replay;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.*;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import org.apache.commons.io.FileUtils;
-import org.easymock.*;
-import org.hamcrest.CoreMatchers;
+import org.easymock.Capture;
+import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockSupport;
+import org.easymock.IMocksControl;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +55,14 @@ import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
@@ -87,18 +92,12 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	private VariantsAnalysisController controller = 
 		new DefaultVariantsAnalysisController();
 
-	private final User aUser = new User("login", "login@domain.com",
-		"926e27eecdbc7a18858b3798ba99bddd", ADMIN);
+	private final User aUser = new User("login", "login@domain.com", "926e27eecdbc7a18858b3798ba99bddd", ADMIN);
 	
 
 	@Before
 	public void configureBasePathMock() {
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(aBaseDirectory).anyTimes();
-	}
-
-	@Before
-	public void configureUserDAOMock() {
-
 	}
 
 	@After
@@ -108,20 +107,15 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testExperimentIsStoredWhenStart() throws Exception {
-
-		Capture<VariantsScoreUserComputation> capturedArgument = 
-				newCapture();
-		Capture<VariantsScoreComputationParameters> capturedParameters =
-				newCapture();
+		Capture<VariantsScoreUserComputation> capturedArgument = newCapture();
+		Capture<VariantsScoreComputationParameters> capturedParameters = newCapture();
 
 		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
 
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
 		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
 
-		final VariantsScoreComputation expectedComputation =
-				mockControl.createMock(
-						VariantsScoreComputation.class);
+		final VariantsScoreComputation expectedComputation = mockControl.createMock(VariantsScoreComputation.class);
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
 		expect(computer.createComputation(capture(capturedParameters))).andReturn(expectedComputation);
@@ -129,12 +123,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
-			@Override
-			public int read() throws IOException {
-				return -1;
-			}
-		});
+		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
 
 		assertEquals(aUser, capturedArgument.getValue().getUser());
 		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
@@ -169,12 +158,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
-		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
-			@Override
-			public int read() throws IOException {
-				return -1;
-			}
-		});
+		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
 
 		aStatus.setOverallProgress(1.0f);
 		assertEquals(expectedResults, capturedArgument.getValue().getComputationDetails().getResults());
@@ -200,25 +184,22 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testComputerCallAndResults() throws InterruptedException, ExecutionException, IOException {
-		final VariantsScoreComputationResults expectedResults = 
-				mockControl.createMock(
-						VariantsScoreComputationResults.class);
+		final VariantsScoreComputationResults expectedResults = mockControl
+				.createMock(VariantsScoreComputationResults.class);
 		
-		final VariantsScoreComputation expectedComputation = 
-				mockControl.createMock(
-						VariantsScoreComputation.class);
+		final VariantsScoreComputation expectedComputation = mockControl.createMock(VariantsScoreComputation.class);
 		
 
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
-		Capture<VariantsScoreUserComputation> capturedArgument = 
-				newCapture();
+		Capture<VariantsScoreUserComputation> capturedArgument = newCapture();
 
 		expect(userDAO.get(aUser.getLogin())).andReturn(aUser);
 
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
-		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument))).andStubAnswer(() ->	capturedArgument.getValue());
-		expect(variantsScoreUserComputationDAO.get(anyInt())).andStubAnswer(()->capturedArgument.getValue());
+		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument)))
+				.andStubAnswer(() -> capturedArgument.getValue());
+		expect(variantsScoreUserComputationDAO.get(anyInt())).andStubAnswer(() -> capturedArgument.getValue());
 
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
@@ -227,12 +208,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
-		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), new InputStream() {
-			@Override
-			public int read() throws IOException {
-				return -1;
-			}
-		});
+		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
 
 		// provoke finish of computation, listeners will be called and computation
 		// and the results should be setted in usercomputation.details
@@ -246,9 +222,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		int anyId = 1;
 		String affectedGenesFileName = "affected_genes.txt";
 		File genesAffectedFile = new File(
-				aBaseDirectory+File.separator+"results"+
-				File.separator+
-				affectedGenesFileName);
+			aBaseDirectory + File.separator + "results" + File.separator + affectedGenesFileName);
 
 		genesAffectedFile.deleteOnExit();
 
@@ -261,8 +235,9 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get("results"));
 
 		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
-				Paths.get("vscore.txt"),
-				Paths.get("affected_genes.txt"));
+			Paths.get("vscore.txt"),
+			Paths.get("affected_genes.txt")
+		);
 
 		aComputation.getComputationDetails().setResults(results);
 

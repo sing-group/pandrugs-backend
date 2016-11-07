@@ -99,6 +99,7 @@
 		<maven-surefire-plugins.version>2.19.1</maven-surefire-plugins.version>
 		<miredot-plugin.version>1.6.0</miredot-plugin.version>
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
+		<maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
 
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
@@ -376,6 +377,11 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jxr-plugin</artifactId>
+	            <version>${maven-jxr-plugin.version}</version>
+	        </plugin>
 		</plugins>
 	</reporting>
 

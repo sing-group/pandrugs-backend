@@ -34,7 +34,6 @@ import org.junit.Test;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ErrorMessage;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
@@ -48,7 +47,7 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 	public void testLogin() throws Exception {
 		final Response response = target("session")
 			.request(APPLICATION_JSON_TYPE)
-			.post(entity(new Login("pepe", "pepe"), APPLICATION_JSON_TYPE));
+		.post(entity(new Login("pepe", "pepe"), APPLICATION_JSON_TYPE));
 		
 		assertThat(response, hasHTTPStatus(NO_CONTENT));
 	}
@@ -57,17 +56,16 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 	public void testLoginInvalidPassword() throws Exception {
 		final Response response = target("session")
 			.request(APPLICATION_JSON_TYPE)
-			.post(entity(new Login("pepe", "badpassword"), APPLICATION_JSON_TYPE));
+		.post(entity(new Login("pepe", "badpassword"), APPLICATION_JSON_TYPE));
 		
 		assertThat(response, hasHTTPStatus(UNAUTHORIZED));
-		System.out.println(response.readEntity(ErrorMessage.class));
 	}
 	
 	@Test
 	public void testLoginInvalidLogin() throws Exception {
 		final Response response = target("session")
 			.request(APPLICATION_JSON_TYPE)
-			.post(entity(new Login("john", "john"), APPLICATION_JSON_TYPE));
+		.post(entity(new Login("john", "john"), APPLICATION_JSON_TYPE));
 		
 		assertThat(response, hasHTTPStatus(UNAUTHORIZED));
 	}

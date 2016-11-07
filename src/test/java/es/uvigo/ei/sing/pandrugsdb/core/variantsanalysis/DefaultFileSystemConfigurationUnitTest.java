@@ -21,17 +21,16 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import org.junit.Test;
-
-import java.io.File;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DefaultFileSystemConfigurationUnitTest {
+import java.io.File;
 
+import org.junit.Test;
+
+public class DefaultFileSystemConfigurationUnitTest {
 	private DefaultFileSystemConfiguration fileSystemConfiguration =
-			new DefaultFileSystemConfiguration();
+		new DefaultFileSystemConfiguration();
 
 
 	@Test(expected = NullPointerException.class)
@@ -46,8 +45,8 @@ public class DefaultFileSystemConfigurationUnitTest {
 		setContextUserDataDirTo(System.getProperty("java.io.tmpdir"));
 
 		assertThat(
-				fileSystemConfiguration.getUserDataBaseDirectory(),
-				is(new File(System.getProperty("java.io.tmpdir")))
+			fileSystemConfiguration.getUserDataBaseDirectory(),
+			is(new File(System.getProperty("java.io.tmpdir")))
 		);
 	}
 

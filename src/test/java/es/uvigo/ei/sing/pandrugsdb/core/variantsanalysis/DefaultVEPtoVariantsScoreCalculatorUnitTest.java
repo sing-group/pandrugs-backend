@@ -22,7 +22,6 @@
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
@@ -43,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 
 public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport {
@@ -67,9 +66,11 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 	@Before
 	public void createUserDir() throws IOException {
 		this.userName = UUID.randomUUID().toString();
-		this.userDir = new File(aBaseDirectory.getAbsolutePath()+File.separator+userName);
-		this.expectedResultsFile = new File(userDir.getAbsolutePath()+File.separator+DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME);
-		this.vepFile = new File(userDir.getAbsolutePath()+File.separator+DefaultVariantsEffectPredictor.VEP_FILE_NAME);
+		this.userDir = new File(aBaseDirectory.getAbsolutePath() + File.separator + userName);
+		this.expectedResultsFile = new File(userDir.getAbsolutePath() + File.separator
+			+ DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME);
+		this.vepFile = new File(
+			userDir.getAbsolutePath() + File.separator + DefaultVariantsEffectPredictor.VEP_FILE_NAME);
 		FileUtils.copyInputStreamToFile(getClass().getResourceAsStream("ensembl_vep-small.csv"), this.vepFile);
 		userDir.mkdir();
 	}
@@ -94,10 +95,11 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 
 		VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
 		parameters.setResultsBasePath(Paths.get(userName));
-		VariantsEffectPredictionResults vepResults = new VariantsEffectPredictionResults(Paths.get(DefaultVariantsEffectPredictor.VEP_FILE_NAME));
+		VariantsEffectPredictionResults vepResults = new VariantsEffectPredictionResults(
+			Paths.get(DefaultVariantsEffectPredictor.VEP_FILE_NAME));
 
-		VariantsScoreComputationResults results = defaultVEPToVariantsScoreCalculator.calculateVariantsScore
-				(parameters, vepResults);
+		VariantsScoreComputationResults results = defaultVEPToVariantsScoreCalculator.calculateVariantsScore(parameters,
+			vepResults);
 
 		assertEquals(DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME, results.getVscorePath().toString());
 		assertTrue(expectedResultsFile.exists());

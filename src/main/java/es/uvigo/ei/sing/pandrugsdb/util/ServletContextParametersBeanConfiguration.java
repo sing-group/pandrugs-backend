@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.util;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -28,8 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
-
-import javax.servlet.ServletContext;
 
 @Configuration
 public class ServletContextParametersBeanConfiguration {

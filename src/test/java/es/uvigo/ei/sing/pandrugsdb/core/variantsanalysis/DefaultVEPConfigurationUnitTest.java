@@ -22,12 +22,12 @@
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 public class DefaultVEPConfigurationUnitTest {
 
