@@ -42,7 +42,7 @@ public class Protein {
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "gene", referencedColumnName = "geneSymbol")
-	private Set<GeneInformation> genes;
+	private Set<Gene> genes;
 	
 	public String getUniprotId() {
 		return uniprotId;
@@ -52,7 +52,7 @@ public class Protein {
 		return unmodifiableSet(iteractions);
 	}
 
-	public Set<GeneInformation> getGenes() {
+	public Set<Gene> getGenes() {
 		return unmodifiableSet(genes);
 	}
 	

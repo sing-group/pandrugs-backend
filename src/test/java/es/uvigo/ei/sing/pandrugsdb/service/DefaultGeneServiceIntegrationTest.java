@@ -22,14 +22,14 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneSymbolsForQuery;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithInteractionDegreeUpTo;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithMaxInteractionDegree;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.interactions;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbols;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
@@ -57,7 +57,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -132,7 +132,7 @@ public class DefaultGeneServiceIntegrationTest {
 	public void testGetGeneInteractions() {
 		for (String queryGene : presentGeneSymbols()) {
 			for (int degree = 0; degree < 5; degree++) {
-				final GeneInformation[] expected = interactions(degree, queryGene);
+				final Gene[] expected = interactions(degree, queryGene);
 				final GeneInteraction[] interactions = service.getGeneInteractions(queryGene, degree);
 				
 				assertThat(asList(interactions), containsGeneInteraction(expected));
@@ -143,9 +143,9 @@ public class DefaultGeneServiceIntegrationTest {
 	@Test
 	public void testGetGenesInteractionsWithMaxDegree() {
 		for (int degree = 0; degree <= 3; degree++) {
-			final List<String> queryGenes = asList(genesWithMaxInteractionDegree(degree));
+			final List<String> queryGenes = asList(geneSymbolsWithMaxInteractionDegree(degree));
 
-			final GeneInformation[] expected = interactions(degree, queryGenes);
+			final Gene[] expected = interactions(degree, queryGenes);
 			final GeneInteraction[] interactions = service.getGenesInteractions(queryGenes, degree);
 				
 			assertThat(asList(interactions), containsGeneInteraction(expected));
@@ -155,9 +155,9 @@ public class DefaultGeneServiceIntegrationTest {
 	@Test
 	public void testGetGenesInteractionsWithDegreeUpTo() {
 		for (int degree = 0; degree <= 5; degree++) {
-			final List<String> queryGenes = asList(genesWithInteractionDegreeUpTo(degree));
+			final List<String> queryGenes = asList(geneSymbolsWithInteractionDegreeUpTo(degree));
 
-			final GeneInformation[] expected = interactions(degree, queryGenes);
+			final Gene[] expected = interactions(degree, queryGenes);
 			final GeneInteraction[] interactions = service.getGenesInteractions(queryGenes, degree);
 			
 			assertThat(asList(interactions), containsGeneInteraction(expected));

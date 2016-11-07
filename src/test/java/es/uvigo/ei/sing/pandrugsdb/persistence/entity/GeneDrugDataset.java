@@ -45,14 +45,14 @@ public final class GeneDrugDataset {
 		));
 	}
 	
-	public static Map<String, GeneInformation> geneInfos() {
+	public static Map<String, Gene> genes() {
 		return Stream.of(
-			new GeneInformation("DIRECT GENE 1", null, false, null, 0d),
-			new GeneInformation("DIRECT GENE 2", null, false, null, 0d),
-			new GeneInformation("INDIRECT GENE 1", null, false, null, 0d),
-			new GeneInformation("INDIRECT GENE 2", null, false, null, 0d)
+			new Gene("DIRECT GENE 1", null, false, null, 0d),
+			new Gene("DIRECT GENE 2", null, false, null, 0d),
+			new Gene("INDIRECT GENE 1", null, false, null, 0d),
+			new Gene("INDIRECT GENE 2", null, false, null, 0d)
 		).collect(toMap(
-			GeneInformation::getGeneSymbol,
+			Gene::getGeneSymbol,
 			Function.identity()
 		));
 	}
@@ -96,7 +96,7 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneDrugDirect() {
 		return new GeneDrug(
-			geneInfos().get("DIRECT GENE 1"),
+			genes().get("DIRECT GENE 1"),
 			drugs()[0],
 			true,
 			null,
@@ -109,13 +109,13 @@ public final class GeneDrugDataset {
 	}
 	
 	public static GeneDrug[] multipleGeneDirect() {
-		final Map<String, GeneInformation> geneInfos = geneInfos();
+		final Map<String, Gene> genes = genes();
 		final Drug[] drugs = drugs();
 		
 		return new GeneDrug[] {
 			singleGeneDrugDirect(),
 			new GeneDrug(
-				geneInfos.get("DIRECT GENE 2"),
+				genes.get("DIRECT GENE 2"),
 				drugs[0],
 				true,
 				null,
@@ -126,7 +126,7 @@ public final class GeneDrugDataset {
 				asList(drugSources()[0])
 			),
 			new GeneDrug(
-				geneInfos.get("DIRECT GENE 2"),
+				genes.get("DIRECT GENE 2"),
 				drugs[1],
 				true,
 				null,
@@ -137,7 +137,7 @@ public final class GeneDrugDataset {
 				asList(drugSources()[1])
 			),
 			new GeneDrug(
-				geneInfos.get("DIRECT GENE 2"),
+				genes.get("DIRECT GENE 2"),
 				drugs[2],
 				true,
 				null,
@@ -152,7 +152,7 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrug singleGeneIndirect() {
 		return new GeneDrug(
-			geneInfos().get("INDIRECT GENE 1"),
+			genes().get("INDIRECT GENE 1"),
 			drugs()[3],
 			true,
 			null,
@@ -165,13 +165,13 @@ public final class GeneDrugDataset {
 	}
 	
 	public static GeneDrug[] multipleGeneIndirect() {
-		final Map<String, GeneInformation> geneInfos = geneInfos();
+		final Map<String, Gene> genes = genes();
 		final Drug[] drugs = drugs();
 		
 		return new GeneDrug[] {
 			singleGeneIndirect(),
 			new GeneDrug(
-				geneInfos.get("INDIRECT GENE 2"),
+				genes.get("INDIRECT GENE 2"),
 				drugs[3],
 				true,
 				null,
@@ -182,7 +182,7 @@ public final class GeneDrugDataset {
 				asList(drugSources()[3])
 			),
 			new GeneDrug(
-				geneInfos.get("INDIRECT GENE 2"),
+				genes.get("INDIRECT GENE 2"),
 				drugs[4],
 				true,
 				null,
@@ -193,7 +193,7 @@ public final class GeneDrugDataset {
 				asList(drugSources()[4])
 			),
 			new GeneDrug(
-				geneInfos.get("INDIRECT GENE 2"),
+				genes.get("INDIRECT GENE 2"),
 				drugs[5],
 				true,
 				null,

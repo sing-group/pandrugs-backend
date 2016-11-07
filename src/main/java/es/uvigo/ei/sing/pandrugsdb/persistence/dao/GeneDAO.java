@@ -19,14 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import java.util.Set;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
-
-public interface GeneInformationController {
-	public String[] listGeneSymbols(String query, int maxResults);
+public interface GeneDAO {
+	public Gene get(String geneSymbol);
 	
-	public Set<GeneInformation> interactions(int degree, String ... geneSymbol);
+	public String[] listGeneSymbols(String query, int maxResults);
 }

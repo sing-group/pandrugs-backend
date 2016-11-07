@@ -52,7 +52,7 @@ import org.junit.runner.RunWith;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
@@ -73,7 +73,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
 
 	@Mock
-	private GeneInformationDAO geneInformationDAO;
+	private GeneDAO geneDAO;
 
 	@Mock
 	private UserDAO userDAO;

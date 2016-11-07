@@ -50,7 +50,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneInformationGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.StaticGeneScoreCalculator;
 
@@ -71,7 +71,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugs(
 			queryParameters,
 			new LinkedHashSet<>(asList(geneNames)),
-			new GeneInformationGeneScoreCalculator()
+			new DefaultGeneScoreCalculator()
 		);
 	}
 

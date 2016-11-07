@@ -38,7 +38,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.GeneInformationController;
+import es.uvigo.ei.sing.pandrugsdb.controller.GeneController;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 @Path("gene")
@@ -47,7 +47,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultGeneService implements GeneService {
 	@Inject
-	private GeneInformationController controller;
+	private GeneController controller;
 
 	@GET
 	@Path("symbol")

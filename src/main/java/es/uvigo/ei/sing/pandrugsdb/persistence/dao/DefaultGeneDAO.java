@@ -31,16 +31,13 @@ import javax.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 @Repository
 @Transactional
-public class DefaultGeneInformationDAO
-extends DAO<String, GeneInformation>
-implements GeneInformationDAO {
-	
+public class DefaultGeneDAO extends DAO<String, Gene> implements GeneDAO {
 	@Override
-	public GeneInformation get(String geneSymbol) {
+	public Gene get(String geneSymbol) {
 		return super.get(geneSymbol);
 	}
 
@@ -49,7 +46,7 @@ implements GeneInformationDAO {
 		requireNonNull(queryFilter, "queryFilter can't be null");
 		
 		final CriteriaQuery<String> cq = cb().createQuery(String.class);
-		final Root<GeneInformation> root = cq.from(getEntityType());
+		final Root<Gene> root = cq.from(getEntityType());
 		
 		final Path<String> geneSymbolField = root.get("geneSymbol");
 		
@@ -67,5 +64,4 @@ implements GeneInformationDAO {
 			.stream()
 		.toArray(String[]::new);
 	}
-	
 }

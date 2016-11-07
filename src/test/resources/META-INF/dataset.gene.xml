@@ -22,15 +22,15 @@
  -->
 
 <dataset>
-	<gene_info gene_symbol="GATA2" cgc="1" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="ADAMTS19" cgc="0" gene_essentiality_score="0.3556896485"/>
-	<gene_info gene_symbol="CDC42BPA" cgc="0" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0.8202555173"/>
-	<gene_info gene_symbol="PRKAG2" cgc="0" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="PTGS1" cgc="0" gene_essentiality_score="0.4277512382"/>
-	<gene_info gene_symbol="PPP3R1" cgc="0" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="MAX" cgc="1" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0.626823283"/>
-	<gene_info gene_symbol="CX3CR1" cgc="0" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="DMD" cgc="0" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0"/>
+	<gene gene_symbol="GATA2" cgc="1" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0"/>
+	<gene gene_symbol="ADAMTS19" cgc="0" gene_essentiality_score="0.3556896485"/>
+	<gene gene_symbol="CDC42BPA" cgc="0" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0.8202555173"/>
+	<gene gene_symbol="PRKAG2" cgc="0" gene_essentiality_score="0"/>
+	<gene gene_symbol="PTGS1" cgc="0" gene_essentiality_score="0.4277512382"/>
+	<gene gene_symbol="PPP3R1" cgc="0" gene_essentiality_score="0"/>
+	<gene gene_symbol="MAX" cgc="1" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0.626823283"/>
+	<gene gene_symbol="CX3CR1" cgc="0" gene_essentiality_score="0"/>
+	<gene gene_symbol="DMD" cgc="0" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0"/>
 
 	<!-- Degree 1: GATA2 -> ADAMTS19 | CDC42BPA | PRKAG2 -->	
 	<!-- Degree 1: CDC42BPA -> ADAMTS19 | PTGS1 | PPP3R1 -->
@@ -39,24 +39,24 @@
 	<!-- Degree 2: GATA2 -> ADAMTS19 | PTGS1 | PPP3R1 | MAX -->
 	<!-- Degree 2: CDC42BPA -> DMD -->
 	<!-- Degree 3: GATA2 -> DMD -->
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="ADAMTS19"/>
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="CDC42BPA"/>
-	<gene_info_gene_info gene_info_gene_symbol="GATA2" gene_info_interacting_gene_symbol="PRKAG2"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="ADAMTS19"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="PTGS1"/>
-	<gene_info_gene_info gene_info_gene_symbol="CDC42BPA" gene_info_interacting_gene_symbol="PPP3R1"/>
-	<gene_info_gene_info gene_info_gene_symbol="PPP3R1" gene_info_interacting_gene_symbol="DMD"/>
-	<gene_info_gene_info gene_info_gene_symbol="PRKAG2" gene_info_interacting_gene_symbol="MAX"/>
+	<gene_gene gene_gene_symbol="GATA2" gene_interacting_gene_symbol="ADAMTS19"/>
+	<gene_gene gene_gene_symbol="GATA2" gene_interacting_gene_symbol="CDC42BPA"/>
+	<gene_gene gene_gene_symbol="GATA2" gene_interacting_gene_symbol="PRKAG2"/>
+	<gene_gene gene_gene_symbol="CDC42BPA" gene_interacting_gene_symbol="ADAMTS19"/>
+	<gene_gene gene_gene_symbol="CDC42BPA" gene_interacting_gene_symbol="PTGS1"/>
+	<gene_gene gene_gene_symbol="CDC42BPA" gene_interacting_gene_symbol="PPP3R1"/>
+	<gene_gene gene_gene_symbol="PPP3R1" gene_interacting_gene_symbol="DMD"/>
+	<gene_gene gene_gene_symbol="PRKAG2" gene_interacting_gene_symbol="MAX"/>
 	
 	<pathway kegg_id="hsa00002" name="Single Gene Pathway"/>
 	<pathway kegg_id="hsa00003" name="Multiple Gene Pathway 1"/>
 	<pathway kegg_id="hsa00004" name="Multiple Gene Pathway 2"/>
 	
-	<gene_info_pathway pathway_kegg_id="hsa00002" gene_info_gene_symbol="GATA2" />
-	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="GATA2" />
-	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="ADAMTS19" />
-	<gene_info_pathway pathway_kegg_id="hsa00003" gene_info_gene_symbol="CDC42BPA" />
-	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="CDC42BPA" />
-	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="PRKAG2" />
-	<gene_info_pathway pathway_kegg_id="hsa00004" gene_info_gene_symbol="PTGS1" />
+	<gene_pathway pathway_kegg_id="hsa00002" gene_gene_symbol="GATA2" />
+	<gene_pathway pathway_kegg_id="hsa00003" gene_gene_symbol="GATA2" />
+	<gene_pathway pathway_kegg_id="hsa00003" gene_gene_symbol="ADAMTS19" />
+	<gene_pathway pathway_kegg_id="hsa00003" gene_gene_symbol="CDC42BPA" />
+	<gene_pathway pathway_kegg_id="hsa00004" gene_gene_symbol="CDC42BPA" />
+	<gene_pathway pathway_kegg_id="hsa00004" gene_gene_symbol="PRKAG2" />
+	<gene_pathway pathway_kegg_id="hsa00004" gene_gene_symbol="PTGS1" />
 </dataset>

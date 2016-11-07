@@ -37,17 +37,17 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel;
 
 @RunWith(Parameterized.class)
-public class GeneInformationGScoreTest extends EasyMockSupport {
+public class GeneGScoreTest extends EasyMockSupport {
 	private final static double ALLOWED_ERROR = 0.00001d;
 	
-	private final GeneInformation geneInfo;
+	private final Gene gene;
 	private final double gScore;
 
-	public GeneInformationGScoreTest(
+	public GeneGScoreTest(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -55,7 +55,7 @@ public class GeneInformationGScoreTest extends EasyMockSupport {
 		Double geneEssentialityScore,
 		double gScore
 	) {
-		this.geneInfo = new GeneInformation(
+		this.gene = new Gene(
 			geneSymbol, tumorPortalMutationLevel, cgc, driverLevel,
 			geneEssentialityScore
 		);
@@ -83,6 +83,6 @@ public class GeneInformationGScoreTest extends EasyMockSupport {
 	
 	@Test
 	public void testSingle() {
-		assertThat(this.geneInfo.getGScore(), is(closeTo(gScore, ALLOWED_ERROR)));
+		assertThat(this.gene.getGScore(), is(closeTo(gScore, ALLOWED_ERROR)));
 	}
 }

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 public class IsEqualToGeneInteraction extends IsEqualToEntity<GeneInteraction> {
@@ -53,7 +53,7 @@ public class IsEqualToGeneInteraction extends IsEqualToEntity<GeneInteraction> {
 	}
 
 	@Factory
-	public static IsEqualToGeneInteraction equalsToGeneInteraction(GeneInformation expected) {
+	public static IsEqualToGeneInteraction equalsToGeneInteraction(Gene expected) {
 		return new IsEqualToGeneInteraction(new GeneInteraction(expected));
 	}
 	
@@ -63,7 +63,7 @@ public class IsEqualToGeneInteraction extends IsEqualToEntity<GeneInteraction> {
 	}
 	
 	@Factory
-	public static Matcher<Iterable<? extends GeneInteraction>> containsGeneInteraction(GeneInformation ... expected) {
+	public static Matcher<Iterable<? extends GeneInteraction>> containsGeneInteraction(Gene ... expected) {
 		final GeneInteraction[] interactions = Arrays.stream(expected)
 			.map(GeneInteraction::new)
 		.toArray(GeneInteraction[]::new);

@@ -22,14 +22,14 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneSymbolsForQuery;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithInteractionDegreeUpTo;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.genesWithMaxInteractionDegree;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.interactions;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.presentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbols;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.easymock.EasyMock.expect;
@@ -51,8 +51,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.GeneInformationController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.controller.GeneController;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 @RunWith(EasyMockRunner.class)
@@ -61,7 +61,7 @@ public class DefaultGeneServiceUnitTest {
 	private DefaultGeneService service = new DefaultGeneService();
 
 	@Mock
-	private GeneInformationController controller;
+	private GeneController controller;
 	
 	private boolean verify = true;
 	
@@ -143,9 +143,9 @@ public class DefaultGeneServiceUnitTest {
 		
 		for (String gene : presentGeneSymbols()) {
 			for (int degree = 0; degree < 5; degree++) {
-				final GeneInformation[] expected = interactions(degree, gene);
+				final Gene[] expected = interactions(degree, gene);
 				
-				final Set<GeneInformation> expectedSet = new HashSet<>(asList(expected));
+				final Set<Gene> expectedSet = new HashSet<>(asList(expected));
 				expect(controller.interactions(degree, gene)).andReturn(expectedSet);
 				replay(controller);
 				
@@ -164,10 +164,10 @@ public class DefaultGeneServiceUnitTest {
 		this.verify = false;
 		
 		for (int degree = 0; degree <= 3; degree++) {
-			final String[] queryGenes = genesWithMaxInteractionDegree(degree);
-			final GeneInformation[] expected = interactions(degree, queryGenes);
+			final String[] queryGenes = geneSymbolsWithMaxInteractionDegree(degree);
+			final Gene[] expected = interactions(degree, queryGenes);
 			
-			final Set<GeneInformation> expectedSet = new HashSet<>(asList(expected));
+			final Set<Gene> expectedSet = new HashSet<>(asList(expected));
 			expect(controller.interactions(degree, queryGenes)).andReturn(expectedSet);
 			replay(controller);
 				
@@ -185,10 +185,10 @@ public class DefaultGeneServiceUnitTest {
 		this.verify = false;
 		
 		for (int degree = 0; degree <= 5; degree++) {
-			final String[] queryGenes = genesWithInteractionDegreeUpTo(degree);
-			final GeneInformation[] expected = interactions(degree, queryGenes);
+			final String[] queryGenes = geneSymbolsWithInteractionDegreeUpTo(degree);
+			final Gene[] expected = interactions(degree, queryGenes);
 			
-			final Set<GeneInformation> expectedSet = new HashSet<>(asList(expected));
+			final Set<Gene> expectedSet = new HashSet<>(asList(expected));
 			expect(controller.interactions(degree, queryGenes)).andReturn(expectedSet);
 			replay(controller);
 			

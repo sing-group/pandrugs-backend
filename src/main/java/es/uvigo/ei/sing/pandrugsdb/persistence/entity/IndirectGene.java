@@ -81,7 +81,7 @@ public class IndirectGene implements Serializable {
 		insertable = false, updatable = false,
 		nullable = true
 	)
-	private GeneInformation geneInformation;
+	private Gene gene;
 	
 	IndirectGene() {
 	}
@@ -116,8 +116,8 @@ public class IndirectGene implements Serializable {
 		return geneDrug;
 	}
 	
-	public GeneInformation getGeneInformation() {
-		return geneInformation;
+	public Gene getGene() {
+		return gene;
 	}
 
 	@Override

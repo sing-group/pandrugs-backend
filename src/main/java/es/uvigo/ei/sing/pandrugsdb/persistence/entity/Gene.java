@@ -39,8 +39,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-@Entity(name = "gene_info")
-public class GeneInformation implements Serializable {
+@Entity(name = "gene")
+public class Gene implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -61,36 +61,36 @@ public class GeneInformation implements Serializable {
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
 	
-	@OneToMany(mappedBy = "geneInformation", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "gene", fetch = FetchType.LAZY)
 	private Set<GeneDrug> geneDrugs;
 	
-	@ManyToMany(mappedBy = "genes")
+	@ManyToMany(mappedBy = "genes", fetch = FetchType.LAZY)
 	private Set<Protein> proteins;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
-		name = "gene_info_gene_info",
-		joinColumns = @JoinColumn(name = "gene_info_gene_symbol", referencedColumnName = "gene_symbol"),
-		inverseJoinColumns = @JoinColumn(name = "gene_info_interacting_gene_symbol", referencedColumnName = "gene_symbol")
+		name = "gene_gene",
+		joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"),
+		inverseJoinColumns = @JoinColumn(name = "gene_interacting_gene_symbol", referencedColumnName = "gene_symbol")
 	)
-	private Set<GeneInformation> interactingGene;
+	private Set<Gene> interactingGene;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
-		name = "gene_info_pathway",
-		joinColumns = @JoinColumn(name = "gene_info_gene_symbol", referencedColumnName = "gene_symbol"),
+		name = "gene_pathway",
+		joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"),
 		inverseJoinColumns = @JoinColumn(name = "pathway_kegg_id", referencedColumnName = "kegg_id")
 	)
 	private Set<Pathway> pathways;
 	
-	GeneInformation() {
+	Gene() {
 	}
 	
-	public GeneInformation(String geneSymbol) {
+	public Gene(String geneSymbol) {
 		this(geneSymbol, null, false, null, null);
 	}
 	
-	public GeneInformation(
+	public Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -111,7 +111,7 @@ public class GeneInformation implements Serializable {
 	}
 
 	
-	public GeneInformation(
+	public Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -119,7 +119,7 @@ public class GeneInformation implements Serializable {
 		Double geneEssentialityScore,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
-		Set<GeneInformation> interactingGene,
+		Set<Gene> interactingGene,
 		Set<Pathway> pathways
 	) {
 		this.geneSymbol = geneSymbol;
@@ -180,7 +180,7 @@ public class GeneInformation implements Serializable {
 		return unmodifiableSet(proteins);
 	}
 	
-	public Set<GeneInformation> getInteractingGenes() {
+	public Set<Gene> getInteractingGenes() {
 		return unmodifiableSet(interactingGene);
 	}
 	
@@ -212,7 +212,7 @@ public class GeneInformation implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneInformation other = (GeneInformation) obj;
+		Gene other = (Gene) obj;
 		if (cgc != other.cgc)
 			return false;
 		if (driverLevel != other.driverLevel)

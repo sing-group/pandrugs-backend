@@ -25,12 +25,12 @@
 	<source_info source="Source 1" short_name="S1" url_template="http://source1.org" curated="false"/>
 	<source_info source="Source 2" short_name="S2" url_template="http://source2.org" curated="false"/>
 	
-	<gene_info gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="INDIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="INDIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="IG1" cgc="false" gene_essentiality_score="0"/>
-	<gene_info gene_symbol="IG2" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="INDIRECT GENE 1" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="INDIRECT GENE 2" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="IG1" cgc="false" gene_essentiality_score="0"/>
+	<gene gene_symbol="IG2" cgc="false" gene_essentiality_score="0"/>
 	
 	<drug id="0" standard_name="Drug 1" show_name="Show Drug 1" status="APPROVED"/>
 	<drug id="1" standard_name="Drug 2" show_name="Show Drug 2" status="APPROVED"/>

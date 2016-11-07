@@ -50,7 +50,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneInformationGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
 
 public class GeneDrugGroup {
@@ -62,7 +62,7 @@ public class GeneDrugGroup {
 		String[] targetGenes,
 		Collection<GeneDrug> geneDrugs
 	) {
-		this(targetGenes, geneDrugs, new GeneInformationGeneScoreCalculator());
+		this(targetGenes, geneDrugs, new DefaultGeneScoreCalculator());
 	}
 
 	public GeneDrugGroup(

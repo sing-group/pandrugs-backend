@@ -26,7 +26,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -66,7 +65,7 @@ public class GeneDrug implements Serializable {
 	@JoinColumn(name = "drug_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private Drug drug;
 
-	@Column(name = "family", length = 50, columnDefinition = "VARCHAR(50)")
+	@Column(name = "family", length = 100, columnDefinition = "VARCHAR(100)")
 	private String family;
 	
 	@Enumerated(EnumType.STRING)
@@ -103,13 +102,13 @@ public class GeneDrug implements Serializable {
 		insertable = false, updatable = false,
 		nullable = true
 	)
-	private GeneInformation geneInformation;
+	private Gene gene;
 
 	GeneDrug() {
 	}
 	
 	GeneDrug(
-		GeneInformation geneInformation,
+		Gene gene,
 		Drug drug,
 		boolean isTarget,
 		String family,
@@ -119,8 +118,8 @@ public class GeneDrug implements Serializable {
 		List<String> inverseGene,
 		List<DrugSource> drugSources
 	) {
-		this.geneSymbol = geneInformation.getGeneSymbol();
-		this.geneInformation = geneInformation;
+		this.geneSymbol = gene.getGeneSymbol();
+		this.gene = gene;
 		this.drugId = drug.getId();
 		this.drug = drug;
 		this.family = family;
@@ -202,7 +201,7 @@ public class GeneDrug implements Serializable {
 	}
 	
 	public List<IndirectGene> getIndirectGenes() {
-		return Collections.unmodifiableList(indirectGenes);
+		return unmodifiableList(this.indirectGenes);
 	}
 	
 	public List<String> getIndirectGeneSymbols() {
@@ -237,8 +236,8 @@ public class GeneDrug implements Serializable {
 		.collect(toList());
 	}
 	
-	public GeneInformation getGeneInformation() {
-		return geneInformation;
+	public Gene getGene() {
+		return gene;
 	}
 	
 	@Override
@@ -248,7 +247,7 @@ public class GeneDrug implements Serializable {
 		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
 		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
 		result = prime * result + ((family == null) ? 0 : family.hashCode());
-		result = prime * result + ((geneInformation == null) ? 0 : geneInformation.hashCode());
+		result = prime * result + ((gene == null) ? 0 : gene.hashCode());
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		result = prime * result + ((resistance == null) ? 0 : resistance.hashCode());
 		long temp;
@@ -282,10 +281,10 @@ public class GeneDrug implements Serializable {
 				return false;
 		} else if (!family.equals(other.family))
 			return false;
-		if (geneInformation == null) {
-			if (other.geneInformation != null)
+		if (gene == null) {
+			if (other.gene != null)
 				return false;
-		} else if (!geneInformation.equals(other.geneInformation))
+		} else if (!gene.equals(other.gene))
 			return false;
 		if (geneSymbol == null) {
 			if (other.geneSymbol != null)

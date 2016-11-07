@@ -24,37 +24,37 @@ package es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
-public class IsEqualToGeneInformation extends IsEqualToEntity<GeneInformation> {
-	public IsEqualToGeneInformation(GeneInformation expected) {
+public class IsEqualToGene extends IsEqualToEntity<Gene> {
+	public IsEqualToGene(Gene expected) {
 		super(expected);
 	}
 	
 	@Override
-	protected boolean matchesSafely(GeneInformation actual) {
+	protected boolean matchesSafely(Gene actual) {
 		this.clearDescribeTo();
 		
 		if (actual == null) {
 			this.addTemplatedDescription("actual", expected.toString());
 			return false;
 		} else {
-			return checkAttribute("geneSymbol", GeneInformation::getGeneSymbol, actual)
-				&& checkAttribute("tumorPortalMutationLevel", GeneInformation::getTumorPortalMutationLevel, actual)
-				&& checkAttribute("cgc", GeneInformation::isCgc, actual)
-				&& checkAttribute("driverLevel", GeneInformation::getDriverLevel, actual)
-				&& checkAttribute("geneEssentialitiyScore", GeneInformation::getGeneEssentialityScore, actual)
-				&& checkAttribute("gScore", GeneInformation::getGScore, actual);
+			return checkAttribute("geneSymbol", Gene::getGeneSymbol, actual)
+				&& checkAttribute("tumorPortalMutationLevel", Gene::getTumorPortalMutationLevel, actual)
+				&& checkAttribute("cgc", Gene::isCgc, actual)
+				&& checkAttribute("driverLevel", Gene::getDriverLevel, actual)
+				&& checkAttribute("geneEssentialitiyScore", Gene::getGeneEssentialityScore, actual)
+				&& checkAttribute("gScore", Gene::getGScore, actual);
 		}
 	}
 
 	@Factory
-	public static IsEqualToGeneInformation equalsToGeneInformation(GeneInformation expected) {
-		return new IsEqualToGeneInformation(expected);
+	public static IsEqualToGene equalsToGene(Gene expected) {
+		return new IsEqualToGene(expected);
 	}
 	
 	@Factory
-	public static Matcher<Iterable<? extends GeneInformation>> containsGeneInformations(GeneInformation ... expected) {
-		return containsEntityInAnyOrder(IsEqualToGeneInformation::equalsToGeneInformation, expected);
+	public static Matcher<Iterable<? extends Gene>> containsGenes(Gene ... expected) {
+		return containsEntityInAnyOrder(IsEqualToGene::equalsToGene, expected);
 	}
 }

@@ -44,11 +44,11 @@ public class Pathway implements Serializable {
 	private String name;
 	
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "pathways")
-	private Set<GeneInformation> genes;
+	private Set<Gene> genes;
 	
 	Pathway() {}
 	
-	Pathway(String id, String name, Set<GeneInformation> genes) {
+	Pathway(String id, String name, Set<Gene> genes) {
 		this.id = id;
 		this.name = name;
 		this.genes = genes;
@@ -62,7 +62,7 @@ public class Pathway implements Serializable {
 		return name;
 	}
 	
-	public Set<GeneInformation> getGenes() {
+	public Set<Gene> getGenes() {
 		return unmodifiableSet(genes);
 	}
 

@@ -37,18 +37,18 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-public final class GeneInformationDataset {
-	private GeneInformationDataset() {}
+public final class GeneDataset {
+	private GeneDataset() {}
 
-	public static GeneInformation[] geneInformations() {
-		final Set<GeneInformation> gata2Interactions = new HashSet<>();
-		final Set<GeneInformation> cdc42bpaInteractions = new HashSet<>();
-		final Set<GeneInformation> ppp3r1Interactions = new HashSet<>();
-		final Set<GeneInformation> prkag2Interactions = new HashSet<>();
+	public static Gene[] genes() {
+		final Set<Gene> gata2Interactions = new HashSet<>();
+		final Set<Gene> cdc42bpaInteractions = new HashSet<>();
+		final Set<Gene> ppp3r1Interactions = new HashSet<>();
+		final Set<Gene> prkag2Interactions = new HashSet<>();
 		
-		final Set<GeneInformation> pathwayGenes000002 = new HashSet<>();
-		final Set<GeneInformation> pathwayGenes000003 = new HashSet<>();
-		final Set<GeneInformation> pathwayGenes000004 = new HashSet<>();
+		final Set<Gene> pathwayGenes000002 = new HashSet<>();
+		final Set<Gene> pathwayGenes000003 = new HashSet<>();
+		final Set<Gene> pathwayGenes000004 = new HashSet<>();
 		
 		final Set<Pathway> gata2Pathways = new HashSet<>();
 		final Set<Pathway> adamts19Pathways = new HashSet<>();
@@ -56,15 +56,15 @@ public final class GeneInformationDataset {
 		final Set<Pathway> prkag2Pathways = new HashSet<>();
 		final Set<Pathway> ptgs1Pathways = new HashSet<>();
 		
-		final GeneInformation gata2 = new GeneInformation("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, emptySet(), emptySet(), gata2Interactions, gata2Pathways);
-		final GeneInformation adamts19 = new GeneInformation("ADAMTS19", null, false, null, 0.3556896485d, emptySet(), emptySet(), emptySet(), adamts19Pathways);
-		final GeneInformation cdc42bpa = new GeneInformation("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, emptySet(), emptySet(), cdc42bpaInteractions, cdc42bpaPathways);
-		final GeneInformation prkag2 = new GeneInformation("PRKAG2", null, false, null, 0d, emptySet(), emptySet(), prkag2Interactions, prkag2Pathways);
-		final GeneInformation ptgs1 = new GeneInformation("PTGS1", null, false, null, 0.4277512382d, emptySet(), emptySet(), emptySet(), ptgs1Pathways);
-		final GeneInformation ppp3r1 = new GeneInformation("PPP3R1", null, false, null, 0d, emptySet(), emptySet(), ppp3r1Interactions, emptySet());
-		final GeneInformation max = new GeneInformation("MAX", null, true, HIGH_CONFIDENCE_DRIVER, 0.626823283d);
-		final GeneInformation cx3cr1 = new GeneInformation("CX3CR1", null, false, null, 0d);
-		final GeneInformation dmd = new GeneInformation("DMD", null, false, HIGH_CONFIDENCE_DRIVER, 0d);
+		final Gene gata2 = new Gene("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, emptySet(), emptySet(), gata2Interactions, gata2Pathways);
+		final Gene adamts19 = new Gene("ADAMTS19", null, false, null, 0.3556896485d, emptySet(), emptySet(), emptySet(), adamts19Pathways);
+		final Gene cdc42bpa = new Gene("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, emptySet(), emptySet(), cdc42bpaInteractions, cdc42bpaPathways);
+		final Gene prkag2 = new Gene("PRKAG2", null, false, null, 0d, emptySet(), emptySet(), prkag2Interactions, prkag2Pathways);
+		final Gene ptgs1 = new Gene("PTGS1", null, false, null, 0.4277512382d, emptySet(), emptySet(), emptySet(), ptgs1Pathways);
+		final Gene ppp3r1 = new Gene("PPP3R1", null, false, null, 0d, emptySet(), emptySet(), ppp3r1Interactions, emptySet());
+		final Gene max = new Gene("MAX", null, true, HIGH_CONFIDENCE_DRIVER, 0.626823283d);
+		final Gene cx3cr1 = new Gene("CX3CR1", null, false, null, 0d);
+		final Gene dmd = new Gene("DMD", null, false, HIGH_CONFIDENCE_DRIVER, 0d);
 		
 		final Pathway pathway00002 = new Pathway("hsa00002", "Single Gene Pathway", pathwayGenes000002);
 		final Pathway pathway00003 = new Pathway("hsa00003", "Multiple Gene Pathway 1", pathwayGenes000003);
@@ -95,79 +95,79 @@ public final class GeneInformationDataset {
 		prkag2Pathways.add(pathway00004);
 		ptgs1Pathways.add(pathway00004);
 		
-		return new GeneInformation[] {
+		return new Gene[] {
 			gata2, adamts19, cdc42bpa, prkag2, ptgs1, ppp3r1, max, cx3cr1, dmd
 		};
 	}
 	
-	public static GeneInformation[] geneInformations(String ... geneSymbols) {
+	public static Gene[] genes(String ... geneSymbols) {
 		final Set<String> geneSymbolsSet = new HashSet<>(asList(geneSymbols));
 		
-		return stream(geneInformations())
-			.filter(gi -> geneSymbolsSet.contains(gi.getGeneSymbol()))
-		.toArray(GeneInformation[]::new);
+		return stream(genes())
+			.filter(gene -> geneSymbolsSet.contains(gene.getGeneSymbol()))
+		.toArray(Gene[]::new);
 	}
 
-	public static GeneInformation geneInformation(String geneSymbol) {
-		return stream(geneInformations())
-			.filter(gi -> gi.getGeneSymbol().equals(geneSymbol))
+	public static Gene gene(String geneSymbol) {
+		return stream(genes())
+			.filter(gene -> gene.getGeneSymbol().equals(geneSymbol))
 			.findFirst()
 		.orElseThrow(IllegalArgumentException::new);
 	}
 	
-	public static String[] genesWithMaxInteractionDegree(int degree) {
+	public static String[] geneSymbolsWithMaxInteractionDegree(int degree) {
 		final Map<Integer, Supplier<String[]>> interactionsByDegree = new HashMap<>();
-		interactionsByDegree.put(0, GeneInformationDataset::genesWithMaxInteractionDegree0);
-		interactionsByDegree.put(1, GeneInformationDataset::genesWithMaxInteractionDegree1);
-		interactionsByDegree.put(2, GeneInformationDataset::genesWithMaxInteractionDegree2);
-		interactionsByDegree.put(3, GeneInformationDataset::genesWithMaxInteractionDegree3);
+		interactionsByDegree.put(0, GeneDataset::geneSymbolsWithMaxInteractionDegree0);
+		interactionsByDegree.put(1, GeneDataset::geneSymbolsWithMaxInteractionDegree1);
+		interactionsByDegree.put(2, GeneDataset::geneSymbolsWithMaxInteractionDegree2);
+		interactionsByDegree.put(3, GeneDataset::geneSymbolsWithMaxInteractionDegree3);
 
 		return interactionsByDegree.getOrDefault(degree, () -> new String[0]).get();
 	}
 	
-	public static String[] genesWithInteractionDegreeUpTo(int maxDegree) {
+	public static String[] geneSymbolsWithInteractionDegreeUpTo(int maxDegree) {
 		return IntStream.rangeClosed(0, maxDegree)
-			.mapToObj(GeneInformationDataset::genesWithMaxInteractionDegree)
+			.mapToObj(GeneDataset::geneSymbolsWithMaxInteractionDegree)
 			.flatMap(Arrays::stream)
 		.toArray(String[]::new);
 	}
 	
-	public static String[] genesWithMaxInteractionDegree0() {
+	public static String[] geneSymbolsWithMaxInteractionDegree0() {
 		return new String[] { "MAX", "DMD", "CX3CR1" };
 	}
 	
-	public static String[] genesWithMaxInteractionDegree1() {
+	public static String[] geneSymbolsWithMaxInteractionDegree1() {
 		return new String[] { "PPP3R1", "PRKAG2" };
 	}
 	
-	public static String[] genesWithMaxInteractionDegree2() {
+	public static String[] geneSymbolsWithMaxInteractionDegree2() {
 		return new String[] { "CDC42BPA" };
 	}
 	
-	public static String[] genesWithMaxInteractionDegree3() {
+	public static String[] geneSymbolsWithMaxInteractionDegree3() {
 		return new String[] { "GATA2" };
 	}
 	
-	public static GeneInformation[] interactions(int degree, Iterable<String> geneSymbols) {
+	public static Gene[] interactions(int degree, Iterable<String> geneSymbols) {
 		return interactions(degree, stream(geneSymbols.spliterator(), false).toArray(String[]::new));
 	}
 	
 	
-	public static GeneInformation[] interactions(int degree, String ... geneSymbols) {
-		final Set<GeneInformation> interactions = new HashSet<>(asList(geneInformations(geneSymbols)));
+	public static Gene[] interactions(int degree, String ... geneSymbols) {
+		final Set<Gene> interactions = new HashSet<>(asList(genes(geneSymbols)));
 		
 		for (int i = 0; i < degree; i++) {
-			for (GeneInformation interaction : new HashSet<>(interactions)) {
+			for (Gene interaction : new HashSet<>(interactions)) {
 				interactions.addAll(interaction.getInteractingGenes());
 			}
 		}
 		
-		return interactions.toArray(new GeneInformation[interactions.size()]);
+		return interactions.toArray(new Gene[interactions.size()]);
 	}
 	
 	public static String[] geneSymbolsForQuery(String query) {
-		return stream(geneInformations())
-			.map(GeneInformation::getGeneSymbol)
+		return stream(genes())
+			.map(Gene::getGeneSymbol)
 			.map(String::toUpperCase)
 			.filter(gene -> gene.startsWith(query.toUpperCase()))
 			.sorted()
@@ -175,8 +175,8 @@ public final class GeneInformationDataset {
 	}
 	
 	public static String[] geneSymbolsForQuery(String query, int maxResults) {
-		return stream(geneInformations())
-			.map(GeneInformation::getGeneSymbol)
+		return stream(genes())
+			.map(Gene::getGeneSymbol)
 			.map(String::toUpperCase)
 			.filter(gene -> gene.startsWith(query.toUpperCase()))
 			.sorted()
@@ -184,8 +184,8 @@ public final class GeneInformationDataset {
 		.toArray(String[]::new);
 	}
 	
-	public static GeneInformation absentGeneInformation() {
-		return new GeneInformation(absentGeneSymbol(), SIGNIFICANTLY_MUTATED, false, null, 0.5910312718d);
+	public static Gene absentGene() {
+		return new Gene(absentGeneSymbol(), SIGNIFICANTLY_MUTATED, false, null, 0.5910312718d);
 	}
 	
 	public static String absentGeneSymbol() {
@@ -201,20 +201,20 @@ public final class GeneInformationDataset {
 	}
 	
 	public static String[] presentGeneSymbols() {
-		return stream(geneInformations())
-			.map(GeneInformation::getGeneSymbol)
+		return stream(genes())
+			.map(Gene::getGeneSymbol)
 		.toArray(String[]::new);
 	}
 	
-	public static GeneInformation[] geneInformationsWithPathway() {
-		return stream(geneInformations())
-			.filter(gi -> !gi.getPathways().isEmpty())
-		.toArray(GeneInformation[]::new);
+	public static Gene[] genesWithPathway() {
+		return stream(genes())
+			.filter(gene -> !gene.getPathways().isEmpty())
+		.toArray(Gene[]::new);
 	}
 	
-	public static GeneInformation[] geneInformationsWithoutPathway() {
-		return stream(geneInformations())
-			.filter(gi -> gi.getPathways().isEmpty())
-		.toArray(GeneInformation[]::new);
+	public static Gene[] genesWithoutPathway() {
+		return stream(genes())
+			.filter(gene -> gene.getPathways().isEmpty())
+		.toArray(Gene[]::new);
 	}
 }

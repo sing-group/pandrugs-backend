@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 @XmlRootElement(name = "gene-interaction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -50,18 +50,18 @@ public class GeneInteraction {
 	
 	GeneInteraction() {}
 	
-	public GeneInteraction(GeneInformation geneInfo) {
-		this.geneSymbol = geneInfo.getGeneSymbol();
+	public GeneInteraction(Gene gene) {
+		this.geneSymbol = gene.getGeneSymbol();
 		
-		this.geneInteractions = geneInfo.getInteractingGenes().stream()
-			.map(GeneInformation::getGeneSymbol)
+		this.geneInteractions = gene.getInteractingGenes().stream()
+			.map(Gene::getGeneSymbol)
 		.toArray(String[]::new);
 		
-		final Stream<DrugInteraction> directInteractions = geneInfo.getGeneDrugs().stream()
+		final Stream<DrugInteraction> directInteractions = gene.getGeneDrugs().stream()
 			.map(DrugInteraction::new);
 		
-		final Stream<DrugInteraction> indirectInteractions = geneInfo.getInteractingGenes().stream()
-			.map(GeneInformation::getGeneDrugs)
+		final Stream<DrugInteraction> indirectInteractions = gene.getInteractingGenes().stream()
+			.map(Gene::getGeneDrugs)
 			.flatMap(Set::stream)
 			.collect(groupingBy(DrugInteraction::new))
 			.entrySet().stream()

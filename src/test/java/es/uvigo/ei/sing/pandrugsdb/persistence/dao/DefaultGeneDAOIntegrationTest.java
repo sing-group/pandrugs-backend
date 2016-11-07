@@ -21,13 +21,13 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInformation.equalsToGeneInformation;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.equalsToGene;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPathway.containsPathways;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformations;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformationsWithPathway;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneInformationsWithoutPathway;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformationDataset.geneSymbolsForQuery;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genes;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithPathway;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithoutPathway;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
@@ -51,7 +51,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Pathway;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,15 +66,15 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Pathway;
 	value = "file:src/test/resources/META-INF/dataset.gene.xml",
 	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
 )
-public class DefaultGeneInformationDAOIntegrationTest {
+public class DefaultGeneDAOIntegrationTest {
 	@Inject
-	@Named("defaultGeneInformationDAO")
-	private GeneInformationDAO dao;
+	@Named("defaultGeneDAO")
+	private GeneDAO dao;
 	
 	@Test
 	public void testGet() {
-		for (GeneInformation geneInfo : geneInformations()) {
-			assertThat(dao.get(geneInfo.getGeneSymbol()), is(equalsToGeneInformation(geneInfo)));
+		for (Gene gene : genes()) {
+			assertThat(dao.get(gene.getGeneSymbol()), is(equalsToGene(gene)));
 		}
 	}
 	
@@ -125,26 +125,26 @@ public class DefaultGeneInformationDAOIntegrationTest {
 	
 	@Test
 	public void testGetNoPathways() {
-		final GeneInformation[] geneInformations = geneInformationsWithoutPathway();
+		final Gene[] genes = genesWithoutPathway();
 		
-		for (GeneInformation expectedGI : geneInformations) {
-			final GeneInformation actualGI = dao.get(expectedGI.getGeneSymbol());
+		for (Gene expectedGene : genes) {
+			final Gene actualGene = dao.get(expectedGene.getGeneSymbol());
 			
-			assertThat(actualGI, is(equalsToGeneInformation(expectedGI)));
-			assertThat(actualGI.getPathways(), is(empty()));
+			assertThat(actualGene, is(equalsToGene(expectedGene)));
+			assertThat(actualGene.getPathways(), is(empty()));
 		}
 	}
 	
 	@Test
 	public void testGetPathways() {
-		final GeneInformation[] geneInformations = geneInformationsWithPathway();
+		final Gene[] genes = genesWithPathway();
 		
-		for (GeneInformation expectedGI : geneInformations) {
-			final GeneInformation actualGI = dao.get(expectedGI.getGeneSymbol());
-			final Pathway[] expectedPathways = expectedGI.getPathways().stream().toArray(Pathway[]::new);
+		for (Gene expectedGene : genes) {
+			final Gene actualGene = dao.get(expectedGene.getGeneSymbol());
+			final Pathway[] expectedPathways = expectedGene.getPathways().stream().toArray(Pathway[]::new);
 			
-			assertThat(actualGI, is(equalsToGeneInformation(expectedGI)));
-			assertThat(actualGI.getPathways(), containsPathways(expectedPathways));
+			assertThat(actualGene, is(equalsToGene(expectedGene)));
+			assertThat(actualGene.getPathways(), containsPathways(expectedPathways));
 		}
 	}
 }

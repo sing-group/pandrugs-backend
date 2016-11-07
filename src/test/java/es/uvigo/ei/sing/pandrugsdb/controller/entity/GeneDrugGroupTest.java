@@ -55,7 +55,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 public class GeneDrugGroupTest extends EasyMockSupport {
 	@After
@@ -790,12 +790,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testGScore() {
 		final String[] genes = new String[] { "G_LOW", "G_MED", "G_HIGH" };
 		
-		final GeneInformation giLow = 
-			new GeneInformation("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d);
-		final GeneInformation giMedium = 
-			new GeneInformation("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d);
-		final GeneInformation giHigh = 
-			new GeneInformation("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d);
+		final Gene giLow = 
+			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d);
+		final Gene giMedium = 
+			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d);
+		final Gene giHigh = 
+			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d);
 		
 		final List<GeneDrug> geneDrugs = asList(
 			newGeneDrug("G_LOW", "D1", giLow),
@@ -869,12 +869,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	}
 
 	private final GeneDrug newGeneDrug(
-		String gene, String drug, GeneInformation geneInfo
+		String geneSymbol, String drug, Gene gene
 	) {
 		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
+		expect(gd.getGeneSymbol()).andReturn(geneSymbol).anyTimes();
 		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
-		expect(gd.getGeneInformation()).andReturn(geneInfo).anyTimes();
+		expect(gd.getGene()).andReturn(gene).anyTimes();
 		
 		return gd;
 	}

@@ -27,14 +27,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 
-public class GeneInformationGeneScoreCalculator implements GeneScoreCalculator {
+public class DefaultGeneScoreCalculator implements GeneScoreCalculator {
 	@Override
 	public double directGScore(GeneDrug geneDrug) {
-		return Optional.ofNullable(geneDrug.getGeneInformation())
-			.map(GeneInformation::getGScore)
+		return Optional.ofNullable(geneDrug.getGene())
+			.map(Gene::getGScore)
 		.orElse(0d);
 	}
 
@@ -43,8 +43,8 @@ public class GeneInformationGeneScoreCalculator implements GeneScoreCalculator {
 		return geneDrug.getIndirectGenes().stream()
 			.collect(toMap(
 				IndirectGene::getGeneSymbol,
-				indirect -> Optional.ofNullable(indirect.getGeneInformation())
-					.map(GeneInformation::getGScore)
+				indirect -> Optional.ofNullable(indirect.getGene())
+					.map(Gene::getGScore)
 				.orElse(0d)
 			));
 	}

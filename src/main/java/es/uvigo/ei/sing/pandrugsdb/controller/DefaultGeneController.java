@@ -37,15 +37,15 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneInformationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneInformation;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 @Controller
 @Transactional
 @Lazy
-public class DefaultGeneInformationController implements GeneInformationController {
+public class DefaultGeneController implements GeneController {
 	@Inject
-	private GeneInformationDAO dao;
+	private GeneDAO dao;
 	
 	@Override
 	public String[] listGeneSymbols(String query, int maxResults) {
@@ -55,12 +55,12 @@ public class DefaultGeneInformationController implements GeneInformationControll
 	}
 
 	@Override
-	public Set<GeneInformation> interactions(int degree, String ... geneSymbol) {
+	public Set<Gene> interactions(int degree, String ... geneSymbol) {
 		requireNonNegative(degree, "degree can't be negative");
 		requireNonEmpty(geneSymbol, "geneSymbol can't be empty");
 		requireNonNullArray(geneSymbol);
 		
-		final Set<GeneInformation> genes = stream(geneSymbol)
+		final Set<Gene> genes = stream(geneSymbol)
 			.map(dao::get)
 			.filter(Objects::nonNull)
 		.collect(toSet());
@@ -69,7 +69,7 @@ public class DefaultGeneInformationController implements GeneInformationControll
 		
 		for (int i = 0; i < degree; i++) {
 			genes.addAll(genes.stream()
-				.map(GeneInformation::getInteractingGenes)
+				.map(Gene::getInteractingGenes)
 				.flatMap(Set::stream)
 			.collect(toSet()));
 		}
