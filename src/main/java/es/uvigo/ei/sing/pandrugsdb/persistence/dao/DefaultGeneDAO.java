@@ -38,7 +38,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 public class DefaultGeneDAO extends DAO<String, Gene> implements GeneDAO {
 	@Override
 	public Gene get(String geneSymbol) {
-		return super.get(geneSymbol);
+		return super.get(geneSymbol.toUpperCase());
 	}
 
 	@Override
