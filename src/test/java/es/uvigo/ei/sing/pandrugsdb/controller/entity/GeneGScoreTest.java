@@ -57,7 +57,7 @@ public class GeneGScoreTest extends EasyMockSupport {
 	) {
 		this.gene = new Gene(
 			geneSymbol, tumorPortalMutationLevel, cgc, driverLevel,
-			geneEssentialityScore
+			geneEssentialityScore, false
 		);
 		this.gScore = gScore;
 	}

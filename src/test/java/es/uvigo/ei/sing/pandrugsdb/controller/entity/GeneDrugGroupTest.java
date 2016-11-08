@@ -791,11 +791,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final String[] genes = new String[] { "G_LOW", "G_MED", "G_HIGH" };
 		
 		final Gene giLow = 
-			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d);
+			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false);
 		final Gene giMedium = 
-			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d);
+			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false);
 		final Gene giHigh = 
-			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d);
+			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false);
 		
 		final List<GeneDrug> geneDrugs = asList(
 			newGeneDrug("G_LOW", "D1", giLow),

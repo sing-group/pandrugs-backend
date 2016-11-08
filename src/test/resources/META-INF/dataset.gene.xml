@@ -22,15 +22,15 @@
  -->
 
 <dataset>
-	<gene gene_symbol="GATA2" cgc="1" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0"/>
-	<gene gene_symbol="ADAMTS19" cgc="0" gene_essentiality_score="0.3556896485"/>
-	<gene gene_symbol="CDC42BPA" cgc="0" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0.8202555173"/>
-	<gene gene_symbol="PRKAG2" cgc="0" gene_essentiality_score="0"/>
-	<gene gene_symbol="PTGS1" cgc="0" gene_essentiality_score="0.4277512382"/>
-	<gene gene_symbol="PPP3R1" cgc="0" gene_essentiality_score="0"/>
-	<gene gene_symbol="MAX" cgc="1" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0.626823283"/>
-	<gene gene_symbol="CX3CR1" cgc="0" gene_essentiality_score="0"/>
-	<gene gene_symbol="DMD" cgc="0" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0"/>
+	<gene gene_symbol="GATA2" cgc="true" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0" ccle="true"/>
+	<gene gene_symbol="ADAMTS19" cgc="false" gene_essentiality_score="0.3556896485" ccle="true"/>
+	<gene gene_symbol="CDC42BPA" cgc="false" tumor_portal_mutation_level="NEAR_SIGNIFICANCE" gene_essentiality_score="0.8202555173" ccle="true"/>
+	<gene gene_symbol="PRKAG2" cgc="false" gene_essentiality_score="0" ccle="false"/>
+	<gene gene_symbol="PTGS1" cgc="false" gene_essentiality_score="0.4277512382" ccle="false"/>
+	<gene gene_symbol="PPP3R1" cgc="false" gene_essentiality_score="0" ccle="true"/>
+	<gene gene_symbol="MAX" cgc="true" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0.626823283" ccle="true"/>
+	<gene gene_symbol="CX3CR1" cgc="false" gene_essentiality_score="0" ccle="false"/>
+	<gene gene_symbol="DMD" cgc="false" driver_level="HIGH_CONFIDENCE_DRIVER" gene_essentiality_score="0" ccle="false"/>
 
 	<!-- Degree 1: GATA2 -> ADAMTS19 | CDC42BPA | PRKAG2 -->	
 	<!-- Degree 1: CDC42BPA -> ADAMTS19 | PTGS1 | PPP3R1 -->

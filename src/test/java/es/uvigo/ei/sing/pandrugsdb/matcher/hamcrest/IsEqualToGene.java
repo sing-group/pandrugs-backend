@@ -44,6 +44,7 @@ public class IsEqualToGene extends IsEqualToEntity<Gene> {
 				&& checkAttribute("cgc", Gene::isCgc, actual)
 				&& checkAttribute("driverLevel", Gene::getDriverLevel, actual)
 				&& checkAttribute("geneEssentialitiyScore", Gene::getGeneEssentialityScore, actual)
+				&& checkAttribute("ccle", Gene::isCcle, actual)
 				&& checkAttribute("gScore", Gene::getGScore, actual);
 		}
 	}

@@ -51,7 +51,7 @@ public class Gene implements Serializable {
 	@Column(name = "tumor_portal_mutation_level", nullable = true)
 	private TumorPortalMutationLevel tumorPortalMutationLevel;
 	
-	@Column(name = "cgc")
+	@Column(name = "cgc", nullable = false)
 	private boolean cgc;
 	
 	@Enumerated(EnumType.STRING)
@@ -60,6 +60,9 @@ public class Gene implements Serializable {
 
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
+	
+	@Column(name = "ccle", nullable = false)
+	private boolean ccle;
 	
 	@OneToMany(mappedBy = "gene", fetch = FetchType.LAZY)
 	private Set<GeneDrug> geneDrugs;
@@ -87,7 +90,7 @@ public class Gene implements Serializable {
 	}
 	
 	public Gene(String geneSymbol) {
-		this(geneSymbol, null, false, null, null);
+		this(geneSymbol, null, false, null, null, false);
 	}
 	
 	public Gene(
@@ -95,7 +98,8 @@ public class Gene implements Serializable {
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
 		DriverLevel driverLevel,
-		Double geneEssentialityScore
+		Double geneEssentialityScore,
+		boolean ccle
 	) {
 		this(
 			geneSymbol,
@@ -103,10 +107,10 @@ public class Gene implements Serializable {
 			cgc,
 			driverLevel,
 			geneEssentialityScore,
+			ccle,
 			emptySet(),
 			emptySet(),
-			emptySet(),
-			emptySet()
+			emptySet(), emptySet()
 		);
 	}
 
@@ -117,16 +121,17 @@ public class Gene implements Serializable {
 		boolean cgc,
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
+		boolean ccle,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
-		Set<Gene> interactingGene,
-		Set<Pathway> pathways
+		Set<Gene> interactingGene, Set<Pathway> pathways
 	) {
 		this.geneSymbol = geneSymbol;
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
 		this.cgc = cgc;
 		this.driverLevel = driverLevel;
 		this.geneEssentialityScore = geneEssentialityScore;
+		this.ccle = ccle;
 		this.geneDrugs = geneDrugs;
 		this.proteins = proteins;
 		this.interactingGene = interactingGene;
@@ -147,6 +152,10 @@ public class Gene implements Serializable {
 
 	public DriverLevel getDriverLevel() {
 		return driverLevel;
+	}
+	
+	public boolean isCcle() {
+		return ccle;
 	}
 
 	public double getGeneEssentialityScore() {
@@ -196,6 +205,7 @@ public class Gene implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (ccle ? 1231 : 1237);
 		result = prime * result + (cgc ? 1231 : 1237);
 		result = prime * result + ((driverLevel == null) ? 0 : driverLevel.hashCode());
 		result = prime * result + ((geneEssentialityScore == null) ? 0 : geneEssentialityScore.hashCode());
@@ -213,6 +223,8 @@ public class Gene implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Gene other = (Gene) obj;
+		if (ccle != other.ccle)
+			return false;
 		if (cgc != other.cgc)
 			return false;
 		if (driverLevel != other.driverLevel)
@@ -239,6 +251,7 @@ public class Gene implements Serializable {
 			.append(", CGC: ").append(this.cgc)
 			.append(", DL: ").append(this.driverLevel)
 			.append(", GES: ").append(this.geneEssentialityScore)
+			.append(", CCLE: ").append(this.ccle)
 			.append("]")
 		.toString();
 	}
