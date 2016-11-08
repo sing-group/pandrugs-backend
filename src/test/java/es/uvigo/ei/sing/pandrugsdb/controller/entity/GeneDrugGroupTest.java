@@ -54,8 +54,9 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.OncodriveRole;
 
 public class GeneDrugGroupTest extends EasyMockSupport {
 	@After
@@ -791,11 +792,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final String[] genes = new String[] { "G_LOW", "G_MED", "G_HIGH" };
 		
 		final Gene giLow = 
-			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false);
+			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false, OncodriveRole.NONE);
 		final Gene giMedium = 
-			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false);
+			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false, OncodriveRole.NONE);
 		final Gene giHigh = 
-			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false);
+			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false, OncodriveRole.NONE);
 		
 		final List<GeneDrug> geneDrugs = asList(
 			newGeneDrug("G_LOW", "D1", giLow),

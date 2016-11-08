@@ -38,6 +38,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.OncodriveRole;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel;
 
 @RunWith(Parameterized.class)
@@ -57,7 +58,7 @@ public class GeneGScoreTest extends EasyMockSupport {
 	) {
 		this.gene = new Gene(
 			geneSymbol, tumorPortalMutationLevel, cgc, driverLevel,
-			geneEssentialityScore, false
+			geneEssentialityScore, false, OncodriveRole.NONE
 		);
 		this.gScore = gScore;
 	}

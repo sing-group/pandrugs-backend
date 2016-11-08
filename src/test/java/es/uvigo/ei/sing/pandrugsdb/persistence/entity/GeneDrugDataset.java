@@ -47,10 +47,10 @@ public final class GeneDrugDataset {
 	
 	public static Map<String, Gene> genes() {
 		return Stream.of(
-			new Gene("DIRECT GENE 1", null, false, null, 0d, false),
-			new Gene("DIRECT GENE 2", null, false, null, 0d, false),
-			new Gene("INDIRECT GENE 1", null, false, null, 0d, false),
-			new Gene("INDIRECT GENE 2", null, false, null, 0d, false)
+			new Gene("DIRECT GENE 1", null, false, null, 0d, false, OncodriveRole.NONE),
+			new Gene("DIRECT GENE 2", null, false, null, 0d, false, OncodriveRole.NONE),
+			new Gene("INDIRECT GENE 1", null, false, null, 0d, false, OncodriveRole.NONE),
+			new Gene("INDIRECT GENE 2", null, false, null, 0d, false, OncodriveRole.NONE)
 		).collect(toMap(
 			Gene::getGeneSymbol,
 			Function.identity()

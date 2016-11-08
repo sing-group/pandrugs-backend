@@ -26,8 +26,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAOTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAOIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAOIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAOTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAOIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultSomaticMutationInCancerDAOTest;

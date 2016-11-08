@@ -26,8 +26,8 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Map;
 import java.util.Optional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 
 public class DefaultGeneScoreCalculator implements GeneScoreCalculator {

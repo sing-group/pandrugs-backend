@@ -25,8 +25,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerIntegrationTest;
 import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;

@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -63,6 +64,10 @@ public class Gene implements Serializable {
 	
 	@Column(name = "ccle", nullable = false)
 	private boolean ccle;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "oncodrive_role", nullable = false)
+	private OncodriveRole oncodriveRole;
 	
 	@OneToMany(mappedBy = "gene", fetch = FetchType.LAZY)
 	private Set<GeneDrug> geneDrugs;
@@ -90,7 +95,7 @@ public class Gene implements Serializable {
 	}
 	
 	public Gene(String geneSymbol) {
-		this(geneSymbol, null, false, null, null, false);
+		this(geneSymbol, null, false, null, null, false, OncodriveRole.NONE);
 	}
 	
 	public Gene(
@@ -99,7 +104,8 @@ public class Gene implements Serializable {
 		boolean cgc,
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
-		boolean ccle
+		boolean ccle,
+		OncodriveRole oncodriveRole
 	) {
 		this(
 			geneSymbol,
@@ -108,9 +114,11 @@ public class Gene implements Serializable {
 			driverLevel,
 			geneEssentialityScore,
 			ccle,
+			oncodriveRole,
 			emptySet(),
 			emptySet(),
-			emptySet(), emptySet()
+			emptySet(),
+			emptySet()
 		);
 	}
 
@@ -122,16 +130,19 @@ public class Gene implements Serializable {
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
 		boolean ccle,
+		OncodriveRole oncodriveRole,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
-		Set<Gene> interactingGene, Set<Pathway> pathways
+		Set<Gene> interactingGene,
+		Set<Pathway> pathways
 	) {
-		this.geneSymbol = geneSymbol;
+		this.geneSymbol = requireNonNull(geneSymbol);
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
 		this.cgc = cgc;
 		this.driverLevel = driverLevel;
 		this.geneEssentialityScore = geneEssentialityScore;
 		this.ccle = ccle;
+		this.oncodriveRole = requireNonNull(oncodriveRole);
 		this.geneDrugs = geneDrugs;
 		this.proteins = proteins;
 		this.interactingGene = interactingGene;
@@ -156,6 +167,10 @@ public class Gene implements Serializable {
 	
 	public boolean isCcle() {
 		return ccle;
+	}
+	
+	public OncodriveRole getOncodriveRole() {
+		return oncodriveRole;
 	}
 
 	public double getGeneEssentialityScore() {

@@ -19,20 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.util;
+package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-public class EmptyInputStream extends InputStream {
-	public final static EmptyInputStream EMPTY_INPUT_STREAM = new EmptyInputStream();
-	
-	public static EmptyInputStream emptyInputStream() {
-		return EMPTY_INPUT_STREAM;
-	}
-	
-	@Override
-	public int read() throws IOException {
-		return -1;
-	}
+public enum OncodriveRole {
+	ACTIVATING, LOSS_OF_FUNCTION, NO_CLASS, NONE;
 }
