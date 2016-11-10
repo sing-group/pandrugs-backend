@@ -52,21 +52,21 @@ public class ClinicalGenomeVariation implements Serializable {
 	private int end;
 
 	@Id
-	@Column(name = "hgvs", length = 300, columnDefinition = "VARCHAR(300)")
+	@Column(name = "hgvs", length = 240, columnDefinition = "VARCHAR(240)")
 	private String hgvs;
 	
 	@Id
-	@Column(name = "disease", length = 200, columnDefinition = "VARCHAR(200)")
+	@Column(name = "disease", length = 150, columnDefinition = "VARCHAR(150)")
 	private String disease;
 	
 	@Id
-	@Column(name = "accession", length = 50, columnDefinition = "VARCHAR(50)")
+	@Column(name = "accession", length = 12, columnDefinition = "VARCHAR(12)")
 	private String accession;
 	
-	@Column(name = "clinical_significance", length = 100, columnDefinition = "VARCHAR(100)", nullable = false)
+	@Column(name = "clinical_significance", length = 60, columnDefinition = "VARCHAR(60)", nullable = false)
 	private String clinicalSignificance;
 	
-	@Column(name = "db_snp", length = 50, columnDefinition = "VARCHAR(50)", nullable = true)
+	@Column(name = "db_snp", length = 12, columnDefinition = "VARCHAR(12)", nullable = true)
 	private String dbSnp;
 	
 	ClinicalGenomeVariation() {
