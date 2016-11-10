@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.newGene;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
@@ -791,12 +792,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testGScore() {
 		final String[] genes = new String[] { "G_LOW", "G_MED", "G_HIGH" };
 		
-		final Gene giLow = 
-			new Gene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false, OncodriveRole.NONE);
-		final Gene giMedium = 
-			new Gene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false, OncodriveRole.NONE);
-		final Gene giHigh = 
-			new Gene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false, OncodriveRole.NONE);
+		final Gene giLow = newGene("G_LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false, OncodriveRole.NONE);
+		final Gene giMedium = newGene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false, OncodriveRole.NONE);
+		final Gene giHigh = newGene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false, OncodriveRole.NONE);
 		
 		final List<GeneDrug> geneDrugs = asList(
 			newGeneDrug("G_LOW", "D1", giLow),

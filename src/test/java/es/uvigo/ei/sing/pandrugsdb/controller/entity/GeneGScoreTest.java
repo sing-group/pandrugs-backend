@@ -23,6 +23,7 @@ package es.uvigo.ei.sing.pandrugsdb.controller.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.newGene;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
@@ -56,7 +57,7 @@ public class GeneGScoreTest extends EasyMockSupport {
 		Double geneEssentialityScore,
 		double gScore
 	) {
-		this.gene = new Gene(
+		this.gene = newGene(
 			geneSymbol, tumorPortalMutationLevel, cgc, driverLevel,
 			geneEssentialityScore, false, OncodriveRole.NONE
 		);

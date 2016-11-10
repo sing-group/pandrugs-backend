@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -75,6 +76,20 @@ public class Gene implements Serializable {
 	@ManyToMany(mappedBy = "genes", fetch = FetchType.LAZY)
 	private Set<Protein> proteins;
 	
+	@ElementCollection
+	@JoinTable(
+		name = "cancer_domain",
+		joinColumns = @JoinColumn(
+			name = "gene_symbol",
+			referencedColumnName = "gene_symbol",
+			columnDefinition = "VARCHAR(50)",
+			insertable = false, updatable = false,
+			nullable = true
+		)
+	)
+	@Column(name = "code", length = 7, columnDefinition = "CHAR(7)", nullable = false, updatable = false, insertable = false)
+	private Set<String> cancerDomains;
+	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 		name = "gene_gene",
@@ -94,11 +109,11 @@ public class Gene implements Serializable {
 	Gene() {
 	}
 	
-	public Gene(String geneSymbol) {
+	Gene(String geneSymbol) {
 		this(geneSymbol, null, false, null, null, false, OncodriveRole.NONE);
 	}
 	
-	public Gene(
+	Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -118,12 +133,13 @@ public class Gene implements Serializable {
 			emptySet(),
 			emptySet(),
 			emptySet(),
+			emptySet(),
 			emptySet()
 		);
 	}
 
 	
-	public Gene(
+	Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
@@ -131,6 +147,7 @@ public class Gene implements Serializable {
 		Double geneEssentialityScore,
 		boolean ccle,
 		OncodriveRole oncodriveRole,
+		Set<String> cancerDomains,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
 		Set<Gene> interactingGene,
@@ -143,6 +160,7 @@ public class Gene implements Serializable {
 		this.geneEssentialityScore = geneEssentialityScore;
 		this.ccle = ccle;
 		this.oncodriveRole = requireNonNull(oncodriveRole);
+		this.cancerDomains = cancerDomains;
 		this.geneDrugs = geneDrugs;
 		this.proteins = proteins;
 		this.interactingGene = interactingGene;
@@ -216,6 +234,10 @@ public class Gene implements Serializable {
 		return unmodifiableSet(pathways);
 	}
 
+	public Set<String> getCancerDomains() {
+		return unmodifiableSet(cancerDomains);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

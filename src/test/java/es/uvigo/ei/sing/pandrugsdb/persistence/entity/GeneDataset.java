@@ -40,6 +40,18 @@ import java.util.stream.IntStream;
 public final class GeneDataset {
 	private GeneDataset() {}
 
+	public static Gene newGene(
+		String geneSymbol,
+		TumorPortalMutationLevel tumorPortalMutationLevel,
+		boolean cgc,
+		DriverLevel driverLevel,
+		Double geneEssentialityScore,
+		boolean ccle,
+		OncodriveRole oncodriveRole
+	) {
+		return new Gene(geneSymbol, tumorPortalMutationLevel, cgc, driverLevel, geneEssentialityScore, ccle, oncodriveRole);
+	}
+	
 	public static Gene[] genes() {
 		final Set<Gene> gata2Interactions = new HashSet<>();
 		final Set<Gene> cdc42bpaInteractions = new HashSet<>();
@@ -56,12 +68,12 @@ public final class GeneDataset {
 		final Set<Pathway> prkag2Pathways = new HashSet<>();
 		final Set<Pathway> ptgs1Pathways = new HashSet<>();
 		
-		final Gene gata2 = new Gene("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, true, OncodriveRole.NONE, emptySet(), emptySet(), gata2Interactions, gata2Pathways);
-		final Gene adamts19 = new Gene("ADAMTS19", null, false, null, 0.3556896485d, true, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), adamts19Pathways);
-		final Gene cdc42bpa = new Gene("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, true, OncodriveRole.NONE, emptySet(), emptySet(), cdc42bpaInteractions, cdc42bpaPathways);
-		final Gene prkag2 = new Gene("PRKAG2", null, false, null, 0d, false, OncodriveRole.NONE, emptySet(), emptySet(), prkag2Interactions, prkag2Pathways);
-		final Gene ptgs1 = new Gene("PTGS1", null, false, null, 0.4277512382d, false, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), ptgs1Pathways);
-		final Gene ppp3r1 = new Gene("PPP3R1", null, false, null, 0d, true, OncodriveRole.NONE, emptySet(), emptySet(), ppp3r1Interactions, emptySet());
+		final Gene gata2 = new Gene("GATA2", NEAR_SIGNIFICANCE, true, null, 0d, true, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), gata2Interactions, gata2Pathways);
+		final Gene adamts19 = new Gene("ADAMTS19", null, false, null, 0.3556896485d, true, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), emptySet(), adamts19Pathways);
+		final Gene cdc42bpa = new Gene("CDC42BPA", NEAR_SIGNIFICANCE, false, null, 0.8202555173d, true, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), cdc42bpaInteractions, cdc42bpaPathways);
+		final Gene prkag2 = new Gene("PRKAG2", null, false, null, 0d, false, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), prkag2Interactions, prkag2Pathways);
+		final Gene ptgs1 = new Gene("PTGS1", null, false, null, 0.4277512382d, false, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), emptySet(), ptgs1Pathways);
+		final Gene ppp3r1 = new Gene("PPP3R1", null, false, null, 0d, true, OncodriveRole.NONE, emptySet(), emptySet(), emptySet(), ppp3r1Interactions, emptySet());
 		final Gene max = new Gene("MAX", null, true, HIGH_CONFIDENCE_DRIVER, 0.626823283d, true, OncodriveRole.ACTIVATING);
 		final Gene cx3cr1 = new Gene("CX3CR1", null, false, null, 0d, false, OncodriveRole.NONE);
 		final Gene dmd = new Gene("DMD", null, false, HIGH_CONFIDENCE_DRIVER, 0d, false, OncodriveRole.NONE);
