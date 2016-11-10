@@ -21,61 +21,58 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Collections.unmodifiableSet;
-
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
-@Entity(name = "protein")
-public class Protein {
+@Entity(name = "protein_pfam")
+@IdClass(ProteinPfamId.class)
+public class ProteinPfam {
 	@Id
 	@Column(name = "uniprot_id")
 	private String uniprotId;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interactionId", referencedColumnName = "uniprotId")
-	private Set<Protein> iteractions;
+	@Id
+	@Column(name = "start")
+	private int start;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "geneSymbol")
-	private Set<Gene> genes;
+	@Id
+	@Column(name = "end")
+	private int end;
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
-	
-	Protein() {}
-	
-	Protein(String uniprotId) {
-		this.uniprotId = uniprotId;
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+		name = "uniprot_id",
+		referencedColumnName = "uniprot_id",
+		insertable = false, updatable = false,
+		nullable = true
+	)
+	private Protein protein;
+
+	ProteinPfam() {}
 
 	public String getUniprotId() {
 		return uniprotId;
 	}
 	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
+	public int getStart() {
+		return start;
+	}
+	
+	public int getEnd() {
+		return end;
 	}
 
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
-	}
-	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + end;
+		result = prime * result + start;
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
 		return result;
 	}
@@ -88,7 +85,11 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
+		ProteinPfam other = (ProteinPfam) obj;
+		if (end != other.end)
+			return false;
+		if (start != other.start)
+			return false;
 		if (uniprotId == null) {
 			if (other.uniprotId != null)
 				return false;
@@ -96,4 +97,5 @@ public class Protein {
 			return false;
 		return true;
 	}
+	
 }
