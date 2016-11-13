@@ -71,7 +71,7 @@ public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport
 			+ DefaultVEPtoVariantsScoreCalculator.VARIANT_SCORES_FILE_NAME);
 		this.vepFile = new File(
 			userDir.getAbsolutePath() + File.separator + DefaultVariantsEffectPredictor.VEP_FILE_NAME);
-		FileUtils.copyInputStreamToFile(getClass().getResourceAsStream("ensembl_vep-small.csv"), this.vepFile);
+		FileUtils.copyInputStreamToFile(getClass().getResourceAsStream("vep-small.txt"), this.vepFile);
 		userDir.mkdir();
 	}
 

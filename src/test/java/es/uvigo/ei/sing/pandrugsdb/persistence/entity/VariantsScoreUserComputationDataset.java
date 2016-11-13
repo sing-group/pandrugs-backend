@@ -37,7 +37,7 @@ public class VariantsScoreUserComputationDataset {
 										0.0,
 										0.5),
 								new VariantsScoreComputationResults(
-										new VariantsEffectPredictionResults(Paths.get("ensembl_vep.csv")), null, null)
+										new VariantsEffectPredictionResults(Paths.get("vep.txt")), null, null)
 						)
 				),
 				new VariantsScoreUserComputation(
@@ -49,7 +49,7 @@ public class VariantsScoreUserComputationDataset {
 										1.0,
 										1.0),
 								new VariantsScoreComputationResults(
-										new VariantsEffectPredictionResults(Paths.get("ensembl_vep.csv")),
+										new VariantsEffectPredictionResults(Paths.get("vep.txt")),
 										Paths.get("vep_data.csv"),
 										Paths.get("genes_affected.csv"))
 						)

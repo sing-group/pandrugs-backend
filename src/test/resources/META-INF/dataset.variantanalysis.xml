@@ -35,7 +35,7 @@
 			status_task_progress="0.0"
 			status_overall_progress="0.5"
 
-			results_vep_file="ensembl_vep.csv"
+			results_vep_file="vep.txt"
 			/>
 	<variants_score_user_computation
 			id = "2"
@@ -50,7 +50,7 @@
 			status_task_progress="1.0"
 			status_overall_progress="1.0"
 
-			results_vep_file="ensembl_vep.csv"
+			results_vep_file="vep.txt"
 			results_vscore_file="vep_data.csv"
 			results_affectedgenes_file="genes_affected.csv"
 			/>

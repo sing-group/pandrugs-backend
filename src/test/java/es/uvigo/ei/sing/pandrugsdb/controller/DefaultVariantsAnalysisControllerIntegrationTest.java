@@ -88,7 +88,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	private DefaultVariantsAnalysisController controller;
 
 	private static final String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
-	private static final String aVEPResourcePath = "../core/variantsanalysis/ensembl_vep-small.csv";
+	private static final String aVEPResourcePath = "../core/variantsanalysis/vep-small.txt";
 
 	@BeforeClass
 	public static void initContext() throws IOException {
@@ -125,7 +125,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 				copyComputationFile("inputVCF.vcf", computationDir, computation);
 			}
 			if (computation.getComputationDetails().getResults().getVepResults().getFilePath() != null) {
-				copyComputationFile("ensembl_vep.csv", computationDir, computation);
+				copyComputationFile("vep.txt", computationDir, computation);
 			}
 			if (computation.getComputationDetails().getResults().getAffectedGenesPath() != null) {
 				copyComputationFile("genes_affected.csv", computationDir, computation);

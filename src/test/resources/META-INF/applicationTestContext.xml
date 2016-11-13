@@ -104,4 +104,7 @@
 	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService"/>
 	<bean id="defaultGeneService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneService"/>
 	<bean id="defaultCancerService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService"/>
+
+	<bean id="defaultveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculator" primary="true"/>
+	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="false"/>
 </beans>

@@ -74,4 +74,6 @@
     </bean>
 	
 	<bean id="mailer" class="es.uvigo.ei.sing.pandrugsdb.mail.DefaultMailer" scope="singleton"/>
+
+	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="true"/>
 </beans>

@@ -38,10 +38,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.easymock.EasyMockRule;
-import org.easymock.EasyMockSupport;
-import org.easymock.Mock;
-import org.easymock.TestSubject;
+import org.easymock.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,8 +69,6 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 	@Mock
 	private Process vepProcess;
 
-	@Mock
-	private Runtime runtime;
 
 	@TestSubject
 	private DefaultVariantsEffectPredictor vepPredictor = 
@@ -134,16 +129,22 @@ public class DefaultVariantsEffectPredictorUnitTest extends EasyMockSupport {
 	}
 
 	@Test
-	public void testInterruptedException() throws InterruptedException, IOException {
+	public void testInterruptedException() throws Exception {
 		expect(fileSystemConfiguration.getUserDataBaseDirectory()).andReturn(userStorageDirectory).anyTimes();
 		expect(vepConfiguration.createVEPCommand(anyObject(), anyObject())).andReturn("");
-		expect(runtime.exec(anyString())).andReturn(vepProcess);
-		PowerMock.mockStatic(Runtime.class);
-		expect(Runtime.getRuntime()).andReturn(runtime);
+
+		ProcessBuilder processBuilder = PowerMock.createNiceMock(ProcessBuilder.class);
+		PowerMock.expectNew(ProcessBuilder.class, new Class[] {String[].class}, EasyMock.anyObject())
+				.andReturn(processBuilder);
+		expect(processBuilder.redirectErrorStream(true)).andReturn(processBuilder);
+		expect(processBuilder.redirectOutput((ProcessBuilder.Redirect) EasyMock.anyObject())).andReturn(processBuilder);
+		expect(processBuilder.start()).andReturn(vepProcess);
 		expect(vepProcess.waitFor()).andReturn(130); // interrupted code
 
 		super.replayAll();
-		PowerMock.replay(Runtime.class);
+
+		PowerMock.replay(ProcessBuilder.class);
+		PowerMock.replay(processBuilder);
 
 		try {
 			vepPredictor.predictEffect(Paths.get(inputVCFName), Paths.get(computationBasePath));

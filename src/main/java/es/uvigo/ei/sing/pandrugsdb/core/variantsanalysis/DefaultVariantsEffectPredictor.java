@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -34,11 +35,14 @@ import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
 
+import static java.lang.ProcessBuilder.Redirect.appendTo;
+import static java.util.Arrays.asList;
+
 @Component
 public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsEffectPredictor.class);
-	public static final String VEP_FILE_NAME = "ensembl_vep.csv";
+	public static final String VEP_FILE_NAME = "vep.txt";
 	
 	@Inject
 	private FileSystemConfiguration configuration;
@@ -64,9 +68,13 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 				userPath.resolve(vcfFile)).toFile();
 		try {
 			String command = vepConfiguration.createVEPCommand(inputFile.toPath(), outFile.toPath());
+
 			LOG.info("Starting VEP computation over "+inputFile+" with command: "+command);
-			Process p = Runtime.getRuntime().exec(command);
-			int retValue = p.waitFor();
+			ProcessBuilder pb = new ProcessBuilder(asList(command.split(" ")))
+									.redirectErrorStream(true)
+									.redirectOutput(
+											appendTo(new File(inputFile.getParent()+File.separator+"vep-out.log")));
+			int retValue = pb.start().waitFor();
 
 			if (retValue == 130) {
 				// bash exit code for CTRL+C (Interruption)
