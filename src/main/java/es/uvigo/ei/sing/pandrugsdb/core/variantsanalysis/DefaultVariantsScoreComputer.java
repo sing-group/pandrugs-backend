@@ -111,7 +111,7 @@ public class DefaultVariantsScoreComputer implements
 				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(parameters, vepResults))
 				.whenComplete((result, exception) -> {
 					if (exception == null) {
-						LOG.info("Finished VEP computation. Path: "+parameters.getResultsBasePath());
+						LOG.info("Finished VSCORE computation. Path: "+parameters.getResultsBasePath());
 						notificationExecutorService.execute( () -> {
 							computation.getStatus().setOverallProgress(1.0f);
 							computation.getStatus().setTaskName("Finished");
