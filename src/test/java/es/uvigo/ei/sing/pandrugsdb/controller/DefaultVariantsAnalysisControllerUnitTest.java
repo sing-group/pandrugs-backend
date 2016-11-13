@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
@@ -219,6 +220,24 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testGetRankingForComputation() throws IOException {
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("gene_hgnc\tmax(vscore)\tbranch\tentrez_id\tpath_desc\tpath_id\n");
+		sb.append("KCNH5\t0.3743\tUNCLASSIFIED\tKCNH5\t\t\n");
+		sb.append("TPO\t0.4161\tUNCLASSIFIED\tTPO\tTyrosine metabolism|Metabolic pathways|Thyroid hormone " +
+						"synthesis|Autoimmune thyroid disease\thsa00350|hsa01100|hsa04918|hsa05320\n");
+		sb.append("CWC25\t0.3322\tUNCLASSIFIED\tCWC25\t\t\n");
+		sb.append("ZNF891\t0.2620\tUNCLASSIFIED\tZNF891\t\t\n");
+		sb.append("TSKS\t0.3750\tTSG\tTSKS\t\t\n");
+		sb.append("CARD16\t0.3145\tUNCLASSIFIED\tCARD16\t\t\n");
+
+		String geneRankingContents = sb.toString();
+
+		testGeneRankings(geneRankingContents, new double[]{0.3743, 0.4161, 0.3322, 0.2620, 0.3750, 0.3145});
+	}
+
+	private void testGeneRankings(String geneRankingContents, double[] expectedRankings) throws IOException {
 		int anyId = 1;
 		String affectedGenesFileName = "affected_genes.txt";
 		File genesAffectedFile = new File(
@@ -226,7 +245,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		genesAffectedFile.deleteOnExit();
 
-		FileUtils.write(genesAffectedFile, "GENE1\t1.0\nGENE2\t2.4");
+		FileUtils.write(genesAffectedFile, geneRankingContents);
 
 		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
 		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation();
@@ -247,8 +266,11 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		GeneRanking ranking = controller.getGeneRankingForComputation(anyId);
 
-		assertThat(ranking.getGeneRank().size(), is(2));
-		assertThat(ranking.getGeneRank().get(0).getRank(), is(1.0d));
-		assertThat(ranking.getGeneRank().get(1).getRank(), is(2.4d));
+
+		assertThat(ranking.getGeneRank().size(), is(expectedRankings.length));
+
+		for (int i = 0; i < expectedRankings.length; i++) {
+				assertThat(ranking.getGeneRank().get(i).getRank(), is(expectedRankings[i]));
+		}
 	}
 }

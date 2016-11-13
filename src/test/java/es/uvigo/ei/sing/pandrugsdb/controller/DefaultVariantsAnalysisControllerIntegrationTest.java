@@ -175,10 +175,10 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test
 	public void testGetAffectedGenesRanking() {
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getGene(), is("GENE-1"));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getGene(), is("GENE-2"));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getRank(), is(1.0));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getRank(), is(0.5));
+		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getGene(), is("KCNH5"));
+		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getGene(), is("TPO"));
+		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getRank(), is(0.3743));
+		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getRank(), is(0.4161));
 	}
 
 	@Test(expected = IllegalStateException.class)

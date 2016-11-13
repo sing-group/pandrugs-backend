@@ -34,6 +34,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,9 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.io.FileUtils.readLines;
 
 @Controller
 public class DefaultVariantsAnalysisController implements
@@ -130,17 +134,23 @@ public class DefaultVariantsAnalysisController implements
 				computation,
 				computation.getComputationDetails().getResults().getAffectedGenesPath());
 
-		Map<String, Double> geneRankingMap = new LinkedHashMap<>();
+		try {
 
-		try (Scanner sc = new Scanner(affectedGenesFile)) {
-			while (sc.hasNext()) {
-				geneRankingMap.put(sc.next(), sc.nextDouble());
-			}
-		} catch (FileNotFoundException e) {
+			Map<String, Double> geneRankingMap =
+					readLines(affectedGenesFile).stream()
+					.skip(1)
+					.map(line -> line.split("\t"))
+					.collect(toMap(
+						tokens -> tokens[0],
+						tokens -> Double.parseDouble(tokens[1]),
+						(d1, __) -> d1,
+						LinkedHashMap::new
+					));
+
+			return new GeneRanking(geneRankingMap);
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
-		return new GeneRanking(geneRankingMap);
 	}
 
 	private File createComputationDataDirectory(User user) {
