@@ -26,50 +26,49 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 
 /**
  * Created by lipido on 10/20/16.
  */
 @XmlRootElement(name = "computation-status-metadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class ComputationStatusMetadata {
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class ComputationMetadata {
 
-	private double overallProgress;
+	private VariantsScoreUserComputation computation;
 
-	private double taskProgress;
+	private Integer affectedGenes;
 
-	private String taskName;
+	public ComputationMetadata(VariantsScoreUserComputation computation, Integer affectedGenes) {
+		this.computation = computation;
+		this.affectedGenes = affectedGenes;
+	}
 
-	private boolean isFinished;
-
-	private boolean hasError;
-
-	public ComputationStatusMetadata(VariantsScoreComputationStatus status) {
-		this.taskProgress = status.getTaskProgress();
-		this.taskName = status.getTaskName();
-		this.overallProgress = status.getOverallProgress();
-		this.isFinished = status.getOverallProgress() == 1.0;
-		this.hasError = status.hasErrors();
+	public String getName() {
+		return computation.getName();
 	}
 
 	public double getOverallProgress() {
-		return overallProgress;
+		return computation.getComputationDetails().getStatus().getOverallProgress();
 	}
 
 	public double getTaskProgress() {
-		return taskProgress;
+		return computation.getComputationDetails().getStatus().getTaskProgress();
 	}
-
 
 	public String getTaskName() {
-		return taskName;
+		return computation.getComputationDetails().getStatus().getTaskName();
 	}
-
 
 	public boolean isFinished() {
-		return isFinished;
+		return computation.getComputationDetails().getStatus().isFinished();
 	}
 
-	public boolean hasError() {return hasError;}
+	public boolean isFailed() {
+		return computation.getComputationDetails().getStatus().hasErrors();
+	}
 
+	public Integer getAffectedGenes() {
+		return affectedGenes;
+	}
 }

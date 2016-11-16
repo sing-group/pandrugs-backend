@@ -23,11 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
 import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.newCapture;
+import static java.util.Arrays.asList;
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -35,9 +32,12 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.*;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMockRunner;
@@ -56,14 +56,6 @@ import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
@@ -124,7 +116,8 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
+		controller.startVariantsScopeUserComputation(
+				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
 
 		assertEquals(aUser, capturedArgument.getValue().getUser());
 		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
@@ -159,7 +152,8 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
-		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
+		controller.startVariantsScopeUserComputation(
+				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
 
 		aStatus.setOverallProgress(1.0f);
 		assertEquals(expectedResults, capturedArgument.getValue().getComputationDetails().getResults());
@@ -177,7 +171,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		ComputationStatusMetadata metadata = controller.getComputationsStatus(anId);
+		ComputationMetadata metadata = controller.getComputationsStatus(anId);
 
 		assertThat(metadata.getTaskName(), is("a task"));
 
@@ -185,11 +179,14 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testComputerCallAndResults() throws InterruptedException, ExecutionException, IOException {
+
+
 		final VariantsScoreComputationResults expectedResults = mockControl
 				.createMock(VariantsScoreComputationResults.class);
-		
+		expect(expectedResults.getAffectedGenesPath()).andReturn(Paths.get("affected_genes.txt"));
+
 		final VariantsScoreComputation expectedComputation = mockControl.createMock(VariantsScoreComputation.class);
-		
+
 
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
@@ -209,10 +206,14 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
-		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), emptyInputStream());
+		int id = controller.startVariantsScopeUserComputation(
+				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
 
 		// provoke finish of computation, listeners will be called and computation
 		// and the results should be setted in usercomputation.details
+
+		createAffectedGenesFile("affected_genes.txt", capturedArgument.getValue().getComputationDetails()
+				.getParameters().getResultsBasePath().toString(), anAffectedGenesFileContent());
 		aStatus.setOverallProgress(1.0);
 
 		assertThat(controller.getComputationsStatus(id).isFinished(), is(true));
@@ -220,7 +221,52 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testGetRankingForComputation() throws IOException {
+		testGeneRankings(anAffectedGenesFileContent(), new double[]{0.3743, 0.4161, 0.3322, 0.2620, 0.3750, 0.3145});
+	}
 
+	@Test
+	public void testDeleteComputation() throws IOException {
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+		int anyId = 1;
+
+		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
+		this.variantsScoreUserComputationDAO.remove(aComputation);
+		expectLastCall().once();
+
+		super.replayAll();
+
+		controller.deleteComputation(anyId);
+	}
+
+	@Test(expected=IllegalStateException.class)
+	public void testDeleteNonFinishedComputation() throws IOException {
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+		int anyId = 1;
+
+		aComputation.getComputationDetails().getStatus().setOverallProgress(0.5);
+
+		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
+
+		super.replayAll();
+
+		controller.deleteComputation(anyId);
+	}
+
+	@Test
+	public void testComputationsForUser() throws IOException {
+		User aUser = UserDataset.anyUser();
+
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+
+		expect(this.userDAO.get(aUser.getLogin())).andReturn(aUser);
+		expect(this.variantsScoreUserComputationDAO.retrieveComputationsBy(aUser)).andReturn(asList(aComputation));
+
+		this.replayAll();
+
+		controller.getComputationsForUser(new UserLogin(aUser.getLogin()));
+	}
+
+	private String anAffectedGenesFileContent() {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("gene_hgnc\tmax(vscore)\tbranch\tentrez_id\tpath_desc\tpath_id\n");
@@ -232,33 +278,13 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		sb.append("TSKS\t0.3750\tTSG\tTSKS\t\t\n");
 		sb.append("CARD16\t0.3145\tUNCLASSIFIED\tCARD16\t\t\n");
 
-		String geneRankingContents = sb.toString();
-
-		testGeneRankings(geneRankingContents, new double[]{0.3743, 0.4161, 0.3322, 0.2620, 0.3750, 0.3145});
+		return sb.toString();
 	}
 
 	private void testGeneRankings(String geneRankingContents, double[] expectedRankings) throws IOException {
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(geneRankingContents);
+
 		int anyId = 1;
-		String affectedGenesFileName = "affected_genes.txt";
-		File genesAffectedFile = new File(
-			aBaseDirectory + File.separator + "results" + File.separator + affectedGenesFileName);
-
-		genesAffectedFile.deleteOnExit();
-
-		FileUtils.write(genesAffectedFile, geneRankingContents);
-
-		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
-		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation();
-		aComputation.getComputationDetails().getStatus().setOverallProgress(1.0);
-
-		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get("results"));
-
-		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
-			Paths.get("vscore.txt"),
-			Paths.get("affected_genes.txt")
-		);
-
-		aComputation.getComputationDetails().setResults(results);
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 
@@ -272,5 +298,36 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		for (int i = 0; i < expectedRankings.length; i++) {
 				assertThat(ranking.getGeneRank().get(i).getRank(), is(expectedRankings[i]));
 		}
+	}
+
+	private VariantsScoreUserComputation prepareFinishedComputation(String geneRankingContents) throws IOException {
+		String affectedGenesFileName = "affected_genes.txt";
+		String basePath = "results";
+		createAffectedGenesFile(affectedGenesFileName, basePath, geneRankingContents);
+
+		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
+		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation();
+		aComputation.getComputationDetails().getStatus().setOverallProgress(1.0);
+
+		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get(basePath));
+
+		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
+			Paths.get("vscore.txt"),
+			Paths.get("affected_genes.txt")
+		);
+
+		aComputation.getComputationDetails().setResults(results);
+		return aComputation;
+	}
+
+	private void createAffectedGenesFile(String affectedGenesFileName, String basePath, String geneRankingContents)
+			throws IOException {
+
+		File genesAffectedFile = new File(
+			aBaseDirectory + File.separator + basePath + File.separator + affectedGenesFileName);
+
+		genesAffectedFile.deleteOnExit();
+
+		FileUtils.write(genesAffectedFile, geneRankingContents);
 	}
 }

@@ -37,6 +37,7 @@ import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -65,7 +66,7 @@ import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 
@@ -144,7 +145,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		final Response response = service.getComputationStatus(new UserLogin(login), computationId, security);
 
-		assertThat(response.getEntity(), instanceOf(ComputationStatusMetadata.class));
+		assertThat(response.getEntity(), instanceOf(ComputationMetadata.class));
 	}
 
 	private void testCreateComputation(User accessingUser, User targetUser) {
@@ -168,7 +169,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		replay(currentUri);
 		replay(uriBuilder);
 		final Response response = service.startVariantsScoreUserComputation(
-			new UserLogin(login), emptyInputStream(), security, currentUri
+			new UserLogin(login), emptyInputStream(), UUID.randomUUID().toString(), security, currentUri
 		);
 
 		assertThat(response.getStatus(), is(201));

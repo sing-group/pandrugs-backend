@@ -37,4 +37,6 @@ public interface VariantsScoreUserComputationDAO {
 	VariantsScoreUserComputation update(VariantsScoreUserComputation computation);
 
 	VariantsScoreUserComputation get(int id);
+
+	void remove(VariantsScoreUserComputation computation);
 }

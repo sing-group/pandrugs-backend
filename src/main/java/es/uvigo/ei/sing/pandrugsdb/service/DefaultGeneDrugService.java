@@ -88,6 +88,33 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		}
 	}
 
+	@GET
+	@Consumes(MediaType.WILDCARD)
+	@Path("fromComputationId")
+	@Override
+	public GeneDrugGroupInfos listFromComputationId(
+			@QueryParam("computationId") Integer computationId,
+			@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+			@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+			@QueryParam("target") String target,
+			@QueryParam("direct") String direct
+	) throws BadRequestException, InternalServerErrorException {
+		try {
+			requireNonNull(computationId, "A computation Id must be provided");
+
+			final List<GeneDrugGroup> geneDrugs = controller.searchForGeneDrugsFromComputationId(
+					new GeneQueryParameters(
+							cancerDrugStatus, nonCancerDrugStatus, target, direct
+					),
+					computationId
+			);
+
+			return new GeneDrugGroupInfos(geneDrugs);
+		} catch (IllegalArgumentException | NullPointerException iae) {
+			throw createBadRequestException(iae.getMessage());
+		}
+	}
+
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Override

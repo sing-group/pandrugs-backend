@@ -23,10 +23,9 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
@@ -39,10 +38,13 @@ public interface VariantsAnalysisController {
 
 	public int startVariantsScopeUserComputation(
 			UserLogin userLogin,
-			InputStream vcfFile
+			InputStream vcfFile,
+			String computationName
 	) throws IOException;
 
-	public ComputationStatusMetadata getComputationsStatus(Integer computationId);
+	public ComputationMetadata getComputationsStatus(Integer computationId);
 
-	public Map<Integer, ComputationStatusMetadata> getComputationsForUser(UserLogin userLogin);
+	public Map<Integer, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
+
+	void deleteComputation(Integer computationId);
 }

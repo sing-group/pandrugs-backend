@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import es.uvigo.ei.sing.pandrugsdb.util.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ import com.qmino.miredot.annotations.ReturnType;
 import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
+
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
 
 /**
  * Service to submit VCF Analysis computations, as well as to follow their status
@@ -66,6 +69,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	public Response startVariantsScoreUserComputation(
 			@PathParam("login") UserLogin login,
 			InputStream vcfFile,
+			@QueryParam("name") String computationName,
 			@Context SecurityContext security,
 			@Context UriInfo currentUri) throws ForbiddenException,
 			NotAuthorizedException {
@@ -77,7 +81,8 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				checker.doIfPrivileged(
 					userLogin,
 					() -> {
-						int computationId = controller.startVariantsScopeUserComputation(login, vcfFile);
+						requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
+						int computationId = controller.startVariantsScopeUserComputation(login, vcfFile, computationName);
 						return Response.created(
 							currentUri.getAbsolutePathBuilder()
 									.path("/"+computationId).build())
@@ -97,7 +102,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 
 	@Override
 	@Path("{login}/{computationId}")
-	@ReturnType("es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata")
+	@ReturnType("es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata")
 	@GET
 	public Response getComputationStatus(
 			@PathParam("login") UserLogin login,
@@ -132,9 +137,51 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			);
 	}
 
+	@Override
+	@Path("{login}/{computationId}")
+	@DELETE
+	public Response deleteComputation(
+			@PathParam("login") UserLogin login,
+			@PathParam("computationId") Integer computationId,
+			@Context SecurityContext security)
+			throws ForbiddenException, NotAuthorizedException, InternalServerErrorException, NotFoundException {
+		final String userLogin = login.getLogin();
+		final SecurityContextUserAccessChecker checker =
+				new SecurityContextUserAccessChecker(security);
+
+		return
+				checker.doIfPrivileged(
+						userLogin,
+						() -> {
+							if (!controller.getComputationsForUser(login).containsKey(computationId)) {
+								throw new NotFoundException(
+										"Computation with id "+computationId+" has not been found");
+							}
+
+							if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
+								throw new ForbiddenException("You have not a computation with id = " +computationId);
+							}
+
+							controller.deleteComputation(computationId);
+
+							return Response.noContent().build();
+						}
+						,
+						() -> {
+							LOG.error(String.format(
+									"Illegal access to get remove a computation as user %s on behalf of" +
+											" user %s",
+									checker.getUserName(), userLogin
+							));
+
+							throw new ForbiddenException("User "+userLogin+" is not you");
+						}
+				);
+	}
+
 	@GET
 	@Path("/{login}")
-	@ReturnType("java.util.Map<Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata>")
+	@ReturnType("java.util.Map<Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata>")
 	@Override
 	public Response getComputationsForUser(@PathParam("login") UserLogin login, @Context SecurityContext security)
 			throws

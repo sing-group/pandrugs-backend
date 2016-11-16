@@ -60,7 +60,10 @@ import es.uvigo.ei.sing.pandrugsdb.service.genescore.StaticGeneScoreCalculator;
 public class DefaultGeneDrugController implements GeneDrugController {
 	@Inject
 	private GeneDrugDAO dao;
-	
+
+	@Inject
+	private VariantsAnalysisController variantsAnalysisController;
+
 	@Override
 	public List<GeneDrugGroup> searchForGeneDrugs(
 		GeneQueryParameters queryParameters, String ... geneNames
@@ -91,7 +94,22 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
 		);
 	}
-	
+
+	@Override
+	public List<GeneDrugGroup> searchForGeneDrugsFromComputationId(
+			GeneQueryParameters queryParameters, int computationId) {
+		requireNonNull(queryParameters);
+
+		final Map<String, Double> geneRank = requireNonEmpty(
+				variantsAnalysisController.getGeneRankingForComputation(computationId).asMap());
+
+		return searchForGeneDrugs(
+				queryParameters,
+				new LinkedHashSet<>(geneRank.keySet()),
+				new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
+		);
+	}
+
 	private List<GeneDrugGroup> searchForGeneDrugs(
 		GeneQueryParameters queryParameters,
 		Set<String> geneNames,

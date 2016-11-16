@@ -61,5 +61,10 @@ implements VariantsScoreUserComputationDAO {
 	public List<VariantsScoreUserComputation> list() {
 		return super.list();
 	}
+
+	@Override
+	public void remove(VariantsScoreUserComputation computation) {
+		super.remove(computation);
+	}
 	
 }

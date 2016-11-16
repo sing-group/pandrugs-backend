@@ -33,7 +33,9 @@ public class VariantsScoreUserComputation {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
+	private String name;
+
 	@ManyToOne
 	private User user;
 	
@@ -62,6 +64,10 @@ public class VariantsScoreUserComputation {
 		this.user = user;
 	}
 
+	public String getName() { return name; }
+
+	public void setName(String name) { this.name = name; }
+
 	public VariantsScoreComputationDetails getComputationDetails() {
 		return computationDetails;
 	}
@@ -69,7 +75,7 @@ public class VariantsScoreUserComputation {
 	public void setComputationDetails(VariantsScoreComputationDetails computationDetails) {
 		this.computationDetails = computationDetails;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

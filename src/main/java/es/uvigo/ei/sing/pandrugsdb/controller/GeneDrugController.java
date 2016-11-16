@@ -35,4 +35,8 @@ public interface GeneDrugController {
 	public abstract List<GeneDrugGroup> searchForGeneDrugs(
 		GeneQueryParameters queryParameters, GeneRanking geneRanking
 	);
+
+	public abstract List<GeneDrugGroup> searchForGeneDrugsFromComputationId(
+			GeneQueryParameters queryParameters, int computationId
+	);
 }

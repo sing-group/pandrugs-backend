@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -103,9 +104,9 @@ public class PerlVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalcu
 				throw new RuntimeException("Perl VSCORE process had non 0 exit status, exit status: "+retValue);
 			}
 			LOG.info("Finished Perl VSCORE computation over "+vepFile);
-		} catch (Exception e) {
+		} catch (InterruptedException | IOException e) {
 			LOG.error("Exception during VSCORE computation over "+vepFile+". Exception: "+e);
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		return new VariantsScoreComputationResults(vep, Paths.get(VARIANT_SCORES_FILE_NAME), affectedGenesPath);

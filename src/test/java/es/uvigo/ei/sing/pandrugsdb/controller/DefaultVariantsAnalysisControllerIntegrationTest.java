@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import java.util.function.BooleanSupplier;
 
 import javax.inject.Inject;
@@ -145,7 +146,8 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	public void testStartAndWaitForVariantsScoreComputation() throws InterruptedException, URISyntaxException, IOException {
 		final User aUser = UserDataset.users()[0];
 
-		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()), openComputationFileStream(aVCFResourcePath));
+		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
+				openComputationFileStream(aVCFResourcePath), UUID.randomUUID().toString());
 
 		waitWhileOrFail(() ->!controller.getComputationsStatus(id).isFinished(), 10000);
 	}

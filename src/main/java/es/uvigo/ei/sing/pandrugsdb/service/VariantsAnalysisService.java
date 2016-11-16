@@ -26,6 +26,7 @@ import java.io.InputStream;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -39,6 +40,7 @@ public interface VariantsAnalysisService {
 	 *
 	 * @param login login of the user.
 	 * @param vcfFile variants in VCF format to analyze.
+	 * @param computationName the name for the computation.
 	 * @param security security context object. Should be provided by the container.
 	 * @param currentUri the current URI information
 	 * @return the computation id as an integer value
@@ -49,6 +51,7 @@ public interface VariantsAnalysisService {
 	public Response startVariantsScoreUserComputation(
 			UserLogin login,
 			InputStream vcfFile,
+			String computationName,
 			SecurityContext security,
 			UriInfo currentUri) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
 
@@ -70,6 +73,27 @@ public interface VariantsAnalysisService {
 			UserLogin login,
 			Integer computationId,
 			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+
+	/**
+	 * Deletes a computation.
+	 *
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 *
+	 * @param login login of the user.
+	 * @param computationId the computation id to delete.
+	 * @param security security context object. Should be provided by the container.
+	 * @return no content.
+	 * @throws ForbiddenException if the authenticated user does not have permissions to delete this computation.
+	 * @throws NotAuthorizedException if provided login has not been correctly authenticated
+	 * or does not own the computation he/she is asking for.
+	 * @throws InternalServerErrorException if an unexpected error occurs.
+	 * @throws NotFoundException if the computation does not exist.
+	 */
+	public Response deleteComputation(
+			UserLogin login,
+			Integer computationId,
+			SecurityContext security) throws ForbiddenException, NotAuthorizedException,
+			InternalServerErrorException, NotFoundException;
 
 	/**
 	 * Obtains the current status of all submitted computations.
