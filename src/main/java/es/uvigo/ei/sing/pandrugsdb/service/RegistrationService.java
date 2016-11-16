@@ -49,6 +49,26 @@ public interface RegistrationService {
 	throws BadRequestException, InternalServerErrorException;
 
 	/**
+	 * Creates a new normal user registration request. An UUID will be
+	 * generated that user must use to access the application.
+	 * <p>
+	 * The confirmation path is:
+	 * {@code http://&lt;server&gt;/public/registration/&lt;uuid&gt;}
+	 * </p>
+	 *
+	 * @param registration data for user registration.
+	 * @param confirmationUrlTemplate a template for the confirmation url that
+	 *                                goes inside the confirmation email. Use %s
+	 *                                as placeholder for the confirmation token
+	 * @return a confirmation message with a 200 OK HTTP status if registration
+	 * was successful.
+	 * @throws BadRequestException if the registration information is not valid.
+	 * @throws InternalServerErrorException in an unexpected error occurs.
+	 */
+	public abstract Message register(Registration registration, String confirmationUrlTemplate)
+			throws BadRequestException, InternalServerErrorException;
+
+	/**
 	 * Confirms an user registration. If the UUID exists, the associated user 
 	 * will be effectively created as a regular user.
 	 * 

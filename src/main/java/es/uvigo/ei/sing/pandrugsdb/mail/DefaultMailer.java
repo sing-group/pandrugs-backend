@@ -62,8 +62,17 @@ public class DefaultMailer implements Mailer {
 	public void sendConfirmSingUp(String to, String username, String uuid)
 	throws MailerException {
 		final String url =  configuration.getServerURL() + "/public/registration/" + uuid;
-		
-		this.send(this.configuration.getEmailFrom(), 
+
+		sendConfirmSingUpWithURL(to, username, url);
+	}
+
+	@Override
+	public void sendConfirmSingUp(String to, String username, String uuid, String urlTemplate) throws MailerException {
+		sendConfirmSingUpWithURL(to, username, String.format(urlTemplate, uuid));
+	}
+
+	private void sendConfirmSingUpWithURL(String to, String username, String url) {
+		this.send(this.configuration.getEmailFrom(),
 			to, "PanDrugsDB registration confirmation",
 			String.format("Hi %s," +
 				"<p>In order to confirm your PanDrugsDB registration, please, click on the following link: " +
@@ -71,8 +80,10 @@ public class DefaultMailer implements Mailer {
 				"<p>Thanks for your registration,<br/><br/>" +
 				"The PanDrugsDB Team</p>",
 				username, url, url
-			), 
+			),
 			"text/html"
 		);
 	}
+
+
 }

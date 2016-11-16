@@ -27,15 +27,7 @@ import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundExc
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
@@ -58,7 +50,6 @@ public class DefaultRegistrationService implements RegistrationService {
 	@PersistenceContext
 	private EntityManager em;
 	
-	@POST
 	@Override
 	public Message register(Registration registration)
 	throws BadRequestException, InternalServerErrorException {
@@ -68,13 +59,37 @@ public class DefaultRegistrationService implements RegistrationService {
 				registration.getEmail(),
 				registration.getPassword()
 			);
-			
+
 			return new Message("User registered");
 		} catch (IllegalArgumentException iae) {
 			throw createBadRequestException(iae.getMessage());
 		}
 	}
-	
+
+	@POST
+	@Override
+	public Message register(Registration registration, @QueryParam("confirmurltemplate") String
+			confirmationUrlTemplate) throws
+			BadRequestException, InternalServerErrorException {
+		try {
+			if (confirmationUrlTemplate == null) {
+				return register(registration);
+			}
+			else {
+				controller.register(
+						registration.getLogin(),
+						registration.getEmail(),
+						registration.getPassword(),
+						confirmationUrlTemplate
+				);
+			}
+
+			return new Message("User registered");
+		} catch (IllegalArgumentException iae) {
+			throw createBadRequestException(iae.getMessage());
+		}
+	}
+
 	@GET
 	@Path("/{uuid}")
 	@Consumes(MediaType.WILDCARD)

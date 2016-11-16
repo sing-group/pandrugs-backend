@@ -29,5 +29,10 @@ public interface RegistrationController {
 		String login, String email, String password
 	);
 
+	public abstract Registration register(
+			String login, String email, String password,
+			String urlTemplate
+	);
+
 	public abstract User confirm(String uuid);
 }

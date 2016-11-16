@@ -41,4 +41,10 @@ public class SpyMailer implements Mailer {
 		this.counts.putIfAbsent("sendConfirmSingUp", new AtomicInteger(0));
 		this.counts.get("sendConfirmSingUp").incrementAndGet();
 	}
+
+	@Override
+	public void sendConfirmSingUp(String to, String username, String uuid, String urlTemplate) throws MailerException {
+		this.counts.putIfAbsent("sendConfirmSingUp", new AtomicInteger(0));
+		this.counts.get("sendConfirmSingUp").incrementAndGet();
+	}
 }

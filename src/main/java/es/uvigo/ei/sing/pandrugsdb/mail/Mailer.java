@@ -25,4 +25,8 @@ public interface Mailer {
 	public abstract void sendConfirmSingUp(
 		String to, String username, String uuid
 	) throws MailerException;
+
+	public abstract void sendConfirmSingUp(
+			String to, String username, String uuid, String urlTemplate
+	) throws MailerException;
 }

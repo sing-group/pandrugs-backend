@@ -50,18 +50,33 @@ implements RegistrationController {
 	
 	@Override
 	public Registration register(String login, String email, String password) {
-		checkIfUserAlreadyExists(login, email);
-		
-		checkIfRegistrationAlreadyExists(login);
-		
-		deleteRegistrationWithEmail(email);
-
-		final Registration registration = registrationDAO.persist(login, email, DigestUtils.md5Digest(password));
+		final Registration registration = doRegistration(login, email, password);
 
 		mailer.sendConfirmSingUp(email, login, registration.getUuid());
 		
 		return registration;
 	}
+
+	@Override
+	public Registration register(String login, String email, String password, String urlTemplate) {
+		final Registration registration = doRegistration(login, email, password);
+
+		mailer.sendConfirmSingUp(email, login, registration.getUuid(), urlTemplate);
+
+		return registration;
+	}
+
+	private Registration doRegistration(String login, String email, String password) {
+		checkIfUserAlreadyExists(login, email);
+
+		checkIfRegistrationAlreadyExists(login);
+
+		deleteRegistrationWithEmail(email);
+
+		return registrationDAO.persist(login, email, DigestUtils.md5Digest(password));
+	}
+
+
 
 	@Override
 	public User confirm(String uuid) {
