@@ -38,7 +38,7 @@ public class VariantsScoreComputationStatus {
 	private double overallProgress;
 	
 	@Column(name="status_task_name")
-	private String taskName;
+	private String taskName = "";
 	
 	@Transient
 	private List<Consumer<VariantsScoreComputationStatus>> changeListeners = new ArrayList<>();
@@ -91,5 +91,9 @@ public class VariantsScoreComputationStatus {
 	
 	public boolean isFinished() {
 		return this.overallProgress == 1.0f;
+	}
+
+	public boolean hasErrors() {
+		return this.taskName.equalsIgnoreCase("error");
 	}
 }

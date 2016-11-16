@@ -42,11 +42,14 @@ public class ComputationStatusMetadata {
 
 	private boolean isFinished;
 
+	private boolean hasError;
+
 	public ComputationStatusMetadata(VariantsScoreComputationStatus status) {
 		this.taskProgress = status.getTaskProgress();
 		this.taskName = status.getTaskName();
 		this.overallProgress = status.getOverallProgress();
 		this.isFinished = status.getOverallProgress() == 1.0;
+		this.hasError = status.hasErrors();
 	}
 
 	public double getOverallProgress() {
@@ -66,5 +69,7 @@ public class ComputationStatusMetadata {
 	public boolean isFinished() {
 		return isFinished;
 	}
+
+	public boolean hasError() {return hasError;}
 
 }
