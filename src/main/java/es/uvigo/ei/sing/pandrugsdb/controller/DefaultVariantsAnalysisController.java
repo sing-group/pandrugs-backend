@@ -27,12 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -110,6 +105,20 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
+	public Map<Integer, ComputationStatusMetadata> getComputationsForUser(UserLogin userLogin) {
+		User user = userDAO.get(userLogin.getLogin());
+
+		Map<Integer, ComputationStatusMetadata> computations = new HashMap<>();
+
+		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
+			computations.put(computation.getId(), new ComputationStatusMetadata(
+					computation.getComputationDetails().getStatus()));
+		}
+
+		return computations;
+	}
+
+	@Override
 	public UserMetadata getUserOfComputation(Integer computationId) {
 		return new UserMetadata(variantsScoreUserComputationDAO.get(computationId).getUser());
 	}
@@ -139,6 +148,7 @@ public class DefaultVariantsAnalysisController implements
 			Map<String, Double> geneRankingMap =
 					readLines(affectedGenesFile).stream()
 					.skip(1)
+					.filter(line -> line.length() > 0)
 					.map(line -> line.split("\t"))
 					.collect(toMap(
 						tokens -> tokens[0],

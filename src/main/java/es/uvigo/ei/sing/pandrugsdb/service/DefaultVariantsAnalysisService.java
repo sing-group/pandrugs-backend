@@ -25,14 +25,7 @@ import java.io.InputStream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.GET;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -137,5 +130,36 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 						throw new ForbiddenException("User "+userLogin+" is not you");
 					}
 			);
+	}
+
+	@GET
+	@Path("/{login}")
+	@ReturnType("java.util.Map<Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata>")
+	@Override
+	public Response getComputationsForUser(@PathParam("login") UserLogin login, @Context SecurityContext security)
+			throws
+			ForbiddenException, NotAuthorizedException, InternalServerErrorException {
+		final String userLogin = login.getLogin();
+		final SecurityContextUserAccessChecker checker =
+				new SecurityContextUserAccessChecker(security);
+
+		return
+				checker.doIfPrivileged(
+						userLogin,
+						() -> {
+							return Response.ok(
+									controller.getComputationsForUser(login)
+							).build();
+						}
+						,
+						() -> {
+							LOG.error(String.format(
+									"Illegal access to get computations as user %s on behalf of user %s",
+									checker.getUserName(), userLogin
+							));
+
+							throw new ForbiddenException("User "+userLogin+" is not you");
+						}
+				);
 	}
 }

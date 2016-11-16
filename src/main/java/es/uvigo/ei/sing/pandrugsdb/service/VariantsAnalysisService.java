@@ -70,4 +70,21 @@ public interface VariantsAnalysisService {
 			UserLogin login,
 			Integer computationId,
 			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+
+	/**
+	 * Obtains the current status of all submitted computations.
+	 *
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 *
+	 * @param login login of the user.
+	 * @param security security context object. Should be provided by the container.
+	 * @return all computations and their status.
+	 * @throws ForbiddenException if the authenticated user does not have permissions to see this computation status.
+	 * @throws NotAuthorizedException if provided login has not been correctly authenticated
+	 * or does not own the computation he/she is asking for.
+	 * @throws InternalServerErrorException if an unexpected error occurs.
+	 */
+	public Response getComputationsForUser(
+			UserLogin login,
+			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
 }

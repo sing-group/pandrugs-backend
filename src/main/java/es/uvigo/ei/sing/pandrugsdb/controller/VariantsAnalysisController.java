@@ -23,6 +23,8 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationStatusMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
@@ -41,4 +43,6 @@ public interface VariantsAnalysisController {
 	) throws IOException;
 
 	public ComputationStatusMetadata getComputationsStatus(Integer computationId);
+
+	public Map<Integer, ComputationStatusMetadata> getComputationsForUser(UserLogin userLogin);
 }
