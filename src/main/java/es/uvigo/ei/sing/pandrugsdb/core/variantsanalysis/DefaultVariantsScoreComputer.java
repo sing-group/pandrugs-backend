@@ -80,9 +80,7 @@ public class DefaultVariantsScoreComputer implements
 		final DefaultVariantsScoreComputation  computation =
 				new DefaultVariantsScoreComputation();
 
-		computation.getStatus().setOverallProgress(0f);
-		computation.getStatus().setTaskName("Submitted");
-		computation.getStatus().setTaskProgress(0f);
+		computation.getStatus().setStatus("Submitted", 0.0, 0.0);
 
 		// compute VEP
 		CompletableFuture<VariantsScoreComputationResults> tasks = 
@@ -100,9 +98,7 @@ public class DefaultVariantsScoreComputer implements
 					if (exception == null) {
 						LOG.info("Completed VEP computation. Path: "+parameters.getResultsBasePath());
 						notificationExecutorService.execute( () -> {
-							computation.getStatus().setOverallProgress(0.5f);
-							computation.getStatus().setTaskName("Computing Variant Scores");
-							computation.getStatus().setTaskProgress(0f);
+							computation.getStatus().setStatus("Computing Variant Scores", 0.0, 0.5);
 						});
 					} else {
 						LOG.error("Error in VEP computation. Path: "+parameters.getResultsBasePath());
@@ -113,9 +109,7 @@ public class DefaultVariantsScoreComputer implements
 					if (exception == null) {
 						LOG.info("Finished VSCORE computation. Path: "+parameters.getResultsBasePath());
 						notificationExecutorService.execute( () -> {
-							computation.getStatus().setOverallProgress(1.0f);
-							computation.getStatus().setTaskName("Finished");
-							computation.getStatus().setTaskProgress(0f);
+							computation.getStatus().setStatus("Finished", 0.0, 1.0);
 						});
 					}  else {
 						if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException){
@@ -128,9 +122,7 @@ public class DefaultVariantsScoreComputer implements
 									""+exception+". Root cause: "+ExceptionUtils.getRootCause(exception));
 							exception.printStackTrace();
 							notificationExecutorService.execute(() -> {
-								computation.getStatus().setOverallProgress(1.0f);
-								computation.getStatus().setTaskName("Error");
-								computation.getStatus().setTaskProgress(0f);
+								computation.getStatus().setStatus("Error", 0.0, 1.0);
 							});
 						}
 					}

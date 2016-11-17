@@ -112,30 +112,9 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 		// extracts the files available as resources and copies them
 		// to a temporary directory
-		for (VariantsScoreUserComputation computation : VariantsScoreUserComputationDataset.computations()) {
-			File computationDir = new File(
-				systemTmpDir +
-				File.separator +
-				computation.getComputationDetails().getParameters().getResultsBasePath().toString());
-
-			if (!computationDir.exists()) {
-				computationDir.mkdir();
-			}
-
-			if (computation.getComputationDetails().getParameters().getVcfFile() != null) {
-				copyComputationFile("inputVCF.vcf", computationDir, computation);
-			}
-			if (computation.getComputationDetails().getResults().getVepResults().getFilePath() != null) {
-				copyComputationFile("vep.txt", computationDir, computation);
-			}
-			if (computation.getComputationDetails().getResults().getAffectedGenesPath() != null) {
-				copyComputationFile("genes_affected.csv", computationDir, computation);
-			}
-			if (computation.getComputationDetails().getResults().getVscorePath() != null) {
-				copyComputationFile("vep_data.csv", computationDir, computation);
-			}
-		}
+		VariantsScoreUserComputationDataset.copyComputationFilesToDir(systemTmpDir);
 	}
+
 
 	@Test
 	@ExpectedDatabase(
@@ -155,7 +134,16 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	@Test
 	public void testGetComputationStatus() throws InterruptedException {
 		assertFalse(controller.getComputationStatus(1).isFinished());
+		assertFalse(controller.getComputationStatus(1).isFailed());
+		assertThat(controller.getComputationStatus(1).getOverallProgress(), is(0.5));
+		assertThat(controller.getComputationStatus(1).getTaskProgress(), is(0.0));
+		assertThat(controller.getComputationStatus(1).getTaskName(), is("Computing Variant Scores"));
+
 		assertTrue(controller.getComputationStatus(2).isFinished());
+		assertFalse(controller.getComputationStatus(2).isFailed());
+		assertThat(controller.getComputationStatus(2).getOverallProgress(), is(1.0));
+		assertThat(controller.getComputationStatus(2).getTaskProgress(), is(1.0));
+		assertThat(controller.getComputationStatus(2).getTaskName(), is("Finished"));
 	}
 	
 	@Test
@@ -208,18 +196,6 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		
 		File inputFile = new File(dir.getAbsolutePath() + File.separator + "inputVCF.vcf");
 		FileUtils.touch(inputFile);
-	}
-
-	private void copyComputationFile(String fileName, File computationDir, VariantsScoreUserComputation computation)
-	throws IOException {
-		copyInputStreamToFile(
-			openComputationFileStream(
-				"/META-INF/dataset.variantanalysis.xml.files/" +
-				computation.getComputationDetails().getParameters().getResultsBasePath().toString() + "/" +
-				fileName
-			),
-			new	File(computationDir.getAbsolutePath() + File.separator + fileName)
-		);
 	}
 
 	private InputStream openComputationFileStream(String name) {

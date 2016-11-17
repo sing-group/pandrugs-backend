@@ -77,7 +77,14 @@ public class VariantsScoreComputationStatus {
 		this.taskName = taskName;
 		notifyListeners();
 	}
-	
+
+	public void setStatus(String taskName, double taskProgress, double overallProgress) {
+		this.taskName = taskName;
+		this.taskProgress = taskProgress;
+		this.overallProgress = overallProgress;
+		notifyListeners();
+	}
+
 	public void onChange(Consumer<VariantsScoreComputationStatus> action) {
 		this.changeListeners.add(action);
 	}

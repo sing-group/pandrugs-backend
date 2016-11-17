@@ -21,26 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import java.io.InputStream;
-
-import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
+import com.qmino.miredot.annotations.ReturnType;
+import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.qmino.miredot.annotations.ReturnType;
-
-import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
+import javax.annotation.security.RolesAllowed;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.InputStream;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
 
@@ -117,8 +111,16 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			checker.doIfPrivileged(
 					userLogin,
 					() -> {
+						UserMetadata user = null;
+
+						try {
+							user = controller.getUserOfComputation(computationId);
+						} catch(IllegalArgumentException e) {
+							throw new NotFoundException("computation id " + computationId+" not found");
+						}
+
 						if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
-							throw new ForbiddenException("You have not a computation with id = " +computationId);
+								throw new ForbiddenException("You have not a computation with id = " + computationId);
 						}
 						return Response.ok(
 								controller.getComputationStatus(computationId)

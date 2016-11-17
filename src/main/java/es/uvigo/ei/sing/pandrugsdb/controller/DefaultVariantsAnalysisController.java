@@ -105,6 +105,9 @@ public class DefaultVariantsAnalysisController implements
 	@Override
 	public ComputationMetadata getComputationStatus(Integer computationId) {
 		VariantsScoreUserComputation computation = variantsScoreUserComputationDAO.get(computationId);
+		if (computation == null) {
+			throw new IllegalArgumentException("computationId "+computationId+" not found.");
+		}
 		return new ComputationMetadata(computation, getAffectedGenes(computation));
 	}
 
@@ -155,6 +158,10 @@ public class DefaultVariantsAnalysisController implements
 
 	@Override
 	public UserMetadata getUserOfComputation(Integer computationId) {
+		if (variantsScoreUserComputationDAO.get(computationId) == null) {
+			throw new IllegalArgumentException("computationId "+computationId+" not found");
+		}
+
 		return new UserMetadata(variantsScoreUserComputationDAO.get(computationId).getUser());
 	}
 

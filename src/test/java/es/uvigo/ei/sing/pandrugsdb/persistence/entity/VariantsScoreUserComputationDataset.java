@@ -21,11 +21,58 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
+
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class VariantsScoreUserComputationDataset {
 	private VariantsScoreUserComputationDataset() {}
 
+	public static void copyComputationFilesToDir(String systemTmpDir) throws IOException {
+		for (VariantsScoreUserComputation computation : VariantsScoreUserComputationDataset.computations()) {
+			File computationDir = new File(
+					systemTmpDir +
+							File.separator +
+							computation.getComputationDetails().getParameters().getResultsBasePath().toString());
+
+			if (!computationDir.exists()) {
+				computationDir.mkdir();
+			}
+
+			if (computation.getComputationDetails().getParameters().getVcfFile() != null) {
+				copyComputationFile("inputVCF.vcf", computationDir, computation);
+			}
+			if (computation.getComputationDetails().getResults().getVepResults().getFilePath() != null) {
+				copyComputationFile("vep.txt", computationDir, computation);
+			}
+			if (computation.getComputationDetails().getResults().getAffectedGenesPath() != null) {
+				copyComputationFile("genes_affected.csv", computationDir, computation);
+			}
+			if (computation.getComputationDetails().getResults().getVscorePath() != null) {
+				copyComputationFile("vep_data.csv", computationDir, computation);
+			}
+		}
+	}
+
+	private static void copyComputationFile(String fileName, File computationDir, VariantsScoreUserComputation
+			computation)
+			throws IOException {
+		copyInputStreamToFile(
+				openComputationFileStream(
+						"/META-INF/dataset.variantanalysis.xml.files/" +
+								computation.getComputationDetails().getParameters().getResultsBasePath().toString() + "/" +
+								fileName
+				),
+				new	File(computationDir.getAbsolutePath() + File.separator + fileName)
+		);
+	}
+
+	private static InputStream openComputationFileStream(String name) {
+		return VariantsScoreUserComputationDataset.class.getResourceAsStream(name);
+	}
 	public final static VariantsScoreUserComputation[] computations() {
 		return new VariantsScoreUserComputation[] {
 				new VariantsScoreUserComputation(

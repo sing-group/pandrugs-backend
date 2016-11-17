@@ -35,18 +35,24 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
 import org.easymock.Capture;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,19 +75,21 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
 @TestExecutionListeners({
 	DependencyInjectionTestExecutionListener.class,
 	DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class
+	TransactionDbUnitTestExecutionListener.class
 })
 @DirtiesContext
 @DatabaseSetup(value = {
 	"file:src/test/resources/META-INF/dataset.user.xml",
 	"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
 })
+@Transactional //open transaction in view
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
 public class DefaultVariantsAnalysisServiceIntegrationTest {
@@ -90,6 +98,12 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		TestServletContext.INIT_PARAMETERS.put("user.data.directory", System.getProperty("java.io.tmpdir"));
 		TestServletContext.INIT_PARAMETERS.put(DefaultVEPConfiguration.VEP_COMMAND_TEMPLATE_PARAMETER,"touch %s %s");
 		new TestServletContext();
+	}
+
+	@Before
+	public void prepareComputationFilesStorage() throws IOException {
+		String systemTmpDir = TestServletContext.INIT_PARAMETERS.get("user.data.directory");
+		VariantsScoreUserComputationDataset.copyComputationFilesToDir(systemTmpDir);
 	}
 
 	@Inject
@@ -111,13 +125,22 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		testCreateComputation(accessingUser, accessingUser);
 	}
 
-	@Test(expected = ForbiddenException.class)
-	public void testGetComputationStatusForOtherUser() {
+	@Test
+	public void testGetComputationStatusForPresentUser() {
 		final User accesingUser = users()[0];
-		final User targetUser = presentUser2();
 
-		testGetComputationStatus(1, accesingUser, targetUser);
+		//computation id=2 is not owned by presentUser2()
+		testGetComputationStatus(1, accesingUser, accesingUser);
 	}
+
+	@Test(expected = NotFoundException.class)
+	public void testGetUnexistentComputationStatusForPresentUser() {
+		final User accesingUser = users()[0];
+
+		//computation id=2 is not owned by presentUser2()
+		testGetComputationStatus(99, accesingUser, accesingUser);
+	}
+
 	@Test(expected = ForbiddenException.class)
 	public void testGetComputationStatusOfAnotherUserForPresentUser() {
 		final User accesingUser = presentUser2();
@@ -126,12 +149,56 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		testGetComputationStatus(1, accesingUser, accesingUser);
 	}
 
-	@Test
-	public void testGetComputationStatusForPresentUser() {
+	@Test(expected = ForbiddenException.class)
+	public void testGetComputationStatusForOtherUser() {
 		final User accesingUser = users()[0];
+		final User targetUser = presentUser2();
 
-		//computation id=2 is not owned by presentUser2()
-		testGetComputationStatus(1, accesingUser, accesingUser);
+		testGetComputationStatus(1, accesingUser, targetUser);
+	}
+
+	@Test
+	public void testGetComputationsForUser() {
+		User user = users()[0];
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		Response response = service.getComputationsForUser(new UserLogin(user.getLogin()), security);
+
+		assertThat(response.getStatus(), is(200));
+		assertThat(response.getEntity(), instanceOf(Map.class));
+		assertThat(((Map) response.getEntity()).size(), is(2));
+	}
+
+	@Test(expected = ForbiddenException.class)
+	public void testGetComputationsForOtherUser() {
+		User user = users()[0];
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		service.getComputationsForUser(new UserLogin(users()[1].getLogin()), security);
+	}
+
+	@Test
+	public void testDeleteComputation() {
+		User user = users()[0];
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		service.deleteComputation(new UserLogin(user.getLogin()), 2, security);
+	}
+
+	@Test(expected = ForbiddenException.class)
+	public void testDeleteComputationOfOtherUser() {
+		User user = users()[0];
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		service.deleteComputation(new UserLogin(users()[1].getLogin()), 2, security);
+	}
+
+	@Test(expected = NotFoundException.class)
+	public void testDeleteUnexistentComputation() {
+		User user = users()[0];
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		service.deleteComputation(new UserLogin(user.getLogin()), 99, security);
 	}
 
 	private void testGetComputationStatus(Integer computationId, User accesingUser, User targetUser) {
@@ -148,11 +215,11 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		assertThat(response.getEntity(), instanceOf(ComputationMetadata.class));
 	}
 
-	private void testCreateComputation(User accessingUser, User targetUser) {
-		this.testCreateComputation(accessingUser.getLogin(), accessingUser.getRole(), targetUser);
+	private int testCreateComputation(User accessingUser, User targetUser) {
+		return this.testCreateComputation(accessingUser.getLogin(), accessingUser.getRole(), targetUser);
 	}
 
-	private void testCreateComputation(String accessLogin, RoleType role, User targetUser) {
+	private int testCreateComputation(String accessLogin, RoleType role, User targetUser) {
 		final String login = targetUser.getLogin();
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
@@ -171,9 +238,6 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final Response response = service.startVariantsScoreUserComputation(
 			new UserLogin(login), emptyInputStream(), UUID.randomUUID().toString(), security, currentUri
 		);
-
-		assertThat(response.getStatus(), is(201));
-
 		try {
 			assertThat(response.getLocation(), is(equalTo(new URI(
 				"http://testhost/api/variantsanalysis/" + login + capture.getValue()))
@@ -181,5 +245,8 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
+		assertThat(response.getStatus(), is(201));
+		int computationId = Integer.parseInt(capture.getValue().substring(1));
+		return computationId;
 	}
 }
