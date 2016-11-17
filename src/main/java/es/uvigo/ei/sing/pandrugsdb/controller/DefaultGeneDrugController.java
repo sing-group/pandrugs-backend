@@ -106,7 +106,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugs(
 				queryParameters,
 				new LinkedHashSet<>(geneRank.keySet()),
-				new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
+				new StaticGeneScoreCalculator(geneRank)
 		);
 	}
 
