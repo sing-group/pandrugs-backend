@@ -149,13 +149,13 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
 				openComputationFileStream(aVCFResourcePath), UUID.randomUUID().toString());
 
-		waitWhileOrFail(() ->!controller.getComputationsStatus(id).isFinished(), 10000);
+		waitWhileOrFail(() ->!controller.getComputationStatus(id).isFinished(), 10000);
 	}
 
 	@Test
 	public void testGetComputationStatus() throws InterruptedException {
-		assertFalse(controller.getComputationsStatus(1).isFinished());
-		assertTrue(controller.getComputationsStatus(2).isFinished());
+		assertFalse(controller.getComputationStatus(1).isFinished());
+		assertTrue(controller.getComputationStatus(2).isFinished());
 	}
 	
 	@Test
@@ -172,7 +172,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		controller.onApplicationEvent(null); //resume computations
 
 		// wait for computations
-		waitWhileOrFail(() ->!controller.getComputationsStatus(1).isFinished(), 10000);
+		waitWhileOrFail(() ->!controller.getComputationStatus(1).isFinished(), 10000);
 	}
 
 	@Test

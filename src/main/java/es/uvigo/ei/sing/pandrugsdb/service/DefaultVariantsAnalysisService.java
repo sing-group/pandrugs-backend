@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import es.uvigo.ei.sing.pandrugsdb.util.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -122,7 +121,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 							throw new ForbiddenException("You have not a computation with id = " +computationId);
 						}
 						return Response.ok(
-								controller.getComputationsStatus(computationId)
+								controller.getComputationStatus(computationId)
 						).build();
 					}
 					,

@@ -103,7 +103,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public ComputationMetadata getComputationsStatus(Integer computationId) {
+	public ComputationMetadata getComputationStatus(Integer computationId) {
 		VariantsScoreUserComputation computation = variantsScoreUserComputationDAO.get(computationId);
 		return new ComputationMetadata(computation, getAffectedGenes(computation));
 	}

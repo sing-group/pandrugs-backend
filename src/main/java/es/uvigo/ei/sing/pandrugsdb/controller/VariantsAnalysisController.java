@@ -42,7 +42,7 @@ public interface VariantsAnalysisController {
 			String computationName
 	) throws IOException;
 
-	public ComputationMetadata getComputationsStatus(Integer computationId);
+	public ComputationMetadata getComputationStatus(Integer computationId);
 
 	public Map<Integer, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
 

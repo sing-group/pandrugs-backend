@@ -32,7 +32,6 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -171,7 +170,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		ComputationMetadata metadata = controller.getComputationsStatus(anId);
+		ComputationMetadata metadata = controller.getComputationStatus(anId);
 
 		assertThat(metadata.getTaskName(), is("a task"));
 
@@ -216,7 +215,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 				.getParameters().getResultsBasePath().toString(), anAffectedGenesFileContent());
 		aStatus.setOverallProgress(1.0);
 
-		assertThat(controller.getComputationsStatus(id).isFinished(), is(true));
+		assertThat(controller.getComputationStatus(id).isFinished(), is(true));
 	}
 
 	@Test
