@@ -55,7 +55,7 @@ public class User implements Serializable {
 	@Size(min = 5, max = 100, message = "Invalid email address")
 	private String email;
 	
-	@Column(unique = true, length = 32)
+	@Column(length = 32)
 	@NotNull(message = "Password can not be null")
 	@Size(min = 32, max = 32, message = "Password must be MD5 digested")
 	@Pattern(regexp = MD5_PATTERN, message = "Password must be MD5 digested")
