@@ -21,25 +21,27 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.util.ContextParameter;
-import es.uvigo.ei.sing.pandrugsdb.util.ContextParameterName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static java.lang.ProcessBuilder.Redirect.appendTo;
+import static java.util.Objects.requireNonNull;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import static java.lang.ProcessBuilder.Redirect.appendTo;
-import static java.util.Objects.requireNonNull;
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameter;
+import es.uvigo.ei.sing.pandrugsdb.util.ContextParameterName;
 
 @Component
 public class PerlVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalculator {

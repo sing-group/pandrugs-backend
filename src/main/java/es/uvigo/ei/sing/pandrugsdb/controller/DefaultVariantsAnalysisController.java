@@ -21,17 +21,26 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.apache.commons.io.FileUtils.readLines;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +57,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.io.FileUtils.deleteDirectory;
-import static org.apache.commons.io.FileUtils.readLines;
 
 @Controller
 public class DefaultVariantsAnalysisController implements

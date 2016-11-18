@@ -21,12 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class VariantsScoreUserComputationDataset {
 	private VariantsScoreUserComputationDataset() {}

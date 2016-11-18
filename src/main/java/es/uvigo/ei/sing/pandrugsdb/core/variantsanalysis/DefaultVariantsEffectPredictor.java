@@ -21,11 +21,13 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+import static java.lang.ProcessBuilder.Redirect.appendTo;
+import static java.util.Arrays.asList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -34,9 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-
-import static java.lang.ProcessBuilder.Redirect.appendTo;
-import static java.util.Arrays.asList;
 
 @Component
 public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {

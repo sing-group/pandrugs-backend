@@ -23,7 +23,6 @@ package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +37,11 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.easymock.*;
+import org.easymock.EasyMock;
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

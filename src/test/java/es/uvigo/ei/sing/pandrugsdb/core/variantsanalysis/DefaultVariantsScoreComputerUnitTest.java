@@ -21,7 +21,11 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.newCapture;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -30,11 +34,15 @@ import static org.powermock.api.easymock.PowerMock.expectNew;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-import org.easymock.*;
-import org.hamcrest.CoreMatchers;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

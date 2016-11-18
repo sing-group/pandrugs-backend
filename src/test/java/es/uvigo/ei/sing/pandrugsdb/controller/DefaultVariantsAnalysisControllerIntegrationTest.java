@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
-import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -61,7 +60,6 @@ import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
