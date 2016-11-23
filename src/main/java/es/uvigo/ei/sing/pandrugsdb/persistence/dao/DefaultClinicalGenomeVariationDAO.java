@@ -26,6 +26,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
@@ -40,16 +43,32 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationId;
 @Repository
 @Transactional
 public class DefaultClinicalGenomeVariationDAO
-extends DAO<ClinicalGenomeVariationId, ClinicalGenomeVariation>
 implements ClinicalGenomeVariationDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<ClinicalGenomeVariationId, ClinicalGenomeVariation> dh;
+	
+	DefaultClinicalGenomeVariationDAO() {}
+	
+	public DefaultClinicalGenomeVariationDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(ClinicalGenomeVariationId.class, ClinicalGenomeVariation.class, this.em);
+	}
+	
 	@Override
 	public ClinicalGenomeVariation get(ClinicalGenomeVariationId key) {
-		return super.get(key);
+		return dh.get(key);
 	}
 	
 	@Override
 	public List<ClinicalGenomeVariation> listByDbSnp(String dbSnp) {
-		return super.listBy("dbSnp", dbSnp);
+		return dh.listBy("dbSnp", dbSnp);
 	}
 
 	@Override
@@ -58,15 +77,15 @@ implements ClinicalGenomeVariationDAO {
 		requireNonNegative(start, "Start can't be negative");
 		requireNonNegative(end, "End can't be negative");
 		
-		final CriteriaQuery<ClinicalGenomeVariation> query = createCBQuery();
-		final Root<ClinicalGenomeVariation> root = query.from(getEntityType());
-		final CriteriaBuilder cb = cb();
+		final CriteriaQuery<ClinicalGenomeVariation> query = dh.createCBQuery();
+		final Root<ClinicalGenomeVariation> root = query.from(dh.getEntityType());
+		final CriteriaBuilder cb = dh.cb();
 
 		final Path<String> chromosomeField = root.get("chromosome");
 		final Path<Integer> startField = root.get("start");
 		final Path<Integer> endField = root.get("end");
 		
-		return em.createQuery(
+		return dh.em().createQuery(
 			query.select(root)
 				.where(cb.and(
 					cb.equal(chromosomeField, chromosome),

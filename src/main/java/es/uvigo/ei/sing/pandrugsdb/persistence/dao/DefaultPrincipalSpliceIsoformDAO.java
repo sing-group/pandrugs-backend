@@ -21,15 +21,33 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.PrincipalSpliceIsoform;
 
-public class DefaultPrincipalSpliceIsoformDAO
-extends DAO<String, PrincipalSpliceIsoform>
-implements PrincipalSpliceIsoformDAO {
+public class DefaultPrincipalSpliceIsoformDAO implements PrincipalSpliceIsoformDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<String, PrincipalSpliceIsoform> dh;
+	
+	DefaultPrincipalSpliceIsoformDAO() {}
+	
+	public DefaultPrincipalSpliceIsoformDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
 
-	@Override
-	public PrincipalSpliceIsoform get(String transcriptId) {
-		return super.get(transcriptId);
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(String.class, PrincipalSpliceIsoform.class, this.em);
 	}
 	
+	@Override
+	public PrincipalSpliceIsoform get(String transcriptId) {
+		return dh.get(transcriptId);
+	}
+
 }

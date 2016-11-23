@@ -23,6 +23,9 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
@@ -35,25 +38,42 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 @Repository
 @Transactional
-public class DefaultGeneDAO extends DAO<String, Gene> implements GeneDAO {
+public class DefaultGeneDAO implements GeneDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<String, Gene> dh;
+	
+	DefaultGeneDAO() {}
+	
+	public DefaultGeneDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+	
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(String.class, Gene.class, em);
+	}
+	
 	@Override
 	public Gene get(String geneSymbol) {
-		return super.get(geneSymbol.toUpperCase());
+		return dh.get(geneSymbol.toUpperCase());
 	}
 
 	@Override
 	public String[] listGeneSymbols(String queryFilter, int maxResults) {
 		requireNonNull(queryFilter, "queryFilter can't be null");
 		
-		final CriteriaQuery<String> cq = cb().createQuery(String.class);
-		final Root<Gene> root = cq.from(getEntityType());
+		final CriteriaQuery<String> cq = dh.cb().createQuery(String.class);
+		final Root<Gene> root = cq.from(dh.getEntityType());
 		
 		final Path<String> geneSymbolField = root.get("geneSymbol");
 		
-		final TypedQuery<String> query = em.createQuery(
+		final TypedQuery<String> query = dh.em().createQuery(
 			cq.select(geneSymbolField).distinct(true)
-				.where(cb().like(geneSymbolField, queryFilter + "%"))
-				.orderBy(cb().asc(root.get("geneSymbol")))
+				.where(dh.cb().like(geneSymbolField, queryFilter + "%"))
+				.orderBy(dh.cb().asc(root.get("geneSymbol")))
 		);
 		
 		if (maxResults > 0)

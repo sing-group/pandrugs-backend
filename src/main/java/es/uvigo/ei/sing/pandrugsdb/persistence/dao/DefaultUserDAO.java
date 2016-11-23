@@ -23,6 +23,10 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,25 +35,42 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 
 @Repository
 @Transactional
-public class DefaultUserDAO extends DAO<String, User> implements UserDAO {
+public class DefaultUserDAO implements UserDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<String, User> dh;
+	
+	DefaultUserDAO() {}
+	
+	public DefaultUserDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(String.class, User.class, this.em);
+	}
+	
 	@Override
 	public List<User> list() {
-		return super.list();
+		return dh.list();
 	}
 	
 	@Override
 	public User get(String login) {
-		return super.get(login);
+		return dh.get(login);
 	}
 	
 	@Override
 	public void removeByLogin(String login) {
-		super.removeByKey(login);
+		dh.removeByKey(login);
 	}
 	
 	@Override
 	public User getByEmail(String email) {
-		return getBy("email", email);
+		return dh.getBy("email", email);
 	}
 	
 	@Override
@@ -61,7 +82,7 @@ public class DefaultUserDAO extends DAO<String, User> implements UserDAO {
 		} else if (entity.getRole() != user.getRole()) {
 			throw new IllegalArgumentException("user role can't be changed with update. Please, use the change role methods.");
 		} else {
-			return super.update(user);
+			return dh.update(user);
 		}
 	}
 	
@@ -81,7 +102,7 @@ public class DefaultUserDAO extends DAO<String, User> implements UserDAO {
 				newRole
 			);
 			
-			return super.update(userNewRole);
+			return dh.update(userNewRole);
 		}
 	}
 	
@@ -102,6 +123,6 @@ public class DefaultUserDAO extends DAO<String, User> implements UserDAO {
 	private final User registerUser(
 		String login, String email, String password, RoleType role
 	) {
-		return persist(new User(login, email, password, role));
+		return dh.persist(new User(login, email, password, role));
 	}
 }

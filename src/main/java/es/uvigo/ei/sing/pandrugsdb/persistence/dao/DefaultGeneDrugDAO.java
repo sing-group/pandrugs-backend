@@ -30,6 +30,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -44,6 +47,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugId;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ResistanceType;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
@@ -51,18 +55,33 @@ import es.uvigo.ei.sing.pandrugsdb.query.TargetMarkerStatus;
 
 @Repository
 @Transactional
-public class DefaultGeneDrugDAO
-extends DAO<Integer, GeneDrug>
-implements GeneDrugDAO {
+public class DefaultGeneDrugDAO implements GeneDrugDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<GeneDrugId, GeneDrug> dh;
+	
+	DefaultGeneDrugDAO() {}
+	
+	public DefaultGeneDrugDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(GeneDrugId.class, GeneDrug.class, this.em);
+	}
+	
 	@Override
 	public List<GeneDrug> searchByGene(GeneQueryParameters queryParameters, String ... geneNames) {
 		requireNonNull(queryParameters, "Query parameters can't be null");
 		requireNonEmpty(geneNames, "At least one gene name must be provided");
 		
-		final CriteriaQuery<GeneDrug> query = createCBQuery();
-		final Root<GeneDrug> root = query.from(getEntityType());
+		final CriteriaQuery<GeneDrug> query = dh.createCBQuery();
+		final Root<GeneDrug> root = query.from(dh.getEntityType());
 		
-		final Predicate predicate = cb().and(
+		final Predicate predicate = dh.cb().and(
 			Stream.of(
 				createDirectIndirectPredicate(root, query, queryParameters, geneNames),
 				createDrugStatusPredicate(root, query, queryParameters),
@@ -72,7 +91,7 @@ implements GeneDrugDAO {
 			.toArray(Predicate[]::new)	
 		);
 		
-		return em.createQuery(
+		return dh.em().createQuery(
 			query.select(root).distinct(true)
 				.where(predicate)
 		).getResultList();
@@ -88,9 +107,9 @@ implements GeneDrugDAO {
 			final Expression<Boolean> targetField = root.get("target");
 			
 			if (queryParameters.getTargetMarker() == TargetMarkerStatus.TARGET) {
-				return cb().isTrue(targetField);
+				return dh.cb().isTrue(targetField);
 			} else {
-				return cb().isFalse(targetField);
+				return dh.cb().isFalse(targetField);
 			}
 		}
 	}
@@ -103,7 +122,7 @@ implements GeneDrugDAO {
 		if (queryParameters.areAllDrugStatusIncluded()) {
 			return null;
 		} else {
-			final CriteriaBuilder cb = cb();
+			final CriteriaBuilder cb = dh.cb();
 
 			final Subquery<Drug> subqueryDrug = query.subquery(Drug.class);
 			final Root<Drug> rootDrug = subqueryDrug.from(Drug.class);
@@ -160,14 +179,14 @@ implements GeneDrugDAO {
 		GeneQueryParameters queryParameters,
 		String ... geneNames
 	) {
-		final CriteriaBuilder cb = cb();
+		final CriteriaBuilder cb = dh.cb();
 		
 		final Expression<String> geneSymbolField = root.get("geneSymbol");
 		
 		final List<Predicate> predicates = new LinkedList<>();
 		
 		final Function<Expression<String>, Predicate> isInGenes = geneNames.length == 1 ?
-			e -> cb().equal(e, geneNames[0]) :
+			e -> dh.cb().equal(e, geneNames[0]) :
 			e -> e.in((Object[]) geneNames);
 			
 		
@@ -207,7 +226,7 @@ implements GeneDrugDAO {
 		} else if (predicates.size() == 1) {
 			return predicates.get(0);
 		} else {
-			return cb().or(predicates.toArray(new Predicate[predicates.size()]));
+			return dh.cb().or(predicates.toArray(new Predicate[predicates.size()]));
 		}
 	}
 }

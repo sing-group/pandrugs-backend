@@ -157,6 +157,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testGetComputationsForUser() {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
@@ -165,7 +166,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		assertThat(response.getStatus(), is(200));
 		assertThat(response.getEntity(), instanceOf(Map.class));
-		assertThat(((Map) response.getEntity()).size(), is(2));
+		assertThat(((Map<Integer, ComputationMetadata>) response.getEntity()).size(), is(2));
 	}
 
 	@Test(expected = ForbiddenException.class)

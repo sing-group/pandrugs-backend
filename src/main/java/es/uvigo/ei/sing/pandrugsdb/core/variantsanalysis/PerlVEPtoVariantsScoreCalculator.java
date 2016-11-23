@@ -77,10 +77,6 @@ public class PerlVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalcu
 
 
 		Path affectedGenesPath = Paths.get(AFFECTED_GENES_FILE_NAME);
-		Path affectedGenesFilePath = parameters.getResultsBasePath().resolve(affectedGenesPath);
-
-		Path vscoreResultsPath = Paths.get(VARIANT_SCORES_FILE_NAME);
-		Path vscoreFilePath = parameters.getResultsBasePath().resolve(vscoreResultsPath);
 
 		String command = createVEPCommand(vepFile.toPath(), configuration.getUserDataBaseDirectory().toPath().resolve(parameters.getResultsBasePath()));
 		LOG.info("Starting Perl VSCORE computation over "+vepFile+" with command: "+command);

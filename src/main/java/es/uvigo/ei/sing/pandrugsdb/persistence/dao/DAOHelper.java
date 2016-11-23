@@ -25,7 +25,6 @@ import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,7 +32,6 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -41,22 +39,28 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public abstract class DAO<K, T> {
-	@PersistenceContext
-	protected EntityManager em;
+public class DAOHelper<K, T> {
+	private final EntityManager em;
+	private final Class<T> entityClass;
 	
-	@SuppressWarnings("unchecked")
-	protected Class<T> getEntityType() {
-		return (Class<T>) ((ParameterizedType) getClass()
-			.getGenericSuperclass())
-	        .getActualTypeArguments()[1];
+	public static <K, T> DAOHelper<K, T> of(Class<K> keyClass, Class<T> entityClass, EntityManager em) {
+		return new DAOHelper<>(keyClass, entityClass, em);
 	}
 	
-	protected T get(K key) {
+	private DAOHelper(Class<K> keyClass, Class<T> entityClass, EntityManager em) {
+		this.entityClass = entityClass;
+		this.em = em;
+	}
+	
+	public Class<T> getEntityType() {
+		return this.entityClass;
+	}
+	
+	public T get(K key) {
 		return this.em.find(this.getEntityType(), requireNonNull(key));
 	}
 	
-	protected T persist(T entity) {
+	public T persist(T entity) {
 		try {
 			this.em.persist(entity);
 			this.em.flush();
@@ -67,14 +71,14 @@ public abstract class DAO<K, T> {
 		}
 	}
 	
-	protected T update(T entity) {
+	public T update(T entity) {
 		final T mergedEntity = this.em.merge(entity);
 		this.em.flush();
 		
 		return mergedEntity;
 	}
 	
-	protected List<T> list() {
+	public List<T> list() {
 		final CriteriaQuery<T> query = createCBQuery();
 		
 		return em.createQuery(
@@ -82,35 +86,35 @@ public abstract class DAO<K, T> {
 		).getResultList();
 	}
 	
-	protected void removeByKey(K key) {
+	public void removeByKey(K key) {
 		this.em.remove(get(key));
 		this.em.flush();
 	}
 	
-	protected void remove(T entity) {
+	public void remove(T entity) {
 		this.em.remove(entity);
 		this.em.flush();
 	}
 
 	@SafeVarargs
-	protected final <F> List<T> listBy(String fieldName, F ... value) {
+	public final <F> List<T> listBy(String fieldName, F ... value) {
 		return createFieldQuery(fieldName, empty(), empty(), value)
 			.getResultList();
 	}
 
 	@SafeVarargs
-	protected final <F> List<T> listBy(String fieldName, int startPosition, int maxResults, F ... value) {
+	public final <F> List<T> listBy(String fieldName, int startPosition, int maxResults, F ... value) {
 		return createFieldQuery(fieldName, Optional.of(startPosition), Optional.of(maxResults), value)
 			.getResultList();
 	}
 
 	@SafeVarargs
-	protected final <F> List<T> listBy(String fieldName, Optional<Integer> startPosition, Optional<Integer> maxResults, F ... value) {
+	public final <F> List<T> listBy(String fieldName, Optional<Integer> startPosition, Optional<Integer> maxResults, F ... value) {
 		return createFieldQuery(fieldName, startPosition, maxResults, value)
 			.getResultList();
 	}
 	
-	protected <F> T getBy(String fieldName, F value) {
+	public <F> T getBy(String fieldName, F value) {
 		try {
 			return createFieldQuery(fieldName, empty(), empty(), value)
 				.getSingleResult();
@@ -120,7 +124,7 @@ public abstract class DAO<K, T> {
 	}
 	
 	@SafeVarargs
-	protected final <F> TypedQuery<T> createFieldQuery(
+	public final <F> TypedQuery<T> createFieldQuery(
 		String fieldName,
 		Optional<Integer> startPosition,
 		Optional<Integer> maxResults,
@@ -148,11 +152,15 @@ public abstract class DAO<K, T> {
 		.setMaxResults(maxResults.orElse(Integer.MAX_VALUE));
 	}
 	
-	protected CriteriaQuery<T> createCBQuery() {
+	public EntityManager em() {
+		return this.em;
+	}
+	
+	public CriteriaQuery<T> createCBQuery() {
 		return cb().createQuery(this.getEntityType());
 	}
 	
-	protected CriteriaBuilder cb() {
+	public CriteriaBuilder cb() {
 		return em.getCriteriaBuilder();
 	}
 }

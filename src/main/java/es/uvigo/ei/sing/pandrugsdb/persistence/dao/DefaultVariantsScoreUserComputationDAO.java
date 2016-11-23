@@ -23,6 +23,10 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,39 +36,52 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputati
 @Repository
 @Transactional
 public class DefaultVariantsScoreUserComputationDAO
-extends DAO<Integer, VariantsScoreUserComputation>
 implements VariantsScoreUserComputationDAO {
+	@PersistenceContext
+	private EntityManager em;
+
+	private DAOHelper<Integer, VariantsScoreUserComputation> dh;
+
+	DefaultVariantsScoreUserComputationDAO() {}
+	
+	public DefaultVariantsScoreUserComputationDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+	
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(Integer.class, VariantsScoreUserComputation.class, em);
+	}
 
 	@Override
 	public void storeComputation(VariantsScoreUserComputation computation) {
-		super.persist(computation);
-		
+		dh.persist(computation);
 	}
 
 	@Override
 	public List<VariantsScoreUserComputation> retrieveComputationsBy(User user) {
-		return super.listBy("user", user);
+		return dh.listBy("user", user);
 	}
 
-	
 	@Override
 	public VariantsScoreUserComputation update(VariantsScoreUserComputation entity) {
-		return super.update(entity);
+		return dh.update(entity);
 	}
 
 	@Override
 	public VariantsScoreUserComputation get(int id) {
-		return super.get(id);
+		return dh.get(id);
 	}
 
 	@Override
 	public List<VariantsScoreUserComputation> list() {
-		return super.list();
+		return dh.list();
 	}
 
 	@Override
 	public void remove(VariantsScoreUserComputation computation) {
-		super.remove(computation);
+		dh.remove(computation);
 	}
-	
+
 }

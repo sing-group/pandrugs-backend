@@ -23,6 +23,10 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,36 +34,51 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 
 @Repository
 @Transactional
-public class DefaultRegistrationDAO
-extends DAO<String, Registration>
-implements RegistrationDAO {
+public class DefaultRegistrationDAO implements RegistrationDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<String, Registration> dh;
+	
+	DefaultRegistrationDAO() {}
+	
+	public DefaultRegistrationDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
+
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(String.class, Registration.class, this.em);
+	}
+	
 	@Override
 	public Registration get(String key) {
-		return super.get(key);
+		return dh.get(key);
 	}
 	
 	@Override
 	public List<Registration> list() {
-		return super.list();
+		return dh.list();
 	}
 	
 	@Override
 	public Registration persist(String login, String email, String password) {
-		return super.persist(new Registration(login, email, password));
+		return dh.persist(new Registration(login, email, password));
 	}
 	
 	@Override
 	public Registration getByEmail(String email) {
-		return getBy("email", email);
+		return dh.getBy("email", email);
 	}
 
 	@Override
 	public void remove(Registration entity) {
-		this.removeByKey(entity.getUuid());
+		this.removeByUuid(entity.getUuid());
 	}
 	
 	@Override
 	public void removeByUuid(String uuid) {
-		super.removeByKey(uuid);
+		dh.removeByKey(uuid);
 	}
 }

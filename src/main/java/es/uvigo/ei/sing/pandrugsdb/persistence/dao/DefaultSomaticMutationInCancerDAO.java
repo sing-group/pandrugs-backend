@@ -25,6 +25,9 @@ import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
@@ -34,12 +37,27 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancer;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerId;
 
 public class DefaultSomaticMutationInCancerDAO
-extends DAO<SomaticMutationInCancerId, SomaticMutationInCancer>
 implements SomaticMutationInCancerDAO {
+	@PersistenceContext
+	private EntityManager em;
+	
+	private DAOHelper<SomaticMutationInCancerId, SomaticMutationInCancer> dh;
+	
+	DefaultSomaticMutationInCancerDAO() {}
+	
+	public DefaultSomaticMutationInCancerDAO(EntityManager em) {
+		this.em = em;
+		createDAOHelper();
+	}
 
+	@PostConstruct
+	private void createDAOHelper() {
+		this.dh = DAOHelper.of(SomaticMutationInCancerId.class, SomaticMutationInCancer.class, this.em);
+	}
+	
 	@Override
 	public SomaticMutationInCancer get(SomaticMutationInCancerId id) {
-		return super.get(id);
+		return dh.get(id);
 	}
 
 	@Override
@@ -47,14 +65,14 @@ implements SomaticMutationInCancerDAO {
 		requireNonEmpty(geneSymbol, "geneSymbol can't be empty or null");
 		requireNonEmpty(mutationAA, "mutationAA can't be empty or null");
 
-		final CriteriaQuery<SomaticMutationInCancer> query = createCBQuery();
-		final Root<SomaticMutationInCancer> root = query.from(getEntityType());
-		final CriteriaBuilder cb = cb();
+		final CriteriaQuery<SomaticMutationInCancer> query = dh.createCBQuery();
+		final Root<SomaticMutationInCancer> root = query.from(dh.getEntityType());
+		final CriteriaBuilder cb = dh.cb();
 
 		final Path<String> geneSymbolField = root.get("geneSymbol");
 		final Path<Integer> mutationAAField = root.get("mutationAA");
 		
-		return em.createQuery(
+		return dh.em().createQuery(
 			query.select(root)
 				.where(cb.and(
 					cb.equal(geneSymbolField, geneSymbol),
