@@ -31,20 +31,27 @@ public class ProteinPfamId implements Serializable {
 
 	private String uniprotId;
 	
+	private String accession;
+	
 	private int start;
 	
 	private int end;
 	
 	ProteinPfamId() {}
 	
-	ProteinPfamId(String uniprotId, int start, int end) {
+	ProteinPfamId(String uniprotId, int start, int end, String accession) {
 		this.uniprotId = uniprotId;
 		this.start = start;
 		this.end = end;
+		this.accession = accession;
 	}
 
 	public String getUniprotId() {
 		return uniprotId;
+	}
+	
+	public String getAccession() {
+		return accession;
 	}
 
 	public int getStart() {
@@ -59,6 +66,7 @@ public class ProteinPfamId implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((accession == null) ? 0 : accession.hashCode());
 		result = prime * result + end;
 		result = prime * result + start;
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
@@ -74,6 +82,11 @@ public class ProteinPfamId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProteinPfamId other = (ProteinPfamId) obj;
+		if (accession == null) {
+			if (other.accession != null)
+				return false;
+		} else if (!accession.equals(other.accession))
+			return false;
 		if (end != other.end)
 			return false;
 		if (start != other.start)

@@ -21,21 +21,21 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity(name = "protein_pfam")
 @IdClass(ProteinPfamId.class)
-public class ProteinPfam {
-	@Id
-	@Column(name = "uniprot_id")
-	private String uniprotId;
-	
+public class ProteinPfam implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "start")
 	private int start;
@@ -43,20 +43,38 @@ public class ProteinPfam {
 	@Id
 	@Column(name = "end")
 	private int end;
+
+	@Id
+	@Column(name = "protein_uniprot_id", insertable = false, updatable = false)
+	private String uniprotId;
+	
+	@Id
+	@Column(name = "pfam_accession", length = 7, columnDefinition = "CHAR(7)", insertable = false, updatable = false)
+	private String accession;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(
-		name = "uniprot_id",
-		referencedColumnName = "uniprot_id",
-		insertable = false, updatable = false,
-		nullable = true
+	@PrimaryKeyJoinColumn(
+		name = "protein_uniprot_id",
+		referencedColumnName = "uniprot_id"
 	)
 	private Protein protein;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@PrimaryKeyJoinColumn(
+		name = "pfam_accession",
+		referencedColumnName = "accession",
+		columnDefinition = "CHAR(7)"
+	)
+	private Pfam pfam;
 
 	ProteinPfam() {}
 
-	public String getUniprotId() {
-		return uniprotId;
+	public Protein getProtein() {
+		return protein;
+	}
+	
+	public Pfam getPfam() {
+		return pfam;
 	}
 	
 	public int getStart() {
@@ -66,36 +84,4 @@ public class ProteinPfam {
 	public int getEnd() {
 		return end;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + end;
-		result = prime * result + start;
-		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ProteinPfam other = (ProteinPfam) obj;
-		if (end != other.end)
-			return false;
-		if (start != other.start)
-			return false;
-		if (uniprotId == null) {
-			if (other.uniprotId != null)
-				return false;
-		} else if (!uniprotId.equals(other.uniprotId))
-			return false;
-		return true;
-	}
-	
 }

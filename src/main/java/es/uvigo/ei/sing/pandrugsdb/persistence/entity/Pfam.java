@@ -21,62 +21,46 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Collections.unmodifiableSet;
-
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-@Entity(name = "protein")
-public class Protein {
+@Entity(name = "pfam")
+public class Pfam {
 	@Id
-	@Column(name = "uniprot_id")
-	private String uniprotId;
+	@Column(name = "accession", length = 7, columnDefinition = "CHAR(7)")
+	private String accession;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interaction_id", referencedColumnName = "uniprot_id")
-	private Set<Protein> iteractions;
+	@Column(name = "domain_description", length = 80, columnDefinition = "VARCHAR(80)")
+	private String domainDescription;
+
+	@OneToMany(mappedBy = "pfam", fetch = FetchType.LAZY)
+	private Set<ProteinPfam> proteins;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "gene_symbol")
-	private Set<Gene> genes;
+	Pfam() {}
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
+	public String getAccession() {
+		return accession;
+	}
 	
-	Protein() {}
+	public String getDomainDescription() {
+		return domainDescription;
+	}
 	
-	Protein(String uniprotId) {
-		this.uniprotId = uniprotId;
+	public Set<ProteinPfam> getProteins() {
+		return proteins;
 	}
 
-	public String getUniprotId() {
-		return uniprotId;
-	}
-	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
-	}
-
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
-	}
-	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
+		result = prime * result + ((accession == null) ? 0 : accession.hashCode());
+		result = prime * result + ((domainDescription == null) ? 0 : domainDescription.hashCode());
 		return result;
 	}
 
@@ -88,11 +72,16 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
-		if (uniprotId == null) {
-			if (other.uniprotId != null)
+		Pfam other = (Pfam) obj;
+		if (accession == null) {
+			if (other.accession != null)
 				return false;
-		} else if (!uniprotId.equals(other.uniprotId))
+		} else if (!accession.equals(other.accession))
+			return false;
+		if (domainDescription == null) {
+			if (other.domainDescription != null)
+				return false;
+		} else if (!domainDescription.equals(other.domainDescription))
 			return false;
 		return true;
 	}
