@@ -23,11 +23,11 @@ package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.newStringFormatter;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -139,6 +139,15 @@ public class GeneDrugGroupInfo {
 		
 		final List<GeneDrugInfo> gdInfos = gdg.getGeneDrugs().stream()
 			.map(gd -> new GeneDrugInfo(gd, gdg))
+		.collect(toList());
+		
+		gdg.getGeneDrugs().stream()
+			.filter(gdg::isDirectAndIndirect)
+			.filter(GeneDrug::isTarget)
+			.map(gd -> new GeneDrugInfo(gd, gdg, true))
+		.forEach(gdInfos::add);
+		
+		this.geneDrugs = gdInfos.stream()
 			.sorted((g1, g2) -> Compare.objects(g1, g2)
 				.byReverseOrderOf(GeneDrugInfo::getDScore)
 					.thenByReverseOrderOf(GeneDrugInfo::getGScore)
@@ -153,16 +162,9 @@ public class GeneDrugGroupInfo {
 					.thenBy(GeneDrugInfo::getTherapy)
 					.thenByArray(GeneDrugInfo::getSources)
 					.thenBy(GeneDrugInfo::getDrugStatusInfo)
-				.andGet())
-		.collect(Collectors.toList());
-		
-		gdg.getGeneDrugs().stream()
-			.filter(gdg::isDirectAndIndirect)
-			.filter(GeneDrug::isTarget)
-			.map(gd -> new GeneDrugInfo(gd, gdg, true))
-		.forEach(gdInfos::add);
-		
-		this.geneDrugs = gdInfos.toArray(new GeneDrugInfo[gdInfos.size()]);
+				.andGet()
+			)
+		.toArray(GeneDrugInfo[]::new);
 	}
 
 	public String[] getGenes() {
