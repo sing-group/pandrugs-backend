@@ -21,7 +21,23 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.util;
 
+import java.util.function.Supplier;
+
 @FunctionalInterface
-public interface ThrowingSupplier<T> {
-	public T get() throws Exception;
+public interface ThrowingSupplier<T> extends Supplier<T> {
+	
+	@Override
+	public default T get() throws WrapperRuntimeException {
+		try {
+			return this.throwingGet();
+		} catch (Throwable t) {
+			throw new WrapperRuntimeException(t);
+		}
+	}
+	
+	public T throwingGet() throws Throwable;
+	
+	public static <T> Supplier<T> wrap(ThrowingSupplier<T> throwingSupplier) {
+		return throwingSupplier::get;
+	}
 }

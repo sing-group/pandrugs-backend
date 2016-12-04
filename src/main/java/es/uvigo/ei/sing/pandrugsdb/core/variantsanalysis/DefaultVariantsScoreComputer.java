@@ -21,6 +21,10 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
 
+import static java.util.Collections.synchronizedList;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,10 +42,10 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationPa
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 import es.uvigo.ei.sing.pandrugsdb.util.FutureProxy;
+import es.uvigo.ei.sing.pandrugsdb.util.ThrowingConsumer;
 
 @Component
-public class DefaultVariantsScoreComputer implements
-		VariantsScoreComputer {
+public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsScoreComputer.class);
 
 	@Inject
@@ -66,71 +70,67 @@ public class DefaultVariantsScoreComputer implements
 	}
 	
 	@Override
-	public VariantsScoreComputation 
-		createComputation(VariantsScoreComputationParameters parameters) {
-		
-		DefaultVariantsScoreComputation computation = createAndStartWholeComputation(parameters);
-		
-		return computation;
+	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters) {
+		return createAndStartWholeComputation(parameters);
 	}
 	
-	public DefaultVariantsScoreComputation createAndStartWholeComputation(VariantsScoreComputationParameters parameters) {
-		final CompletableFuture<VariantsScoreComputationParameters> input = new CompletableFuture<VariantsScoreComputationParameters>();
+	private DefaultVariantsScoreComputation createAndStartWholeComputation(VariantsScoreComputationParameters parameters) {
+		final CompletableFuture<VariantsScoreComputationParameters> input =
+			new CompletableFuture<VariantsScoreComputationParameters>();
 
-		final DefaultVariantsScoreComputation  computation =
-				new DefaultVariantsScoreComputation();
-
+		final DefaultVariantsScoreComputation computation = new DefaultVariantsScoreComputation();
+		final Notifications notifications = new Notifications();
+		
 		computation.getStatus().setStatus("Submitted", 0.0, 0.0);
 
 		// compute VEP
-		CompletableFuture<VariantsScoreComputationResults> tasks = 
-				input
-				.thenApply((params) -> {
-					LOG.info("Starting computation. Path: "+parameters.getResultsBasePath());
-					//use another thread to notify status, because if listeners try to call
-					//get() they will lock, because they are in the same thread as the computation.
-					notificationExecutorService.execute( () -> {
-						computation.getStatus().setTaskName("Computing VEP");
-					});
+		CompletableFuture<VariantsScoreComputationResults> tasks = input
+			.thenApply(
+				(params) -> {
+					LOG.info("Starting computation. Path: " + parameters.getResultsBasePath());
+					// use another thread to notify status, because if listeners try to call get()
+					// they will lock, because they are in the same thread as the computation.
+					notifications.submit(() -> computation.getStatus().setTaskName("Computing VEP"));
+					
 					return effectPredictor.predictEffect(params.getVcfFile(), params.getResultsBasePath());
-				})
-				.whenComplete((result, exception) -> {
+				}
+			)
+			.whenComplete(
+				(result, exception) -> {
 					if (exception == null) {
-						LOG.info("Completed VEP computation. Path: "+parameters.getResultsBasePath());
-						notificationExecutorService.execute( () -> {
-							computation.getStatus().setStatus("Computing Variant Scores", 0.0, 0.5);
-						});
+						LOG.info("Completed VEP computation. Path: " + parameters.getResultsBasePath());
+						
+						notifications.submit(() -> computation.getStatus().setStatus("Computing Variant Scores", 0.0, 0.5));
 					} else {
-						LOG.error("Error in VEP computation. Path: "+parameters.getResultsBasePath());
+						LOG.error("Error in VEP computation. Path: " + parameters.getResultsBasePath());
 					}
-				})
-				.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(parameters, vepResults))
-				.whenComplete((result, exception) -> {
+				}
+			)
+			.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(parameters, vepResults))
+			.whenComplete(
+				(result, exception) -> {
 					if (exception == null) {
-						LOG.info("Finished VSCORE computation. Path: "+parameters.getResultsBasePath());
-						notificationExecutorService.execute( () -> {
-							computation.getStatus().setStatus("Finished", 0.0, 1.0);
-						});
-					}  else {
-						if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException){
-							LOG.warn("Interrupted computation in path "+parameters.getResultsBasePath());
-							notificationExecutorService.execute( () -> {
-								computation.getStatus().setTaskName("Interrupted");
-							});
-						} else {
-							LOG.error("Error during computation in path "+parameters.getResultsBasePath()+": " +
-									""+exception+". Root cause: "+ExceptionUtils.getRootCause(exception));
-							exception.printStackTrace();
-							notificationExecutorService.execute(() -> {
-								computation.getStatus().setStatus("Error", 0.0, 1.0);
-							});
-						}
+						LOG.info("Finished VSCORE computation. Path: " + parameters.getResultsBasePath());
+						
+						notifications.submit(() -> computation.getStatus().setStatus("Finished", 0.0, 1.0));
+					} else if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException) {
+						LOG.warn("Interrupted computation in path " + parameters.getResultsBasePath());
+						
+						notifications.submit(() -> computation.getStatus().setTaskName("Interrupted"));
+					} else {
+						LOG.error(
+							"Error during computation in path " + parameters.getResultsBasePath() + ": " +
+								"" + exception + ". Root cause: " + ExceptionUtils.getRootCause(exception),
+							exception
+						);
+						notifications.submit(() -> computation.getStatus().setStatus("Error", 0.0, 1.0));
 					}
-				});
+				}
+			);
 		
 		computation.wrapFuture(tasks);
 
-		LOG.info("Submitted computation. Path: "+parameters.getResultsBasePath());
+		LOG.info("Submitted computation. Path: " + parameters.getResultsBasePath());
 
 		this.executorService.execute(() -> {
 			input.complete(parameters);
@@ -139,18 +139,27 @@ public class DefaultVariantsScoreComputer implements
 		return computation;
 	}
 	
+	private class Notifications {
+		private final List<Future<?>> submittedNotifications;
+		
+		public Notifications() {
+			this.submittedNotifications = synchronizedList(new LinkedList<>());
+		}
+		
+		public void submit(Runnable notification) {
+			this.submittedNotifications.add(notificationExecutorService.submit(notification));
+		}
+	}
+	
 	static class DefaultVariantsScoreComputation 
-		implements VariantsScoreComputation,
-		FutureProxy<VariantsScoreComputationResults> {
+		implements VariantsScoreComputation, FutureProxy<VariantsScoreComputationResults> {
 
 		private Future<VariantsScoreComputationResults> future;
 
 		private VariantsScoreComputationStatus status = new VariantsScoreComputationStatus();
-
 		
 		@Override
-		public void wrapFuture(Future<VariantsScoreComputationResults>
-			future) {
+		public void wrapFuture(Future<VariantsScoreComputationResults> future) {
 			this.future = future;
 		}
 		

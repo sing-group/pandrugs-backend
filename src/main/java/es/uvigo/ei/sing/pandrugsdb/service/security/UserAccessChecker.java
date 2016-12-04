@@ -29,6 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils;
 import es.uvigo.ei.sing.pandrugsdb.util.ThrowingSupplier;
+import es.uvigo.ei.sing.pandrugsdb.util.WrapperRuntimeException;
 
 public interface UserAccessChecker {
 	public abstract boolean isUserInRole(RoleType role);
@@ -52,6 +53,12 @@ public interface UserAccessChecker {
 			}
 		} catch (WebApplicationException wae) {
 			throw wae;
+		} catch (WrapperRuntimeException re) {
+			if (re.unwrap() instanceof WebApplicationException) {
+				throw (WebApplicationException) re.unwrap();
+			} else {
+				throw actionError.apply(re.unwrap());
+			}
 		} catch (Exception e) {
 			throw actionError.apply(e);
 		}

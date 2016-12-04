@@ -37,12 +37,14 @@ import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
+import org.hibernate.annotations.SourceType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,8 +97,11 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 	public void createComputer() {
 		Capture<Runnable> taskCapture = EasyMock.newCapture();
 		thisThreadExecutorService.execute(EasyMock.capture(taskCapture));
-		EasyMock.expectLastCall().andAnswer(()->{
-			taskCapture.getValue().run(); return null;}
+		EasyMock.expectLastCall().andAnswer(
+			() -> {
+				taskCapture.getValue().run();
+				return null;
+			}
 		);
 
 		computer = new DefaultVariantsScoreComputer(effectPredictor, vEPtoVariantsScoreCalculator,thisThreadExecutorService);
@@ -166,7 +171,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		assertThat(capturedTasks.getValue().get(), is(results));
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testVEPError() throws ExecutionException, InterruptedException {
 		// effectPredictor mock
 		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
@@ -183,6 +188,17 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 		VariantsScoreComputation computation = computer.createComputation(parameters);
 
+		// listen for status change
+		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
+		computation.getStatus().onChange((status) -> {
+			if (status.getTaskName().equals("Error")) {
+				synchronized (DefaultVariantsScoreComputerUnitTest.this) {
+					expectedStatusArrived.set(true);
+					DefaultVariantsScoreComputerUnitTest.this.notify();
+				}
+			}
+		});
+
 		try	{
 			// wait
 			computation.get();
@@ -190,13 +206,21 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
+
+			if (! computation.getStatus().getTaskName().equals("Error")) {
+				synchronized (this) {
+					if (!expectedStatusArrived.get()) {
+						this.wait();
+					}
+				}
+			}
 			assertThat(computation.getStatus().getTaskName(), is("Error"));
 			assertThat(computation.getStatus().isFinished(), is(true));
 			assertThat(computation.getStatus().hasErrors(), is(true));
 		}
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testVEPtoVariantsError() throws ExecutionException, InterruptedException {
 		// VEP results mock
 		VariantsEffectPredictionResults VEPRs = createMock(VariantsEffectPredictionResults.class);
@@ -219,6 +243,17 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 		VariantsScoreComputation computation = computer.createComputation(parameters);
 
+		// listen for status change
+		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
+		computation.getStatus().onChange((status) -> {
+			if (status.getTaskName().equals("Error")) {
+				synchronized (DefaultVariantsScoreComputerUnitTest.this) {
+					expectedStatusArrived.set(true);
+					DefaultVariantsScoreComputerUnitTest.this.notify();
+				}
+			}
+		});
+
 		try	{
 			// wait
 			computation.get();
@@ -226,13 +261,21 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("Error in VScore computation"));
+
+			if (! computation.getStatus().getTaskName().equals("Error")) {
+				synchronized (this) {
+					if (!expectedStatusArrived.get()) {
+						this.wait();
+					}
+				}
+			}
 			assertThat(computation.getStatus().getTaskName(), is("Error"));
 			assertThat(computation.getStatus().isFinished(), is(true));
 			assertThat(computation.getStatus().hasErrors(), is(true));
 		}
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testVEPInterrupted() throws ExecutionException, InterruptedException {
 		// effectPredictor mock
 		expect(effectPredictor.predictEffect(anyObject(), anyObject()))
@@ -249,6 +292,17 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 		VariantsScoreComputation computation = computer.createComputation(parameters);
 
+		// listen for status change
+		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
+		computation.getStatus().onChange((status) -> {
+			if (status.getTaskName().equals("Interrupted")) {
+				synchronized (DefaultVariantsScoreComputerUnitTest.this) {
+					expectedStatusArrived.set(true);
+					DefaultVariantsScoreComputerUnitTest.this.notify();
+				}
+			}
+		});
+
 		try	{
 			// wait
 			computation.get();
@@ -256,13 +310,21 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("exception in VEP"));
+
+			if (! computation.getStatus().getTaskName().equals("Interrupted")) {
+				synchronized (this) {
+					if (!expectedStatusArrived.get()) {
+						this.wait();
+					}
+				}
+			}
 			assertThat(computation.getStatus().getTaskName(), is("Interrupted"));
 			assertThat(computation.getStatus().isFinished(), is(false));
 			assertThat(computation.getStatus().hasErrors(), is(false));
 		}
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testVEPtoVariantsInterrupted() throws ExecutionException, InterruptedException {
 		// VEP results mock
 		VariantsEffectPredictionResults VEPRs = createMock(VariantsEffectPredictionResults.class);
@@ -285,6 +347,17 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 
 		VariantsScoreComputation computation = computer.createComputation(parameters);
 
+		// listen for status change
+		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
+		computation.getStatus().onChange((status) -> {
+			if (status.getTaskName().equals("Interrupted")) {
+				synchronized (DefaultVariantsScoreComputerUnitTest.this) {
+					expectedStatusArrived.set(true);
+					DefaultVariantsScoreComputerUnitTest.this.notify();
+				}
+			}
+		});
+
 		try	{
 			// wait
 			computation.get();
@@ -292,6 +365,15 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		} catch(ExecutionException e) {
 			//we expect to be here
 			assertThat(e.getCause().getCause().getMessage(), is("Error in VScore computation"));
+
+			if (! computation.getStatus().getTaskName().equals("Interrupted")) {
+				synchronized (this) {
+					if (!expectedStatusArrived.get()) {
+						this.wait();
+					}
+				}
+			}
+
 			assertThat(computation.getStatus().getTaskName(), is("Interrupted"));
 			assertThat(computation.getStatus().isFinished(), is(false));
 			assertThat(computation.getStatus().hasErrors(), is(false));
