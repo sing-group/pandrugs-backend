@@ -28,7 +28,7 @@ import java.util.Set;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 
-public class GeneQueryParameters {
+public class GeneDrugQueryParameters {
 	public static final DirectIndirectStatus DEFAULT_DIRECT_INDIRECT = DirectIndirectStatus.BOTH;
 	public static final TargetMarkerStatus DEFAULT_TARGET_MARKER = TargetMarkerStatus.BOTH;
 	public static final DrugStatus[] DEFAULT_CANCER_DRUG_STATUS =
@@ -41,7 +41,7 @@ public class GeneQueryParameters {
 	private final TargetMarkerStatus targetMarker;
 	private final DirectIndirectStatus directIndirect;
 	
-	public GeneQueryParameters() {
+	public GeneDrugQueryParameters() {
 		this(
 			DEFAULT_CANCER_DRUG_STATUS,
 			DEFAULT_NON_CANCER_DRUG_STATUS,
@@ -50,7 +50,7 @@ public class GeneQueryParameters {
 		);
 	}
 	
-	public GeneQueryParameters(
+	public GeneDrugQueryParameters(
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String targetMarker,
@@ -82,7 +82,7 @@ public class GeneQueryParameters {
 		);
 	}
 	
-	public GeneQueryParameters(
+	public GeneDrugQueryParameters(
 		DrugStatus[] cancerDrugStatus,
 		DrugStatus[] nonCancerDrugStatus,
 		TargetMarkerStatus targetMarker,

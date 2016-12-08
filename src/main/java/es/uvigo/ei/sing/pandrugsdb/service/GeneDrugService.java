@@ -61,6 +61,7 @@ public interface GeneDrugService {
 	 */
 	public abstract GeneDrugGroupInfos list(
 		Set<String> genes,
+		Set<String> drugs,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String target,
@@ -98,11 +99,11 @@ public interface GeneDrugService {
 	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
 	public abstract GeneDrugGroupInfos listFromComputationId(
-			Integer computationId,
-			Set<String> cancerDrugStatus,
-			Set<String> nonCancerDrugStatus,
-			String target,
-			String direct
+		Integer computationId,
+		Set<String> cancerDrugStatus,
+		Set<String> nonCancerDrugStatus,
+		String target,
+		String direct
 	) throws BadRequestException, InternalServerErrorException;
 
 	/**
@@ -145,4 +146,32 @@ public interface GeneDrugService {
 		String target,
 		String direct
 	) throws BadRequestException, InternalServerErrorException;
+	
+	/**
+	 * Returns a list of standard drug names associated to a drug ordered by
+	 * ascending alphabetical order. The drugs included are those with a
+	 * CLINICAL, APPROVED or EXPERIMENTAL status. 
+	 * 
+	 * @param query a string with which the standard drug name must start. Use
+	 * empty value or ignore it for no filtering.
+	 * @param maxResults the maximum number of results to return. Use negative
+	 * numbers or ignore it for no limit.
+	 * @return a list of standard drug names associated to a drug ordered by
+	 * ascending alphabetical order.
+	 */
+	public String[] listStandardDrugNames(String query, int maxResults);
+
+	/**
+	 * Returns a list of gene symbols associated to a drug ordered by ascending
+	 * alphabetical order. Only genes related to drugs with an CLINICAL,
+	 * APPROVED or EXPERIMENTAL status. 
+	 * 
+	 * @param query a string with which the gene symbol must start. Use empty
+	 * value or ignore it for no filtering.
+	 * @param maxResults the maximum number of results to return. Use negative
+	 * numbers or ignore it for no limit.
+	 * @return a list of gene symbols associated to a drug ordered by ascending
+	 * alphabetical order.
+	 */
+	public abstract String[] listGeneSymbols(String query, int maxResults);
 }

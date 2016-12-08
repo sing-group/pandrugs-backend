@@ -232,7 +232,10 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testGetRankingForComputation() throws IOException {
-		testGeneRankings(anAffectedGenesFileContent(), new double[]{0.3743, 0.4161, 0.3322, 0.2620, 0.3750, 0.3145});
+		testGeneRankings(
+			anAffectedGenesFileContent(),
+			new double[] { 0.2620, 0.3145, 0.3322, 0.3743, 0.3750, 0.4161 }
+		);
 	}
 
 	@Test

@@ -24,14 +24,11 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.equalsToGene;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPathway.containsPathways;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genes;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithPathway;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithoutPathway;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
@@ -86,41 +83,6 @@ public class DefaultGeneDAOIntegrationTest {
 	@Test(expected = NullPointerException.class)
 	public void testGetNull() {
 		dao.get(null);
-	}
-	
-	@Test
-	public void testListGeneSymbols() {
-		assertThat(dao.listGeneSymbols("C", 10), arrayContaining(geneSymbolsForQuery("C")));
-	}
-	
-	@Test
-	public void testListGeneSymbolsZeroMaxResults() {
-		assertThat(dao.listGeneSymbols("C", 0), arrayContaining(geneSymbolsForQuery("C")));
-	}
-	
-	@Test
-	public void testListGeneSymbolsNegativeMaxResults() {
-		assertThat(dao.listGeneSymbols("C", -1), arrayContaining(geneSymbolsForQuery("C")));
-	}
-	
-	@Test
-	public void testListGeneSymbolsOneMaxResults() {
-		assertThat(dao.listGeneSymbols("C", 1), arrayContaining(geneSymbolsForQuery("C", 1)));
-	}
-	
-	@Test
-	public void testListGeneSymbolsLimitedMaxResults() {
-		assertThat(dao.listGeneSymbols("P", 2), arrayContaining(geneSymbolsForQuery("P", 2)));
-	}
-	
-	@Test
-	public void testListGeneSymbolsEmptyResults() {
-		assertThat(dao.listGeneSymbols("XYZ", 10), is(emptyArray()));
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testListGeneSymbolsNullQuery() {
-		dao.listGeneSymbols(null, 0);
 	}
 	
 	@Test

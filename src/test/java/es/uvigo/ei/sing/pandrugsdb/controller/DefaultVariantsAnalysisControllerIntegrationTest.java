@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 
@@ -61,6 +63,8 @@ import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRank;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,8 +76,8 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 })
 @DirtiesContext
 @DatabaseSetup(value = {
-		"file:src/test/resources/META-INF/dataset.user.xml",
-		"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
+	"file:src/test/resources/META-INF/dataset.user.xml",
+	"file:src/test/resources/META-INF/dataset.variantanalysis.xml"
 })
 @DatabaseTearDown(value = "file:src/test/resources/META-INF/dataset.variantanalysis.xml",
 		type = DatabaseOperation.DELETE_ALL)
@@ -86,8 +90,8 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	@Named("defaultVariantsAnalysisController")
 	private DefaultVariantsAnalysisController controller;
 
-	private static final String aVCFResourcePath = "../core/variantsanalysis/sampleVCF_31variants.vcf";
-	private static final String aVEPResourcePath = "../core/variantsanalysis/vep-small.txt";
+	private static final String A_VCF_RESOURCE_PATH = "../core/variantsanalysis/sampleVCF_31variants.vcf";
+	private static final String A_VEP_RESOURCE_PATH = "../core/variantsanalysis/vep-small.txt";
 
 	@BeforeClass
 	public static void initContext() throws IOException {
@@ -96,7 +100,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		// the vep command template is mocked as a simple "cp [test.vep] %2$s"
 		File tempVepFile = File.createTempFile("vep-small", ".csv");
 		FileUtils.copyInputStreamToFile(
-			DefaultVariantsAnalysisControllerIntegrationTest.class.getResourceAsStream(aVEPResourcePath),
+			DefaultVariantsAnalysisControllerIntegrationTest.class.getResourceAsStream(A_VEP_RESOURCE_PATH),
 			tempVepFile
 		);
 		TestServletContext.INIT_PARAMETERS.put(DefaultVEPConfiguration.VEP_COMMAND_TEMPLATE_PARAMETER,
@@ -124,7 +128,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		final User aUser = UserDataset.users()[0];
 
 		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
-				openComputationFileStream(aVCFResourcePath), UUID.randomUUID().toString());
+				openComputationFileStream(A_VCF_RESOURCE_PATH), UUID.randomUUID().toString());
 
 		waitWhileOrFail(() ->!controller.getComputationStatus(id).isFinished(), 10000);
 	}
@@ -163,10 +167,22 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test
 	public void testGetAffectedGenesRanking() {
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getGene(), is("KCNH5"));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getGene(), is("TPO"));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(0).getRank(), is(0.3743));
-		assertThat(controller.getGeneRankingForComputation(2).getGeneRank().get(1).getRank(), is(0.4161));
+		final GeneRanking geneRanking = controller.getGeneRankingForComputation(2);
+		final List<GeneRank> geneRank = geneRanking.getGeneRank();
+		
+		assertThat(geneRank, hasSize(6));
+		assertThat(geneRank.get(0).getGene(), is("ZNF891"));
+		assertThat(geneRank.get(1).getGene(), is("CARD16"));
+		assertThat(geneRank.get(2).getGene(), is("CWC25"));
+		assertThat(geneRank.get(3).getGene(), is("KCNH5"));
+		assertThat(geneRank.get(4).getGene(), is("TSKS"));
+		assertThat(geneRank.get(5).getGene(), is("TPO"));
+		assertThat(geneRank.get(0).getRank(), is(0.262));
+		assertThat(geneRank.get(1).getRank(), is(0.3145));
+		assertThat(geneRank.get(2).getRank(), is(0.3322));
+		assertThat(geneRank.get(3).getRank(), is(0.3743));
+		assertThat(geneRank.get(4).getRank(), is(0.375));
+		assertThat(geneRank.get(5).getRank(), is(0.4161));
 	}
 
 	@Test(expected = IllegalStateException.class)

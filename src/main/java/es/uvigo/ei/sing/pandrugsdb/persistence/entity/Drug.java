@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -93,6 +92,7 @@ public class Drug implements Serializable {
 	Drug() {}
 
 	Drug(
+		int id,
 		String standardName,
 		String showName,
 		DrugStatus status,
@@ -102,6 +102,7 @@ public class Drug implements Serializable {
 		CancerType[] cancers,
 		String[] pathologies
 	) {
+		this.id = id;
 		this.standardName = standardName;
 		this.showName = showName;
 		this.status = status;
@@ -159,11 +160,7 @@ public class Drug implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((cancers == null) ? 0 : cancers.hashCode());
-		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
-		result = prime * result + ((extraDetails == null) ? 0 : extraDetails.hashCode());
-		result = prime * result + ((pathologies == null) ? 0 : pathologies.hashCode());
-		result = prime * result + ((pubChemIds == null) ? 0 : pubChemIds.hashCode());;
+		result = prime * result + id;
 		result = prime * result + ((showName == null) ? 0 : showName.hashCode());
 		result = prime * result + ((standardName == null) ? 0 : standardName.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -179,27 +176,7 @@ public class Drug implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Drug other = (Drug) obj;
-		if (cancers == null) {
-			if (other.cancers != null)
-				return false;
-		} else if (!equalsIgnoreOrder(cancers, other.cancers))
-			return false;
-		if (extra != other.extra)
-			return false;
-		if (extraDetails == null) {
-			if (other.extraDetails != null)
-				return false;
-		} else if (!extraDetails.equals(other.extraDetails))
-			return false;
-		if (pathologies == null) {
-			if (other.pathologies != null)
-				return false;
-		} else if (!equalsIgnoreOrder(pathologies, other.pathologies))
-			return false;
-		if (pubChemIds == null) {
-			if (other.pubChemIds != null)
-				return false;
-		} else if (!equalsIgnoreOrder(pubChemIds, other.pubChemIds))
+		if (id != other.id)
 			return false;
 		if (showName == null) {
 			if (other.showName != null)

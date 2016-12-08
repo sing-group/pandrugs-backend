@@ -24,7 +24,6 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.containsGenes;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.gene;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
@@ -32,9 +31,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
 import org.easymock.EasyMockRunner;
@@ -57,68 +53,6 @@ public class DefaultGeneControllerUnitTest {
 	@After
 	public void verifyDao() {
 		verify(dao);
-	}
-	
-	@Test
-	public void testListGeneSymbols() {
-		final String query = "C";
-		final int maxResults = 10;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		prepareDaoList(query, maxResults, expected);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsZeroMaxResults() {
-		final String query = "C";
-		final int maxResults = 0;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		prepareDaoList(query, maxResults, expected);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsNegativeMaxResults() {
-		final String query = "C";
-		final int maxResults = -1;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		prepareDaoList(query, maxResults, expected);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsMaxResults() {
-		final String query = "C";
-		final int maxResults = 1;
-		final String[] expected = geneSymbolsForQuery(query, maxResults);
-		
-		prepareDaoList(query, maxResults, expected);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsEmptyResults() {
-		final String query = "XYZ";
-		final int maxResults = 10;
-		final String[] expected = new String[0];
-		
-		prepareDaoList(query, maxResults, expected);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), is(emptyArray()));
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testListGeneSymbolsNullQuery() {
-		replay(dao);
-		
-		controller.listGeneSymbols(null, 0);
 	}
 
 	@Test
@@ -175,15 +109,6 @@ public class DefaultGeneControllerUnitTest {
 		replay(dao);
 		
 		controller.interactions(10, geneSymbols);
-	}
-	
-	private void prepareDaoList(
-		String geneSymbol, int maxResults, String[] geneSymbols
-	) {
-		expect(dao.listGeneSymbols(geneSymbol, maxResults))
-			.andReturn(geneSymbols);
-		
-		replay(dao);
 	}
 	
 	private void prepareDaoGet(String ... geneSymbols) {

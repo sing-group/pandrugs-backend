@@ -44,6 +44,7 @@ public class GeneRanking {
 
 	public GeneRanking(Map<String, Double> ranking) {
 		this.geneRank = ranking.entrySet().stream()
+			.sorted((e1, e2) -> Double.compare(e1.getValue(), e2.getValue()))
 			.map(entry -> new GeneRank(entry.getKey(), entry.getValue()))
 		.collect(toList());
 	}

@@ -22,34 +22,48 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalsToGeneDrugGroupInfos;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroups;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.rankingFor;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroups;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroupsInfos;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toSet;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import javax.ws.rs.BadRequestException;
 
@@ -76,153 +90,202 @@ public class DefaultGeneDrugServiceUnitTest {
 	
 	@After
 	public void verifyController() {
-		EasyMock.verify(controller);
+		verify(controller);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithNullGenes() {
 		replay(controller);
 	
-		service.list(null, null, null, null, null);
+		service.list(null, null, null, null, null, null);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
 		replay(controller);
 		
-		service.list(emptySet(), null, null, null, null);
+		service.list(emptySet(), null, null, null, null, null);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyDrugs() {
+		replay(controller);
+		
+		service.list(null, emptySet(), null, null, null, null);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesAndDrugs() {
+		replay(controller);
+		
+		service.list(emptySet(), emptySet(), null, null, null, null);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithGenesAndDrugs() {
+		replay(controller);
+		
+		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, null);
 	}
 	
 	@Test
-	public void testSearchNoResult() {
-		final String query = "Absent gene";
+	public void testListByGenesNoResult() {
+		final String query = absentGeneSymbol();
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(query)))
+		expect(controller.searchByGenes(anyObject(), eq(query)))
 			.andReturn(emptyList());
 		
 		replay(controller);
 		
 		final GeneDrugGroupInfos result = this.service.list(
-			singleton(query), null, null, null, null);
+			singleton(query), null, null, null, null, null);
 		
 		assertThat(result.getGeneDrugs(), is(empty()));
 	}
 	
 	@Test
-	public void testSearchSingleGeneDirect() {
-		final String query = "Direct Gene 1";
+	public void testListByGenesSingleGeneDirect() {
+		final String query = singleGeneSymbolDirect();
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(query)))
+		expect(controller.searchByGenes(anyObject(), eq(query)))
 			.andReturn(asList(singleGeneGroupDirect()));
 		
 		replay(controller);
 		
 		final GeneDrugGroupInfos result = this.service.list(
-			singleton(query), null, null, null, null);
+			singleton(query), null, null, null, null, null);
 
 		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosDirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneDirect() {
-		final String[] query = new String[] {"Direct Gene 1", "Direct Gene 2"};
+	public void testListByGenesMultipleGeneDirect() {
+		final String[] query = multipleGeneSymbolsDirect();
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq("Direct Gene 1"), eq("Direct Gene 2")))
+		expect(controller.searchByGenes(anyObject(), arrayToEasyMockMatchers(query)))
 			.andReturn(asList(multipleGeneGroupDirect()));
 		
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			new HashSet<>(asList(query)), null, null, null, null);
+			new HashSet<>(asList(query)), null, null, null, null, null);
 
 		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosDirect()));
 	}
 	
 	@Test
-	public void testSearchSingleGeneIndirect() {
-		final String query = "IG1";
+	public void testListByGenesSingleGeneIndirect() {
+		final String query = singleGeneSymbolIndirect();
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(query)))
+		expect(controller.searchByGenes(anyObject(), eq(query)))
 			.andReturn(asList(singleGeneGroupIndirect()));
 		
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			singleton(query), null, null, null, null);
+			singleton(query), null, null, null, null, null);
 
 		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneIndirect() {
-		final String[] query = new String[] {"IG1", "IG2"};
+	public void testListByGenesMultipleGeneIndirect() {
+		final String[] query = multipleGeneSymbolsIndirect();
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq("IG1"), eq("IG2")))
+		expect(controller.searchByGenes(anyObject(), arrayToEasyMockMatchers(query)))
 			.andReturn(asList(multipleGeneGroupIndirect()));
 		
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			new HashSet<>(asList(query)), null, null, null, null);
+			new HashSet<>(asList(query)), null, null, null, null, null);
 
 		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneMixed() {
-		final String[] query = new String[] {
-			"Direct Gene 1", "Direct Gene 2", "IG1", "IG2"
-		};
+	public void testListByGenesMultipleGeneMixed() {
+		final String[] query = multipleGeneSymbolsMixed();
 		
-		expect(controller.searchForGeneDrugs(
-			anyObject(), eq("Direct Gene 1"), eq("Direct Gene 2"), eq("IG1"), eq("IG2")
+		expect(controller.searchByGenes(
+			anyObject(), arrayToEasyMockMatchers(query)
 		)).andReturn(asList(multipleGeneGroupMixed()));
 		
 		replay(controller);
 
 		final GeneDrugGroupInfos result = this.service.list(
-			new LinkedHashSet<>(asList(query)), null, null, null, null);
+			new LinkedHashSet<>(asList(query)), null, null, null, null, null);
 
 		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneMixedRepeatedGenes() {
-		final String[] query = new String[] {
-			"Direct Gene 1", "Direct Gene 1", "Direct Gene 2", "IG1", "Direct Gene 1", "IG2", "IG1", "IG2"
-		};
+	public void testListByDrugsNoResult() {
+		final String query = absentDrugName();
 		
-		expect(controller.searchForGeneDrugs(
-			anyObject(), eq("Direct Gene 1"), eq("Direct Gene 2"), eq("IG1"), eq("IG2")
-		)).andReturn(asList(multipleGeneGroupMixed()));
+		expect(controller.searchByDrugs(anyObject(), eq(query)))
+			.andReturn(emptyList());
 		
 		replay(controller);
-
+		
 		final GeneDrugGroupInfos result = this.service.list(
-			new LinkedHashSet<>(asList(query)), null, null, null, null);
-
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+			null, singleton(absentDrugName()), null, null, null, null
+		);
+		
+		assertThat(result.getGeneDrugs(), is(empty()));
+	}
+	
+	@Test
+	public void testSearchByDrugSingle() {
+		final String query = singleDrugName();
+		
+		expect(controller.searchByDrugs(anyObject(), eq(query)))
+			.andReturn(asList(singleDrugGeneDrugGroups()));
+		
+		replay(controller);
+		
+		final GeneDrugGroupInfos result = this.service.list(
+			null, singleton(query), null, null, null, null
+		);
+		
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleDrugGeneDrugGroupsInfos())));
+	}
+	
+	@Test
+	public void testSearchByDrugMultiple() {
+		final String[] query = multipleDrugNames();
+		
+		expect(controller.searchByDrugs(anyObject(), arrayToEasyMockMatchers(query)))
+			.andReturn(asList(multipleDrugGeneDrugGroups()));
+		
+		replay(controller);
+		
+		final GeneDrugGroupInfos result = this.service.list(
+			null, stream(query).collect(toSet()), null, null, null, null
+		);
+		
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleDrugGeneDrugGroupsMixed())));
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testRankedSearchWithNullGenes() {
+	public void testListRankedWithNullGenes() {
 		replay(controller);
 	
 		service.listRanked((GeneRanking) null, null, null, null, null);
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void testRankedSearchWithEmptyGenes() {
+	public void testListRankedWithEmptyGenes() {
 		replay(controller);
 		
 		service.listRanked(new GeneRanking(emptyMap()), null, null, null, null);
 	}
 	
 	@Test
-	public void testRankedSearchNoResult() {
-		final GeneRanking ranking = new GeneRanking(singletonMap("Absent gene", 1d));
+	public void testListRankedNoResult() {
+		final GeneRanking ranking = rankingFor(absentGeneSymbol());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(emptyList());
 		
 		replay(controller);
@@ -234,10 +297,10 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneDirect() {
-		final GeneRanking ranking = new GeneRanking(singletonMap("Direct Gene 1", 1d));
+	public void testListRankedSingleGeneDirect() {
+		final GeneRanking ranking = rankingFor(singleGeneSymbolDirect());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(asList(singleGeneGroupDirect()));
 		
 		replay(controller);
@@ -249,13 +312,10 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneDirect() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 2d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneDirect() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsDirect());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(asList(multipleGeneGroupDirect()));
 		
 		replay(controller);
@@ -267,10 +327,10 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneIndirect() {
-		final GeneRanking ranking = new GeneRanking(singletonMap("IG1", 1d));
+	public void testListRankedSingleGeneIndirect() {
+		final GeneRanking ranking = rankingFor(singleGeneSymbolIndirect());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(asList(singleGeneGroupIndirect()));
 		
 		replay(controller);
@@ -282,13 +342,10 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneIndirect() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("IG1", 1d);
-		rank.put("IG2", 2d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneIndirect() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsIndirect());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(asList(multipleGeneGroupIndirect()));
 		
 		replay(controller);
@@ -300,15 +357,10 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneMixed() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 2d);
-		rank.put("IG1", 3d);
-		rank.put("IG2", 4d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneMixed() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsMixed());
 		
-		expect(controller.searchForGeneDrugs(anyObject(), eq(ranking)))
+		expect(controller.searchByRanking(anyObject(), eq(ranking)))
 			.andReturn(asList(multipleGeneGroupMixed()));
 		
 		replay(controller);
@@ -319,28 +371,9 @@ public class DefaultGeneDrugServiceUnitTest {
 		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
 	}
 	
-	@Test
-	public void testRankedSearchMultipleGeneMixedRepeatedGenes() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 2d);
-		rank.put("IG1", 3d);
-		rank.put("Direct Gene 1", 1d);
-		rank.put("IG2", 4d);
-		rank.put("IG1", 3d);
-		rank.put("IG2", 4d);
-		final GeneRanking ranking = new GeneRanking(rank);
-		
-		expect(controller.searchForGeneDrugs(
-			anyObject(), eq(ranking)
-		)).andReturn(asList(multipleGeneGroupMixed()));
-		
-		replay(controller);
-
-		final GeneDrugGroupInfos result = this.service.listRanked(
-			ranking, null, null, null, null);
-
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+	private static String[] arrayToEasyMockMatchers(final String[] query) {
+		return stream(query)
+			.map(EasyMock::eq)
+		.toArray(String[]::new);
 	}
 }

@@ -27,45 +27,53 @@
 	
 	<gene gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
-	<gene gene_symbol="INDIRECT GENE 1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
-	<gene gene_symbol="INDIRECT GENE 2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
+	<gene gene_symbol="GENE WITH INDIRECT 1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
+	<gene gene_symbol="GENE WITH INDIRECT 2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="IG1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="IG2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	
-	<drug id="0" standard_name="Drug 1" show_name="Show Drug 1" status="APPROVED"/>
-	<drug id="1" standard_name="Drug 2" show_name="Show Drug 2" status="APPROVED"/>
-	<drug id="2" standard_name="Drug 3" show_name="Show Drug 3" status="APPROVED"/>
-	<drug id="10" standard_name="Drug 10" show_name="Show Drug 10" status="APPROVED"/>
-	<drug id="11" standard_name="Drug 11" show_name="Show Drug 11" status="APPROVED"/>
-	<drug id="12" standard_name="Drug 12" show_name="Show Drug 12" status="APPROVED"/>
+	<drug id="0" standard_name="DRUG 1" show_name="Show Drug 1" status="CLINICAL_TRIALS"/>
+	<drug id="1" standard_name="DRUG 2" show_name="Show Drug 2" status="APPROVED"/>
+	<drug id="2" standard_name="DRUG 3" show_name="Show Drug 3" status="EXPERIMENTAL"/>
+	<drug id="10" standard_name="DRUG 10" show_name="Show Drug 10" status="CLINICAL_TRIALS"/>
+	<drug id="11" standard_name="DRUG 11" show_name="Show Drug 11" status="APPROVED"/>
+	<drug id="12" standard_name="DRUG 12" show_name="Show Drug 12" status="EXPERIMENTAL"/>
+	<drug id="20" standard_name="DRUG 20" show_name="Show Drug 20" status="WITHDRAWN"/>
+	<drug id="21" standard_name="DRUG 21" show_name="Show Drug 21" status="UNDEFINED"/>
 	
-	<drug_source source="Source 1" source_drug_name="Source Drug 1" drug_id="0" />
-	<drug_source source="Source 1" source_drug_name="Source Drug 2" drug_id="1" />
-	<drug_source source="Source 2" source_drug_name="Source Drug 3" drug_id="2" />
-	<drug_source source="Source 1" source_drug_name="Source Drug 10" drug_id="10" />
-	<drug_source source="Source 1" source_drug_name="Source Drug 11" drug_id="11" />
-	<drug_source source="Source 2" source_drug_name="Source Drug 12" drug_id="12" />
+	<drug_source source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
+	<drug_source source="Source 1" source_drug_name="Source Drug 2" drug_id="1"/>
+	<drug_source source="Source 2" source_drug_name="Source Drug 3" drug_id="2"/>
+	<drug_source source="Source 2" source_drug_name="Source Drug 20" drug_id="20"/>
+	<drug_source source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
+	<drug_source source="Source 1" source_drug_name="Source Drug 11" drug_id="11"/>
+	<drug_source source="Source 2" source_drug_name="Source Drug 12" drug_id="12"/>
+	<drug_source source="Source 2" source_drug_name="Source Drug 21" drug_id="21"/>
 	
 	<gene_drug drug_id="0" gene_symbol="DIRECT GENE 1" target="1" resistance="SENSITIVITY" score="0.1"/>
 	<gene_drug drug_id="0" gene_symbol="DIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.2"/>
 	<gene_drug drug_id="1" gene_symbol="DIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.3"/>
 	<gene_drug drug_id="2" gene_symbol="DIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.4"/>
-	<gene_drug drug_id="10" gene_symbol="INDIRECT GENE 1" target="1" resistance="SENSITIVITY" score="0.1"/>
-	<gene_drug drug_id="10" gene_symbol="INDIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.2"/>
-	<gene_drug drug_id="11" gene_symbol="INDIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.3"/>
-	<gene_drug drug_id="12" gene_symbol="INDIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.4"/>
+	<gene_drug drug_id="20" gene_symbol="DIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.5"/>
+	<gene_drug drug_id="10" gene_symbol="GENE WITH INDIRECT 1" target="1" resistance="SENSITIVITY" score="0.1"/>
+	<gene_drug drug_id="10" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.2"/>
+	<gene_drug drug_id="11" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.3"/>
+	<gene_drug drug_id="12" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.4"/>
+	<gene_drug drug_id="21" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.5"/>
 	
-	<indirect_gene direct_gene_symbol="INDIRECT GENE 1" indirect_gene_symbol="IG1" target="1" drug_id="10"/>
-	<indirect_gene direct_gene_symbol="INDIRECT GENE 2" indirect_gene_symbol="IG2" target="1" drug_id="10"/>
-	<indirect_gene direct_gene_symbol="INDIRECT GENE 2" indirect_gene_symbol="IG2" target="1" drug_id="11"/>
-	<indirect_gene direct_gene_symbol="INDIRECT GENE 2" indirect_gene_symbol="IG2" target="1" drug_id="12"/>
+	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 1" indirect_gene_symbol="IG1" target="1" drug_id="10"/>
+	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="10"/>
+	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="11"/>
+	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="12"/>
 
 	<gene_drug_drug_source gene_symbol="DIRECT GENE 1" target="1" source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
 	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
 	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 2" drug_id="1"/>
 	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 3" drug_id="2"/>
-	<gene_drug_drug_source gene_symbol="INDIRECT GENE 1" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
-	<gene_drug_drug_source gene_symbol="INDIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
-	<gene_drug_drug_source gene_symbol="INDIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 11" drug_id="11"/>
-	<gene_drug_drug_source gene_symbol="INDIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 12" drug_id="12"/>
+	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 20" drug_id="20"/>
+	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 1" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
+	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
+	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 11" drug_id="11"/>
+	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 12" drug_id="12"/>
+	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 21" drug_id="21"/>
 </dataset>

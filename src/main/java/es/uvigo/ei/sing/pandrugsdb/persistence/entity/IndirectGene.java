@@ -72,7 +72,7 @@ public class IndirectGene implements Serializable {
 	})
 	private GeneDrug geneDrug;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
 		name = "indirect_gene_symbol",

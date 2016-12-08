@@ -434,4 +434,9 @@ public class GeneDrugGroup {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "GeneDrugGroup [targetGenes=" + Arrays.toString(targetGenes) + ", geneDrugs=" + geneDrugs + "]";
+	}
 }

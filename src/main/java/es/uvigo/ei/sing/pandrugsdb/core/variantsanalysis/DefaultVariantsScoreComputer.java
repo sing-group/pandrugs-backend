@@ -42,7 +42,6 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationPa
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
 import es.uvigo.ei.sing.pandrugsdb.util.FutureProxy;
-import es.uvigo.ei.sing.pandrugsdb.util.ThrowingConsumer;
 
 @Component
 public class DefaultVariantsScoreComputer implements VariantsScoreComputer {

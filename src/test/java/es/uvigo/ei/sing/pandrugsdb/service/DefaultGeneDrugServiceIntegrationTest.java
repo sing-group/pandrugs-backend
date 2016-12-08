@@ -22,24 +22,35 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalsToGeneDrugGroupInfos;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.rankingFor;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroupsInfos;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
-import static java.util.Arrays.asList;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
+import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
-
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -83,87 +94,194 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Named("defaultGeneDrugService")
 	private GeneDrugService service;
 	
+	@Test
+	public void testListGeneSymbols() {
+		final String[] geneSymbols = this.service.listGeneSymbols("D", 10);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("D", 10))));
+	}
+	
+	@Test
+	public void testListGeneSymbolsNoMatch() {
+		final String[] geneSymbols = this.service.listGeneSymbols("X", 10);
+		
+		assertThat(geneSymbols, is(emptyArray()));
+	}
+	
+	@Test
+	public void testListGeneSymbolsWithLimit() {
+		final String[] geneSymbols = this.service.listGeneSymbols("D", 1);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("D", 1))));
+	}
+	
+	@Test
+	public void testListGeneSymbolsEmptyFilter() {
+		final String[] geneSymbols = this.service.listGeneSymbols("", 10);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("", 10))));
+	}
+	
+	@Test
+	public void testListGeneSymbolsNegativeMaxResults() {
+		final String[] geneSymbols = this.service.listGeneSymbols("G", -1);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("G", -1))));
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testListGeneSymbolsNullFilter() {
+		this.service.listGeneSymbols(null, 10);
+	}
+	
+	@Test
+	public void testListStandardDrugNames() {
+		final String[] drugNames = this.service.listStandardDrugNames("D", 10);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 10))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesNoMatch() {
+		final String[] drugNames = this.service.listStandardDrugNames("X", 10);
+		
+		assertThat(drugNames, is(emptyArray()));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesWithLimit() {
+		final String[] drugNames = this.service.listStandardDrugNames("D", 1);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 1))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesEmptyFilter() {
+		final String[] drugNames = this.service.listStandardDrugNames("", 10);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("", 10))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesNegativeMaxResults() {
+		final String[] drugNames = this.service.listStandardDrugNames("D", -1);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", -1))));
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testListStandardDrugNamesNullFilter() {
+		this.service.listStandardDrugNames(null, 10);
+	}
+	
 	@Test(expected = BadRequestException.class)
 	public void testListWithNullGenes() {
-		service.list(null, null, null, null, null);
+		service.list(null, null, null, null, null, null);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
-		service.list(emptySet(), null, null, null, null);
+		service.list(emptySet(), null, null, null, null, null);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyDrugs() {
+		service.list(null, emptySet(), null, null, null, null);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesAndDrugs() {
+		service.list(emptySet(), emptySet(), null, null, null, null);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithGenesAndDrugs() {
+		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, null);
 	}
 	
 	@Test
-	public void testSearchNoResult() {
+	public void testListByGenesNoResult() {
 		final GeneDrugGroupInfos result = this.service.list(
-			singleton("Absent Gene"), null, null, null, null
+			singleton(absentGeneSymbol()), null, null, null, null, null
 		);
 		
 		assertThat(result.getGeneDrugs(), is(empty()));
 	}
 	
 	@Test
-	public void testSearchSingleGeneDirect() {
+	public void testListByGenesSingleGeneDirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			singleton("Direct Gene 1"), null, null, null, null
+			singleton(singleGeneSymbolDirect()), null, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosDirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleGeneGroupInfosDirect())));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneDirect() {
+	public void testListByGenesMultipleGeneDirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2")),
-			null, null, null, null
+			stream(multipleGeneSymbolsDirect()).collect(toSet()),
+			null, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosDirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosDirect())));
 	}
 	
 	@Test
-	public void testSearchSingleGeneIndirect() {
+	public void testListByGenesSingleGeneIndirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-				singleton("IG1"), null, null, null, null);
-
-		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect()));
-	}
-	
-	@Test
-	public void testSearchMultipleGeneIndirect() {
-		final GeneDrugGroupInfos result = this.service.list(
-			new HashSet<>(asList("IG1", "IG2")), null, null, null, null
+			singleton(singleGeneSymbolIndirect()), null, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect())));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneMixed() {
+	public void testListByGenesMultipleGeneIndirect() {
 		final GeneDrugGroupInfos result = this.service.list(
-			new HashSet<>(asList("Direct Gene 1", "Direct Gene 2", "IG1", "IG2")),
-			null, null, null, null
+			stream(multipleGeneSymbolsIndirect()).collect(toSet()),
+			null, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect())));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneMixedRepeatedGenes() {
-		final String[] query = new String[] {
-			"Direct Gene 1", "Direct Gene 1", "Direct Gene 2", "IG1", "Direct Gene 1", "IG2", "IG1", "IG2"
-		};
-
+	public void testListByGenesMultipleGeneMixed() {
 		final GeneDrugGroupInfos result = this.service.list(
-			new LinkedHashSet<>(asList(query)), null, null, null, null);
+			stream(multipleGeneSymbolsMixed()).collect(toSet()),
+			null, null, null, null, null
+		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed())));
 	}
 	
+	@Test
+	public void testListByDrugsNoResult() {
+		final GeneDrugGroupInfos result = this.service.list(
+			null, singleton(absentDrugName()), null, null, null, null
+		);
+		
+		assertThat(result.getGeneDrugs(), is(empty()));
+	}
 	
+	@Test
+	public void testSearchByDrugSingle() {
+		final GeneDrugGroupInfos result = this.service.list(
+			null, singleton(singleDrugName()), null, null, null, null
+		);
+		
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleDrugGeneDrugGroupsInfos())));
+	}
 	
-	
-
+	@Test
+	public void testSearchByDrugMultiple() {
+		final GeneDrugGroupInfos result = this.service.list(
+			null, stream(multipleDrugNames()).collect(toSet()), null, null, null, null
+		);
+		
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleDrugGeneDrugGroupsMixed())));
+	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListRankedWithNullGenes() {
@@ -176,97 +294,66 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
-	public void testRankedSearchNoResult() {
+	public void testListRankedNoResult() {
 		final GeneDrugGroupInfos result = this.service.listRanked(
-			new GeneRanking(singletonMap("Absent Gene", 1d)), null, null, null, null
+			rankingFor(absentGeneSymbol()), null, null, null, null
 		);
 		
 		assertThat(result.getGeneDrugs(), is(empty()));
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneDirect() {
-		final GeneRanking ranking = new GeneRanking(singletonMap("Direct Gene 1", 1d));
+	public void testListRankedSingleGeneDirect() {
+		final GeneRanking ranking = rankingFor(singleGeneSymbolDirect());
 		
 		final GeneDrugGroupInfos result = this.service.listRanked(
 			ranking, null, null, null, null
 		);
 		
-		assertThat(result, is(singleGeneGroupInfosDirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleGeneGroupInfosDirect())));
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneDirect() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 2d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneDirect() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsDirect());
 		
 		final GeneDrugGroupInfos result = this.service.listRanked(
 			ranking, null, null, null, null
 		);
 		
-		assertThat(result, is(multipleGeneGroupInfosDirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosDirect())));
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneIndirect() {
-		final GeneRanking ranking = new GeneRanking(singletonMap("IG1", 1d));
+	public void testListRankedSingleGeneIndirect() {
+		final GeneRanking ranking = rankingFor(singleGeneSymbolIndirect());
 		
 		final GeneDrugGroupInfos result = this.service.listRanked(
 			ranking, null, null, null, null
 		);
 		
-		assertThat(result, equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(singleGeneGroupInfosIndirect())));
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneIndirect() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("IG1", 1d);
-		rank.put("IG2", 2d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneIndirect() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsIndirect());
 		
 		final GeneDrugGroupInfos result = this.service.listRanked(
 			ranking, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosIndirect())));
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneMixed() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 1d);
-		rank.put("IG1", 1d);
-		rank.put("IG2", 1d);
-		final GeneRanking ranking = new GeneRanking(rank);
+	public void testListRankedMultipleGeneMixed() {
+		final GeneRanking ranking = rankingFor(multipleGeneSymbolsMixed());
 		
 		final GeneDrugGroupInfos result = this.service.listRanked(
 			ranking, null, null, null, null
 		);
 
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
-	}
-	
-	@Test
-	public void testRankedSearchMultipleGeneMixedRepeatedGenes() {
-		final Map<String, Double> rank = new LinkedHashMap<>();
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 1", 1d);
-		rank.put("Direct Gene 2", 2d);
-		rank.put("IG1", 3d);
-		rank.put("Direct Gene 1", 1d);
-		rank.put("IG2", 4d);
-		rank.put("IG1", 3d);
-		rank.put("IG2", 4d);
-		final GeneRanking ranking = new GeneRanking(rank);
-		
-		final GeneDrugGroupInfos result = this.service.listRanked(
-			ranking, null, null, null, null
-		);
-
-		assertThat(result, equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed()));
+		assertThat(result, is(equalsToGeneDrugGroupInfos(multipleGeneGroupInfosMixed())));
 	}
 }

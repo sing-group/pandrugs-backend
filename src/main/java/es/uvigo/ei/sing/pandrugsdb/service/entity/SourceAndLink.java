@@ -26,9 +26,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import es.uvigo.ei.sing.pandrugsdb.util.Compare;
+
 @XmlRootElement(name = "source-and-link", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SourceAndLink {
+public class SourceAndLink implements Comparable<SourceAndLink> {
 	@XmlAttribute(name = "name")
 	private String source;
 	private String shortName;
@@ -64,6 +66,15 @@ public class SourceAndLink {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+	
+	@Override
+	public int compareTo(SourceAndLink o) {
+		return Compare.objects(this, o)
+			.by(SourceAndLink::getSource)
+			.thenBy(SourceAndLink::getShortName)
+			.thenBy(SourceAndLink::getLink)
+		.andGet();
 	}
 
 	@Override

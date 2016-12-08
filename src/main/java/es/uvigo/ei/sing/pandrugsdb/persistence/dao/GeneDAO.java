@@ -25,6 +25,4 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 public interface GeneDAO {
 	public Gene get(String geneSymbol);
-	
-	public String[] listGeneSymbols(String query, int maxResults);
 }

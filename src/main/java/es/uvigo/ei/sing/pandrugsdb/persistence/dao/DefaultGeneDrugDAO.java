@@ -21,21 +21,27 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus.activeDrugStatus;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
 import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -50,7 +56,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugId;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ResistanceType;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.query.TargetMarkerStatus;
 
 @Repository
@@ -72,19 +78,94 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	private void createDAOHelper() {
 		this.dh = DAOHelper.of(GeneDrugId.class, GeneDrug.class, this.em);
 	}
+
+	@Override
+	public String[] listGeneSymbols(String queryFilter, int maxResults) {
+		return listByField(queryFilter, maxResults, (root, join) -> root.get("geneSymbol"));
+	}
+
+	@Override
+	public String[] listStandardDrugNames(String queryFilter, int maxResults) {
+		return listByField(queryFilter, maxResults, (root, join) -> join.get("standardName"));
+	}
+	
+	private String[] listByField(
+		String queryFilter,
+		int maxResults,
+		BiFunction<Root<GeneDrug>, Join<GeneDrug, Drug>, Expression<String>> fieldProvider
+	) {
+		requireNonNull(queryFilter, "Query filter can't be null");
+		
+		final CriteriaBuilder cb = dh.cb();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		
+		final Root<GeneDrug> root = cq.from(dh.getEntityType());
+		
+		final Join<GeneDrug, Drug> join = root.join("drug");
+		
+		final Expression<String> field = fieldProvider.apply(root, join);
+		final Expression<DrugStatus> statusField = join.get("status");
+		
+		final DrugStatus[] activeDrugStatus = activeDrugStatus();
+		
+		final TypedQuery<String> query = dh.em().createQuery(
+			cq.select(field).distinct(true)
+				.where(cb.and(
+					cb.like(field, queryFilter + "%"),
+					statusField.in((Object[]) activeDrugStatus)
+				))
+				.orderBy(cb.asc(field))
+		);
+		
+		if (maxResults > 0)
+			query.setMaxResults(maxResults);
+		
+		return query
+			.getResultList()
+			.stream()
+		.toArray(String[]::new);
+	}
 	
 	@Override
-	public List<GeneDrug> searchByGene(GeneQueryParameters queryParameters, String ... geneNames) {
+	public List<GeneDrug> searchByGene(GeneDrugQueryParameters queryParameters, String ... geneNames) {
 		requireNonNull(queryParameters, "Query parameters can't be null");
 		requireNonEmpty(geneNames, "At least one gene name must be provided");
+
+		return searchWithQueryParameters(
+			queryParameters,
+			(root, join, query) -> createDirectIndirectPredicate(root, join, query, queryParameters, toUpperCase(geneNames))
+		);
+	}
+
+	@Override
+	public List<GeneDrug> searchByDrug(final GeneDrugQueryParameters queryParameters, final String... drugNames) {
+		requireNonNull(queryParameters, "Query parameters can't be null");
+		requireNonEmpty(drugNames, "At least one drug name must be provided");
+		
+		return searchWithQueryParameters(
+			queryParameters,
+			(root, join, query) -> createDrugPredicate(root, join, query, queryParameters, toUpperCase(drugNames))
+		);
+	}
+	
+	private interface SpecificPredicateBuilder {
+		public Predicate buildPredicate(Root<GeneDrug> root, Join<GeneDrug, Drug> join, CriteriaQuery<GeneDrug> cb);
+	}
+	
+	private List<GeneDrug> searchWithQueryParameters(
+		GeneDrugQueryParameters queryParameters,
+		SpecificPredicateBuilder specificPredicateBuilder
+	) {
+		requireNonNull(queryParameters, "Query parameters can't be null");
 		
 		final CriteriaQuery<GeneDrug> query = dh.createCBQuery();
 		final Root<GeneDrug> root = query.from(dh.getEntityType());
+		final Join<GeneDrug, Drug> join = root.join("drug");
 		
 		final Predicate predicate = dh.cb().and(
 			Stream.of(
-				createDirectIndirectPredicate(root, query, queryParameters, geneNames),
-				createDrugStatusPredicate(root, query, queryParameters),
+				specificPredicateBuilder.buildPredicate(root, join, query),
+				createDrugStatusPredicate(root, join, query, queryParameters),
 				createTargetMarkerPredicate(root, queryParameters)
 			)
 				.filter(Objects::nonNull)
@@ -99,7 +180,7 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	
 	private Predicate createTargetMarkerPredicate(
 		Root<GeneDrug> root,
-		GeneQueryParameters queryParameters
+		GeneDrugQueryParameters queryParameters
 	) {
 		if (queryParameters.getTargetMarker() == TargetMarkerStatus.BOTH) {
 			return null;
@@ -116,24 +197,23 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	
 	private Predicate createDrugStatusPredicate(
 		Root<GeneDrug> root,
+		Join<GeneDrug, Drug> join,
 		CriteriaQuery<GeneDrug> query,
-		GeneQueryParameters queryParameters
+		GeneDrugQueryParameters queryParameters
 	) {
 		if (queryParameters.areAllDrugStatusIncluded()) {
 			return null;
 		} else {
 			final CriteriaBuilder cb = dh.cb();
-
-			final Subquery<Drug> subqueryDrug = query.subquery(Drug.class);
-			final Root<Drug> rootDrug = subqueryDrug.from(Drug.class);
 			
-			final Expression<List<CancerType>> cancersField = rootDrug.get("cancers");
-			final Expression<DrugStatus> statusField = rootDrug.get("status");
-
+			final Expression<DrugStatus> statusField = join.get("status");
+			
+			final Join<Drug, CancerType> joinCancers = join.join("cancers", JoinType.LEFT);
+			
 			final List<Predicate> predicates = new LinkedList<>();
 			
 			if (queryParameters.areCancerDrugStatusIncluded()) {
-				final Predicate isCancer = cb.gt(cb.size(cancersField), 0);
+				final Predicate isCancer = joinCancers.isNotNull();
 				
 				if (queryParameters.isAnyCancerDrugStatus()) {
 					predicates.add(isCancer);
@@ -149,7 +229,7 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 			}
 			
 			if (queryParameters.areNonCancerDrugStatusIncluded()) {
-				final Predicate isNotCancer = cb.equal(cb.size(cancersField), 0);
+				final Predicate isNotCancer = joinCancers.isNull();
 				
 				if (queryParameters.isAnyNonCancerDrugStatus()) {
 					predicates.add(isNotCancer);
@@ -164,19 +244,32 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 				}
 			}
 			
-			return cb.exists(subqueryDrug.select(rootDrug)
-				.where(cb.and(
-					cb.equal(rootDrug.get("id"), root.get("drugId")),
-					or(predicates)
-				))
-			);
+			return or(predicates);
 		}
+	}
+
+	private Predicate createDrugPredicate(
+		Root<GeneDrug> root,
+		Join<GeneDrug, Drug> join,
+		CriteriaQuery<GeneDrug> query,
+		GeneDrugQueryParameters queryParameters,
+		String ... drugNames
+	) {
+		final Expression<String> standardNameDrugField = join.get("standardName");
+		
+		final CriteriaBuilder cb = dh.cb();
+		final Function<Expression<String>, Predicate> isInDrugs = drugNames.length == 1 ?
+			e -> cb.equal(e, drugNames[0]) :
+			e -> e.in((Object[]) drugNames);
+		
+		return isInDrugs.apply(standardNameDrugField);
 	}
 
 	private Predicate createDirectIndirectPredicate(
 		Root<GeneDrug> root,
+		Join<GeneDrug, Drug> join,
 		CriteriaQuery<GeneDrug> query,
-		GeneQueryParameters queryParameters,
+		GeneDrugQueryParameters queryParameters,
 		String ... geneNames
 	) {
 		final CriteriaBuilder cb = dh.cb();

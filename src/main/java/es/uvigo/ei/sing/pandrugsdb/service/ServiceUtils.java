@@ -56,8 +56,7 @@ public final class ServiceUtils {
 	}
 
 	public static BadRequestException createBadRequestException(String message) {
-		return createErrorException(
-			BadRequestException::new, BAD_REQUEST, message);
+		return createErrorException(BadRequestException::new, BAD_REQUEST, message);
 	}
 
 	public static InternalServerErrorException createInternalServerErrorException(String message) {

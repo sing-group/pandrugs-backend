@@ -44,7 +44,6 @@ import org.easymock.EasyMock;
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
-import org.hibernate.annotations.SourceType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

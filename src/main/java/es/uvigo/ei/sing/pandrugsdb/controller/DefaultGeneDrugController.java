@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -33,7 +34,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -48,7 +48,7 @@ import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
@@ -65,13 +65,27 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	private VariantsAnalysisController variantsAnalysisController;
 
 	@Override
-	public List<GeneDrugGroup> searchForGeneDrugs(
-		GeneQueryParameters queryParameters, String ... geneNames
+	public String[] listGeneSymbols(String query, int maxResults) {
+		requireNonNull(query, "query can't be null");
+		
+		return dao.listGeneSymbols(query, maxResults);
+	}
+
+	@Override
+	public String[] listStandardDrugNames(String query, int maxResults) {
+		requireNonNull(query, "query can't be null");
+		
+		return dao.listStandardDrugNames(query, maxResults);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchByGenes(
+		GeneDrugQueryParameters queryParameters, String ... geneNames
 	) {
 		requireNonNull(queryParameters);
 		requireNonEmpty(geneNames);
 		
-		return searchForGeneDrugs(
+		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new LinkedHashSet<>(asList(geneNames)),
 			new DefaultGeneScoreCalculator()
@@ -79,8 +93,22 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	}
 
 	@Override
-	public List<GeneDrugGroup> searchForGeneDrugs(
-		GeneQueryParameters queryParameters,
+	public List<GeneDrugGroup> searchByDrugs(
+		GeneDrugQueryParameters queryParameters, String... standardDrugNames
+	) {
+		requireNonNull(queryParameters);
+		requireNonEmpty(standardDrugNames);
+		
+		return searchForGeneDrugsWithDrugs(
+			queryParameters,
+			new LinkedHashSet<>(asList(standardDrugNames)),
+			new DefaultGeneScoreCalculator()
+		);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchByRanking(
+		GeneDrugQueryParameters queryParameters,
 		GeneRanking geneRanking
 	) {
 		requireNonNull(queryParameters);
@@ -88,7 +116,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		final Map<String, Double> geneRank = requireNonEmpty(geneRanking.asMap());
 		
-		return searchForGeneDrugs(
+		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new LinkedHashSet<>(geneRank.keySet()),
 			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
@@ -96,43 +124,63 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	}
 
 	@Override
-	public List<GeneDrugGroup> searchForGeneDrugsFromComputationId(
-			GeneQueryParameters queryParameters, int computationId) {
+	public List<GeneDrugGroup> searchFromComputationId(
+			GeneDrugQueryParameters queryParameters, int computationId
+	) {
 		requireNonNull(queryParameters);
 
 		final Map<String, Double> geneRank = requireNonEmpty(
-				variantsAnalysisController.getGeneRankingForComputation(computationId).asMap());
+			variantsAnalysisController.getGeneRankingForComputation(computationId).asMap()
+		);
 
+		return searchForGeneDrugsWithGenes(
+			queryParameters,
+			new LinkedHashSet<>(geneRank.keySet()),
+			new StaticGeneScoreCalculator(geneRank)
+		);
+	}
+
+	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
+		GeneDrugQueryParameters queryParameters,
+		Set<String> geneNames,
+		GeneScoreCalculator gScoreCalculator
+	) {
+		final String[] upperGeneNames = toUpperCase(geneNames);
+		
 		return searchForGeneDrugs(
-				queryParameters,
-				new LinkedHashSet<>(geneRank.keySet()),
-				new StaticGeneScoreCalculator(geneRank)
+			this.dao.searchByGene(queryParameters, upperGeneNames),
+			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
+			gScoreCalculator
+		);
+	}
+
+	private List<GeneDrugGroup> searchForGeneDrugsWithDrugs(
+		GeneDrugQueryParameters queryParameters,
+		Set<String> drugNames,
+		GeneScoreCalculator gScoreCalculator
+	) {
+		final Function<Set<GeneDrug>, String[]> groupToGenes = group -> group.stream()
+			.map(GeneDrug::getGeneSymbol)
+		.toArray(String[]::new);
+		
+		return searchForGeneDrugs(
+			this.dao.searchByDrug(queryParameters, toUpperCase(drugNames)),
+			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters.getDirectIndirect()),
+			gScoreCalculator
 		);
 	}
 
 	private List<GeneDrugGroup> searchForGeneDrugs(
-		GeneQueryParameters queryParameters,
-		Set<String> geneNames,
+		Collection<GeneDrug> geneDrugs,
+		Function<Set<GeneDrug>, String[]> geneDrugToGenes,
 		GeneScoreCalculator gScoreCalculator
 	) {
-		final String[] upperGeneNames = geneNames.stream()
-			.map(String::toUpperCase)
-		.toArray(String[]::new);
-		
-		final List<GeneDrug> geneDrugs = this.dao.searchByGene(
-			queryParameters, upperGeneNames
-		);
-		
 		final Collection<Set<GeneDrug>> groups = geneDrugs.stream()
 			.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
 		.values();
 		
 		return groups.stream()
-			.map(gdg -> new GeneDrugGroup(
-				filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
-				gdg,
-				gScoreCalculator
-			))
+			.map(gdg -> new GeneDrugGroup(geneDrugToGenes.apply(gdg), gdg, gScoreCalculator))
 		.collect(toList());
 	}
 	
@@ -140,16 +188,18 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		Map<String, Double> unnormalizedGeneRank
 	) {
 		final double min = unnormalizedGeneRank.values().stream()
-			.reduce(Double.MAX_VALUE, Math::min)
-		.doubleValue();
+			.mapToDouble(Double::valueOf)
+		.min().orElse(Double.NaN);
+		
 		final double max = unnormalizedGeneRank.values().stream()
-			.reduce(Double.MIN_VALUE, Math::max)
-		.doubleValue();
+			.mapToDouble(Double::valueOf)
+		.max().orElse(Double.NaN);
+		
 		final double diff = max - min;
 		
 		return unnormalizedGeneRank.entrySet().stream()
 			.collect(toMap(
-				Entry::getKey,
+				entry -> entry.getKey().toUpperCase(),
 				diff == 0d
 					? e -> 1d
 					: e -> (e.getValue() - min) / diff

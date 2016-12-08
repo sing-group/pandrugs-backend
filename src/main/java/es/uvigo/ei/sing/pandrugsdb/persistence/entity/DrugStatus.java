@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
+import java.util.Arrays;
+
 public enum DrugStatus {
 	EXPERIMENTAL(true, "in pre-clinical studies", "Experimental"),
 	APPROVED(true, "approved by FDA", "Approved"),
@@ -48,6 +50,12 @@ public enum DrugStatus {
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public static DrugStatus[] activeDrugStatus() {
+		return Arrays.stream(values())
+			.filter(DrugStatus::isActive)
+		.toArray(DrugStatus[]::new);
 	}
 	
 	@Override

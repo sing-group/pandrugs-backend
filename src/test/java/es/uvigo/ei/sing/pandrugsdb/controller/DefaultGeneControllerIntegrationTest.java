@@ -23,13 +23,9 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.containsGenes;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -69,55 +65,6 @@ public class DefaultGeneControllerIntegrationTest {
 	@Named("defaultGeneController")
 	private GeneController controller;
 	
-	@Test
-	public void testListGeneSymbols() {
-		final String query = "C";
-		final int maxResults = 10;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsZeroMaxResults() {
-		final String query = "C";
-		final int maxResults = 0;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsNegativeMaxResults() {
-		final String query = "C";
-		final int maxResults = -1;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsMaxResults() {
-		final String query = "C";
-		final int maxResults = 1;
-		final String[] expected = geneSymbolsForQuery(query, maxResults);
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsEmptyResults() {
-		final String query = "XYZ";
-		final int maxResults = 10;
-		
-		assertThat(controller.listGeneSymbols(query, maxResults), is(emptyArray()));
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testListGeneSymbolsNullQuery() {
-		controller.listGeneSymbols(null, 0);
-	}
-
 	@Test
 	public void testInteractionsWithMaxDegree() {
 		for (int degree = 0; degree <= 3; degree++) {

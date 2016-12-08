@@ -26,7 +26,5 @@ import java.util.Set;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 
 public interface GeneController {
-	public String[] listGeneSymbols(String query, int maxResults);
-	
 	public Set<Gene> interactions(int degree, String ... geneSymbol);
 }

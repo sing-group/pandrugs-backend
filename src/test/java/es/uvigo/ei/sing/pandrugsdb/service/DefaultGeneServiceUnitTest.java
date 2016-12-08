@@ -24,7 +24,6 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsForQuery;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
@@ -36,9 +35,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashSet;
@@ -69,72 +65,6 @@ public class DefaultGeneServiceUnitTest {
 	public void tearDown() {
 		if (verify)
 			verify(controller);
-	}
-	
-	@Test
-	public void testListGeneSymbols() {
-		final String query = "C";
-		final int maxResults = 10;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		expect(controller.listGeneSymbols(query, maxResults)).andReturn(expected);
-		replay(controller);
-		
-		assertThat(service.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsZeroMaxResults() {
-		final String query = "C";
-		final int maxResults = 0;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		expect(controller.listGeneSymbols(query, maxResults)).andReturn(expected);
-		replay(controller);
-		
-		assertThat(service.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsNegativeMaxResults() {
-		final String query = "C";
-		final int maxResults = -1;
-		final String[] expected = geneSymbolsForQuery(query);
-		
-		expect(controller.listGeneSymbols(query, maxResults)).andReturn(expected);
-		replay(controller);
-		
-		assertThat(service.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsMaxResults() {
-		final String query = "C";
-		final int maxResults = 1;
-		final String[] expected = geneSymbolsForQuery(query, maxResults);
-		
-		expect(controller.listGeneSymbols(query, maxResults)).andReturn(expected);
-		replay(controller);
-		
-		assertThat(service.listGeneSymbols(query, maxResults), arrayContaining(expected));
-	}
-	
-	@Test
-	public void testListGeneSymbolsEmptyResults() {
-		final String query = "XYZ";
-		final int maxResults = 10;
-		
-		expect(controller.listGeneSymbols(query, maxResults)).andReturn(new String[0]);
-		replay(controller);
-		
-		assertThat(service.listGeneSymbols(query, maxResults), is(emptyArray()));
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testGetGeneInteractionsNusNullQuery() {
-		replay(controller);
-		
-		service.listGeneSymbols(null, 0);
 	}
 	
 	@Test

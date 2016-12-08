@@ -23,11 +23,12 @@ package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
 import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.newStringFormatter;
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.sort;
+import static java.util.Arrays.stream;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.SortedMap;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -86,21 +87,30 @@ public class GeneDrugGroupInfo {
 	
 	public GeneDrugGroupInfo(GeneDrugGroup gdg) {
 		this.genes = gdg.getTargetGenes();
+		sort(this.genes);
+		
 		this.standardDrugName = gdg.getStandardDrugName();
 		this.showDrugName = gdg.getShowDrugName();
 		this.families = gdg.getFamilies();
+		sort(this.families);
+		
 		final SortedMap<String, String> sourceShortNames = 
 			gdg.getSourceShortNames();
 		this.sourceLinks = gdg.getSourceLinks().entrySet().stream()
 			.map(e -> new SourceAndLink(e.getKey(), sourceShortNames.get(e.getKey()), e.getValue()))
+			.sorted()
 		.toArray(SourceAndLink[]::new);
 		this.curatedSources = gdg.getCuratedSourceNames();
+		sort(this.curatedSources);
 		this.status = gdg.getStatus();
 		this.cancers = gdg.getCancers();
+		sort(this.cancers);
 		this.therapy = gdg.getExtra();
 		this.indirect = gdg.getIndirectGenes();
+		sort(this.indirect);
 		this.target = gdg.isTarget();
 		this.pubchemId = gdg.getPubchemId();
+		sort(this.pubchemId);
 		this.dScore = gdg.getDScore();
 		this.gScore = gdg.getGScore();
 		
@@ -111,43 +121,46 @@ public class GeneDrugGroupInfo {
 			} else if (this.cancers[0] == CancerType.CLINICAL_CANCER) {
 				this.statusDescription = "Cancer Clinical Trials and approved for other pathologies";
 			} else {
-				final String[] cancerNames = Arrays.stream(this.cancers)
-					.map(CancerType::name)
-				.toArray(String[]::new);
-				
-				final String cancers = StringJoiner.join(cancerNames)
-					.withSeparator(", ")
-					.withLastSeparator(" and ")
-					.withFormatter(
-						newStringFormatter()
-							.replaceAll("_", " ")
-							.toLowerCase()
-						.build()
-					)
-				.andGet();
-				
 				this.statusDescription = String.format("%s for %s cancer",
-					this.status.getTitle(), cancers
+					this.status.getTitle(), formatCancerList(this.cancers)
 				);
 			}
 			
 			break;
 		default:
 			this.statusDescription = this.status.getTitle();
-			break;
 		}
 		
-		final List<GeneDrugInfo> gdInfos = gdg.getGeneDrugs().stream()
-			.map(gd -> new GeneDrugInfo(gd, gdg))
-		.collect(toList());
+		this.geneDrugs = createGeneDrugInfos(gdg);
+	}
+
+	private static String formatCancerList(final CancerType[] cancers) {
+		final String[] cancerNames = stream(cancers)
+			.map(CancerType::name)
+		.toArray(String[]::new);
 		
-		gdg.getGeneDrugs().stream()
+		return StringJoiner.join(cancerNames)
+			.withSeparator(", ")
+			.withLastSeparator(" and ")
+			.withFormatter(
+				newStringFormatter()
+					.replaceAll("_", " ")
+					.toLowerCase()
+				.build()
+			)
+		.andGet();
+	}
+
+	private static GeneDrugInfo[] createGeneDrugInfos(GeneDrugGroup gdg) {
+		final Stream<GeneDrugInfo> directGDIs = gdg.getGeneDrugs().stream()
+			.map(gd -> new GeneDrugInfo(gd, gdg));
+		
+		final Stream<GeneDrugInfo> indirectGDIs = gdg.getGeneDrugs().stream()
 			.filter(gdg::isDirectAndIndirect)
 			.filter(GeneDrug::isTarget)
-			.map(gd -> new GeneDrugInfo(gd, gdg, true))
-		.forEach(gdInfos::add);
+		.map(gd -> new GeneDrugInfo(gd, gdg, true));
 		
-		this.geneDrugs = gdInfos.stream()
+		return Stream.concat(directGDIs, indirectGDIs)
 			.sorted((g1, g2) -> Compare.objects(g1, g2)
 				.byReverseOrderOf(GeneDrugInfo::getDScore)
 					.thenByReverseOrderOf(GeneDrugInfo::getGScore)

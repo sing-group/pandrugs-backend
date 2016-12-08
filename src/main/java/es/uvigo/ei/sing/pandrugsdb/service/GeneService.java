@@ -27,19 +27,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 public interface GeneService {
 	/**
-	 * Returns the complete list of gene symbols stored in the database ordered
-	 * in ascending alphabetical order.
-	 * 
-	 * @param query a string with which the gene symbol must start. Use empty
-	 * value or ignore it for no filtering.
-	 * @param maxResults the maximum number of results to return. Use negative
-	 * numbers or ignore it for no limit.
-	 * @return the complete list of gene symbols stored in the database ordered
-	 * in ascending alphabetical order.
-	 */
-	public abstract String[] listGeneSymbols(String query, int maxResults);
-	
-	/**
 	 * Returns a list of genes that interact with a provided gene with a
 	 * certain degree of distance.
 	 * 

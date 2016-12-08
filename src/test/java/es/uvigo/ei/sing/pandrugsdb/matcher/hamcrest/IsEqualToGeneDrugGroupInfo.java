@@ -76,6 +76,6 @@ public class IsEqualToGeneDrugGroupInfo extends IsEqualToEntity<GeneDrugGroupInf
 		final GeneDrugGroupInfo[] expectedArray = StreamSupport.stream(expected.spliterator(), false)
 			.toArray(GeneDrugGroupInfo[]::new);
 		
-		return containsEntityInAnyOrder(IsEqualToGeneDrugGroupInfo::equalsToGeneDrugGroup, expectedArray);
+		return containsGeneDrugGroupInfos(expectedArray);
 	}
 }

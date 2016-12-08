@@ -88,7 +88,6 @@
 	<bean id="defaultRegistrationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAO"/>
 	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAO"/>	
 	<bean id="defaultGeneDrugDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAO"/>
-	<bean id="defaultGeneDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDAO"/>
 	<bean id="defaultClinicalGenomeVariationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAO"/>
 	<bean id="defaultPrincipalSpliceIsoformDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAO"/>
 	<bean id="defaultSomaticMutationInCancerDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultSomaticMutationInCancerDAO"/>
@@ -102,7 +101,6 @@
 	<bean id="defaultRegistrationService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService"/>
 	<bean id="defaultUserService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService"/>
 	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService"/>
-	<bean id="defaultGeneService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneService"/>
 	<bean id="defaultCancerService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService"/>
 
 	<bean id="defaultveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculator" primary="true"/>

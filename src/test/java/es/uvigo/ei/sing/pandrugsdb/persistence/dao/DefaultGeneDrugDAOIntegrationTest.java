@@ -21,12 +21,26 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugName;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsWithDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDrugDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
+import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
@@ -50,7 +64,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -69,67 +83,170 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Named("defaultGeneDrugDAO")
 	private GeneDrugDAO dao;
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testSearchEmptyGenes() {
-		this.dao.searchByGene(new GeneQueryParameters(), new String[0]);
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testSearchNullGenes() {
-		this.dao.searchByGene(new GeneQueryParameters(), (String[]) null);
+	@Test
+	public void testListGeneSymbols() {
+		final String[] geneSymbols = this.dao.listGeneSymbols("D", 10);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("D", 10))));
 	}
 	
 	@Test
-	public void testSearchNoResult() {
-		final List<GeneDrug> result = this.dao.searchByGene(new GeneQueryParameters(), "ABSENT GENE");
+	public void testListGeneSymbolsNoMatch() {
+		final String[] geneSymbols = this.dao.listGeneSymbols("X", 10);
+		
+		assertThat(geneSymbols, is(emptyArray()));
+	}
+	
+	@Test
+	public void testListGeneSymbolsWithLimit() {
+		final String[] geneSymbols = this.dao.listGeneSymbols("D", 1);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("D", 1))));
+	}
+	
+	@Test
+	public void testListGeneSymbolsEmptyFilter() {
+		final String[] geneSymbols = this.dao.listGeneSymbols("", 10);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("", 10))));
+	}
+	
+	@Test
+	public void testListGeneSymbolsNegativeMaxResults() {
+		final String[] geneSymbols = this.dao.listGeneSymbols("G", -1);
+		
+		assertThat(geneSymbols, is(arrayContaining(listGeneSymbols("G", -1))));
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testListGeneSymbolsNullFilter() {
+		this.dao.listGeneSymbols(null, 10);
+	}
+	
+	@Test
+	public void testListStandardDrugNames() {
+		final String[] drugNames = this.dao.listStandardDrugNames("D", 10);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 10))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesNoMatch() {
+		final String[] drugNames = this.dao.listStandardDrugNames("X", 10);
+		
+		assertThat(drugNames, is(emptyArray()));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesWithLimit() {
+		final String[] drugNames = this.dao.listStandardDrugNames("D", 1);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 1))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesEmptyFilter() {
+		final String[] drugNames = this.dao.listStandardDrugNames("", 10);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("", 10))));
+	}
+	
+	@Test
+	public void testListStandardDrugNamesNegativeMaxResults() {
+		final String[] drugNames = this.dao.listStandardDrugNames("D", -1);
+		
+		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", -1))));
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testListStandardDrugNamesNullFilter() {
+		this.dao.listStandardDrugNames(null, 10);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSearchByGeneEmptyGenes() {
+		this.dao.searchByGene(new GeneDrugQueryParameters(), new String[0]);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testSearchByGeneNullGenes() {
+		this.dao.searchByGene(new GeneDrugQueryParameters(), (String[]) null);
+	}
+	
+	@Test
+	public void testSearchByGeneNoResult() {
+		final List<GeneDrug> result = this.dao.searchByGene(
+			new GeneDrugQueryParameters(), absentGeneSymbol()
+		);
 		
 		assertThat(result, is(empty()));
 	}
 	
 	@Test
-	public void testSearchSingleGeneDirect() {
+	public void testSearchByGeneSingleGeneDirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneQueryParameters(), "DIRECT GENE 1"
+			new GeneDrugQueryParameters(), singleGeneSymbolDirect()
 		);
 
 		assertThat(result, containsInAnyOrder(singleGeneDrugDirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneDirect() {
+	public void testSearchByGeneMultipleGeneDirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneQueryParameters(),
-			"DIRECT GENE 1", "DIRECT GENE 2"
+			new GeneDrugQueryParameters(), multipleGeneSymbolsDirect()
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneDirect()));
 	}
 	
 	@Test
-	public void testSearchSingleGeneIndirect() {
+	public void testSearchByGeneSingleGeneIndirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneQueryParameters(), "IG1"
+			new GeneDrugQueryParameters(), singleGeneSymbolIndirect()
 		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneIndirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneIndirect() {
+	public void testSearchByGeneMultipleGeneIndirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneQueryParameters(), "IG1", "IG2"
+			new GeneDrugQueryParameters(), multipleGeneSymbolsIndirect()
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneIndirect()));
 	}
 	
 	@Test
-	public void testSearchMultipleGeneMixed() {
+	public void testSearchByGeneMultipleGeneMixed() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneQueryParameters(),
-			"DIRECT GENE 1", "DIRECT GENE 2", "IG1", "IG2"
+			new GeneDrugQueryParameters(), multipleGeneSymbolsMixed()
 		);
 		
 		assertThat(result, containsInAnyOrder(multipleGeneMixed()));
+	}
+	
+	@Test
+	public void testSearchByDrugAbsent() {
+		testSearchByDrug(absentDrugName());
+	}
+	
+	@Test
+	public void testSearchByDrugSingle() {
+		testSearchByDrug(singleDrugName());
+	}
+	
+	@Test
+	public void testSearchByDrugMultiple() {
+		testSearchByDrug(multipleDrugNames());
+	}
+	
+	private void testSearchByDrug(String ... drugNames) {
+		final List<GeneDrug> result = this.dao.searchByDrug(
+			new GeneDrugQueryParameters(), drugNames
+		);
+
+		assertThat(result, containsInAnyOrder(geneDrugsWithDrug(drugNames)));
 	}
 }

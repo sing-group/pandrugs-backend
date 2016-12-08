@@ -60,10 +60,6 @@ public class GeneDrug implements Serializable {
 	@Id
 	@Column(name = "target")
 	private boolean target;
-	
-	@ManyToOne
-	@JoinColumn(name = "drug_id", referencedColumnName = "id", insertable = false, updatable = false)
-	private Drug drug;
 
 	@Column(name = "family", length = 100, columnDefinition = "VARCHAR(100)")
 	private String family;
@@ -74,9 +70,14 @@ public class GeneDrug implements Serializable {
 	@Column(name = "alteration", length = 100, columnDefinition = "VARCHAR(100)")
 	private String alteration;
 	
+	@Column(name = "score")
 	private double score;
 	
-	@OneToMany(mappedBy = "geneDrug")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "drug_id", referencedColumnName = "id", insertable = false, updatable = false)
+	private Drug drug;
+	
+	@OneToMany(mappedBy = "geneDrug", fetch = FetchType.LAZY)
 	private List<IndirectGene> indirectGenes;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -93,7 +94,7 @@ public class GeneDrug implements Serializable {
 	)
 	private List<DrugSource> drugSources;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
 		name = "gene_symbol",
@@ -131,6 +132,10 @@ public class GeneDrug implements Serializable {
 			.map(gs -> new IndirectGene(this, gs))
 		.collect(toList());
 		this.drugSources = drugSources;
+	}
+	
+	public int getDrugId() {
+		return drugId;
 	}
 	
 	public Drug getDrug() {
@@ -245,9 +250,8 @@ public class GeneDrug implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
-		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
+		result = prime * result + drugId;
 		result = prime * result + ((family == null) ? 0 : family.hashCode());
-		result = prime * result + ((gene == null) ? 0 : gene.hashCode());
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		result = prime * result + ((resistance == null) ? 0 : resistance.hashCode());
 		long temp;
@@ -271,20 +275,12 @@ public class GeneDrug implements Serializable {
 				return false;
 		} else if (!alteration.equals(other.alteration))
 			return false;
-		if (drug == null) {
-			if (other.drug != null)
-				return false;
-		} else if (!drug.equals(other.drug))
+		if (drugId != other.drugId)
 			return false;
 		if (family == null) {
 			if (other.family != null)
 				return false;
 		} else if (!family.equals(other.family))
-			return false;
-		if (gene == null) {
-			if (other.gene != null)
-				return false;
-		} else if (!gene.equals(other.gene))
 			return false;
 		if (geneSymbol == null) {
 			if (other.geneSymbol != null)

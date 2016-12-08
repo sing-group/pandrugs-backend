@@ -21,15 +21,9 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static java.util.Objects.requireNonNull;
-
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,29 +53,5 @@ public class DefaultGeneDAO implements GeneDAO {
 	@Override
 	public Gene get(String geneSymbol) {
 		return dh.get(geneSymbol.toUpperCase());
-	}
-
-	@Override
-	public String[] listGeneSymbols(String queryFilter, int maxResults) {
-		requireNonNull(queryFilter, "queryFilter can't be null");
-		
-		final CriteriaQuery<String> cq = dh.cb().createQuery(String.class);
-		final Root<Gene> root = cq.from(dh.getEntityType());
-		
-		final Path<String> geneSymbolField = root.get("geneSymbol");
-		
-		final TypedQuery<String> query = dh.em().createQuery(
-			cq.select(geneSymbolField).distinct(true)
-				.where(dh.cb().like(geneSymbolField, queryFilter + "%"))
-				.orderBy(dh.cb().asc(root.get("geneSymbol")))
-		);
-		
-		if (maxResults > 0)
-			query.setMaxResults(maxResults);
-		
-		return query
-			.getResultList()
-			.stream()
-		.toArray(String[]::new);
 	}
 }

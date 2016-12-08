@@ -24,9 +24,11 @@ package es.uvigo.ei.sing.pandrugsdb.util;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class StringFormatter {
 	private final List<Function<String, String>> transformations;
@@ -48,8 +50,7 @@ public final class StringFormatter {
 
 		public StringFormatterBuiler toTitleCase() {
 			this.transformations.add(text -> stream(text.split(" "))
-				.map(String::toLowerCase)
-				.map(token -> Character.toUpperCase(token.charAt(0)) + token.substring(1))
+				.map(StringFormatter::capitalize)
 			.collect(joining(" ")));
 			
 			return this;
@@ -76,6 +77,24 @@ public final class StringFormatter {
 		public StringFormatter build() {
 			return new StringFormatter(this.transformations);
 		}
+	}
+	
+	public static String[] toUpperCase(String ... strings) {
+		return toUpperCase(stream(strings));
+	}
+	
+	public static String[] toUpperCase(Collection<String> strings) {
+		return toUpperCase(strings.stream());
+	}
+	
+	public static String[] toUpperCase(Stream<String> strings) {
+		return strings.map(String::toUpperCase).toArray(String[]::new);
+	}
+	
+	public static String capitalize(String text) {
+		if (text.isEmpty()) return text;
+		else if (text.length() == 1) return text.toUpperCase();
+		else return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
 	}
 	
 	public String format(String text) {
