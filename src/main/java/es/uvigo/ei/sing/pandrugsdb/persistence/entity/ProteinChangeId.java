@@ -21,68 +21,38 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Collections.unmodifiableSet;
+import java.io.Serializable;
 
-import java.util.Set;
+import javax.persistence.Embeddable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+@Embeddable
+public class ProteinChangeId implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-@Entity(name = "protein")
-public class Protein {
-	@Id
-	@Column(name = "uniprot_id")
 	private String uniprotId;
-	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interaction_id", referencedColumnName = "uniprot_id")
-	private Set<Protein> iteractions;
-	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "gene_symbol")
-	private Set<Gene> genes;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinChange> changes;
-	
-	Protein() {}
-	
-	Protein(String uniprotId) {
+
+	private String change;
+
+	ProteinChangeId() {}
+
+	public ProteinChangeId(String uniprotId, String change) {
 		this.uniprotId = uniprotId;
+		this.change = change;
 	}
 
 	public String getUniprotId() {
 		return uniprotId;
 	}
-	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
+
+	public String getChange() {
+		return change;
 	}
 
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
-	}
-	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
-	}
-	
-	public Set<ProteinChange> getChanges() {
-		return unmodifiableSet(changes);
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((change == null) ? 0 : change.hashCode());
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
 		return result;
 	}
@@ -95,7 +65,12 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
+		ProteinChangeId other = (ProteinChangeId) obj;
+		if (change == null) {
+			if (other.change != null)
+				return false;
+		} else if (!change.equals(other.change))
+			return false;
 		if (uniprotId == null) {
 			if (other.uniprotId != null)
 				return false;

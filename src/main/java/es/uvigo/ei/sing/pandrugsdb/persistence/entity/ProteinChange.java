@@ -23,66 +23,64 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 import static java.util.Collections.unmodifiableSet;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-@Entity(name = "protein")
-public class Protein {
+@Entity(name = "protein_change")
+@Table(indexes = @Index(columnList = "protein_change"))
+@IdClass(ProteinChangeId.class)
+public class ProteinChange implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "uniprot_id")
 	private String uniprotId;
+
+	@Id
+	@Column(name = "protein_change", length = 10, columnDefinition = "VARCHAR(10)")
+	private String change;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+		name = "uniprot_id",
+		referencedColumnName = "uniprot_id",
+		insertable = false, updatable = false
+	)
+	private Protein protein;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interaction_id", referencedColumnName = "uniprot_id")
-	private Set<Protein> iteractions;
-	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "gene_symbol")
-	private Set<Gene> genes;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinChange> changes;
-	
-	Protein() {}
-	
-	Protein(String uniprotId) {
-		this.uniprotId = uniprotId;
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "changes")
+	private Set<ProteinChangesPublication> publications;
+
+	ProteinChange() {}
+
+	public Protein getProtein() {
+		return protein;
 	}
 
-	public String getUniprotId() {
-		return uniprotId;
+	public String getChange() {
+		return change;
 	}
 	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
+	public Set<ProteinChangesPublication> getPublications() {
+		return unmodifiableSet(publications);
 	}
 
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
-	}
-	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
-	}
-	
-	public Set<ProteinChange> getChanges() {
-		return unmodifiableSet(changes);
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((change == null) ? 0 : change.hashCode());
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
 		return result;
 	}
@@ -95,7 +93,12 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
+		ProteinChange other = (ProteinChange) obj;
+		if (change == null) {
+			if (other.change != null)
+				return false;
+		} else if (!change.equals(other.change))
+			return false;
 		if (uniprotId == null) {
 			if (other.uniprotId != null)
 				return false;
