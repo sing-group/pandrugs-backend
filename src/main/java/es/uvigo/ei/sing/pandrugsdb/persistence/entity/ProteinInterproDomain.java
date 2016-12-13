@@ -21,75 +21,91 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Collections.unmodifiableSet;
-
-import java.util.Set;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
-@Entity(name = "protein")
-public class Protein {
+@Entity(name = "protein_interpro_domain")
+@IdClass(ProteinInterproDomainId.class)
+public class ProteinInterproDomain implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	@Id
-	@Column(name = "uniprot_id")
+	@Column(
+		name = "uniprot_id",
+		insertable = false, updatable = false
+	)
 	private String uniprotId;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interaction_id", referencedColumnName = "uniprot_id")
-	private Set<Protein> iteractions;
+	@Id
+	@Column(
+		name = "domain_id",
+		length = 9, columnDefinition = "CHAR(9)",
+		insertable = false, updatable = false
+	)
+	private String domainId;
+
+	@Id
+	@Column(name = "start")
+	private int start;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "gene_symbol")
-	private Set<Gene> genes;
+	@Id
+	@Column(name = "end")
+	private int end;
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
+	@ManyToOne
+	@JoinColumn(
+		name = "uniprot_id",
+		referencedColumnName = "uniprot_id"
+	)
+	private Protein protein;
+
+	@ManyToOne
+	@JoinColumn(
+		name = "domain_id",
+		referencedColumnName = "id"
+	)
+	private InterproDomain interproDomain;
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinChange> changes;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinInterproDomain> interproDomains;
-	
-	Protein() {}
-	
-	Protein(String uniprotId) {
-		this.uniprotId = uniprotId;
+	ProteinInterproDomain() {
 	}
 
 	public String getUniprotId() {
 		return uniprotId;
 	}
-	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
+
+	public String getDomainId() {
+		return domainId;
 	}
 
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
+	public int getStart() {
+		return start;
+	}
+
+	public int getEnd() {
+		return end;
 	}
 	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
+	public Protein getProtein() {
+		return protein;
 	}
 	
-	public Set<ProteinChange> getChanges() {
-		return unmodifiableSet(changes);
+	public InterproDomain getInterproDomain() {
+		return interproDomain;
 	}
-	
-	public Set<ProteinInterproDomain> getInterproDomains() {
-		return unmodifiableSet(interproDomains);
-	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((domainId == null) ? 0 : domainId.hashCode());
+		result = prime * result + end;
+		result = prime * result + start;
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
 		return result;
 	}
@@ -102,7 +118,16 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
+		ProteinInterproDomain other = (ProteinInterproDomain) obj;
+		if (domainId == null) {
+			if (other.domainId != null)
+				return false;
+		} else if (!domainId.equals(other.domainId))
+			return false;
+		if (end != other.end)
+			return false;
+		if (start != other.start)
+			return false;
 		if (uniprotId == null) {
 			if (other.uniprotId != null)
 				return false;
@@ -110,4 +135,5 @@ public class Protein {
 			return false;
 		return true;
 	}
+
 }

@@ -21,75 +21,48 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Collections.unmodifiableSet;
+import java.io.Serializable;
 
-import java.util.Set;
+import javax.persistence.Embeddable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+@Embeddable
+public class ProteinInterproDomainId implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-@Entity(name = "protein")
-public class Protein {
-	@Id
-	@Column(name = "uniprot_id")
 	private String uniprotId;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interaction_id", referencedColumnName = "uniprot_id")
-	private Set<Protein> iteractions;
+	private String domainId;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gene", referencedColumnName = "gene_symbol")
-	private Set<Gene> genes;
+	private int start;
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinPfam> pfams;
+	private int end;
 	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinChange> changes;
-	
-	@OneToMany(mappedBy = "protein", fetch = FetchType.LAZY)
-	private Set<ProteinInterproDomain> interproDomains;
-	
-	Protein() {}
-	
-	Protein(String uniprotId) {
-		this.uniprotId = uniprotId;
+	ProteinInterproDomainId() {
 	}
-
+	
 	public String getUniprotId() {
 		return uniprotId;
 	}
-	
-	public Set<Protein> getInteractions() {
-		return unmodifiableSet(iteractions);
+
+	public String getDomainId() {
+		return domainId;
 	}
 
-	public Set<Gene> getGenes() {
-		return unmodifiableSet(genes);
+	public int getStart() {
+		return start;
 	}
-	
-	public Set<ProteinPfam> getPfams() {
-		return unmodifiableSet(pfams);
+
+	public int getEnd() {
+		return end;
 	}
-	
-	public Set<ProteinChange> getChanges() {
-		return unmodifiableSet(changes);
-	}
-	
-	public Set<ProteinInterproDomain> getInterproDomains() {
-		return unmodifiableSet(interproDomains);
-	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((domainId == null) ? 0 : domainId.hashCode());
+		result = prime * result + end;
+		result = prime * result + start;
 		result = prime * result + ((uniprotId == null) ? 0 : uniprotId.hashCode());
 		return result;
 	}
@@ -102,7 +75,16 @@ public class Protein {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Protein other = (Protein) obj;
+		ProteinInterproDomainId other = (ProteinInterproDomainId) obj;
+		if (domainId == null) {
+			if (other.domainId != null)
+				return false;
+		} else if (!domainId.equals(other.domainId))
+			return false;
+		if (end != other.end)
+			return false;
+		if (start != other.start)
+			return false;
 		if (uniprotId == null) {
 			if (other.uniprotId != null)
 				return false;
@@ -110,4 +92,5 @@ public class Protein {
 			return false;
 		return true;
 	}
+	
 }
