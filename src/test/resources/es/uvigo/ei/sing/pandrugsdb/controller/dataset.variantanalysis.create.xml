@@ -24,5 +24,6 @@
 <dataset>
 	<variants_score_user_computation user_login="pepe" />
 	<variants_score_user_computation user_login="pepe" results_vscore_file="vep_data.csv" results_affectedgenes_file="genes_affected.csv"/>
+	<variants_score_user_computation user_login="guest" results_vscore_file="vep_data.csv" results_affectedgenes_file="genes_affected.csv"/>
 	<variants_score_user_computation user_login="pepe" results_vscore_file="vep_data.csv" results_affectedgenes_file="genes_affected.csv"/>
 </dataset>

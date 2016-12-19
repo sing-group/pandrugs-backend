@@ -23,5 +23,5 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
 
 public enum RoleType {
-	ADMIN, USER;
+	ADMIN, USER, GUEST;
 }

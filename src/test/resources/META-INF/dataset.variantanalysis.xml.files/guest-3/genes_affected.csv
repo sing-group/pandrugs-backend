@@ -1,0 +1,7 @@
+gene_hgnc	max(vscore)	branch	entrez_id	path_desc	path_id
+KCNH5	0.3743	UNCLASSIFIED	KCNH5		
+TPO	0.4161	UNCLASSIFIED	TPO	Tyrosine metabolism|Metabolic pathways|Thyroid hormone synthesis|Autoimmune thyroid disease	hsa00350|hsa01100|hsa04918|hsa05320
+CWC25	0.3322	UNCLASSIFIED	CWC25		
+ZNF891	0.2620	UNCLASSIFIED	ZNF891		
+TSKS	0.3750	TSG	TSKS		
+CARD16	0.3145	UNCLASSIFIED	CARD16

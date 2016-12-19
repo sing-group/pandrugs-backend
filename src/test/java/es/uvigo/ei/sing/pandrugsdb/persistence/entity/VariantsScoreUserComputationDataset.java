@@ -100,6 +100,20 @@ public class VariantsScoreUserComputationDataset {
 										Paths.get("vep_data.csv"),
 										Paths.get("genes_affected.csv"))
 						)
+				),
+				new VariantsScoreUserComputation(
+						3, UserDataset.guestUser(),
+						new VariantsScoreComputationDetails(
+								new VariantsScoreComputationParameters("inputVCF.vcf", "guest-3"),
+								new VariantsScoreComputationStatus(
+										"Finished",
+										1.0,
+										1.0),
+								new VariantsScoreComputationResults(
+										new VariantsEffectPredictionResults(Paths.get("vep.txt")),
+										Paths.get("vep_data.csv"),
+										Paths.get("genes_affected.csv"))
+						)
 				)
 			};
 	}

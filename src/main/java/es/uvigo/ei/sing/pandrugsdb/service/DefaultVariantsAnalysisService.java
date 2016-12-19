@@ -52,6 +52,7 @@ import org.springframework.stereotype.Service;
 import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
 
@@ -212,6 +213,12 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 		throws ForbiddenException, NotAuthorizedException, InternalServerErrorException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
+
+		if (checker.isUserInRole(RoleType.GUEST)) {
+			LOG.error(String.format("Your are a guest user, you cannot list computations. Give an id"));
+
+			throw new ForbiddenException("Guest users cannot list computations");
+		}
 
 		return checker.doIfPrivileged(
 			userLogin,

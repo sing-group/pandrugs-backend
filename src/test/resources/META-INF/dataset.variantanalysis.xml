@@ -54,4 +54,21 @@
 			results_vscore_file="vep_data.csv"
 			results_affectedgenes_file="genes_affected.csv"
 			/>
+	<variants_score_user_computation
+			id = "3"
+			user_login="guest"
+
+			parameter_vcf_file="inputVCF.vcf"
+			parameter_base_path="guest-3"
+			parameter_consequence_filter_active = "true"
+			parameter_gene_frequency_threshold = "0.0"
+
+			status_task_name="Finished"
+			status_task_progress="1.0"
+			status_overall_progress="1.0"
+
+			results_vep_file="vep.txt"
+			results_vscore_file="vep_data.csv"
+			results_affectedgenes_file="genes_affected.csv"
+	/>
 </dataset>

@@ -27,5 +27,6 @@
 	<user login="juan" email="juan@email.com" password="a94652aa97c7211ba8954dd15a3cf838" role="USER"/>
 	<user login="maría" email="maria@email.com" password="8a2ac0c5b70c320c517fea7adb2e4d00" role="USER"/>
 	<user login="admin1" email="admin1@email.com" password="e00cf25ad42683b3df678c61f42c6bda" role="ADMIN"/>
+	<User login="guest" email="guest@guest.com" password="084e0343a0486ff05530df6c705c8bb4" role="GUEST"/>
 	<user login="admin2" email="admin2@email.com" password="c84258e9c39059a89ab77d846ddab909" role="ADMIN"/>
 </dataset>

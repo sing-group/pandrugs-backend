@@ -24,4 +24,5 @@
 <dataset>
 	<variants_score_user_computation user_login="pepe" status_overall_progress="1.0"/>
 	<variants_score_user_computation user_login="pepe" status_overall_progress="1.0"/>
+	<variants_score_user_computation user_login="guest" status_overall_progress="1.0"/>
 </dataset>

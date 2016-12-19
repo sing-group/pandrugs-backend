@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.guestUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
@@ -71,6 +72,7 @@ import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
@@ -167,6 +169,17 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		assertThat(response.getStatus(), is(200));
 		assertThat(response.getEntity(), instanceOf(Map.class));
 		assertThat(((Map<Integer, ComputationMetadata>) response.getEntity()).size(), is(2));
+	}
+
+	@Test(expected = ForbiddenException.class)
+	public void testGetComputationsForGuestUser() {
+		final User accesingUser = guestUser();
+
+		//computation id=3 is owned by guest, but guests are not allowed to retrieve a list of computations
+		User user = guestUser();
+		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
+
+		service.getComputationsForUser(new UserLogin(user.getLogin()), security);
 	}
 
 	@Test(expected = ForbiddenException.class)

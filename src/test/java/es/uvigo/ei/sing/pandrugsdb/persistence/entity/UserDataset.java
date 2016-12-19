@@ -32,7 +32,8 @@ public class UserDataset {
 			new User("ana", "ana@email.com", "276b6c4692e78d4799c12ada515bc3e4", RoleType.USER),
 			new User("juan", "juan@email.com", "a94652aa97c7211ba8954dd15a3cf838", RoleType.USER),
 			new User("maría", "maria@email.com", "8a2ac0c5b70c320c517fea7adb2e4d00", RoleType.USER),
-			new User("admin1", "admin1@email.com", "e00cf25ad42683b3df678c61f42c6bda", RoleType.ADMIN)
+			new User("admin1", "admin1@email.com", "e00cf25ad42683b3df678c61f42c6bda", RoleType.ADMIN),
+			new User("guest", "guest@guest.com", "084e0343a0486ff05530df6c705c8bb4", RoleType.GUEST)
 		};
 	}
 	
@@ -50,7 +51,7 @@ public class UserDataset {
 	
 	public final static User presentAdmin() {
 		final User[] users = users();
-		return users[users.length - 1];
+		return users[users.length - 2];
 	}
 	
 	public final static String presentAdminPassword() {
@@ -68,7 +69,11 @@ public class UserDataset {
 	public final static User anyUser() {
 		return absentUser();
 	}
-	
+
+	public final static User guestUser() {
+		return users()[users().length - 1];
+	}
+
 	public final static String anyUserPassword() {
 		return anyUser().getLogin();
 	}
