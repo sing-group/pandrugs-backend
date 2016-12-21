@@ -35,17 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
-@XmlRootElement(name = "gene-interaction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "geneInteraction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneInteraction {
 	private String geneSymbol;
 	
-	@XmlElementWrapper(name = "gene-interactions")
-	@XmlElement(name = "gene-interaction")
+	@XmlElementWrapper(name = "geneInteractions")
+	@XmlElement(name = "geneInteraction")
 	private String[] geneInteractions;
 	
-	@XmlElementWrapper(name = "drug-interactions")
-	@XmlElement(name = "drug-interaction")
+	@XmlElementWrapper(name = "drugInteractions")
+	@XmlElement(name = "drugInteraction")
 	private DrugInteraction[] drugInteractions;
 	
 	GeneInteraction() {}

@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PUT;
@@ -38,23 +37,25 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.qmino.miredot.annotations.ReturnType;
+
 import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfos;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
 
 @Path("user")
 @Service
-@RolesAllowed("ADMIN")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultUserService implements UserService {
@@ -66,11 +67,12 @@ public class DefaultUserService implements UserService {
 	@GET
 	@Path("/{login}")
 	@RolesAllowed({ "ADMIN", "USER" })
+	@ReturnType(clazz = UserInfo.class)
 	@Override
-	public UserMetadata get(
+	public Response get(
 		@PathParam("login") UserLogin login,
 		@Context SecurityContext security
-	) throws NotAuthorizedException, NotFoundException, InternalServerErrorException {
+	) throws NotAuthorizedException, NotFoundException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = 
 			new SecurityContextUserAccessChecker(security);
@@ -81,11 +83,9 @@ public class DefaultUserService implements UserService {
 				final User user = controller.get(userLogin);
 				
 				if (user == null) {
-					throw createNotFoundException(
-						"No user found with login: " + userLogin
-					);
+					throw createNotFoundException("No user found with login: %s", userLogin);
 				} else {
-					return new UserMetadata(user);
+					return Response.ok(new UserInfo(user)).build();
 				}
 			},
 			() -> {
@@ -101,11 +101,12 @@ public class DefaultUserService implements UserService {
 	
 	@PUT
 	@RolesAllowed({ "ADMIN", "USER" })
+	@ReturnType(clazz = UserInfo.class)
 	@Override
-	public UserMetadata update(
-		UserMetadata userMetadata,
+	public Response update(
+		UserInfo userMetadata,
 		@Context SecurityContext security
-	) throws NotAuthorizedException, NotFoundException, InternalServerErrorException {
+	) throws NotAuthorizedException, NotFoundException {
 		final String userLogin = userMetadata.getLogin();
 		final SecurityContextUserAccessChecker checker = 
 			new SecurityContextUserAccessChecker(security);
@@ -116,14 +117,12 @@ public class DefaultUserService implements UserService {
 				final User user = controller.get(userLogin);
 				
 				if (user == null) {
-					throw createNotFoundException(
-						"No user found with login: " + userLogin
-					);
+					throw createNotFoundException("No user found with login: %s", userLogin);
 				} else {
 					user.setEmail(userMetadata.getEmail());
 					user.setPassword(userMetadata.getPassword());
 
-					return new UserMetadata(controller.update(user));
+					return Response.ok(new UserInfo(controller.update(user))).build();
 				}
 			},
 			() -> {
@@ -137,25 +136,27 @@ public class DefaultUserService implements UserService {
 		);
 	}
 	
-	@Override
 	@DELETE
-	public Message delete(@PathParam("login") UserLogin login)
-	throws NotFoundException, InternalServerErrorException {
+	@Path("/{login}")
+	@RolesAllowed("ADMIN")
+	@ReturnType(clazz = Message.class)
+	@Override
+	public Response delete(@PathParam("login") UserLogin login)
+	throws NotFoundException {
 		try {
 			this.controller.remove(login.getLogin());
 	
-			return new Message("User " + login + " deleted");
+			return Response.ok(Message.withFormat("User %s deleted", login)).build();
 		} catch (IllegalArgumentException iae) {
-			throw createNotFoundException(
-				"User " + login + " not found"
-			);
+			throw createNotFoundException("User %s not found", login);
 		}
 	}
 
 	@GET
+	@RolesAllowed("ADMIN")
+	@ReturnType(clazz = UserInfos.class)
 	@Override
-	public UserMetadatas list() 
-	throws InternalServerErrorException {
-		return new UserMetadatas(controller.list());
+	public Response list() {
+		return Response.ok(new UserInfos(controller.list())).build();
 	}
 }

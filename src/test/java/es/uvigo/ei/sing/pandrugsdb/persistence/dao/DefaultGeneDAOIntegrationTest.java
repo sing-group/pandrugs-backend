@@ -21,7 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.equalsToGene;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.equalToGene;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPathway.containsPathways;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genes;
@@ -71,7 +71,7 @@ public class DefaultGeneDAOIntegrationTest {
 	@Test
 	public void testGet() {
 		for (Gene gene : genes()) {
-			assertThat(dao.get(gene.getGeneSymbol()), is(equalsToGene(gene)));
+			assertThat(dao.get(gene.getGeneSymbol()), is(equalToGene(gene)));
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class DefaultGeneDAOIntegrationTest {
 		for (Gene expectedGene : genes) {
 			final Gene actualGene = dao.get(expectedGene.getGeneSymbol());
 			
-			assertThat(actualGene, is(equalsToGene(expectedGene)));
+			assertThat(actualGene, is(equalToGene(expectedGene)));
 			assertThat(actualGene.getPathways(), is(empty()));
 		}
 	}
@@ -105,7 +105,7 @@ public class DefaultGeneDAOIntegrationTest {
 			final Gene actualGene = dao.get(expectedGene.getGeneSymbol());
 			final Pathway[] expectedPathways = expectedGene.getPathways().stream().toArray(Pathway[]::new);
 			
-			assertThat(actualGene, is(equalsToGene(expectedGene)));
+			assertThat(actualGene, is(equalToGene(expectedGene)));
 			assertThat(actualGene.getPathways(), containsPathways(expectedPathways));
 		}
 	}

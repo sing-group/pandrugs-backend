@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
@@ -33,10 +34,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -79,10 +79,7 @@ public class DefaultGeneServiceIntegrationTest {
 	public void testGetGeneInteractions() {
 		for (String queryGene : presentGeneSymbols()) {
 			for (int degree = 0; degree < 5; degree++) {
-				final Gene[] expected = interactions(degree, queryGene);
-				final GeneInteraction[] interactions = service.getGeneInteractions(queryGene, degree);
-				
-				assertThat(asList(interactions), containsGeneInteraction(expected));
+				testGetInteractions(degree, queryGene);
 			}
 		}
 	}
@@ -90,64 +87,70 @@ public class DefaultGeneServiceIntegrationTest {
 	@Test
 	public void testGetGenesInteractionsWithMaxDegree() {
 		for (int degree = 0; degree <= 3; degree++) {
-			final List<String> queryGenes = asList(geneSymbolsWithMaxInteractionDegree(degree));
-
-			final Gene[] expected = interactions(degree, queryGenes);
-			final GeneInteraction[] interactions = service.getGenesInteractions(queryGenes, degree);
-				
-			assertThat(asList(interactions), containsGeneInteraction(expected));
+			testGetInteractions(degree, geneSymbolsWithMaxInteractionDegree(degree));
 		}
 	}
 	
 	@Test
 	public void testGetGenesInteractionsWithDegreeUpTo() {
 		for (int degree = 0; degree <= 5; degree++) {
-			final List<String> queryGenes = asList(geneSymbolsWithInteractionDegreeUpTo(degree));
-
-			final Gene[] expected = interactions(degree, queryGenes);
-			final GeneInteraction[] interactions = service.getGenesInteractions(queryGenes, degree);
-			
-			assertThat(asList(interactions), containsGeneInteraction(expected));
+			testGetInteractions(degree, geneSymbolsWithInteractionDegreeUpTo(degree));
 		}
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGeneInteractionsNegativeDegree() {
 		service.getGeneInteractions(presentGeneSymbol(), -1);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGeneInteractionsEmptyGeneSymbol() {
 		service.getGeneInteractions("", 10);
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGeneInteractionsNullGeneSymbol() {
 		service.getGeneInteractions(null, 10);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGeneInteractionsAbsentGeneSymbol() {
 		service.getGeneInteractions(absentGeneSymbol(), 10);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGenesInteractionsNegativeDegree() {
 		service.getGenesInteractions(asList(presentGeneSymbols()), -1);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGenesInteractionsEmptyGeneSymbols() {
 		service.getGenesInteractions(emptyList(), 10);
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGenesInteractionsNullGeneSymbols() {
 		service.getGenesInteractions(null, 10);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = BadRequestException.class)
 	public void testGetGenesInteractionsAbsentGeneSymbols() {
 		service.getGenesInteractions(asList(absentGeneSymbols()), 10);
+	}
+
+	private void testGetInteractions(int degree, String ... queryGene) {
+		final Response response;
+		
+		if (queryGene.length == 1) {
+			response = service.getGeneInteractions(queryGene[0], degree);
+		} else {
+			response = service.getGenesInteractions(asList(queryGene), degree);
+		}
+		
+		assertThat(response, hasOkStatus());
+		assertThat(
+			asList((GeneInteraction[]) response.getEntity()),
+			containsGeneInteraction(interactions(degree, queryGene))
+		);
 	}
 }

@@ -21,13 +21,19 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
+import javax.ws.rs.core.Response;
 
+/**
+ * Service to get information about the cancer types used in the application.
+ * 
+ * @author Miguel Reboiro-Jato
+ *
+ */
 public interface CancerService {
 	/**
 	 * Returns the list of cancer types to which the drugs can be associated.
 	 * 
 	 * @return the list of cancer types to which the drugs can be associated.
 	 */
-	public abstract CancerTypeNames list();
+	public abstract Response list();
 }

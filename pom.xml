@@ -103,7 +103,7 @@
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
 		<maven-surefire-plugins.version>2.19.1</maven-surefire-plugins.version>
-		<miredot-plugin.version>1.6.0</miredot-plugin.version>
+		<miredot-plugin.version>2.0.2</miredot-plugin.version>
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		<maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
 
@@ -122,7 +122,7 @@
 		<miredot-annotations.version>1.5.0</miredot-annotations.version>
 		<mysql.version>5.1.34</mysql.version>
 		<logback.version>1.1.2</logback.version>
-		<jcloverslf4j.version>1.7.10</jcloverslf4j.version>
+		<jcloverslf4j.version>1.7.22</jcloverslf4j.version>
 		<mail.version>1.5.2</mail.version>
 		<activation.version>1.1.1</activation.version>
 		<commons-io.version>2.4</commons-io.version>
@@ -527,9 +527,12 @@
 					</execution>
 				</executions>
 				<configuration>
+					<organizationId>${miredot.organizationId}</organizationId>
 					<licence>${miredot.license.pandrugsdb}</licence>
-					<!-- insert other configuration here (optional) -->
 					<restModel>
+						<restFramework>
+							<name>jax-rs</name>
+						</restFramework>
 						<httpStatusCodes>
 							<httpStatusCode>
 								<httpCode>200</httpCode>
@@ -540,6 +543,16 @@
 								<httpCode>400</httpCode>
 								<document>explicit: javax.ws.rs.BadRequestException</document>
 								<defaultMessage>The information provided was not expected or some parts where missing.</defaultMessage>
+							</httpStatusCode>
+							<httpStatusCode>
+								<httpCode>401</httpCode>
+								<document>explicit: javax.ws.rs.NotAuthorizedException</document>
+								<defaultMessage>The given credentials are note valid.</defaultMessage>
+							</httpStatusCode>
+							<httpStatusCode>
+								<httpCode>403</httpCode>
+								<document>explicit: javax.ws.rs.ForbiddenException</document>
+								<defaultMessage>The given credentials do not allow to perform the request.</defaultMessage>
 							</httpStatusCode>
 							<httpStatusCode>
 								<httpCode>404</httpCode>
@@ -556,13 +569,11 @@
 								<document>always</document>
 								<defaultMessage>An unexpected error has happened while resolving the request.</defaultMessage>
 							</httpStatusCode>
-							<httpStatusCode>
-								<httpCode>403</httpCode>
-								<document>explicit: javax.ws.rs.ForbiddenException</document>
-								<defaultMessage>The given credentials do not allow to perform the request.</defaultMessage>
-							</httpStatusCode>
 						</httpStatusCodes>
 					</restModel>
+					<output>
+						<html></html>
+					</output>
 				</configuration>
 			</plugin>
 

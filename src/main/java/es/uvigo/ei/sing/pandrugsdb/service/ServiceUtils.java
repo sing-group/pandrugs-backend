@@ -25,12 +25,14 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
@@ -47,6 +49,10 @@ public final class ServiceUtils {
 			NotAuthorizedException::new, UNAUTHORIZED, message);
 	}
 
+	public static NotFoundException createNotFoundException(String formattableMessage, Object ... params) {
+		return createErrorException(NotFoundException::new, NOT_FOUND, String.format(formattableMessage, params));
+	}
+
 	public static NotFoundException createNotFoundException(String message) {
 		return createErrorException(NotFoundException::new, NOT_FOUND, message);
 	}
@@ -59,6 +65,10 @@ public final class ServiceUtils {
 		return createErrorException(BadRequestException::new, BAD_REQUEST, message);
 	}
 
+	public static BadRequestException createBadRequestException(Exception exception) {
+		return createErrorException(BadRequestException::new, BAD_REQUEST, exception);
+	}
+
 	public static InternalServerErrorException createInternalServerErrorException(String message) {
 		return createErrorException(
 			InternalServerErrorException::new, INTERNAL_SERVER_ERROR, message);
@@ -68,6 +78,14 @@ public final class ServiceUtils {
 		return createErrorException(
 			InternalServerErrorException::new, INTERNAL_SERVER_ERROR, exception);
 	}
+
+	public static ForbiddenException createForbiddentException(String message) {
+		return createErrorException(ForbiddenException::new, FORBIDDEN, message);
+	}
+
+	public static ForbiddenException createForbiddentException(String formattableMessage, Object ... params) {
+		return createErrorException(ForbiddenException::new, FORBIDDEN, String.format(formattableMessage, params));
+	}
 	
 	public static <T extends WebApplicationException> T createErrorException(
 		BiFunction<Response, Throwable, T> exceptionBuilder,
@@ -75,7 +93,8 @@ public final class ServiceUtils {
 		Throwable exception
 	) {
 		final Response response = Response.status(status).entity(new ErrorMessage(
-			status.getStatusCode(), Optional.ofNullable(exception.getMessage()).orElse("Unexpected exception thrown")
+			status.getStatusCode(),
+			Optional.ofNullable(exception.getMessage()).orElse("Unexpected exception thrown")
 		)).build();
 		
 		return exceptionBuilder.apply(response, exception);

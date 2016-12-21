@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 
-@XmlRootElement(name = "cancer-names", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "cancerNames", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CancerTypeNames {
 	@XmlElement(name = "name", nillable = false)

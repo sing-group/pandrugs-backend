@@ -22,51 +22,36 @@
 package es.uvigo.ei.sing.pandrugsdb.service;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 
+/**
+ * Service to perform the user registration and confirmation.
+ * 
+ * @author Miguel Reboiro-Jato
+ */
 public interface RegistrationService {
-	/**
-	 * Creates a new normal user registration request. An UUID will be 
-	 * generated that user must use to access the application.
-	 * <p>
-	 * The confirmation path is:
-	 * {@code http://&lt;server&gt;/public/registration/&lt;uuid&gt;}
-	 * </p>
-	 * 
-	 * @param registration data for user registration.
-	 * @return a confirmation message with a 200 OK HTTP status if registration
-	 * was successful.
-	 * @throws BadRequestException if the registration information is not valid.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
-	 */
-	public abstract Message register(Registration registration)
-	throws BadRequestException, InternalServerErrorException;
-
 	/**
 	 * Creates a new normal user registration request. An UUID will be
 	 * generated that user must use to access the application.
 	 * <p>
 	 * The confirmation path is:
-	 * {@code http://&lt;server&gt;/public/registration/&lt;uuid&gt;}
+	 * {@code http://<server>/public/registration/<uuid>}
 	 * </p>
 	 *
 	 * @param registration data for user registration.
-	 * @param confirmationUrlTemplate a template for the confirmation url that
+	 * @param confirmationUrlTemplate a template for the confirmation URL that
 	 *                                goes inside the confirmation email. Use %s
 	 *                                as placeholder for the confirmation token
 	 * @return a confirmation message with a 200 OK HTTP status if registration
 	 * was successful.
 	 * @throws BadRequestException if the registration information is not valid.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract Message register(Registration registration, String confirmationUrlTemplate)
-			throws BadRequestException, InternalServerErrorException;
+	public Response register(Registration registration, String confirmationUrlTemplate)
+	throws BadRequestException;
 
 	/**
 	 * Confirms an user registration. If the UUID exists, the associated user 
@@ -76,8 +61,7 @@ public interface RegistrationService {
 	 * @return the new user created after confirmation with a 200 OK HTTP 
 	 * status.
 	 * @throws NotFoundException if the uuid is not valid. 
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract UserMetadata confirm(UUID uuid)
-	throws NotFoundException, InternalServerErrorException;
+	public Response confirm(UUID uuid)
+	throws NotFoundException;
 }

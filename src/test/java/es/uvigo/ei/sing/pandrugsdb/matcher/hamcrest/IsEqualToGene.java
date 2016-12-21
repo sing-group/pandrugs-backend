@@ -51,12 +51,12 @@ public class IsEqualToGene extends IsEqualToEntity<Gene> {
 	}
 
 	@Factory
-	public static IsEqualToGene equalsToGene(Gene expected) {
+	public static IsEqualToGene equalToGene(Gene expected) {
 		return new IsEqualToGene(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends Gene>> containsGenes(Gene ... expected) {
-		return containsEntityInAnyOrder(IsEqualToGene::equalsToGene, expected);
+		return containsEntityInAnyOrder(IsEqualToGene::equalToGene, expected);
 	}
 }

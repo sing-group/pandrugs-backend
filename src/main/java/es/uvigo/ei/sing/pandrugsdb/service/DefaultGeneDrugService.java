@@ -34,17 +34,18 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
@@ -59,26 +60,26 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
  */
 @Path("genedrug")
 @Service
-@Transactional
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultGeneDrugService implements GeneDrugService {
-	private static Logger LOG = LoggerFactory.getLogger(DefaultGeneDrugService.class);
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultGeneDrugService.class);
 	
 	@Inject
 	private GeneDrugController controller;
 
 	@GET
 	@Consumes(MediaType.WILDCARD)
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public GeneDrugGroupInfos list(
+	public Response list(
 		@QueryParam("gene") Set<String> genes,
 		@QueryParam("drug") Set<String> drugs,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
-	) throws BadRequestException, InternalServerErrorException {
+	) throws BadRequestException {
 		try {
 			if (!isEmpty(genes) && !isEmpty(drugs)) {
 				throw new IllegalArgumentException("Genes and dugs can't be provided at the same time");
@@ -92,7 +93,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					genes.stream().sorted().toArray(String[]::new)
 				);
 				
-				return new GeneDrugGroupInfos(geneDrugs);
+				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 			} else {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByDrugs(
 					new GeneDrugQueryParameters(
@@ -101,24 +102,25 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					drugs.stream().sorted().toArray(String[]::new)
 				);
 				
-				return new GeneDrugGroupInfos(geneDrugs);
+				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 			}
 		} catch (IllegalArgumentException | NullPointerException e) {
-			LOG.error("Error listing gene-drugs", e);
-			throw createBadRequestException(e.getMessage());
+			LOG.warn("Error listing gene-drugs", e);
+			throw createBadRequestException(e);
 		}
 	}
 
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public GeneDrugGroupInfos listRanked(
+	public Response listRanked(
 		GeneRanking geneRanking,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
-	) throws BadRequestException, InternalServerErrorException {
+	) throws BadRequestException {
 		try {
 			requireNonNull(geneRanking, "geneRanking can't be null");
 			requireNonEmpty(geneRanking.getGeneRank(), "At least one gene must be provided");
@@ -129,25 +131,26 @@ public class DefaultGeneDrugService implements GeneDrugService {
 				),
 				geneRanking
 			);
-			
-			return new GeneDrugGroupInfos(geneDrugs);
+
+			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
-			LOG.error("Error listing gene-drugs from rank", e);
-			throw createBadRequestException(e.getMessage());
+			LOG.warn("Error listing gene-drugs from rank", e);
+			throw createBadRequestException(e);
 		}
 	}
 
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Path("fromComputationId")
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public GeneDrugGroupInfos listFromComputationId(
+	public Response listFromComputationId(
 		@QueryParam("computationId") Integer computationId,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
-	) throws BadRequestException, InternalServerErrorException {
+	) throws BadRequestException {
 		try {
 			requireNonNull(computationId, "A computation Id must be provided");
 
@@ -158,34 +161,46 @@ public class DefaultGeneDrugService implements GeneDrugService {
 				computationId
 			);
 
-			return new GeneDrugGroupInfos(geneDrugs);
+			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
-			LOG.error("Error listing gene-drugs from computation id", e);
-			throw createBadRequestException(e.getMessage());
+			LOG.warn("Error listing gene-drugs from computation id", e);
+			throw createBadRequestException(e);
+		}
+	}
+
+	@GET
+	@Path("/gene")
+	@ReturnType(clazz = String[].class)
+	@Override
+	public Response listGeneSymbols(
+		@QueryParam("query") @DefaultValue("") String query,
+		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
+	) {
+		try {
+			requireNonNull(query, "query can't be null");
+			
+			return Response.ok(controller.listGeneSymbols(query, maxResults)).build();
+		} catch (NullPointerException e) {
+			LOG.warn("Error retrieving gene symbols", e);
+			throw createBadRequestException(e);
 		}
 	}
 
 	@GET
 	@Path("/drug")
+	@ReturnType(clazz = String[].class)
 	@Override
-	public String[] listStandardDrugNames(
+	public Response listStandardDrugNames(
 		@QueryParam("query") @DefaultValue("") String query,
 		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
 	) {
-		requireNonNull(query, "query can't be null");
-
-		return controller.listStandardDrugNames(query, maxResults);
-	}
-
-	@GET
-	@Path("/gene")
-	@Override
-	public String[] listGeneSymbols(
-		@QueryParam("query") @DefaultValue("") String query,
-		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
-	) {
-		requireNonNull(query, "query can't be null");
-		
-		return controller.listGeneSymbols(query, maxResults);
+		try {
+			requireNonNull(query, "query can't be null");
+	
+			return Response.ok(controller.listStandardDrugNames(query, maxResults)).build();
+		} catch (NullPointerException e) {
+			LOG.warn("Error retrieving standard drug names", e);
+			throw createBadRequestException(e);
+		}
 	}
 }

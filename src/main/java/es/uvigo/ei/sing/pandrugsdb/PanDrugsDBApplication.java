@@ -30,13 +30,24 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneService;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService;
+import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService;
 import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisService;
+import es.uvigo.ei.sing.pandrugsdb.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("api")
-public class PanDrugsDBPrivateApplication extends ResourceConfig {
-	public PanDrugsDBPrivateApplication() {
+public class PanDrugsDBApplication extends ResourceConfig {
+	public PanDrugsDBApplication() {
 		super(
+			DefaultRegistrationService.class,
+			DefaultGeneDrugService.class,
+			DefaultSessionService.class,
+			DefaultGeneService.class,
+			DefaultCancerService.class,
 			DefaultUserService.class,
 			DefaultVariantsAnalysisService.class
 		);
@@ -47,5 +58,6 @@ public class PanDrugsDBPrivateApplication extends ResourceConfig {
 		register(RolesAllowedDynamicFeature.class);
 		register(ValidationFeature.class);
 		register(UnexpectedExceptionMapper.class);
+		register(GeneRankingMessageBodyReader.class);
 	}
 }

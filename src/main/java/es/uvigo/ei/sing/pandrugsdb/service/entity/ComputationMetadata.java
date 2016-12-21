@@ -27,47 +27,52 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
 
-/**
- * Created by lipido on 10/20/16.
- */
-@XmlRootElement(name = "computation-status-metadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlRootElement(name = "computationStatusMetadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ComputationMetadata {
-
-	private VariantsScoreUserComputation computation;
-
+	private String name;
 	private Integer affectedGenes;
+	private double overallProgress;
+	private double taskProgress;
+	private String taskName;
+	private boolean finished;
+	private boolean failed;
 
 	public ComputationMetadata(VariantsScoreUserComputation computation, Integer affectedGenes) {
-		this.computation = computation;
 		this.affectedGenes = affectedGenes;
+		this.name = computation.getName();
+		this.overallProgress = computation.getComputationDetails().getStatus().getOverallProgress();
+		this.taskProgress = computation.getComputationDetails().getStatus().getTaskProgress();
+		this.taskName = computation.getComputationDetails().getStatus().getTaskName();
+		this.finished = computation.getComputationDetails().getStatus().isFinished();
+		this.failed = computation.getComputationDetails().getStatus().hasErrors();
 	}
 
 	public String getName() {
-		return computation.getName();
-	}
-
-	public double getOverallProgress() {
-		return computation.getComputationDetails().getStatus().getOverallProgress();
-	}
-
-	public double getTaskProgress() {
-		return computation.getComputationDetails().getStatus().getTaskProgress();
-	}
-
-	public String getTaskName() {
-		return computation.getComputationDetails().getStatus().getTaskName();
-	}
-
-	public boolean isFinished() {
-		return computation.getComputationDetails().getStatus().isFinished();
-	}
-
-	public boolean isFailed() {
-		return computation.getComputationDetails().getStatus().hasErrors();
+		return name;
 	}
 
 	public Integer getAffectedGenes() {
 		return affectedGenes;
+	}
+
+	public double getOverallProgress() {
+		return overallProgress;
+	}
+
+	public double getTaskProgress() {
+		return taskProgress;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public boolean isFailed() {
+		return failed;
 	}
 }

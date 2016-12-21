@@ -31,6 +31,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
@@ -41,14 +43,16 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultSessionService implements SessionService {
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultSessionService.class);
+	
 	@Inject
 	private UserController controller;
 	
 	@POST
 	@Override
-	public void login(Login login) 
-	throws NotAuthorizedException {
+	public void login(Login login) throws NotAuthorizedException {
 		if (!controller.checkLogin(login.getUsername(), login.getPassword())) {
+			LOG.warn("Invalid login for user: " + login.getUsername());
 			throw createUnauthorizedException("Access denied");
 		}
 	}

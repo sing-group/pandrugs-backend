@@ -57,7 +57,6 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>CorsFilter</filter-name>
-		<url-pattern>/public/*</url-pattern>
 		<url-pattern>/api/*</url-pattern>
 	</filter-mapping>
 	
@@ -87,14 +86,13 @@
 	<!-- Security -->
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>All</web-resource-name>
+			<web-resource-name>Private</web-resource-name>
 			<url-pattern>/api/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 			<http-method>PUT</http-method>
 			<http-method>DELETE</http-method>
 			<http-method>HEAD</http-method>
-			<!-- <http-method>OPTIONS</http-method>-->
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>ADMIN</role-name>
@@ -104,6 +102,26 @@
 			<transport-guarantee>NONE</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Public</web-resource-name>
+			<url-pattern>/api/cancer/*</url-pattern>
+			<url-pattern>/api/genedrug/*</url-pattern>
+			<url-pattern>/api/gene/*</url-pattern>
+			<url-pattern>/api/registration/*</url-pattern>
+			<url-pattern>/api/session/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>HEAD</http-method>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	
 	<login-config>
 		<auth-method>BASIC</auth-method>
 		<realm-name>PanDrugsDBRealm</realm-name>

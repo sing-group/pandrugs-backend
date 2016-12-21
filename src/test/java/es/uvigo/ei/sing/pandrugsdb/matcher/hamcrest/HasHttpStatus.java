@@ -32,14 +32,14 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public class HasAHTTPStatusMatcher extends TypeSafeMatcher<Response> {
+public class HasHttpStatus extends TypeSafeMatcher<Response> {
 	private final StatusType expectedStatus;
 	
-	public HasAHTTPStatusMatcher(StatusType expectedStatus) {
+	public HasHttpStatus(StatusType expectedStatus) {
 		this.expectedStatus = requireNonNull(expectedStatus);
 	}
 	
-	public HasAHTTPStatusMatcher(int expectedStatus) {
+	public HasHttpStatus(int expectedStatus) {
 		this(Status.fromStatusCode(expectedStatus));
 	}
 
@@ -54,12 +54,47 @@ public class HasAHTTPStatusMatcher extends TypeSafeMatcher<Response> {
 	}
 	
 	@Factory
-	public static Matcher<Response> hasHTTPStatus(StatusType expectedStatus) {
-		return new HasAHTTPStatusMatcher(expectedStatus);
+	public static Matcher<Response> hasHttpStatus(StatusType expectedStatus) {
+		return new HasHttpStatus(expectedStatus);
 	}
 	
 	@Factory
-	public static Matcher<Response> hasHTTPStatus(int expectedStatus) {
-		return new HasAHTTPStatusMatcher(expectedStatus);
+	public static Matcher<Response> hasHttpStatus(int expectedStatus) {
+		return new HasHttpStatus(expectedStatus);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasOkStatus() {
+		return new HasHttpStatus(Response.Status.OK);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasBadRequestStatus() {
+		return new HasHttpStatus(Response.Status.BAD_REQUEST);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasInternalServerErrorStatus() {
+		return new HasHttpStatus(Response.Status.INTERNAL_SERVER_ERROR);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasUnauthorizedStatus() {
+		return new HasHttpStatus(Response.Status.UNAUTHORIZED);
+	}
+	
+	@Factory
+	public static Matcher<Response> hasForbiddenStatus() {
+		return new HasHttpStatus(Response.Status.FORBIDDEN);
+	}
+
+	@Factory
+	public static Matcher<Response> hasNoContentStatus() {
+		return new HasHttpStatus(Response.Status.NO_CONTENT);
+	}
+
+	@Factory
+	public static Matcher<Response> hasCreatedStatus() {
+		return new HasHttpStatus(Response.Status.CREATED);
 	}
 }

@@ -24,7 +24,6 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import java.io.InputStream;
 
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
@@ -33,8 +32,13 @@ import javax.ws.rs.core.UriInfo;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 
+/**
+ * Service to submit VCF Analysis computations, as well as to follow their
+ * status
+ *
+ * @author Daniel Glez-Peña
+ */
 public interface VariantsAnalysisService {
-
 	/**
 	 * Submits a new variant score computation for an existing user.
 	 *
@@ -46,14 +50,14 @@ public interface VariantsAnalysisService {
 	 * @return the computation id as an integer value
 	 * @throws ForbiddenException if the authenticated user does not have permissions to create the computation.
 	 * @throws NotAuthorizedException if provided login has not been correctly authenticated.
-	 * @throws InternalServerErrorException if an unexpected error occurs.
 	 */
 	public Response startVariantsScoreUserComputation(
-			UserLogin login,
-			InputStream vcfFile,
-			String computationName,
-			SecurityContext security,
-			UriInfo currentUri) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+		UserLogin login,
+		InputStream vcfFile,
+		String computationName,
+		SecurityContext security,
+		UriInfo currentUri
+	) throws ForbiddenException, NotAuthorizedException;
 
 	/**
 	 * Obtains the current status of a previously submitted computation.
@@ -67,12 +71,12 @@ public interface VariantsAnalysisService {
 	 * @throws ForbiddenException if the authenticated user does not have permissions to see this computation status.
 	 * @throws NotAuthorizedException if provided login has not been correctly authenticated
 	 * or does not own the computation he/she is asking for.
-	 * @throws InternalServerErrorException if an unexpected error occurs.
 	 */
 	public Response getComputationStatus(
-			UserLogin login,
-			Integer computationId,
-			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+		UserLogin login,
+		Integer computationId,
+		SecurityContext security
+	) throws ForbiddenException, NotAuthorizedException;
 
 	/**
 	 * Deletes a computation.
@@ -86,14 +90,13 @@ public interface VariantsAnalysisService {
 	 * @throws ForbiddenException if the authenticated user does not have permissions to delete this computation.
 	 * @throws NotAuthorizedException if provided login has not been correctly authenticated
 	 * or does not own the computation he/she is asking for.
-	 * @throws InternalServerErrorException if an unexpected error occurs.
 	 * @throws NotFoundException if the computation does not exist.
 	 */
 	public Response deleteComputation(
-			UserLogin login,
-			Integer computationId,
-			SecurityContext security) throws ForbiddenException, NotAuthorizedException,
-			InternalServerErrorException, NotFoundException;
+		UserLogin login,
+		Integer computationId,
+		SecurityContext security
+	) throws ForbiddenException, NotAuthorizedException, NotFoundException;
 
 	/**
 	 * Obtains the current status of all submitted computations.
@@ -106,9 +109,9 @@ public interface VariantsAnalysisService {
 	 * @throws ForbiddenException if the authenticated user does not have permissions to see this computation status.
 	 * @throws NotAuthorizedException if provided login has not been correctly authenticated
 	 * or does not own the computation he/she is asking for.
-	 * @throws InternalServerErrorException if an unexpected error occurs.
 	 */
 	public Response getComputationsForUser(
-			UserLogin login,
-			SecurityContext security) throws ForbiddenException, NotAuthorizedException, InternalServerErrorException;
+		UserLogin login,
+		SecurityContext security
+	) throws ForbiddenException, NotAuthorizedException;
 }

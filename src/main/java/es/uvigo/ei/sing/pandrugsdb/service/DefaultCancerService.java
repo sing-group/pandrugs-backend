@@ -26,8 +26,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
+
+import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
 
@@ -43,8 +46,9 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultCancerService implements CancerService {
 	@GET
+	@ReturnType(clazz = CancerTypeNames.class)
 	@Override
-	public CancerTypeNames list() {
-		return new CancerTypeNames();
+	public Response list() {
+		return Response.ok(new CancerTypeNames()).build();
 	}
 }

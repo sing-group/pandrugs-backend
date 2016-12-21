@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.anyUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.easymock.EasyMockRunner;
@@ -52,8 +54,8 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfos;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultUserServiceUnitTest {
@@ -93,7 +95,7 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(security, principal);
 		
-		service.update(new UserMetadata(user), security);
+		service.update(new UserInfo(user), security);
 	}
 	
 	@Test(expected = InternalServerErrorException.class)
@@ -126,9 +128,10 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		final UserMetadata metadata = service.get(new UserLogin(user.getLogin()), security);
+		final Response response = service.get(new UserLogin(user.getLogin()), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(user));
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), hasTheSameUserDataAs(user));
 	}
 	
 	@Test(expected = NotFoundException.class)
@@ -188,9 +191,10 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		final UserMetadata metadata = service.update(new UserMetadata(updatedUser), security);
+		final Response response = service.update(new UserInfo(updatedUser), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(updatedUser));
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), hasTheSameUserDataAs(updatedUser));
 	}
 	
 	@Test(expected = NotFoundException.class)
@@ -204,7 +208,7 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		service.update(new UserMetadata(user), security);
+		service.update(new UserInfo(user), security);
 	}
 	
 	@Test(expected = InternalServerErrorException.class)
@@ -218,7 +222,7 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		service.update(new UserMetadata(user), security);
+		service.update(new UserInfo(user), security);
 	}
 
 	@Test
@@ -230,9 +234,10 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		final Message message = service.delete(new UserLogin(login));
+		final Response response = service.delete(new UserLogin(login));
 		
-		assertThat(message, is(instanceOf(Message.class)));
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), is(instanceOf(Message.class)));
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -264,17 +269,19 @@ public class DefaultUserServiceUnitTest {
 	@Test
 	public void testList() {
 		final User[] users = users();
-		final UserMetadata[] metadatas  = Stream.of(users)
-			.map(UserMetadata::new)
-		.toArray(UserMetadata[]::new);
+		final UserInfo[] metadatas  = Stream.of(users)
+			.map(UserInfo::new)
+		.toArray(UserInfo[]::new);
 		
 		expect(controller.list())
 			.andReturn(asList(users));
 		
 		replay(controller, security, principal);
 		
-		final UserMetadatas userMetadatas = service.list();
+		final Response response = service.list();
+		assertThat(response, hasOkStatus());
 		
+		final UserInfos userMetadatas = (UserInfos) response.getEntity();
 		assertThat(userMetadatas.getUsers(), containsInAnyOrder(metadatas));
 	}
 
@@ -311,9 +318,10 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		final UserMetadata metadata = service.get(new UserLogin(login), security);
+		final Response response = service.get(new UserLogin(login), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(user));
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), hasTheSameUserDataAs(user));
 	}
 	
 	private void testUpdateOwnData(boolean isAdmin) {
@@ -334,8 +342,9 @@ public class DefaultUserServiceUnitTest {
 		
 		replay(controller, security, principal);
 		
-		final UserMetadata metadata = service.update(new UserMetadata(updatedUser), security);
+		final Response response = service.update(new UserInfo(updatedUser), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(updatedUser));
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), hasTheSameUserDataAs(updatedUser));
 	}
 }

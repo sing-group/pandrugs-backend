@@ -22,7 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToSomaticMutationInCancer.containsSomaticMutationInCancers;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToSomaticMutationInCancer.equalsSomaticMutationInCancer;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToSomaticMutationInCancer.equalSomaticMutationInCancer;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.invalidGeneAndMutationAA;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.invalidIds;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.validGeneAndMutationAA;
@@ -72,7 +72,7 @@ public class DefaultSomaticMutationInCancerDAOTest {
 	@Test
 	public void testGetById() {
 		for (SomaticMutationInCancerId id : validIds()) {
-			assertThat(dao.get(id), is(equalsSomaticMutationInCancer(withId(id))));
+			assertThat(dao.get(id), is(equalSomaticMutationInCancer(withId(id))));
 		}
 	}
 
@@ -88,7 +88,7 @@ public class DefaultSomaticMutationInCancerDAOTest {
 		for (SomaticMutationInCancerId id : validIds()) {
 			assertThat(
 				dao.get(id.getSampleId(), id.getGeneSymbol(), id.getMutationId(), id.getStatus()),
-				is(equalsSomaticMutationInCancer(withId(id)))
+				is(equalSomaticMutationInCancer(withId(id)))
 			);
 		}
 	}

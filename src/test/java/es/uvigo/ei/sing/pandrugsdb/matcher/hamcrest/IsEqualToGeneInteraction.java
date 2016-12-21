@@ -48,18 +48,18 @@ public class IsEqualToGeneInteraction extends IsEqualToEntity<GeneInteraction> {
 	}
 
 	@Factory
-	public static IsEqualToGeneInteraction equalsToGeneInteraction(GeneInteraction expected) {
+	public static IsEqualToGeneInteraction equalToGeneInteraction(GeneInteraction expected) {
 		return new IsEqualToGeneInteraction(expected);
 	}
 
 	@Factory
-	public static IsEqualToGeneInteraction equalsToGeneInteraction(Gene expected) {
+	public static IsEqualToGeneInteraction equalToGeneInteraction(Gene expected) {
 		return new IsEqualToGeneInteraction(new GeneInteraction(expected));
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends GeneInteraction>> containsGeneInteraction(GeneInteraction ... expected) {
-		return containsEntityInAnyOrder(IsEqualToGeneInteraction::equalsToGeneInteraction, expected);
+		return containsEntityInAnyOrder(IsEqualToGeneInteraction::equalToGeneInteraction, expected);
 	}
 	
 	@Factory
@@ -68,6 +68,6 @@ public class IsEqualToGeneInteraction extends IsEqualToEntity<GeneInteraction> {
 			.map(GeneInteraction::new)
 		.toArray(GeneInteraction[]::new);
 		
-		return containsEntityInAnyOrder(IsEqualToGeneInteraction::equalsToGeneInteraction, interactions);
+		return containsEntityInAnyOrder(IsEqualToGeneInteraction::equalToGeneInteraction, interactions);
 	}
 }

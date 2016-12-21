@@ -332,11 +332,13 @@ public final class GeneDrugDataset {
 		.toArray(GeneDrug[]::new);
 	}
 	
-	public static GeneDrugGroup singleGeneGroupDirect() {
-		return new GeneDrugGroup(
-			new String[] { singleGeneSymbolDirect() },
-			asList(singleGeneDrugDirect())
-		);
+	public static GeneDrugGroup[] singleGeneGroupDirect() {
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolDirect() },
+				asList(singleGeneDrugDirect())
+			)
+		};
 	}
 	
 	public static GeneDrugGroup[] multipleGeneGroupDirect() {
@@ -361,11 +363,13 @@ public final class GeneDrugDataset {
 		};
 	}
 	
-	public static GeneDrugGroup singleGeneGroupIndirect() {
-		return new GeneDrugGroup(
-			new String[] { INDIRECT_GENE_SYMBOL_1 },
-			asList(singleGeneIndirect())
-		);
+	public static GeneDrugGroup[] singleGeneGroupIndirect() {
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { INDIRECT_GENE_SYMBOL_1 },
+				asList(singleGeneIndirect())
+			)
+		};
 	}
 	
 	public static GeneDrugGroup[] multipleGeneGroupIndirect() {
@@ -541,6 +545,10 @@ public final class GeneDrugDataset {
 	
 	public static GeneDrugGroupInfos multipleDrugGeneDrugGroupsMixed() {
 		return new GeneDrugGroupInfos(asList(multipleDrugGeneDrugGroups()));
+	}
+	
+	public static GeneDrugGroupInfos emptyGeneDrugGroupInfo() {
+		return new GeneDrugGroupInfos(emptyList());
 	}
 	
 	public static GeneRanking rankingFor(String ... geneSymbols) {

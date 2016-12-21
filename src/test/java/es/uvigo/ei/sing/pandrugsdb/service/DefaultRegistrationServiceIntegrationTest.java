@@ -21,11 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.userFor;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -33,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +55,9 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")
@@ -66,6 +72,7 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
 	value = "file:src/test/resources/META-INF/dataset.registration.xml",
 	assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED
 )
+//TODO: Check email sending
 public class DefaultRegistrationServiceIntegrationTest {
 	@Inject
 	@Named("defaultRegistrationService")
@@ -80,7 +87,10 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final Registration registration = absentRegistration();
 		registration.setPassword(plainPassword(registration));
 
-		assertNotNull(service.register(registration));
+		final Response response = service.register(registration, null);
+		
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), is(instanceOf(Message.class)));
 	}
 	
 	@Test
@@ -92,7 +102,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final Registration registration = presentRegistration();
 		registration.setPassword(plainPassword(registration));
 
-		assertNotNull(service.register(registration));
+		assertNotNull(service.register(registration, null));
 	}
 
 	@Test(expected = BadRequestException.class)
@@ -101,7 +111,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		final Registration registration = new Registration(
 			user.getLogin(), user.getEmail(), user.getPassword());
 		
-		service.register(registration);
+		service.register(registration, null);
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -110,7 +120,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		registration.setLogin(presentRegistration().getLogin());
 		registration.setPassword(plainPassword(registration));
 
-		service.register(registration);
+		service.register(registration, null);
 	}
 	
 	@Test
@@ -124,7 +134,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 
 		registration.setEmail(presentRegistration().getEmail());
 		
-		assertNotNull(service.register(registration));
+		assertNotNull(service.register(registration, null));
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -134,7 +144,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		registration.setLogin(user.getLogin());
 		registration.setPassword(plainPassword(registration));
 		
-		assertNotNull(service.register(registration));
+		assertNotNull(service.register(registration, null));
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -144,7 +154,7 @@ public class DefaultRegistrationServiceIntegrationTest {
 		registration.setEmail(user.getEmail());
 		registration.setPassword(plainPassword(registration));
 
-		assertNotNull(service.register(registration));
+		assertNotNull(service.register(registration, null));
 	}
 
 	@Test
@@ -155,10 +165,10 @@ public class DefaultRegistrationServiceIntegrationTest {
 	public void testConfirm() throws Exception {
 		final Registration registration = presentRegistration();
 		final String uuid = registration.getUuid();
+		final Response response = service.confirm(new UUID(uuid));
 		
-		final UserMetadata metadata = service.confirm(new UUID(uuid));
-		
-		assertThat(metadata, hasTheSameUserDataAs(registration));
+		assertThat(response, hasOkStatus());
+		assertThat((UserInfo) response.getEntity(), hasTheSameUserDataAs(userFor(registration)));
 	}
 
 	@Test(expected = NotFoundException.class)

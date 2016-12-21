@@ -40,9 +40,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 
-@XmlRootElement(name = "user-metadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "userInfo", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserMetadata {
+public class UserInfo {
 	@NotNull(message = "Login can not be null")
 	@Size(min = 1, max = 50, message = "Login must have between 1 and 50 characters")
 	@XmlElement(required = true, nillable = false)
@@ -65,10 +65,10 @@ public class UserMetadata {
 	@XmlElement(required = true, nillable = false)
 	private RoleType role;
 	
-	UserMetadata() {
+	UserInfo() {
 	}
 	
-	public UserMetadata(User user) {
+	public UserInfo(User user) {
 		this(
 			user.getLogin(),
 			user.getEmail(),
@@ -77,7 +77,7 @@ public class UserMetadata {
 		);
 	}
 	
-	public UserMetadata(
+	public UserInfo(
 		String login, String email, String password, RoleType role
 	) {
 		this.login = login;
@@ -138,7 +138,7 @@ public class UserMetadata {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserMetadata other = (UserMetadata) obj;
+		UserInfo other = (UserInfo) obj;
 		if (email == null) {
 			if (other.email != null)
 				return false;
@@ -161,7 +161,7 @@ public class UserMetadata {
 
 	@Override
 	public String toString() {
-		return "UserMetadata [login=" + login + ", email=" + email
+		return "UserInfo [login=" + login + ", email=" + email
 				+ ", password=" + password + ", role=" + role + "]";
 	}
 }

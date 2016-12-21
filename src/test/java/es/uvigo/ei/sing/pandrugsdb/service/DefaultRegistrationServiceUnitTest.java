@@ -21,17 +21,21 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyRegistration;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyUrl;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyUser;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -42,8 +46,9 @@ import org.junit.runner.RunWith;
 import es.uvigo.ei.sing.pandrugsdb.controller.RegistrationController;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultRegistrationServiceUnitTest {
@@ -65,7 +70,10 @@ public class DefaultRegistrationServiceUnitTest {
 		
 		replay(controller);
 
-		assertNotNull(service.register(registration));
+		final Response response = service.register(registration, null);
+		
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), is(instanceOf(Message.class)));
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -80,7 +88,7 @@ public class DefaultRegistrationServiceUnitTest {
 		
 		replay(controller);
 		
-		service.register(registration);
+		service.register(registration, null);
 	}
 
 	@Test(expected = BadRequestException.class)
@@ -95,7 +103,7 @@ public class DefaultRegistrationServiceUnitTest {
 		
 		replay(controller);
 
-		service.register(registration);
+		service.register(registration, null);
 	}
 	
 	@Test(expected = RuntimeException.class)
@@ -105,7 +113,68 @@ public class DefaultRegistrationServiceUnitTest {
 		
 		replay(controller);
 
-		service.register(anyRegistration());
+		service.register(anyRegistration(), null);
+	}
+
+	@Test
+	public void testRegisterAbsentRegistrationWithUrl() {
+		final Registration registration = anyRegistration();
+		final String login = registration.getLogin();
+		final String email = registration.getEmail();
+		final String password = registration.getPassword();
+		final String url = anyUrl();
+		
+		expect(controller.register(login, email, password, url))
+			.andReturn(registration);
+		
+		replay(controller);
+
+		final Response response = service.register(registration, url);
+		
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), is(instanceOf(Message.class)));
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testRegisterPresentRegistrationLoginWithUrl() {
+		final Registration registration = anyRegistration();
+		final String login = registration.getLogin();
+		final String email = registration.getEmail();
+		final String password = registration.getPassword();
+		final String url = anyUrl();
+		
+		expect(controller.register(login, email, password, url))
+			.andThrow(new IllegalArgumentException("Already present"));
+		
+		replay(controller);
+		
+		service.register(registration, url);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testRegisterPresentUserWithUrl() {
+		final Registration registration = anyRegistration();
+		final String login = registration.getLogin();
+		final String email = registration.getEmail();
+		final String password = registration.getPassword();
+		final String url = anyUrl();
+		
+		expect(controller.register(login, email, password, url))
+			.andThrow(new IllegalArgumentException("Error"));
+		
+		replay(controller);
+
+		service.register(registration, url);
+	}
+	
+	@Test(expected = RuntimeException.class)
+	public void testRegisterUnexpectedExceptionWithUrl() {
+		expect(controller.register(anyString(), anyString(), anyString(), anyString()))
+			.andThrow(new RuntimeException("Unexpected exception"));
+		
+		replay(controller);
+
+		service.register(anyRegistration(), anyUrl());
 	}
 
 	@Test
@@ -118,9 +187,10 @@ public class DefaultRegistrationServiceUnitTest {
 
 		replay(controller);
 		
-		final UserMetadata metadata = service.confirm(new UUID(uuid));
+		final Response response = service.confirm(new UUID(uuid));
 		
-		assertThat(metadata, hasTheSameUserDataAs(user));
+		assertThat(response, hasOkStatus());
+		assertThat((UserInfo) response.getEntity(), hasTheSameUserDataAs(user));
 	}
 
 	@Test(expected = NotFoundException.class)

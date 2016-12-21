@@ -21,7 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.guestUser;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasCreatedStatus;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
@@ -34,6 +35,7 @@ import static org.easymock.EasyMock.replay;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -72,7 +74,6 @@ import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
 import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
@@ -166,20 +167,9 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 
 		Response response = service.getComputationsForUser(new UserLogin(user.getLogin()), security);
 
-		assertThat(response.getStatus(), is(200));
-		assertThat(response.getEntity(), instanceOf(Map.class));
-		assertThat(((Map<Integer, ComputationMetadata>) response.getEntity()).size(), is(2));
-	}
-
-	@Test(expected = ForbiddenException.class)
-	public void testGetComputationsForGuestUser() {
-		final User accesingUser = guestUser();
-
-		//computation id=3 is owned by guest, but guests are not allowed to retrieve a list of computations
-		User user = guestUser();
-		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
-
-		service.getComputationsForUser(new UserLogin(user.getLogin()), security);
+		assertThat(response, hasOkStatus());
+		assertThat(response.getEntity(), is(instanceOf(Map.class)));
+		assertThat((Map<Integer, ComputationMetadata>) response.getEntity(), is(aMapWithSize(2)));
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -251,6 +241,9 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final Response response = service.startVariantsScoreUserComputation(
 			new UserLogin(login), emptyInputStream(), UUID.randomUUID().toString(), security, currentUri
 		);
+		
+		assertThat(response, hasCreatedStatus());
+		
 		try {
 			assertThat(response.getLocation(), is(equalTo(new URI(
 				"http://testhost/api/variantsanalysis/" + login + capture.getValue()))
@@ -258,7 +251,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-		assertThat(response.getStatus(), is(201));
+		
 		int computationId = Integer.parseInt(capture.getValue().substring(1));
 		return computationId;
 	}

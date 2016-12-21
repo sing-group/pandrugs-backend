@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createForbiddentException;
+import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundException;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
 
 import java.io.InputStream;
@@ -31,7 +33,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -52,27 +53,15 @@ import org.springframework.stereotype.Service;
 import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
 
-/**
- * Service to submit VCF Analysis computations, as well as to follow their
- * status
- *
- * @autor Daniel Glez-Peña
- */
 @Path("variantsanalysis")
 @Service
-@RolesAllowed({
-	"ADMIN", "USER"
-})
-@Produces({
-	MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML
-})
-@Consumes({
-	MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML
-})
+@RolesAllowed({ "ADMIN", "USER", "GUEST" })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsAnalysisService.class);
 
@@ -80,56 +69,53 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	private VariantsAnalysisController controller;
 
 	@POST
-	@Override
 	@Path("/{login}")
 	@Consumes(MediaType.WILDCARD)
-	@ReturnType("java.lang.Integer")
+	@RolesAllowed({ "ADMIN", "USER", "GUEST" })
+	@ReturnType(clazz = Integer.class)
+	@Override
 	public Response startVariantsScoreUserComputation(
 		@PathParam("login") UserLogin login,
 		InputStream vcfFile,
 		@QueryParam("name") String computationName,
 		@Context SecurityContext security,
 		@Context UriInfo currentUri
-	) throws ForbiddenException,
-		NotAuthorizedException {
-
+	) throws ForbiddenException, NotAuthorizedException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
+		
 		return checker.doIfPrivileged(
 			userLogin,
 			() -> {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
-				int computationId = controller.startVariantsScopeUserComputation(login, vcfFile, computationName);
+				
+				final int computationId = controller.startVariantsScopeUserComputation(login, vcfFile, computationName);
+				
 				return Response.created(
-					currentUri.getAbsolutePathBuilder()
-						.path("/" + computationId).build()
-				)
-					.build();
+					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()
+				) .build();
 			},
 			() -> {
-				LOG.error(
-					String.format(
-						"Illegal access to create a computation as user %s on behalf of user %s",
-						checker.getUserName(), userLogin
-					)
-				);
+				LOG.error(String.format(
+					"Illegal access to create a computation as user %s on behalf of user %s",
+					checker.getUserName(), userLogin
+				));
 
-				throw new ForbiddenException("User " + userLogin + " is not you");
+				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
-
 	}
 
-	@Override
-	@Path("{login}/{computationId}")
-	@ReturnType("es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata")
 	@GET
+	@Path("{login}/{computationId}")
+	@RolesAllowed({ "ADMIN", "USER", "GUEST" })
+	@ReturnType(clazz = ComputationMetadata.class)
+	@Override
 	public Response getComputationStatus(
 		@PathParam("login") UserLogin login,
 		@PathParam("computationId") Integer computationId,
 		@Context SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException {
-
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
 
@@ -139,38 +125,37 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				try {
 					controller.getUserOfComputation(computationId);
 				} catch (IllegalArgumentException e) {
-					throw new NotFoundException("computation id " + computationId + " not found");
+					throw createNotFoundException("Computation id %s not found", computationId);
 				}
 
 				if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
-					throw new ForbiddenException("You have not a computation with id = " + computationId);
+					throw createForbiddentException("You do not have a computation with id %s", computationId);
 				}
 				return Response.ok(
 					controller.getComputationStatus(computationId)
 				).build();
 			},
 			() -> {
-				LOG.error(
-					String.format(
-						"Illegal access to get gene ranking for a computation as user %s on behalf of user %s",
-						checker.getUserName(), userLogin
-					)
-				);
+				LOG.error(String.format(
+					"Illegal access to get gene ranking for a computation as user %s on behalf of user %s",
+					checker.getUserName(), userLogin
+				));
 
-				throw new ForbiddenException("User " + userLogin + " is not you");
+				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
 	}
 
-	@Override
-	@Path("{login}/{computationId}")
 	@DELETE
+	@Path("{login}/{computationId}")
+	@RolesAllowed({ "ADMIN", "USER", "GUEST" })
+	@ReturnType(clazz = Void.class)
+	@Override
 	public Response deleteComputation(
 		@PathParam("login") UserLogin login,
 		@PathParam("computationId") Integer computationId,
 		@Context SecurityContext security
-	)
-		throws ForbiddenException, NotAuthorizedException, InternalServerErrorException, NotFoundException {
+	) throws ForbiddenException, NotAuthorizedException, NotFoundException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
 
@@ -178,13 +163,11 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			userLogin,
 			() -> {
 				if (!controller.getComputationsForUser(login).containsKey(computationId)) {
-					throw new NotFoundException(
-						"Computation with id " + computationId + " has not been found"
-					);
+					throw createNotFoundException("Computation id %s not found", computationId);
 				}
 
 				if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
-					throw new ForbiddenException("You have not a computation with id = " + computationId);
+					throw createForbiddentException("You do not have a computation with id %s", computationId);
 				}
 
 				controller.deleteComputation(computationId);
@@ -192,33 +175,27 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				return Response.noContent().build();
 			},
 			() -> {
-				LOG.error(
-					String.format(
-						"Illegal access to get remove a computation as user %s on behalf of" +
-							" user %s",
-						checker.getUserName(), userLogin
-					)
-				);
+				LOG.error(String.format(
+					"Illegal access to get remove a computation as user %s on behalf of user %s",
+					checker.getUserName(), userLogin
+				));
 
-				throw new ForbiddenException("User " + userLogin + " is not you");
+				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
 	}
 
 	@GET
 	@Path("/{login}")
-	@ReturnType("java.util.Map<Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata>")
+	@RolesAllowed({ "ADMIN", "USER" })
+	@ReturnType("java.util.Map<java.lang.Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata>")
 	@Override
-	public Response getComputationsForUser(@PathParam("login") UserLogin login, @Context SecurityContext security)
-		throws ForbiddenException, NotAuthorizedException, InternalServerErrorException {
+	public Response getComputationsForUser(
+		@PathParam("login") UserLogin login,
+		@Context SecurityContext security
+	) throws ForbiddenException, NotAuthorizedException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
-
-		if (checker.isUserInRole(RoleType.GUEST)) {
-			LOG.error(String.format("Your are a guest user, you cannot list computations. Give an id"));
-
-			throw new ForbiddenException("Guest users cannot list computations");
-		}
 
 		return checker.doIfPrivileged(
 			userLogin,
@@ -228,14 +205,12 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				).build();
 			},
 			() -> {
-				LOG.error(
-					String.format(
-						"Illegal access to get computations as user %s on behalf of user %s",
-						checker.getUserName(), userLogin
-					)
-				);
+				LOG.error(String.format(
+					"Illegal access to get computations as user %s on behalf of user %s",
+					checker.getUserName(), userLogin
+				));
 
-				throw new ForbiddenException("User " + userLogin + " is not you");
+				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
 	}

@@ -24,17 +24,28 @@ package es.uvigo.ei.sing.pandrugsdb.service;
 import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.Response;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
+/**
+ * Service to query the gene drugs lists.
+ * 
+ * @author Miguel Reboiro-Jato
+ */
 public interface GeneDrugService {
 	/**
 	 * Returns a list of genes-drug interactions with the provided gene
-	 * symbol/s.
+	 * symbol/s or standar drug name/s.
 	 * 
 	 * @param genes a list of gene symbol names to search in the database.
+	 * The use of this and the {@code drugs} parameter is mutually exclusive,
+	 * but one of both parameters is required (you can query by genes or by
+	 * drugs, but not by both at the same time).
+	 * @param drugs a list of standard drug names to search in the database.
+	 * The use of this and the {@code genes} parameter is mutually exclusive,
+	 * but one of both parameters is required (you can query by genes or by
+	 * drugs, but not by both at the same time).
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
 	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. <br>
@@ -57,16 +68,15 @@ public interface GeneDrugService {
 	 * DIRECT, INDIRECT and BOTH. Default value is BOTH.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract GeneDrugGroupInfos list(
+	public abstract Response list(
 		Set<String> genes,
 		Set<String> drugs,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String target,
 		String direct
-	) throws BadRequestException, InternalServerErrorException;
+	) throws BadRequestException;
 
 	/**
 	 * Returns a list of genes-drug interactions with the affected genes
@@ -96,15 +106,14 @@ public interface GeneDrugService {
 	 * DIRECT, INDIRECT and BOTH. Default value is BOTH.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract GeneDrugGroupInfos listFromComputationId(
+	public abstract Response listFromComputationId(
 		Integer computationId,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String target,
 		String direct
-	) throws BadRequestException, InternalServerErrorException;
+	) throws BadRequestException;
 
 	/**
 	 * Returns a list of genes-drug interactions with the provided gene
@@ -137,15 +146,14 @@ public interface GeneDrugService {
 	 * DIRECT, INDIRECT and BOTH. Default value is BOTH.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract GeneDrugGroupInfos listRanked(
+	public abstract Response listRanked(
 		GeneRanking genesRanking,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String target,
 		String direct
-	) throws BadRequestException, InternalServerErrorException;
+	) throws BadRequestException;
 	
 	/**
 	 * Returns a list of standard drug names associated to a drug ordered by
@@ -159,7 +167,7 @@ public interface GeneDrugService {
 	 * @return a list of standard drug names associated to a drug ordered by
 	 * ascending alphabetical order.
 	 */
-	public String[] listStandardDrugNames(String query, int maxResults);
+	public Response listStandardDrugNames(String query, int maxResults);
 
 	/**
 	 * Returns a list of gene symbols associated to a drug ordered by ascending
@@ -173,5 +181,5 @@ public interface GeneDrugService {
 	 * @return a list of gene symbols associated to a drug ordered by ascending
 	 * alphabetical order.
 	 */
-	public abstract String[] listGeneSymbols(String query, int maxResults);
+	public abstract Response listGeneSymbols(String query, int maxResults);
 }

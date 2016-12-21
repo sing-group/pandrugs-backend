@@ -31,18 +31,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
-@XmlRootElement(name = "drug-interaction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "drugInteraction", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugInteraction {
-	@XmlElement(name = "standard-drug-name")
 	private String standardDrugName;
-	@XmlElement(name = "show-drug-name")
 	private String showDrugName;
-	
 	private String target;
 	
-	@XmlElementWrapper(name = "indirect-genes")
-	@XmlElement(name = "indirect-gene")
+	@XmlElementWrapper(name = "indirectGenes")
+	@XmlElement(name = "indirectGene")
 	private String[] indirect;
 	
 	DrugInteraction() {}
@@ -55,13 +52,6 @@ public class DrugInteraction {
 		
 		this.indirect = null;
 	}
-//	
-//	public DrugInteraction(String showDrugName, String standardDrugName, String target, String[] indirect) {
-//		this.showDrugName = showDrugName;
-//		this.standardDrugName = standardDrugName;
-//		this.target = target;
-//		this.indirect = indirect;
-//	}
 
 	public String getShowDrugName() {
 		return showDrugName;

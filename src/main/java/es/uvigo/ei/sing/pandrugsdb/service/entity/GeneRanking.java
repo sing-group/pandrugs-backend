@@ -33,11 +33,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "gene-ranking", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "geneRanking", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneRanking {
 	@NotNull
-	@XmlElement(name = "gene-rank")
+	@XmlElement(name = "geneRank")
 	private List<GeneRank> geneRank;
 	
 	GeneRanking() {}

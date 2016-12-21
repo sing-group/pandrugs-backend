@@ -21,12 +21,16 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
+import static java.util.Arrays.asList;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -35,49 +39,65 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.qmino.miredot.annotations.ReturnType;
+
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneController;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
+import es.uvigo.ei.sing.pandrugsdb.util.Checks;
 
 @Path("gene")
 @Service
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultGeneService implements GeneService {
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultGeneService.class);
+	private final static Comparator<Gene> GENE_COMPARATOR =
+		(gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol());
+		
 	@Inject
 	private GeneController controller;
 	
 	@GET
 	@Path("/{gene}/interactions")
+	@ReturnType(clazz = GeneInteraction[].class)
 	@Override
-	public GeneInteraction[] getGeneInteractions(
+	public Response getGeneInteractions(
 		@PathParam("gene") String geneSymbol,
 		@QueryParam("degree") @DefaultValue("0") int degree
-	) {
-		requireNonEmpty(geneSymbol);
-		requireNonNegative(degree);
-		
-		return controller.interactions(degree, geneSymbol).stream()
-			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))
-			.map(GeneInteraction::new)
-		.toArray(GeneInteraction[]::new);
+	) throws BadRequestException {
+		return this.getGenesInteractions(asList(geneSymbol), degree);
 	}
 	
 	@GET
 	@Path("/interactions")
+	@ReturnType(clazz = GeneInteraction[].class)
 	@Override
-	public GeneInteraction[] getGenesInteractions(
+	public Response getGenesInteractions(
 		@QueryParam("gene") List<String> geneSymbols,
 		@QueryParam("degree") @DefaultValue("0") int degree
-	) {
-		requireNonEmpty(geneSymbols);
-		requireNonNegative(degree);
-		
-		return controller.interactions(degree, geneSymbols.stream().toArray(String[]::new)).stream()
-			.sorted((gi1, gi2) -> gi1.getGeneSymbol().compareTo(gi2.getGeneSymbol()))
-			.map(GeneInteraction::new)
-		.toArray(GeneInteraction[]::new);
+	) throws BadRequestException {
+		try {
+			requireNonNegative(degree);
+			requireNonEmpty(geneSymbols);
+			geneSymbols.forEach(Checks::requireNonEmpty);
+			
+			final GeneInteraction[] interactions =
+				controller.interactions(degree, geneSymbols.stream().toArray(String[]::new)).stream()
+					.sorted(GENE_COMPARATOR)
+					.map(GeneInteraction::new)
+				.toArray(GeneInteraction[]::new);
+			
+			return Response.ok(interactions).build();
+		} catch (NullPointerException |  IllegalArgumentException e) {
+			LOG.warn("Error retrieving gene interactions", e);
+			throw createBadRequestException(e);
+		}
 	}
 }

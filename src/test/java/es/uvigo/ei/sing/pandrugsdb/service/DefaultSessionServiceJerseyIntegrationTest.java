@@ -21,11 +21,10 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasAHTTPStatusMatcher.hasHTTPStatus;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasNoContentStatus;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasUnauthorizedStatus;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.core.Response;
@@ -49,7 +48,7 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 			.request(APPLICATION_JSON_TYPE)
 		.post(entity(new Login("pepe", "pepe"), APPLICATION_JSON_TYPE));
 		
-		assertThat(response, hasHTTPStatus(NO_CONTENT));
+		assertThat(response, hasNoContentStatus());
 	}
 	
 	@Test
@@ -58,7 +57,7 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 			.request(APPLICATION_JSON_TYPE)
 		.post(entity(new Login("pepe", "badpassword"), APPLICATION_JSON_TYPE));
 		
-		assertThat(response, hasHTTPStatus(UNAUTHORIZED));
+		assertThat(response, hasUnauthorizedStatus());
 	}
 	
 	@Test
@@ -67,6 +66,6 @@ public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJersey
 			.request(APPLICATION_JSON_TYPE)
 		.post(entity(new Login("john", "john"), APPLICATION_JSON_TYPE));
 		
-		assertThat(response, hasHTTPStatus(UNAUTHORIZED));
+		assertThat(response, hasUnauthorizedStatus());
 	}
 }

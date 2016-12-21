@@ -47,13 +47,13 @@ public class IsEqualToPrincipalSpliceIsoform extends IsEqualToEntity<PrincipalSp
 	}
 
 	@Factory
-	public static IsEqualToPrincipalSpliceIsoform equalsPrincipalSpliceIsoform(PrincipalSpliceIsoform expected) {
+	public static IsEqualToPrincipalSpliceIsoform equalPrincipalSpliceIsoform(PrincipalSpliceIsoform expected) {
 		return new IsEqualToPrincipalSpliceIsoform(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends PrincipalSpliceIsoform>> containsPrincipalSpliceIsoforms(PrincipalSpliceIsoform ... expected) {
-		return containsEntityInAnyOrder(IsEqualToPrincipalSpliceIsoform::equalsPrincipalSpliceIsoform, expected);
+		return containsEntityInAnyOrder(IsEqualToPrincipalSpliceIsoform::equalPrincipalSpliceIsoform, expected);
 	}
 	
 	@Factory
@@ -61,6 +61,6 @@ public class IsEqualToPrincipalSpliceIsoform extends IsEqualToEntity<PrincipalSp
 		final PrincipalSpliceIsoform[] expectedArray = StreamSupport.stream(expected.spliterator(), false)
 			.toArray(PrincipalSpliceIsoform[]::new);
 		
-		return containsEntityInAnyOrder(IsEqualToPrincipalSpliceIsoform::equalsPrincipalSpliceIsoform, expectedArray);
+		return containsEntityInAnyOrder(IsEqualToPrincipalSpliceIsoform::equalPrincipalSpliceIsoform, expectedArray);
 	}
 }

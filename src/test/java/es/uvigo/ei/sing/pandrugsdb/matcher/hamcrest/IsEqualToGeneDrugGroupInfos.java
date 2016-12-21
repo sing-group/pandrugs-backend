@@ -47,7 +47,7 @@ public class IsEqualToGeneDrugGroupInfos extends IsEqualToEntity<GeneDrugGroupIn
 	}
 
 	@Factory
-	public static IsEqualToGeneDrugGroupInfos equalsToGeneDrugGroupInfos(GeneDrugGroupInfos expected) {
+	public static IsEqualToGeneDrugGroupInfos equalToGeneDrugGroupInfos(GeneDrugGroupInfos expected) {
 		return new IsEqualToGeneDrugGroupInfos(expected);
 	}
 }

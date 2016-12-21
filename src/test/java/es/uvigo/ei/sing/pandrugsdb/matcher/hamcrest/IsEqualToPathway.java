@@ -45,12 +45,12 @@ public class IsEqualToPathway extends IsEqualToEntity<Pathway> {
 	}
 
 	@Factory
-	public static IsEqualToPathway equalsToPathway(Pathway expected) {
+	public static IsEqualToPathway equalToPathway(Pathway expected) {
 		return new IsEqualToPathway(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends Pathway>> containsPathways(Pathway ... expected) {
-		return containsEntityInAnyOrder(IsEqualToPathway::equalsToPathway, expected);
+		return containsEntityInAnyOrder(IsEqualToPathway::equalToPathway, expected);
 	}
 }

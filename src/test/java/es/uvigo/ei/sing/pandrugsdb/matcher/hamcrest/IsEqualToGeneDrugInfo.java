@@ -58,12 +58,12 @@ public class IsEqualToGeneDrugInfo extends IsEqualToEntity<GeneDrugInfo> {
 	}
 
 	@Factory
-	public static IsEqualToGeneDrugInfo equalsToGeneDrugInfo(GeneDrugInfo expected) {
+	public static IsEqualToGeneDrugInfo equalToGeneDrugInfo(GeneDrugInfo expected) {
 		return new IsEqualToGeneDrugInfo(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends GeneDrugInfo>> containsGeneDrugInfos(GeneDrugInfo ... expected) {
-		return containsEntityInAnyOrder(IsEqualToGeneDrugInfo::equalsToGeneDrugInfo, expected);
+		return containsEntityInAnyOrder(IsEqualToGeneDrugInfo::equalToGeneDrugInfo, expected);
 	}
 }

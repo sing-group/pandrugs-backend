@@ -21,12 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +55,10 @@ public class DefaultCancerServiceIntegrationTest {
 	
 	@Test
 	public void testListWithNullGenes() {
-		assertThat(service.list(), is(equalTo(new CancerTypeNames())));
+		final Response response = service.list();
+		assertThat(response, hasOkStatus());
+		
+		
+		assertThat(response.getEntity(), is(equalTo(new CancerTypeNames())));
 	}
 }

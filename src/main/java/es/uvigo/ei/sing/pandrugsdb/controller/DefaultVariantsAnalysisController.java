@@ -60,7 +60,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputati
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 @Controller
 public class DefaultVariantsAnalysisController implements
@@ -162,12 +162,12 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public UserMetadata getUserOfComputation(Integer computationId) {
+	public UserInfo getUserOfComputation(Integer computationId) {
 		if (variantsScoreUserComputationDAO.get(computationId) == null) {
 			throw new IllegalArgumentException("computationId "+computationId+" not found");
 		}
 
-		return new UserMetadata(variantsScoreUserComputationDAO.get(computationId).getUser());
+		return new UserInfo(variantsScoreUserComputationDAO.get(computationId).getUser());
 	}
 
 	@Override

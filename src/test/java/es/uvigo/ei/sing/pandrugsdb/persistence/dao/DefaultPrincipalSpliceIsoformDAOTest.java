@@ -21,7 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPrincipalSpliceIsoform.equalsPrincipalSpliceIsoform;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPrincipalSpliceIsoform.equalPrincipalSpliceIsoform;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.PrincipalSpliceIsoformDataset.withId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -65,7 +65,7 @@ public class DefaultPrincipalSpliceIsoformDAOTest {
 		final String[] ids = new String[] { "ENST00000366621", "ENST00000458013", "ENST00000371320" };
 		
 		for (String id : ids) {
-			assertThat(dao.get(id), is(equalsPrincipalSpliceIsoform(withId(id))));
+			assertThat(dao.get(id), is(equalPrincipalSpliceIsoform(withId(id))));
 		}
 	}
 

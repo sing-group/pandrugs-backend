@@ -21,11 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
 
+/**
+ * Service to check the user credentials.
+ * 
+ * @author Miguel Reboiro-Jato
+ */
 public interface SessionService {
 	/**
 	 * Checks the login credentials received, returning a HTTP status code 200
@@ -33,8 +37,6 @@ public interface SessionService {
 	 * 
 	 * @param login the login credentials to check.
 	 * @throws NotAuthorizedException if the credentials are not valid.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
 	 */
-	public abstract void login(Login login)
-	throws NotAuthorizedException, InternalServerErrorException;
+	public void login(Login login) throws NotAuthorizedException;
 }

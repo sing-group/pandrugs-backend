@@ -32,25 +32,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 
-@XmlRootElement(name = "user-metadatas", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "userInfos", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserMetadatas {
+public class UserInfos {
 	@NotNull
-	private List<UserMetadata> users;
+	private List<UserInfo> users;
 	
-	UserMetadatas() {}
+	UserInfos() {}
 
-	public UserMetadatas(List<User> users) {
+	public UserInfos(List<User> users) {
 		this.users = users.stream()
-			.map(UserMetadata::new)
+			.map(UserInfo::new)
 		.collect(toList());
 	}
 
-	public List<UserMetadata> getUsers() {
+	public List<UserInfo> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<UserMetadata> users) {
+	public void setUsers(List<UserInfo> users) {
 		this.users = users;
 	}
 }

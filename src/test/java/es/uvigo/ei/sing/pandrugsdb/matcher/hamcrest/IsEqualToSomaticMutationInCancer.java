@@ -51,13 +51,13 @@ public class IsEqualToSomaticMutationInCancer extends IsEqualToEntity<SomaticMut
 	}
 
 	@Factory
-	public static IsEqualToSomaticMutationInCancer equalsSomaticMutationInCancer(SomaticMutationInCancer expected) {
+	public static IsEqualToSomaticMutationInCancer equalSomaticMutationInCancer(SomaticMutationInCancer expected) {
 		return new IsEqualToSomaticMutationInCancer(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends SomaticMutationInCancer>> containsSomaticMutationInCancers(SomaticMutationInCancer ... expected) {
-		return containsEntityInAnyOrder(IsEqualToSomaticMutationInCancer::equalsSomaticMutationInCancer, expected);
+		return containsEntityInAnyOrder(IsEqualToSomaticMutationInCancer::equalSomaticMutationInCancer, expected);
 	}
 	
 	@Factory
@@ -65,6 +65,6 @@ public class IsEqualToSomaticMutationInCancer extends IsEqualToEntity<SomaticMut
 		final SomaticMutationInCancer[] expectedArray = StreamSupport.stream(expected.spliterator(), false)
 			.toArray(SomaticMutationInCancer[]::new);
 		
-		return containsEntityInAnyOrder(IsEqualToSomaticMutationInCancer::equalsSomaticMutationInCancer, expectedArray);
+		return containsEntityInAnyOrder(IsEqualToSomaticMutationInCancer::equalSomaticMutationInCancer, expectedArray);
 	}
 }

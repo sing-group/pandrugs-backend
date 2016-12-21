@@ -37,11 +37,11 @@ import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.util.Compare;
 
 
-@XmlRootElement(name = "gene-drug-groups", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "geneDrugGroups", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugGroupInfos {
 	@NotNull
-	@XmlElement(name = "gene-drug-group")
+	@XmlElement(name = "geneDrugGroup")
 	private List<GeneDrugGroupInfo> geneDrugs;
 	
 	GeneDrugGroupInfos() {}

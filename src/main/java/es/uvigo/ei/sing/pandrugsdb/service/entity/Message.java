@@ -38,6 +38,10 @@ public class Message {
 	@XmlValue
 	private String text;
 	
+	public static Message withFormat(String formattableMessage, Object ... params) {
+		return new Message(String.format(formattableMessage, params));
+	}
+	
 	Message() {}
 	
 	public Message(String text) {

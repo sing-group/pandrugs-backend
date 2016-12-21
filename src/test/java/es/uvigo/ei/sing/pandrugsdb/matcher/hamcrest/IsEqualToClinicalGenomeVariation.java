@@ -53,13 +53,13 @@ public class IsEqualToClinicalGenomeVariation extends IsEqualToEntity<ClinicalGe
 	}
 
 	@Factory
-	public static IsEqualToClinicalGenomeVariation equalsClinicalGenomeVariation(ClinicalGenomeVariation expected) {
+	public static IsEqualToClinicalGenomeVariation equalToClinicalGenomeVariation(ClinicalGenomeVariation expected) {
 		return new IsEqualToClinicalGenomeVariation(expected);
 	}
 	
 	@Factory
 	public static Matcher<Iterable<? extends ClinicalGenomeVariation>> containsClinicalGenomeVariations(ClinicalGenomeVariation ... expected) {
-		return containsEntityInAnyOrder(IsEqualToClinicalGenomeVariation::equalsClinicalGenomeVariation, expected);
+		return containsEntityInAnyOrder(IsEqualToClinicalGenomeVariation::equalToClinicalGenomeVariation, expected);
 	}
 	
 	@Factory
@@ -67,6 +67,6 @@ public class IsEqualToClinicalGenomeVariation extends IsEqualToEntity<ClinicalGe
 		final ClinicalGenomeVariation[] expectedArray = StreamSupport.stream(expected.spliterator(), false)
 			.toArray(ClinicalGenomeVariation[]::new);
 		
-		return containsEntityInAnyOrder(IsEqualToClinicalGenomeVariation::equalsClinicalGenomeVariation, expectedArray);
+		return containsEntityInAnyOrder(IsEqualToClinicalGenomeVariation::equalToClinicalGenomeVariation, expectedArray);
 	}
 }

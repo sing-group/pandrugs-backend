@@ -50,40 +50,45 @@ public class GeneDrugGroupInfo {
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
 	private String[] genes;
-	@XmlElement(name = "standard-drug-name")
+	
 	private String standardDrugName;
-	@XmlElement(name = "show-drug-name")
 	private String showDrugName;
+	
 	@XmlElementWrapper(name = "families")
 	@XmlElement(name = "family")
 	private String[] families;
+	
 	@XmlElementWrapper(name = "sources")
 	@XmlElement(name = "source")
 	private SourceAndLink[] sourceLinks;
-	@XmlElementWrapper(name = "curated-sources")
-	@XmlElement(name = "curated-source")
+	
+	@XmlElementWrapper(name = "curatedSources")
+	@XmlElement(name = "curatedSource")
 	private String[] curatedSources;
+	
 	private DrugStatus status;
-	@XmlElement(name = "status-description")
 	private String statusDescription;
+	
 	@XmlElementWrapper(name = "cancers")
 	@XmlElement(name = "cancer")
 	private CancerType[] cancers;
+	
 	private Extra therapy;
-	@XmlElementWrapper(name = "indirect-genes")
+	
+	@XmlElementWrapper(name = "indirectGenes")
 	@XmlElement(name = "indirect-gene")
 	private String[] indirect;
+	
 	private boolean target;
 	private int[] pubchemId;
 	private double dScore;
 	private double gScore;
 
-	@XmlElementWrapper(name = "gene-drug-infos")
-	@XmlElement(name = "gene-drug-info")
+	@XmlElementWrapper(name = "geneDrugInfos")
+	@XmlElement(name = "geneDrugInfo")
 	private GeneDrugInfo[] geneDrugs;
 	
-	GeneDrugGroupInfo() {
-	}
+	GeneDrugGroupInfo() {}
 	
 	public GeneDrugGroupInfo(GeneDrugGroup gdg) {
 		this.genes = gdg.getTargetGenes();

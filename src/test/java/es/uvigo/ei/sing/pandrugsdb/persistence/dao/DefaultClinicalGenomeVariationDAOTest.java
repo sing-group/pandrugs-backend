@@ -22,7 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToClinicalGenomeVariation.containsClinicalGenomeVariations;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToClinicalGenomeVariation.equalsClinicalGenomeVariation;
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToClinicalGenomeVariation.equalToClinicalGenomeVariation;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withChromosomeLocation;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withDbSnp;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withId;
@@ -77,7 +77,7 @@ public class DefaultClinicalGenomeVariationDAOTest {
 		
 		assertThat(
 			dao.get(new ClinicalGenomeVariationId(chromosome, start, end, hgvs, disease, accession)),
-			is(equalsClinicalGenomeVariation(withId(chromosome, start, end, hgvs, disease, accession)))
+			is(equalToClinicalGenomeVariation(withId(chromosome, start, end, hgvs, disease, accession)))
 		);
 	}
 

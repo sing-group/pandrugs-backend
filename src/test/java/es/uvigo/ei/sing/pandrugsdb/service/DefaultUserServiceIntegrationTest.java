@@ -21,22 +21,23 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentAdmin;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
+import static java.util.Arrays.stream;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +54,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfos;
 import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -151,12 +152,14 @@ public class DefaultUserServiceIntegrationTest {
 	@Test
 	public void testList() {
 		final User[] users = users();
-		final UserMetadata[] metadatas  = Stream.of(users)
-			.map(UserMetadata::new)
-		.toArray(UserMetadata[]::new);
+		final UserInfo[] metadatas  = stream(users)
+			.map(UserInfo::new)
+		.toArray(UserInfo[]::new);
 		
-		final UserMetadatas userMetadatas = service.list();
+		final Response response = service.list();
+		assertThat(response, hasOkStatus());
 		
+		final UserInfos userMetadatas = (UserInfos) response.getEntity();
 		assertThat(userMetadatas.getUsers(), containsInAnyOrder(metadatas));
 	}
 	
@@ -169,9 +172,10 @@ public class DefaultUserServiceIntegrationTest {
 		
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 		
-		final UserMetadata metadata = service.get(new UserLogin(login), security);
+		final Response response = service.get(new UserLogin(login), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(targetUser));
+		assertThat(response, hasOkStatus());
+		assertThat((UserInfo) response.getEntity(), hasTheSameUserDataAs(targetUser));
 	}
 	
 	private void testUpdateUserData(User accessingUser, User targetUser) {
@@ -184,8 +188,9 @@ public class DefaultUserServiceIntegrationTest {
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
 		
-		final UserMetadata metadata = service.update(new UserMetadata(updatedUser), security);
+		final Response response = service.update(new UserInfo(updatedUser), security);
 		
-		assertThat(metadata, hasTheSameUserDataAs(updatedUser));
+		assertThat(response, hasOkStatus());
+		assertThat((UserInfo) response.getEntity(), hasTheSameUserDataAs(updatedUser));
 	}
 }

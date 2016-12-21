@@ -39,6 +39,15 @@ public final class RegistrationDataset {
 		};
 	}
 	
+	public final static User userFor(Registration registration) {
+		return new User(
+			registration.getLogin(),
+			registration.getEmail(),
+			registration.getPassword(),
+			RoleType.USER
+		);
+	}
+	
 	public final static User presentUser() {
 		return new User("maría", "maria@email.com",
 			"8a2ac0c5b70c320c517fea7adb2e4d00", RoleType.USER);
@@ -73,5 +82,9 @@ public final class RegistrationDataset {
 
 	public final static String plainPassword(Registration registration) {
 		return registration.getLogin();
+	}
+
+	public static String anyUrl() {
+		return "http://localhost/%s";
 	}
 }

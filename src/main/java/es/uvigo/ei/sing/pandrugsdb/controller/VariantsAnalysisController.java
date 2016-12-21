@@ -28,11 +28,11 @@ import java.util.Map;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 public interface VariantsAnalysisController {
 
-	public UserMetadata getUserOfComputation(Integer computationId);
+	public UserInfo getUserOfComputation(Integer computationId);
 
 	public GeneRanking getGeneRankingForComputation(int computationId);
 

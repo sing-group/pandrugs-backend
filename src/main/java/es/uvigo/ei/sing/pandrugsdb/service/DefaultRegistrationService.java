@@ -30,7 +30,6 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,63 +37,59 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.RegistrationController;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 @Path("registration")
 @Service
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultRegistrationService implements RegistrationService {
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultRegistrationService.class);
+	
 	@Inject
 	private RegistrationController controller;
 
 	@PersistenceContext
 	private EntityManager em;
 	
-	@Override
-	public Message register(Registration registration)
-	throws BadRequestException, InternalServerErrorException {
-		try {
-			controller.register(
-				registration.getLogin(),
-				registration.getEmail(),
-				registration.getPassword()
-			);
-
-			return new Message("User registered");
-		} catch (IllegalArgumentException iae) {
-			throw createBadRequestException(iae.getMessage());
-		}
-	}
-
 	@POST
+	@ReturnType(clazz = Message.class)
 	@Override
-	public Message register(Registration registration, @QueryParam("confirmurltemplate") String
-			confirmationUrlTemplate) throws
-			BadRequestException, InternalServerErrorException {
+	public Response register(
+		Registration registration,
+		@QueryParam("confirmurltemplate") String confirmationUrlTemplate
+	) throws BadRequestException {
 		try {
 			if (confirmationUrlTemplate == null) {
-				return register(registration);
-			}
-			else {
 				controller.register(
-						registration.getLogin(),
-						registration.getEmail(),
-						registration.getPassword(),
-						confirmationUrlTemplate
+					registration.getLogin(),
+					registration.getEmail(),
+					registration.getPassword()
+				);
+			} else {
+				controller.register(
+					registration.getLogin(),
+					registration.getEmail(),
+					registration.getPassword(),
+					confirmationUrlTemplate
 				);
 			}
 
-			return new Message("User registered");
+			return Response.ok(new Message("User registered")).build();
 		} catch (IllegalArgumentException iae) {
+			LOG.warn("Error registering user");
 			throw createBadRequestException(iae.getMessage());
 		}
 	}
@@ -102,13 +97,16 @@ public class DefaultRegistrationService implements RegistrationService {
 	@GET
 	@Path("/{uuid}")
 	@Consumes(MediaType.WILDCARD)
+	@ReturnType(clazz = UserInfo.class)
 	@Override
-	public UserMetadata confirm(@PathParam("uuid") UUID uuid)
-	throws NotFoundException, InternalServerErrorException {
+	public Response confirm(@PathParam("uuid") UUID uuid)
+	throws NotFoundException {
 		try {
-			final User user = controller.confirm(uuid.getUuid());
-			return new UserMetadata(user);
+			return Response
+				.ok(new UserInfo(controller.confirm(uuid.getUuid())))
+			.build();
 		} catch (IllegalArgumentException iae) {
+			LOG.warn("Error confirming user");
 			throw createNotFoundException(iae);
 		}
 	}

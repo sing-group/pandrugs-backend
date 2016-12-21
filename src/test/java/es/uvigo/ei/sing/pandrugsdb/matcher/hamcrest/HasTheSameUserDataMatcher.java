@@ -31,7 +31,7 @@ import org.hamcrest.TypeSafeMatcher;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 public class HasTheSameUserDataMatcher extends TypeSafeMatcher<Object> {
 	private final String login;
@@ -71,7 +71,7 @@ public class HasTheSameUserDataMatcher extends TypeSafeMatcher<Object> {
 	}
 	
 	@Factory
-	public static HasTheSameUserDataMatcher hasTheSameUserDataAs(UserMetadata expected) {
+	public static HasTheSameUserDataMatcher hasTheSameUserDataAs(UserInfo expected) {
 		return new HasTheSameUserDataMatcher(
 			expected.getLogin(),
 			expected.getEmail(),
@@ -107,11 +107,11 @@ public class HasTheSameUserDataMatcher extends TypeSafeMatcher<Object> {
 			(u, p) -> ((User) u).getPassword().equals(p),
 			(u, r) -> ((User) u).getRole().equals(r)
 		),
-		USER_METADATA(UserMetadata.class,
-			(u, l) -> ((UserMetadata) u).getLogin().equals(l),
-			(u, e) -> ((UserMetadata) u).getEmail().equals(e),
-			(u, p) -> ((UserMetadata) u).getPassword().equals(p),
-			(u, r) -> ((UserMetadata) u).getRole().equals(r)
+		USER_METADATA(UserInfo.class,
+			(u, l) -> ((UserInfo) u).getLogin().equals(l),
+			(u, e) -> ((UserInfo) u).getEmail().equals(e),
+			(u, p) -> ((UserInfo) u).getPassword().equals(p),
+			(u, r) -> ((UserInfo) u).getRole().equals(r)
 		),
 		REGISTRATION(Registration.class,
 			(u, l) -> ((Registration) u).getLogin().equals(l),

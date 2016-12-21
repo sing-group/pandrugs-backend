@@ -21,16 +21,20 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service;
 
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserMetadatas;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
+/**
+ * Service to manage the user data.
+ * 
+ * @author Miguel Reboiro-Jato
+ * @servicetag private
+ */
 public interface UserService {
 	/**
 	 * Provides information about an user.
@@ -49,10 +53,11 @@ public interface UserService {
 	 * access the user information (even if the requested user doesn't exists).
 	 * @throws NotFoundException if the requested user doesn't exists (this 
 	 * will only happen for administrator users).
-	 * @throws InternalServerErrorException in an unexpected error occurs.
+	 * @servicetag ADMIN
+	 * @servicetag USER
 	 */
-	public abstract UserMetadata get(UserLogin login, SecurityContext security)
-	throws NotAuthorizedException, NotFoundException, InternalServerErrorException;
+	public Response get(UserLogin login, SecurityContext security)
+	throws NotAuthorizedException, NotFoundException;
 
 	/**
 	 * Updates the user profile data. Only the email and password of the users
@@ -70,10 +75,11 @@ public interface UserService {
 	 * access the user information (even if the requested user doesn't exists).
 	 * @throws NotFoundException if the requested user doesn't exists (this 
 	 * will only happen for administrator users).
-	 * @throws InternalServerErrorException in an unexpected error occurs.
+	 * @servicetag ADMIN
+	 * @servicetag USER
 	 */
-	public abstract UserMetadata update(UserMetadata userMetadata, SecurityContext security)
-	throws NotAuthorizedException, NotFoundException, InternalServerErrorException;
+	public Response update(UserInfo userMetadata, SecurityContext security)
+	throws NotAuthorizedException, NotFoundException;
 
 	/**
 	 * Deletes an user from the system.
@@ -84,10 +90,12 @@ public interface UserService {
 	 * @return a confirmation message with a 200 OK HTTP status if deletion was
 	 * successful.
 	 * @throws NotFoundException if the user does not exists.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
+	 * @throws NotAuthorizedException if the client doesn't have permission to 
+	 * access the user information (even if the requested user doesn't exists).
+	 * @servicetag ADMIN
 	 */
-	public abstract Message delete(UserLogin login)
-	throws NotFoundException, InternalServerErrorException;
+	public Response delete(UserLogin login)
+	throws NotAuthorizedException, NotFoundException;
 
 	/**
 	 * Returns the list of users registered in the system.
@@ -96,8 +104,9 @@ public interface UserService {
 	 * 
 	 * @return the list of users in the system with a 200 OK HTTP status if
 	 * the client has permission to access that user information.
-	 * @throws InternalServerErrorException in an unexpected error occurs.
+	 * @throws NotAuthorizedException if the client doesn't have permission to 
+	 * access the user information (even if the requested user doesn't exists).
+	 * @servicetag ADMIN
 	 */
-	public abstract UserMetadatas list()
-	throws InternalServerErrorException;
+	public Response list() throws NotAuthorizedException;
 }

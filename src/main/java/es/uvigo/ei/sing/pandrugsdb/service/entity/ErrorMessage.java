@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "error-message", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "errorMessage", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ErrorMessage {
 	@XmlAttribute(required = true)
