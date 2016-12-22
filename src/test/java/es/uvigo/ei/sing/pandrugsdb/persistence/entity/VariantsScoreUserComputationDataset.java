@@ -76,7 +76,7 @@ public class VariantsScoreUserComputationDataset {
 	public final static VariantsScoreUserComputation[] computations() {
 		return new VariantsScoreUserComputation[] {
 				new VariantsScoreUserComputation(
-						1, UserDataset.users()[0],
+						"1", UserDataset.users()[0],
 						new VariantsScoreComputationDetails(
 								new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-1"),
 								new VariantsScoreComputationStatus(
@@ -88,7 +88,7 @@ public class VariantsScoreUserComputationDataset {
 						)
 				),
 				new VariantsScoreUserComputation(
-						2, UserDataset.users()[1],
+						"2", UserDataset.users()[1],
 						new VariantsScoreComputationDetails(
 								new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-2"),
 								new VariantsScoreComputationStatus(
@@ -102,7 +102,7 @@ public class VariantsScoreUserComputationDataset {
 						)
 				),
 				new VariantsScoreUserComputation(
-						3, UserDataset.guestUser(),
+						"3", UserDataset.guestUser(),
 						new VariantsScoreComputationDetails(
 								new VariantsScoreComputationParameters("inputVCF.vcf", "guest-3"),
 								new VariantsScoreComputationStatus(

@@ -40,7 +40,7 @@ implements VariantsScoreUserComputationDAO {
 	@PersistenceContext
 	private EntityManager em;
 
-	private DAOHelper<Integer, VariantsScoreUserComputation> dh;
+	private DAOHelper<String, VariantsScoreUserComputation> dh;
 
 	DefaultVariantsScoreUserComputationDAO() {}
 	
@@ -51,7 +51,7 @@ implements VariantsScoreUserComputationDAO {
 	
 	@PostConstruct
 	private void createDAOHelper() {
-		this.dh = DAOHelper.of(Integer.class, VariantsScoreUserComputation.class, em);
+		this.dh = DAOHelper.of(String.class, VariantsScoreUserComputation.class, em);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ implements VariantsScoreUserComputationDAO {
 	}
 
 	@Override
-	public VariantsScoreUserComputation get(int id) {
+	public VariantsScoreUserComputation get(String id) {
 		return dh.get(id);
 	}
 

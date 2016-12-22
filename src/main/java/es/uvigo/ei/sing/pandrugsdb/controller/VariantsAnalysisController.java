@@ -32,19 +32,19 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
 
 public interface VariantsAnalysisController {
 
-	public UserInfo getUserOfComputation(Integer computationId);
+	public UserInfo getUserOfComputation(String computationId);
 
-	public GeneRanking getGeneRankingForComputation(int computationId);
+	public GeneRanking getGeneRankingForComputation(String computationId);
 
-	public int startVariantsScopeUserComputation(
+	public String startVariantsScopeUserComputation(
 			UserLogin userLogin,
 			InputStream vcfFile,
 			String computationName
 	) throws IOException;
 
-	public ComputationMetadata getComputationStatus(Integer computationId);
+	public ComputationMetadata getComputationStatus(String computationId);
 
-	public Map<Integer, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
+	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
 
-	void deleteComputation(Integer computationId);
+	void deleteComputation(String computationId);
 }

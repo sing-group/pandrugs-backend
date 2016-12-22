@@ -31,8 +31,8 @@ import javax.persistence.ManyToOne;
 @Entity(name = "variants_score_user_computation")
 public class VariantsScoreUserComputation {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@Id
+	private String id;
 
 	private String name;
 
@@ -43,10 +43,14 @@ public class VariantsScoreUserComputation {
 	private VariantsScoreComputationDetails computationDetails =
 		new VariantsScoreComputationDetails();
 
-	public VariantsScoreUserComputation() { }
+	VariantsScoreUserComputation() { }
+
+	public VariantsScoreUserComputation(String id) {
+		this.id = id;
+	}
 
 	public VariantsScoreUserComputation(
-			int id,
+			String id,
 			User user,
 			VariantsScoreComputationDetails details) {
 
@@ -76,7 +80,7 @@ public class VariantsScoreUserComputation {
 		this.computationDetails = computationDetails;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 }

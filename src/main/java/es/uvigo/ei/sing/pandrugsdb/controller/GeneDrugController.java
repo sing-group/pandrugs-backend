@@ -45,6 +45,6 @@ public interface GeneDrugController {
 	);
 
 	public abstract List<GeneDrugGroup> searchFromComputationId(
-		GeneDrugQueryParameters queryParameters, int computationId
+		GeneDrugQueryParameters queryParameters, String computationId
 	);
 }

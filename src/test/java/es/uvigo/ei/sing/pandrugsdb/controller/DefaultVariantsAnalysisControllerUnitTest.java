@@ -26,6 +26,7 @@ import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -174,9 +175,9 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	public void testGetComputationStatus() {
 		VariantsScoreComputationDetails details = new VariantsScoreComputationDetails();
 		details.getStatus().setTaskName("a task");
-		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation(1, null, details);
+		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation("1", null, details);
 
-		int anId = 1;
+		String anId = "1";
 
 		expect(variantsScoreUserComputationDAO.get(anId)).andReturn(aComputation);
 
@@ -208,7 +209,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		variantsScoreUserComputationDAO.storeComputation(capture(capturedArgument));
 		expect(variantsScoreUserComputationDAO.update(capture(capturedArgument)))
 				.andStubAnswer(() -> capturedArgument.getValue());
-		expect(variantsScoreUserComputationDAO.get(anyInt())).andStubAnswer(() -> capturedArgument.getValue());
+		expect(variantsScoreUserComputationDAO.get(anyString())).andStubAnswer(() -> capturedArgument.getValue());
 
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
@@ -217,7 +218,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
-		int id = controller.startVariantsScopeUserComputation(
+		String id = controller.startVariantsScopeUserComputation(
 				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
 
 		// provoke finish of computation, listeners will be called and computation
@@ -241,7 +242,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	@Test
 	public void testDeleteComputation() throws IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
-		int anyId = 1;
+		String anyId = "1";
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 		this.variantsScoreUserComputationDAO.remove(aComputation);
@@ -255,7 +256,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	@Test(expected=IllegalStateException.class)
 	public void testDeleteNonFinishedComputation() throws IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
-		int anyId = 1;
+		String anyId = "1";
 
 		aComputation.getComputationDetails().getStatus().setOverallProgress(0.5);
 
@@ -298,7 +299,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	private void testGeneRankings(String geneRankingContents, double[] expectedRankings) throws IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(geneRankingContents);
 
-		int anyId = 1;
+		String anyId = "1";
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 
@@ -320,7 +321,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		createAffectedGenesFile(affectedGenesFileName, basePath, geneRankingContents);
 
 		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
-		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation();
+		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation(UUID.randomUUID().toString());
 		aComputation.getComputationDetails().getStatus().setOverallProgress(1.0);
 
 		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get(basePath));

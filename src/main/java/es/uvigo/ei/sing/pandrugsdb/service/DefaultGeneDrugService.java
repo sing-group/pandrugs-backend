@@ -145,7 +145,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
 	public Response listFromComputationId(
-		@QueryParam("computationId") Integer computationId,
+		@QueryParam("computationId") String computationId,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("target") String target,

@@ -74,7 +74,7 @@ public interface VariantsAnalysisService {
 	 */
 	public Response getComputationStatus(
 		UserLogin login,
-		Integer computationId,
+		String computationId,
 		SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException;
 
@@ -94,7 +94,7 @@ public interface VariantsAnalysisService {
 	 */
 	public Response deleteComputation(
 		UserLogin login,
-		Integer computationId,
+		String computationId,
 		SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException, NotFoundException;
 

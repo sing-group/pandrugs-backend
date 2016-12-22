@@ -87,7 +87,7 @@ public class DefaultVariantsAnalysisController implements
 
 
 	@Override
-	public int startVariantsScopeUserComputation(
+	public String startVariantsScopeUserComputation(
 			UserLogin userLogin,
 			InputStream vcfFileInputStream,
 			String computationName)
@@ -108,7 +108,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public ComputationMetadata getComputationStatus(Integer computationId) {
+	public ComputationMetadata getComputationStatus(String computationId) {
 		VariantsScoreUserComputation computation = variantsScoreUserComputationDAO.get(computationId);
 		if (computation == null) {
 			throw new IllegalArgumentException("computationId "+computationId+" not found.");
@@ -117,10 +117,10 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public Map<Integer, ComputationMetadata> getComputationsForUser(UserLogin userLogin) {
+	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin) {
 		User user = userDAO.get(userLogin.getLogin());
 
-		Map<Integer, ComputationMetadata> computations = new HashMap<>();
+		Map<String, ComputationMetadata> computations = new HashMap<>();
 
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
 			computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes(computation)));
@@ -142,7 +142,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public void deleteComputation(Integer computationId) {
+	public void deleteComputation(String computationId) {
 		VariantsScoreUserComputation variantsScoreUserComputation = variantsScoreUserComputationDAO.get(computationId);
 		requireNonNull(variantsScoreUserComputation, "computation with id ="+computationId);
 
@@ -162,7 +162,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public UserInfo getUserOfComputation(Integer computationId) {
+	public UserInfo getUserOfComputation(String computationId) {
 		if (variantsScoreUserComputationDAO.get(computationId) == null) {
 			throw new IllegalArgumentException("computationId "+computationId+" not found");
 		}
@@ -171,7 +171,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
-	public GeneRanking getGeneRankingForComputation(int computationId) {
+	public GeneRanking getGeneRankingForComputation(String computationId) {
 		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
 
 		if (computation == null) {
@@ -232,7 +232,7 @@ public class DefaultVariantsAnalysisController implements
 				variantsScoreComputer.createComputation(parameters);
 
 
-		VariantsScoreUserComputation userComputation = new VariantsScoreUserComputation();
+		VariantsScoreUserComputation userComputation = new VariantsScoreUserComputation(UUID.randomUUID().toString());
 		userComputation.setUser(user);
 		userComputation.setName(computationName);
 		userComputation.getComputationDetails().setStatus(computation.getStatus());

@@ -89,7 +89,8 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			() -> {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
 				
-				final int computationId = controller.startVariantsScopeUserComputation(login, vcfFile, computationName);
+				final String computationId = controller.startVariantsScopeUserComputation(login, vcfFile,
+						computationName);
 				
 				return Response.created(
 					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()
@@ -113,7 +114,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	@Override
 	public Response getComputationStatus(
 		@PathParam("login") UserLogin login,
-		@PathParam("computationId") Integer computationId,
+		@PathParam("computationId") String computationId,
 		@Context SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException {
 		final String userLogin = login.getLogin();
@@ -153,7 +154,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	@Override
 	public Response deleteComputation(
 		@PathParam("login") UserLogin login,
-		@PathParam("computationId") Integer computationId,
+		@PathParam("computationId") String computationId,
 		@Context SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException, NotFoundException {
 		final String userLogin = login.getLogin();

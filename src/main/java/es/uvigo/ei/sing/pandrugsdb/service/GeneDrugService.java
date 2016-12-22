@@ -108,7 +108,7 @@ public interface GeneDrugService {
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
 	public abstract Response listFromComputationId(
-		Integer computationId,
+		String computationId,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		String target,

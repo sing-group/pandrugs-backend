@@ -132,7 +132,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = users()[0];
 
 		//computation id=2 is not owned by presentUser2()
-		testGetComputationStatus(1, accesingUser, accesingUser);
+		testGetComputationStatus("1", accesingUser, accesingUser);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -140,7 +140,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = users()[0];
 
 		//computation id=2 is not owned by presentUser2()
-		testGetComputationStatus(99, accesingUser, accesingUser);
+		testGetComputationStatus("99", accesingUser, accesingUser);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -148,7 +148,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = presentUser2();
 
 		//computation id=1 is not owned by presentUser2()
-		testGetComputationStatus(1, accesingUser, accesingUser);
+		testGetComputationStatus("1", accesingUser, accesingUser);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -156,7 +156,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = users()[0];
 		final User targetUser = presentUser2();
 
-		testGetComputationStatus(1, accesingUser, targetUser);
+		testGetComputationStatus("1", accesingUser, targetUser);
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(user.getLogin()), 2, security);
+		service.deleteComputation(new UserLogin(user.getLogin()), "2", security);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -193,7 +193,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(users()[1].getLogin()), 2, security);
+		service.deleteComputation(new UserLogin(users()[1].getLogin()), "2", security);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -201,14 +201,14 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(user.getLogin()), 99, security);
+		service.deleteComputation(new UserLogin(user.getLogin()), "99", security);
 	}
 
-	private void testGetComputationStatus(Integer computationId, User accesingUser, User targetUser) {
+	private void testGetComputationStatus(String computationId, User accesingUser, User targetUser) {
 		this.testGetComputationStatus(computationId, accesingUser.getLogin(), accesingUser.getRole(), targetUser);
 	}
 
-	private void testGetComputationStatus(Integer computationId, String accessLogin, RoleType role, User targetUser) {
+	private void testGetComputationStatus(String computationId, String accessLogin, RoleType role, User targetUser) {
 		final String login = targetUser.getLogin();
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
@@ -218,11 +218,11 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		assertThat(response.getEntity(), instanceOf(ComputationMetadata.class));
 	}
 
-	private int testCreateComputation(User accessingUser, User targetUser) {
+	private String testCreateComputation(User accessingUser, User targetUser) {
 		return this.testCreateComputation(accessingUser.getLogin(), accessingUser.getRole(), targetUser);
 	}
 
-	private int testCreateComputation(String accessLogin, RoleType role, User targetUser) {
+	private String testCreateComputation(String accessLogin, RoleType role, User targetUser) {
 		final String login = targetUser.getLogin();
 
 		final SecurityContextStub security = new SecurityContextStub(users(), accessLogin);
@@ -252,7 +252,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 			throw new RuntimeException(e);
 		}
 		
-		int computationId = Integer.parseInt(capture.getValue().substring(1));
-		return computationId;
+
+		return capture.getValue().substring(1);
 	}
 }

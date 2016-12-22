@@ -125,7 +125,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Override
 	public List<GeneDrugGroup> searchFromComputationId(
-			GeneDrugQueryParameters queryParameters, int computationId
+			GeneDrugQueryParameters queryParameters, String computationId
 	) {
 		requireNonNull(queryParameters);
 

@@ -127,7 +127,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	public void testStartAndWaitForVariantsScoreComputation() throws InterruptedException, URISyntaxException, IOException {
 		final User aUser = UserDataset.users()[0];
 
-		int id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
+		final String id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
 				openComputationFileStream(A_VCF_RESOURCE_PATH), UUID.randomUUID().toString());
 
 		waitWhileOrFail(() ->!controller.getComputationStatus(id).isFinished(), 10000);
@@ -135,17 +135,17 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test
 	public void testGetComputationStatus() throws InterruptedException {
-		assertFalse(controller.getComputationStatus(1).isFinished());
-		assertFalse(controller.getComputationStatus(1).isFailed());
-		assertThat(controller.getComputationStatus(1).getOverallProgress(), is(0.5));
-		assertThat(controller.getComputationStatus(1).getTaskProgress(), is(0.0));
-		assertThat(controller.getComputationStatus(1).getTaskName(), is("Computing Variant Scores"));
+		assertFalse(controller.getComputationStatus("1").isFinished());
+		assertFalse(controller.getComputationStatus("1").isFailed());
+		assertThat(controller.getComputationStatus("1").getOverallProgress(), is(0.5));
+		assertThat(controller.getComputationStatus("1").getTaskProgress(), is(0.0));
+		assertThat(controller.getComputationStatus("1").getTaskName(), is("Computing Variant Scores"));
 
-		assertTrue(controller.getComputationStatus(2).isFinished());
-		assertFalse(controller.getComputationStatus(2).isFailed());
-		assertThat(controller.getComputationStatus(2).getOverallProgress(), is(1.0));
-		assertThat(controller.getComputationStatus(2).getTaskProgress(), is(1.0));
-		assertThat(controller.getComputationStatus(2).getTaskName(), is("Finished"));
+		assertTrue(controller.getComputationStatus("2").isFinished());
+		assertFalse(controller.getComputationStatus("2").isFailed());
+		assertThat(controller.getComputationStatus("2").getOverallProgress(), is(1.0));
+		assertThat(controller.getComputationStatus("2").getTaskProgress(), is(1.0));
+		assertThat(controller.getComputationStatus("2").getTaskName(), is("Finished"));
 	}
 	
 	@Test
@@ -162,12 +162,12 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		controller.onApplicationEvent(null); //resume computations
 
 		// wait for computations
-		waitWhileOrFail(() ->!controller.getComputationStatus(1).isFinished(), 10000);
+		waitWhileOrFail(() ->!controller.getComputationStatus("1").isFinished(), 10000);
 	}
 
 	@Test
 	public void testGetAffectedGenesRanking() {
-		final GeneRanking geneRanking = controller.getGeneRankingForComputation(2);
+		final GeneRanking geneRanking = controller.getGeneRankingForComputation("2");
 		final List<GeneRank> geneRank = geneRanking.getGeneRank();
 		
 		assertThat(geneRank, hasSize(6));
@@ -187,7 +187,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetAffectedGenesRankingOfNonCompletedComputation() {
-		controller.getGeneRankingForComputation(1).getGeneRank();
+		controller.getGeneRankingForComputation("1").getGeneRank();
 	}
 
 	private void waitWhileOrFail(BooleanSupplier condition, long timeout) throws InterruptedException {
