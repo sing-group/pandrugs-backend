@@ -65,15 +65,4 @@
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="10"/>
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="11"/>
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="12"/>
-
-	<gene_drug_drug_source gene_symbol="DIRECT GENE 1" target="1" source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
-	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
-	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 2" drug_id="1"/>
-	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 3" drug_id="2"/>
-	<gene_drug_drug_source gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 20" drug_id="20"/>
-	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 1" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
-	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 10" drug_id="10"/>
-	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 11" drug_id="11"/>
-	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 12" drug_id="12"/>
-	<gene_drug_drug_source gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 21" drug_id="21"/>
 </dataset>

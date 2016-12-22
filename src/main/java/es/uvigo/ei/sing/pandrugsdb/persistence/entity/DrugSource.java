@@ -50,8 +50,8 @@ public class DrugSource implements Serializable {
 		insertable = false, updatable = false)
 	private SourceInformation sourceInformation;
 	
-	@ManyToOne
-	@JoinColumn(name = "drug_id", referencedColumnName = "id", insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "drug_id", referencedColumnName = "id")
 	private Drug drug;
 	
 	DrugSource() {}
@@ -75,9 +75,9 @@ public class DrugSource implements Serializable {
 	public String getSourceDrugName() {
 		return this.sourceDrugName;
 	}
-
-	public String getStandardDrugName() {
-		return this.drug.getStandardName();
+	
+	public Drug getDrug() {
+		return drug;
 	}
 	
 	public SourceInformation getSourceInformation() {
@@ -94,7 +94,7 @@ public class DrugSource implements Serializable {
 		return Optional.ofNullable(this.sourceInformation)
 			.map(SourceInformation::getUrlTemplate)
 			.map(template -> template.replaceAll("\\[GENES\\]", geneNames))
-			.map(template -> template.replaceAll("\\[DRUG\\]", this.getStandardDrugName()))
+			.map(template -> template.replaceAll("\\[DRUG\\]", this.getDrug().getStandardName()))
 		.orElse(null);
 	}
 

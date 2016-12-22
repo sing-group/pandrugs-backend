@@ -70,7 +70,7 @@ public class GeneDrugInfo {
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group, boolean forceIndirect) {
 		this.genes = group.getTargetGeneNames(geneDrug, forceIndirect);
 		this.drug = geneDrug.getStandardDrugName();
-		this.sources = geneDrug.getDrugSourceNames().stream()
+		this.sources = geneDrug.getDrug().getDrugSourceNames().stream()
 			.toArray(String[]::new);
 		this.family = geneDrug.getFamily();
 		this.status = geneDrug.getStatus();

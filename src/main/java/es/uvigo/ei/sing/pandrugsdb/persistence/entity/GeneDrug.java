@@ -36,8 +36,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -80,20 +78,6 @@ public class GeneDrug implements Serializable {
 	@OneToMany(mappedBy = "geneDrug", fetch = FetchType.LAZY)
 	private List<IndirectGene> indirectGenes;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "gene_drug_drug_source",
-		joinColumns = {
-			@JoinColumn(name = "gene_symbol", referencedColumnName = "gene_symbol"),
-			@JoinColumn(name = "drug_id", referencedColumnName = "drug_id"),
-			@JoinColumn(name = "target", referencedColumnName = "target")
-		},
-		inverseJoinColumns = {
-			@JoinColumn(name = "source", referencedColumnName = "source"),
-			@JoinColumn(name = "source_drug_name", referencedColumnName = "source_drug_name"),
-		}
-	)
-	private List<DrugSource> drugSources;
-	
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
@@ -116,8 +100,7 @@ public class GeneDrug implements Serializable {
 		String alteration,
 		ResistanceType resistance,
 		double score,
-		List<String> inverseGene,
-		List<DrugSource> drugSources
+		List<String> inverseGene
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
 		this.gene = gene;
@@ -131,7 +114,6 @@ public class GeneDrug implements Serializable {
 		this.indirectGenes = inverseGene.stream()
 			.map(gs -> new IndirectGene(this, gs))
 		.collect(toList());
-		this.drugSources = drugSources;
 	}
 	
 	public int getDrugId() {
@@ -212,32 +194,6 @@ public class GeneDrug implements Serializable {
 	public List<String> getIndirectGeneSymbols() {
 		return this.indirectGenes.stream()
 			.map(IndirectGene::getGeneSymbol)
-		.collect(toList());
-	}
-	
-	public List<DrugSource> getDrugSources() {
-		return unmodifiableList(this.drugSources);
-	}
-
-	public List<String> getDrugSourceNames() {
-		return this.drugSources.stream()
-			.map(DrugSource::getSource)
-			.distinct()
-			.sorted()
-		.collect(toList());
-	}
-	
-	public List<DrugSource> getCuratedDrugSources() {
-		return this.drugSources.stream()
-			.filter(DrugSource::isCurated)
-		.collect(toList());
-	}
-	
-	public List<String> getCuratedDrugSourceNames() {
-		return this.drugSources.stream()
-			.filter(DrugSource::isCurated)
-			.map(DrugSource::getSource)
-			.distinct()
 		.collect(toList());
 	}
 	

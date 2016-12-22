@@ -24,6 +24,7 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
@@ -40,6 +41,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -88,6 +90,9 @@ public class Drug implements Serializable {
 	@CollectionTable(name = "pathology", joinColumns = @JoinColumn(name = "drug_id"))
 	@Column(name = "name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false)
 	private List<String> pathologies;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "drug")
+	private List<DrugSource> drugSources;
 	
 	Drug() {}
 
@@ -100,7 +105,8 @@ public class Drug implements Serializable {
 		String extraDetails,
 		int[] pubChemIds,
 		CancerType[] cancers,
-		String[] pathologies
+		String[] pathologies,
+		List<DrugSource> drugSources
 	) {
 		this.id = id;
 		this.standardName = standardName;
@@ -111,6 +117,7 @@ public class Drug implements Serializable {
 		this.pubChemIds = pubChemIds == null ? emptyList() : stream(pubChemIds).boxed().collect(toList());
 		this.cancers = cancers == null ? emptyList() : asList(cancers);
 		this.pathologies = pathologies == null ? emptyList() : asList(pathologies);
+		this.drugSources = drugSources;
 	}
 	
 	public int getId() {
@@ -154,6 +161,38 @@ public class Drug implements Serializable {
 		return pathologies.stream()
 			.sorted()
 		.toArray(String[]::new);
+	}
+	
+	public List<DrugSource> getDrugSources() {
+		return unmodifiableList(drugSources);
+	}
+
+	public List<String> getDrugSourceNames() {
+		return this.drugSources.stream()
+			.map(DrugSource::getSource)
+			.distinct()
+			.sorted()
+		.collect(toList());
+	}
+	
+	public List<DrugSource> getCuratedDrugSources() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+		.collect(toList());
+	}
+	
+	public List<String> getCuratedDrugSourceNames() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+			.map(DrugSource::getSource)
+			.distinct()
+		.collect(toList());
+	}
+	
+	public int countCuratedDrugSources() {
+		return (int) this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+		.count();
 	}
 
 	@Override

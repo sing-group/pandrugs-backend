@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
@@ -87,7 +88,7 @@ public class GeneDrugGroup {
 			throw new IllegalArgumentException("Invalid geneDrugs for targetGenes");
 			
 		checkSingleValue(
-			geneDrugs, GeneDrug::getDrug,
+			geneDrugs, GeneDrug::getDrugId,
 			() -> new IllegalArgumentException("Different drugs in group")
 		);
 		
@@ -220,7 +221,8 @@ public class GeneDrugGroup {
 
 	public DrugSource[] getSources() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getDrugSources)
+			.map(GeneDrug::getDrug)
+			.map(Drug::getDrugSources)
 			.flatMap(List::stream)
 			.distinct()
 		.toArray(DrugSource[]::new);
@@ -258,9 +260,9 @@ public class GeneDrugGroup {
 	
 	public DrugSource[] getCuratedSources() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getDrugSources)
+			.map(GeneDrug::getDrug)
+			.map(Drug::getCuratedDrugSources)
 			.flatMap(List::stream)
-			.filter(DrugSource::isCurated)
 			.distinct()
 		.toArray(DrugSource[]::new);
 	}
@@ -314,7 +316,7 @@ public class GeneDrugGroup {
 			if (this.isOnlyIndirect())
 				score -= 0.01d;
 			
-			score += min(9, geneDrug.getCuratedDrugSourceNames().size()) * 0.001d + 0.001d;
+			score += min(9, geneDrug.getDrug().getCuratedDrugSourceNames().size()) * 0.001d + 0.001d;
 			break;
 		default:
 			return Double.NaN;

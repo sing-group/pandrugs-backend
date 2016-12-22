@@ -28,7 +28,9 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutation
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -68,7 +70,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testConstructorSingleDirectGeneDrug() {
 		final String[] genes = new String[] { "G1" };
-		final List<GeneDrug> genesDrugs = asList(newGeneDrug("G1", "D1"));
+		final List<GeneDrug> genesDrugs = asList(newGeneDrug("G1", newDrug("D1")));
 		
 		replayAll();
 		
@@ -78,10 +80,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testConstructorMultipleDirectGeneDrug() {
 		final String[] genes = new String[] { "G1", "G2", "G3" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1"),
-			newGeneDrug("G3", "D1", "IG1", "IG2")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug),
+			newGeneDrug("G3", drug, "IG1", "IG2")
 		);
 		
 		replayAll();
@@ -92,7 +95,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testConstructorSingleIndirectGeneDrug() {
 		final String[] genes = new String[] { "IG1" };
-		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", "D1", "IG1"));
+		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", newDrug("D1"), "IG1"));
 		
 		replayAll();
 		
@@ -102,10 +105,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testConstructorMultipleIndirectGeneDrug() {
 		final String[] genes = new String[] { "IG1", "IG2", "IG3" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", "IG1"),
-			newGeneDrug("G2", "D1", "IG2"),
-			newGeneDrug("G3", "D1", "IG1", "IG2")
+			newGeneDrug("G1", drug, "IG1"),
+			newGeneDrug("G2", drug, "IG2"),
+			newGeneDrug("G3", drug, "IG1", "IG2")
 		);
 		
 		replayAll();
@@ -116,11 +120,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testConstructorMultipleBothGeneDrug() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1"),
-			newGeneDrug("G3", "D1", "IG100", "IG2")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1"),
+			newGeneDrug("G3", drug, "IG100", "IG2")
 		);
 		
 		replayAll();
@@ -131,7 +136,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorMissingGeneDrug() {
 		final String[] genes = new String[] { "MG1" };
-		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", "D1"));
+		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", newDrug("D1"), new String[0]));
 		
 		replayAll();
 		
@@ -157,7 +162,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorEmptyGenes() {
-		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", "D1"));
+		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", newDrug("D1")));
 		
 		replayAll();
 		
@@ -166,7 +171,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNullGenes() {
-		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", "D1"));
+		final List<GeneDrug> geneDrugs = asList(newGeneDrug("G1", newDrug("D1")));
 
 		replayAll();
 		
@@ -177,18 +182,13 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testConstructorDifferentDrugs() {
 		final String[] genes = new String[] { "G1", "G2", "G3" };
 		
-		final Drug drug1 = createNiceMock(Drug.class);
-		final Drug drug2 = createNiceMock(Drug.class);
-		
+		final Drug drug1 = newDrug("D1");
+		final Drug drug2 = newDrug("D2");
 		final GeneDrug[] gd = new GeneDrug[] {
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1"),
-			newGeneDrug("G3", "D2", "IG1", "IG2")
+			newGeneDrug("G1", drug1),
+			newGeneDrug("G2", drug1),
+			newGeneDrug("G3", drug2, "IG1", "IG2")
 		};
-
-		expect(gd[0].getDrug()).andReturn(drug1);
-		expect(gd[1].getDrug()).andReturn(drug1);
-		expect(gd[2].getDrug()).andReturn(drug2);
 		
 		replayAll();
 		
@@ -198,9 +198,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorDifferentStatus() {
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", DrugStatus.APPROVED, null, null, null, null),
-			newGeneDrug("G2", "D1", DrugStatus.CLINICAL_TRIALS, null, null, null, null)
+			newGeneDrug("G1", drug, DrugStatus.APPROVED, null, null, null, null),
+			newGeneDrug("G2", drug, DrugStatus.CLINICAL_TRIALS, null, null, null, null)
 		);
 		
 		replayAll();
@@ -211,9 +213,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorDifferentPathology() {
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, new String[] { "P1" }, null, null, null),
-			newGeneDrug("G2", "D1", null, new String[] { "P2" }, null, null, null)
+			newGeneDrug("G1", drug, null, new String[] { "P1" }, null, null, null),
+			newGeneDrug("G2", drug, null, new String[] { "P2" }, null, null, null)
 		);
 		
 		replayAll();
@@ -224,9 +228,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorDifferentCancer() {
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, new CancerType[] { CancerType.ADRENAL_GLAND }, null, null),
-			newGeneDrug("G2", "D1", null, null, new CancerType[] { CancerType.BLADDER }, null, null)
+			newGeneDrug("G1", drug, null, null, new CancerType[] { CancerType.ADRENAL_GLAND }, null, null),
+			newGeneDrug("G2", drug, null, null, new CancerType[] { CancerType.BLADDER }, null, null)
 		);
 		
 		replayAll();
@@ -237,9 +243,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorDifferentExtra() {
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, null, Extra.CHEMOTHERAPY, null),
-			newGeneDrug("G2", "D1", null, null, null, Extra.IMMUNOTHERAPY, null)
+			newGeneDrug("G1", drug, null, null, null, Extra.CHEMOTHERAPY, null),
+			newGeneDrug("G2", drug, null, null, null, Extra.IMMUNOTHERAPY, null)
 		);
 		
 		replayAll();
@@ -250,10 +258,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetGeneDrugs() {
 		final String[] targetGenes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final GeneDrug[] geneDrugs = new GeneDrug[] {
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		};
 		
 		replayAll();
@@ -268,10 +277,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetTargetGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -284,10 +294,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetDirectGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -300,10 +311,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetIndirectGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -315,12 +327,13 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testIsDirect() {
-		final GeneDrug directGeneDrug = newGeneDrug("G1", "D1");
+		final Drug drug = newDrug("D1");
+		final GeneDrug directGeneDrug = newGeneDrug("G1", drug);
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
 		final List<GeneDrug> geneDrugs = asList(
 			directGeneDrug,
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -332,13 +345,14 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testIsIndirect() {
-		final GeneDrug indirectGeneDrug = newGeneDrug("G3", "D1", "IG1");
-		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
+		final GeneDrug indirectGeneDrug = newGeneDrug("G3", drug, "IG1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
+			newGeneDrug("G1", drug, new String[0]),
+			newGeneDrug("G2", drug, "IG200"),
 			indirectGeneDrug
 		);
+		final String[] genes = new String[] { "G1", "G2", "IG1" };
 		
 		replayAll();
 		
@@ -349,12 +363,13 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testIsDirectNotPresent() {
-		final GeneDrug notPresentGD = newGeneDrug("GX", "DX");
+		final GeneDrug notPresentGD = newGeneDrug("GX", newDrug("DX"));
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -366,13 +381,14 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testIsIndirectNotPresent() {
-		final GeneDrug indirectGeneDrug = newGeneDrug("G3", "D1", "IG1");
-		final GeneDrug notPresentGD = newGeneDrug("GX", "DX");
+		final Drug drug = newDrug("D1");
+		final GeneDrug indirectGeneDrug = newGeneDrug("G3", drug, "IG1");
+		final GeneDrug notPresentGD = newGeneDrug("GX", newDrug("DX"));
 		
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
 			indirectGeneDrug
 		);
 		
@@ -386,10 +402,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testCountTargetGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -402,10 +419,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testCountDirectGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -418,10 +436,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testCountIndirectGenes() {
 		final String[] genes = new String[] { "G1", "G2", "IG1" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1")
 		);
 		
 		replayAll();
@@ -434,10 +453,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testIsOnlyIndirectDirect() {
 		final String[] genes = new String[] { "G1", "G2", "G3" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1"),
-			newGeneDrug("G3", "D1", "IG1", "IG2")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug),
+			newGeneDrug("G3", drug, "IG1", "IG2")
 		);
 		
 		replayAll();
@@ -450,10 +470,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testIsOnlyIndirectIndirect() {
 		final String[] genes = new String[] { "IG1", "IG2", "IG3" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", "IG1"),
-			newGeneDrug("G2", "D1", "IG2"),
-			newGeneDrug("G3", "D1", "IG1", "IG2")
+			newGeneDrug("G1", drug, "IG1"),
+			newGeneDrug("G2", drug, "IG2"),
+			newGeneDrug("G3", drug, "IG1", "IG2")
 		);
 		
 		replayAll();
@@ -466,11 +487,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testIsOnlyIndirectBoth() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1"),
-			newGeneDrug("G3", "D1", "IG100", "IG2")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1"),
+			newGeneDrug("G3", drug, "IG100", "IG2")
 		);
 		
 		replayAll();
@@ -483,11 +505,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetStandardDrugName() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1"),
-			newGeneDrug("G2", "D1", "IG200"),
-			newGeneDrug("G3", "D1", "IG1"),
-			newGeneDrug("G3", "D1", "IG100", "IG2")
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug, "IG200"),
+			newGeneDrug("G3", drug, "IG1"),
+			newGeneDrug("G3", drug, "IG100", "IG2")
 		);
 		
 		replayAll();
@@ -501,9 +524,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testGetStatus() {
 		final DrugStatus status = DrugStatus.APPROVED;
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", status, null, null, null, null),
-			newGeneDrug("G2", "D1", status, null, null, null, null)
+			newGeneDrug("G1", drug, status, null, null, null, null),
+			newGeneDrug("G2", drug, status, null, null, null, null)
 		);
 		
 		replayAll();
@@ -517,9 +542,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testGetCancer() {
 		final CancerType[] cancers = new CancerType[] { CancerType.CANCER };
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, cancers, null, null),
-			newGeneDrug("G2", "D1", null, null, cancers, null, null)
+			newGeneDrug("G1", drug, null, null, cancers, null, null),
+			newGeneDrug("G2", drug, null, null, cancers, null, null)
 		);
 		
 		replayAll();
@@ -533,9 +560,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testGetExtra() {
 		final Extra extra = Extra.ANTIHORMONE_THERAPY;
 		final String[] genes = new String[] { "G1", "G2" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, null, extra, null),
-			newGeneDrug("G2", "D1", null, null, null, extra, null)
+			newGeneDrug("G1", drug, null, null, null, extra, null),
+			newGeneDrug("G2", drug, null, null, null, extra, null)
 		);
 		
 		replayAll();
@@ -548,10 +577,12 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	@Test
 	public void testGetFamily() {
 		final String[] genes = new String[] { "G1", "G2", "G3" };
+		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", "D1", null, null, null, null, "F1"),
-			newGeneDrug("G2", "D1", null, null, null, null, "F2"),
-			newGeneDrug("G3", "D1", null, null, null, null, "F1")
+			newGeneDrug("G1", drug, null, null, null, null, "F1"),
+			newGeneDrug("G2", drug, null, null, null, null, "F2"),
+			newGeneDrug("G3", drug, null, null, null, null, "F1")
 		);
 		
 		replayAll();
@@ -567,9 +598,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds2 = newDrugSource("DS2");
 		final DrugSource ds3 = newDrugSource("DS3");
 		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		replayAll();
 		
@@ -583,9 +614,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testGetSourceNames() {
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", "DS1");
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", "DS2");
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", "DS3", "DS1");
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", "DS1"));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", "DS2"));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", "DS3", "DS1"));
 		
 		replayAll();
 		
@@ -614,9 +645,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		expect(ds3.getDrugURL(targetGenes))
 			.andReturn("DS3_URL");
 		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		final SortedMap<String, String> expectedLinks = ImmutableSortedMap.of(
 			"DS1", "DS1_URL", "DS2", "DS2_URL", "DS3", "DS3_URL"
@@ -639,9 +670,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds2 = newDrugSource("DS2", false);
 		final DrugSource ds3 = newDrugSource("DS3", true);
 		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		replayAll();
 		
@@ -659,10 +690,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds1 = newDrugSource("DS1", false);
 		final DrugSource ds2 = newDrugSource("DS2", false);
 		final DrugSource ds3 = newDrugSource("DS3", false);
-		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		replayAll();
 		
@@ -671,8 +702,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			asList(gd1, gd2, gd3)
 		);
 		
-		assertThat(geneDrugGroup.getCuratedSources(),
-			is(emptyArray()));
+		assertThat(geneDrugGroup.getCuratedSources(), is(emptyArray()));
 	}
 
 	@Test
@@ -680,10 +710,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds1 = newDrugSource("DS1", true);
 		final DrugSource ds2 = newDrugSource("DS2", false);
 		final DrugSource ds3 = newDrugSource("DS3", true);
-		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		replayAll();
 		
@@ -702,10 +732,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds1 = newDrugSource("DS1", false);
 		final DrugSource ds2 = newDrugSource("DS2", false);
 		final DrugSource ds3 = newDrugSource("DS3", false);
-		
-		final GeneDrug gd1 = newGeneDrugWithSources("G1", "D1", ds1);
-		final GeneDrug gd2 = newGeneDrugWithSources("G2", "D1", ds2);
-		final GeneDrug gd3 = newGeneDrugWithSources("G3", "D1", ds1, ds3);
+
+		final GeneDrug gd1 = newGeneDrug("G1", newDrug("D1", ds1));
+		final GeneDrug gd2 = newGeneDrug("G2", newDrug("D1", ds2));
+		final GeneDrug gd3 = newGeneDrug("G3", newDrug("D1", ds1, ds3));
 		
 		replayAll();
 		
@@ -720,9 +750,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	
 	@Test
 	public void testIsTarget() {
-		final GeneDrug gd1 = newGeneDrug("G1", "D1", true);
-		final GeneDrug gd2 = newGeneDrug("G2", "D1", false);
-		final GeneDrug gd3 = newGeneDrug("G3", "D1", false);
+		final Drug drug = newDrug("D1");
+		final GeneDrug gd1 = newGeneDrug("G1", drug, true);
+		final GeneDrug gd2 = newGeneDrug("G2", drug, false);
+		final GeneDrug gd3 = newGeneDrug("G3", drug, false);
 		
 		replayAll();
 		
@@ -736,9 +767,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	
 	@Test
 	public void testIsTargetFalse() {
-		final GeneDrug gd1 = newGeneDrug("G1", "D1", false);
-		final GeneDrug gd2 = newGeneDrug("G2", "D1", false);
-		final GeneDrug gd3 = newGeneDrug("G3", "D1", false);
+		final Drug drug = newDrug("D1");
+		final GeneDrug gd1 = newGeneDrug("G1", drug, false);
+		final GeneDrug gd2 = newGeneDrug("G2", drug, false);
+		final GeneDrug gd3 = newGeneDrug("G3", drug, false);
 		
 		replayAll();
 		
@@ -754,9 +786,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testTargetGeneNames() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
 		
-		final GeneDrug gd1 = newGeneDrug("G1", "D1");
-		final GeneDrug gd2 = newGeneDrug("G2", "D1", "IG200");
-		final GeneDrug gd3 = newGeneDrug("G3", "D1", "IG1", "IG2");
+		final Drug drug = newDrug("D1");
+		final GeneDrug gd1 = newGeneDrug("G1", drug);
+		final GeneDrug gd2 = newGeneDrug("G2", drug, "IG200");
+		final GeneDrug gd3 = newGeneDrug("G3", drug, "IG1", "IG2");
 		
 		final List<GeneDrug> geneDrugs = asList(gd1, gd2, gd3);
 		
@@ -773,9 +806,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	public void testIndirectGeneNames() {
 		final String[] genes = new String[] { "G1", "G2", "IG1", "IG2" };
 		
-		final GeneDrug gd1 = newGeneDrug("G1", "D1");
-		final GeneDrug gd2 = newGeneDrug("G2", "D1", "IG200");
-		final GeneDrug gd3 = newGeneDrug("G3", "D1", "IG1", "IG2");
+		final Drug drug = newDrug("D1");
+		final GeneDrug gd1 = newGeneDrug("G1", drug);
+		final GeneDrug gd2 = newGeneDrug("G2", drug, "IG200");
+		final GeneDrug gd3 = newGeneDrug("G3", drug, "IG1", "IG2");
 		
 		final List<GeneDrug> geneDrugs = asList(gd1, gd2, gd3);
 		
@@ -796,10 +830,11 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final Gene giMedium = newGene("G_MED", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false, OncodriveRole.NONE);
 		final Gene giHigh = newGene("G_HIGH", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, false, OncodriveRole.NONE);
 		
+		final Drug drug = newDrug("D1");
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G_LOW", "D1", giLow),
-			newGeneDrug("G_HIGH", "D1", giHigh),
-			newGeneDrug("G_MED", "D1", giMedium)
+			newGeneDrug(giLow, drug),
+			newGeneDrug(giHigh, drug),
+			newGeneDrug(giMedium, drug)
 		);
 		geneDrugs.forEach(gd -> expect(gd.getIndirectGeneSymbols()).andReturn(emptyList()).anyTimes());
 		
@@ -808,6 +843,36 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
 		assertThat(group.getGScore(), is(1d));
+	}
+	
+	private final Drug newDrug(String drugName) {
+		final Drug drug = createNiceMock(Drug.class);
+		
+		expect(drug.getId()).andReturn(drugName.hashCode()).anyTimes();
+		expect(drug.getStandardName()).andReturn(drugName).anyTimes();
+		
+		return drug;
+	}
+	
+	private final Drug newDrug(String drugName, DrugSource ... drugSources) {
+		final Drug drug = newDrug(drugName);
+		
+		expect(drug.getDrugSources()).andReturn(asList(drugSources)).anyTimes();
+		expect(drug.getCuratedDrugSources())
+			.andAnswer(() -> stream(drugSources)
+				.filter(DrugSource::isCurated)
+			.collect(toList())
+		).anyTimes();
+		
+		return drug;
+	}
+	
+	private final Drug newDrug(String drugName, String ... drugSourceNames) {
+		final DrugSource[] drugSources = Stream.of(drugSourceNames)
+			.map(this::newDrugSource)
+		.toArray(DrugSource[]::new);
+		
+		return newDrug(drugName, drugSources);
 	}
 
 	private final DrugSource newDrugSource(String source) {
@@ -819,45 +884,50 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	private final DrugSource newDrugSource(String source, boolean curated) {
 		final DrugSource ds = createNiceMock(DrugSource.class);
+		
 		expect(ds.getSource()).andReturn(source).anyTimes();
 		expect(ds.isCurated()).andReturn(curated).anyTimes();
 		
 		return ds;
 	}
 
-	private final GeneDrug newGeneDrug(
-		String gene, String drug, String ... indirect
-	) {
+	private final GeneDrug newGeneDrug(String gene, Drug drug) {
+		return newGeneDrug(gene, drug, new String[0]);
+	}
+	
+	private final GeneDrug newGeneDrug(String gene, Drug drug, String ... indirect) {
 		final GeneDrug gd = createNiceMock(GeneDrug.class);
+		
 		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
-		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
+		expect(gd.getDrug()).andReturn(drug).anyTimes();
+		expect(gd.getDrugId()).andAnswer(drug::getId).anyTimes();
+		expect(gd.getStandardDrugName()).andAnswer(drug::getStandardName).anyTimes();
 		expect(gd.getIndirectGeneSymbols()).andReturn(asList(indirect)).anyTimes();
 		
 		return gd;
 	}
 
 	private final GeneDrug newGeneDrug(
-		String gene, String drug, boolean isTarget
+		String gene, Drug drug, boolean isTarget
 	) {
-		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
-		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
+		final GeneDrug gd = newGeneDrug(gene, drug);
+		
 		expect(gd.isTarget()).andReturn(isTarget).anyTimes();
 		
 		return gd;
 	}
 
 	private final GeneDrug newGeneDrug(
-		String gene, String drug,
+		String gene,
+		Drug drug,
 		DrugStatus status,
 		String[] pathology,
 		CancerType[] cancer,
 		Extra extra,
 		String family
 	) {
-		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
-		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
+		final GeneDrug gd = newGeneDrug(gene, drug);
+		
 		expect(gd.getStatus()).andReturn(status).anyTimes();
 		expect(gd.getPathologies()).andReturn(pathology).anyTimes();
 		expect(gd.getCancers()).andReturn(cancer).anyTimes();
@@ -867,34 +937,13 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		return gd;
 	}
 
-	private final GeneDrug newGeneDrug(
-		String geneSymbol, String drug, Gene gene
-	) {
+	private final GeneDrug newGeneDrug(Gene gene, Drug drug) {
 		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol()).andReturn(geneSymbol).anyTimes();
-		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
+		
 		expect(gd.getGene()).andReturn(gene).anyTimes();
-		
-		return gd;
-	}
-
-	private final GeneDrug newGeneDrugWithSources(
-		String gene, String drug, String ... sourceNames
-	) {
-		final DrugSource[] drugSources = Stream.of(sourceNames)
-			.map(this::newDrugSource)
-		.toArray(DrugSource[]::new);
-		
-		return newGeneDrugWithSources(gene, drug, drugSources);
-	}
-	
-	private final GeneDrug newGeneDrugWithSources(
-		String gene, String drug, DrugSource ... drugSources
-	) {
-		final GeneDrug gd = createNiceMock(GeneDrug.class);
-		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
-		expect(gd.getStandardDrugName()).andReturn(drug).anyTimes();
-		expect(gd.getDrugSources()).andReturn(asList(drugSources)).anyTimes();
+		expect(gd.getDrug()).andReturn(drug).anyTimes();
+		expect(gd.getGeneSymbol()).andAnswer(gene::getGeneSymbol).anyTimes();
+		expect(gd.getStandardDrugName()).andAnswer(drug::getStandardName).anyTimes();
 		
 		return gd;
 	}
