@@ -26,8 +26,8 @@ import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneDrugGrou
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.emptyGeneDrugGroupInfo;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
@@ -75,6 +75,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
+import es.uvigo.ei.sing.pandrugsdb.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
@@ -129,33 +130,33 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListStandardDrugNamesNullFilter() {
-		this.service.listStandardDrugNames(null, 10);
+	public void testListDrugNamesNullFilter() {
+		this.service.listDrugNames(null, 10);
 	}
 	
 	@Test
-	public void testListStandardDrugNames() {
-		testListStandardDrugNames("D", 10);
+	public void testListDrugNames() {
+		testListDrugNames("D", 10);
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNoMatch() {
-		testListStandardDrugNames("X", 10);
+	public void testListDrugNamesNoMatch() {
+		testListDrugNames("X", 10);
 	}
 	
 	@Test
-	public void testListStandardDrugNamesWithLimit() {
-		testListStandardDrugNames("D", 1);
+	public void testListDrugNamesWithLimit() {
+		testListDrugNames("D", 1);
 	}
 	
 	@Test
-	public void testListStandardDrugNamesEmptyFilter() {
-		testListStandardDrugNames("", 10);
+	public void testListDrugNamesEmptyFilter() {
+		testListDrugNames("", 10);
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNegativeMaxResults() {
-		testListStandardDrugNames("D", -1);
+	public void testListDrugNamesNegativeMaxResults() {
+		testListDrugNames("D", -1);
 	}
 
 	private void testListGeneSymbols(final String query, final int maxResults) {
@@ -171,16 +172,17 @@ public class DefaultGeneDrugServiceIntegrationTest {
 		}
 	}
 
-	private void testListStandardDrugNames(final String query, final int maxResults) {
-		final Response response = this.service.listStandardDrugNames(query, maxResults);
+	private void testListDrugNames(final String query, final int maxResults) {
+		final Response response = this.service.listDrugNames(query, maxResults);
+		
 		assertThat(response, hasOkStatus());
 		
-		final String[] expected = listStandardDrugNames(query, maxResults);
+		final DrugNames[] expected = DrugNames.of(listDrugs(query, maxResults));
 
 		if (expected.length == 0) {
-			assertThat((String[]) response.getEntity(), is(emptyArray()));
+			assertThat((DrugNames[]) response.getEntity(), is(emptyArray()));
 		} else {
-			assertThat((String[]) response.getEntity(), is(arrayContaining(expected)));
+			assertThat((DrugNames[]) response.getEntity(), is(arrayContaining(expected)));
 		}
 	}
 	

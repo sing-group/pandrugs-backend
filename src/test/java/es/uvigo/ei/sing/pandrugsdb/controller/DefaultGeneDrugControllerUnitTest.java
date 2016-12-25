@@ -21,11 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToDrug.containsDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsWithDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroups;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
@@ -72,6 +73,7 @@ import org.junit.runner.RunWith;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
@@ -137,49 +139,49 @@ public class DefaultGeneDrugControllerUnitTest {
 	}
 	
 	@Test
-	public void testListStandardDrugNames() {
+	public void testlistDrugs() {
 		final String query = "D";
 		final int maxResults = 10;
-		final String[] expected = listStandardDrugNames(query, maxResults);
+		final Drug[] expected = listDrugs(query, maxResults);
 		
-		prepareListStandardDrugNames(query, maxResults, expected);
+		preparelistDrugs(query, maxResults, expected);
 
-		final String[] drugNames = this.controller.listStandardDrugNames(query, maxResults);
+		final Drug[] drugs = this.controller.listDrugs(query, maxResults);
 		
-		assertThat(drugNames, is(arrayContaining(expected)));
+		assertThat(asList(drugs), containsDrugs(expected));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNoMatch() {
+	public void testlistDrugsNoMatch() {
 		final String query = "X";
 		final int maxResults = 10;
-		final String[] expected = new String[0];
+		final Drug[] expected = new Drug[0];
 		
-		prepareListStandardDrugNames(query, maxResults, expected);
+		preparelistDrugs(query, maxResults, expected);
 		
-		final String[] drugNames = this.controller.listStandardDrugNames(query, maxResults);
+		final Drug[] drugs = this.controller.listDrugs(query, maxResults);
 		
-		assertThat(drugNames, is(emptyArray()));
+		assertThat(drugs, is(emptyArray()));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesEmptyQueryAndNegativeMaxResults() {
+	public void testlistDrugsEmptyQueryAndNegativeMaxResults() {
 		final String query = "";
 		final int maxResults = -1;
-		final String[] expected = listStandardDrugNames(query, maxResults);
+		final Drug[] expected = listDrugs(query, maxResults);
 		
-		prepareListStandardDrugNames(query, maxResults, expected);
+		preparelistDrugs(query, maxResults, expected);
 		
-		final String[] drugNames = this.controller.listStandardDrugNames(query, maxResults);
+		final Drug[] drugs = this.controller.listDrugs(query, maxResults);
 		
-		assertThat(drugNames, arrayContaining(expected));
+		assertThat(asList(drugs), containsDrugs(expected));
 	}
 	
 	@Test(expected = NullPointerException.class)
-	public void testListStandardDrugNamesNullFilter() {
+	public void testlistDrugsNullFilter() {
 		replay(dao);
 		
-		this.controller.listStandardDrugNames(null, 10);
+		this.controller.listDrugs(null, 10);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -479,8 +481,8 @@ public class DefaultGeneDrugControllerUnitTest {
 		replay(dao);
 	}
 	
-	private void prepareListStandardDrugNames(String query, int maxResults, String[] expected) {
-		expect(dao.listStandardDrugNames(query, maxResults)).andReturn(expected);
+	private void preparelistDrugs(String query, int maxResults, Drug[] expected) {
+		expect(dao.listDrugs(query, maxResults)).andReturn(expected);
 		
 		replay(dao);
 	}

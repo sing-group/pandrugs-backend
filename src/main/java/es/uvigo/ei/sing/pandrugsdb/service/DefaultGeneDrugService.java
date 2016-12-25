@@ -49,7 +49,9 @@ import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
@@ -188,16 +190,18 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 	@GET
 	@Path("/drug")
-	@ReturnType(clazz = String[].class)
+	@ReturnType(clazz = DrugNames[].class)
 	@Override
-	public Response listStandardDrugNames(
+	public Response listDrugNames(
 		@QueryParam("query") @DefaultValue("") String query,
 		@QueryParam("maxResults") @DefaultValue("-1") int maxResults
 	) {
 		try {
 			requireNonNull(query, "query can't be null");
 	
-			return Response.ok(controller.listStandardDrugNames(query, maxResults)).build();
+			final Drug[] drugs = controller.listDrugs(query, maxResults);
+			
+			return Response.ok(DrugNames.of(drugs)).build();
 		} catch (NullPointerException e) {
 			LOG.warn("Error retrieving standard drug names", e);
 			throw createBadRequestException(e);

@@ -156,18 +156,21 @@ public interface GeneDrugService {
 	) throws BadRequestException;
 	
 	/**
-	 * Returns a list of standard drug names associated to a drug ordered by
-	 * ascending alphabetical order. The drugs included are those with a
-	 * CLINICAL, APPROVED or EXPERIMENTAL status. 
+	 * Returns a list of drug names associated to a drug ordered by	ascending
+	 * alphabetical order of the show drug name. The drugs included are those
+	 * with a CLINICAL, APPROVED or EXPERIMENTAL status.
 	 * 
-	 * @param query a string with which the standard drug name must start. Use
+	 * The drug name includes the standard drug name, the show drug name and
+	 * the drug name for each data source.
+	 * 
+	 * @param query a string with which any of the drug names must start. Use
 	 * empty value or ignore it for no filtering.
 	 * @param maxResults the maximum number of results to return. Use negative
 	 * numbers or ignore it for no limit.
-	 * @return a list of standard drug names associated to a drug ordered by
-	 * ascending alphabetical order.
+	 * @return a list of drug names associated to a drug ordered by ascending
+	 * alphabetical order.
 	 */
-	public Response listStandardDrugNames(String query, int maxResults);
+	public Response listDrugNames(String query, int maxResults);
 
 	/**
 	 * Returns a list of gene symbols associated to a drug ordered by ascending

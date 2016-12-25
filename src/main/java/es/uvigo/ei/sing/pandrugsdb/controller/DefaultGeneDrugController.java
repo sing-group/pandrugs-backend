@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
@@ -72,10 +73,10 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	}
 
 	@Override
-	public String[] listStandardDrugNames(String query, int maxResults) {
+	public Drug[] listDrugs(String query, int maxResults) {
 		requireNonNull(query, "query can't be null");
 		
-		return dao.listStandardDrugNames(query, maxResults);
+		return dao.listDrugs(query, maxResults);
 	}
 
 	@Override

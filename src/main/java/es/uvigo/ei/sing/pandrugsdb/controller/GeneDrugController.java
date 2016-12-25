@@ -24,13 +24,14 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import java.util.List;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
 public interface GeneDrugController {
 	public abstract String[] listGeneSymbols(String query, int maxResults);
 
-	public abstract String[] listStandardDrugNames(String query, int maxResults);
+	public abstract Drug[] listDrugs(String query, int maxResults);
 	
 	public abstract List<GeneDrugGroup> searchByGenes(
 		GeneDrugQueryParameters queryParameters, String ... geneNames

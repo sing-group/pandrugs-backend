@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugId;
@@ -85,8 +86,45 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	}
 
 	@Override
-	public String[] listStandardDrugNames(String queryFilter, int maxResults) {
-		return listByField(queryFilter, maxResults, (root, join) -> join.get("standardName"));
+	public Drug[] listDrugs(String queryFilter, int maxResults) {
+		requireNonNull(queryFilter, "Query filter can't be null");
+		
+		final CriteriaBuilder cb = dh.cb();
+		final CriteriaQuery<Drug> cq = cb.createQuery(Drug.class);
+		
+		final Root<GeneDrug> root = cq.from(dh.getEntityType());
+		
+		final Join<GeneDrug, Drug> joinDrug = root.join("drug");
+		
+		final Join<Drug, DrugSource> joinDrugSources = joinDrug.join("drugSources");
+		
+		final Expression<DrugStatus> fieldStatus = joinDrug.get("status");
+		final Expression<String> fieldStandardName = joinDrug.get("standardName");
+		final Expression<String> fieldShowName = joinDrug.get("showName");
+		final Expression<String> fieldSourceName = joinDrugSources.get("sourceDrugName");
+		
+		final DrugStatus[] activeDrugStatus = activeDrugStatus();
+		
+		final TypedQuery<Drug> query = dh.em().createQuery(
+			cq.select(joinDrug).distinct(true)
+				.where(cb.and(
+					fieldStatus.in((Object[]) activeDrugStatus),
+					cb.or(
+						cb.like(fieldStandardName, queryFilter + "%"),
+						cb.like(fieldShowName, queryFilter + "%"),
+						cb.like(fieldSourceName, queryFilter + "%")
+					)
+				))
+				.orderBy(cb.asc(fieldShowName))
+		);
+		
+		if (maxResults > 0)
+			query.setMaxResults(maxResults);
+		
+		return query
+			.getResultList()
+			.stream()
+		.toArray(Drug[]::new);
 	}
 	
 	private String[] listByField(

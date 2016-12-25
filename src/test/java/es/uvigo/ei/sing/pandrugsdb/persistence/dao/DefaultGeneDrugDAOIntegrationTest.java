@@ -21,23 +21,25 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToDrug.containsDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugName;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.geneDrugsWithDrug;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneMixed;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneDrugDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
@@ -63,6 +65,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 
@@ -124,43 +127,43 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	}
 	
 	@Test
-	public void testListStandardDrugNames() {
-		final String[] drugNames = this.dao.listStandardDrugNames("D", 10);
+	public void testlistDrugs() {
+		final Drug[] drugs = this.dao.listDrugs("D", 10);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 10))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", 10)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNoMatch() {
-		final String[] drugNames = this.dao.listStandardDrugNames("X", 10);
+	public void testlistDrugsNoMatch() {
+		final Drug[] drugs = this.dao.listDrugs("X", 10);
 		
-		assertThat(drugNames, is(emptyArray()));
+		assertThat(drugs, is(emptyArray()));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesWithLimit() {
-		final String[] drugNames = this.dao.listStandardDrugNames("D", 1);
+	public void testlistDrugsWithLimit() {
+		final Drug[] drugs = this.dao.listDrugs("D", 1);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 1))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", 1)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesEmptyFilter() {
-		final String[] drugNames = this.dao.listStandardDrugNames("", 10);
+	public void testlistDrugsEmptyFilter() {
+		final Drug[] drugs = this.dao.listDrugs("", 10);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("", 10))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("", 10)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNegativeMaxResults() {
-		final String[] drugNames = this.dao.listStandardDrugNames("D", -1);
+	public void testlistDrugsNegativeMaxResults() {
+		final Drug[] drugs = this.dao.listDrugs("D", -1);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", -1))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", -1)));
 	}
 	
 	@Test(expected = NullPointerException.class)
-	public void testListStandardDrugNamesNullFilter() {
-		this.dao.listStandardDrugNames(null, 10);
+	public void testlistDrugsNullFilter() {
+		this.dao.listDrugs(null, 10);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

@@ -21,10 +21,11 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
+import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToDrug.containsDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.listStandardDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroups;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleDrugNames;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.multipleGeneGroupDirect;
@@ -40,6 +41,7 @@ import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.sin
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
@@ -69,6 +71,7 @@ import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
@@ -134,43 +137,43 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	}
 	
 	@Test
-	public void testListStandardDrugNames() {
-		final String[] drugNames = this.controller.listStandardDrugNames("D", 10);
+	public void testlistDrugs() {
+		final Drug[] drugs = this.controller.listDrugs("D", 10);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 10))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", 10)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNoMatch() {
-		final String[] drugNames = this.controller.listStandardDrugNames("X", 10);
+	public void testlistDrugsNoMatch() {
+		final Drug[] drugs = this.controller.listDrugs("X", 10);
 		
-		assertThat(drugNames, is(emptyArray()));
+		assertThat(drugs, is(emptyArray()));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesWithLimit() {
-		final String[] drugNames = this.controller.listStandardDrugNames("D", 1);
+	public void testlistDrugsWithLimit() {
+		final Drug[] drugs = this.controller.listDrugs("D", 1);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", 1))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", 1)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesEmptyFilter() {
-		final String[] drugNames = this.controller.listStandardDrugNames("", 10);
+	public void testlistDrugsEmptyFilter() {
+		final Drug[] drugs = this.controller.listDrugs("", 10);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("", 10))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("", 10)));
 	}
 	
 	@Test
-	public void testListStandardDrugNamesNegativeMaxResults() {
-		final String[] drugNames = this.controller.listStandardDrugNames("D", -1);
+	public void testlistDrugsNegativeMaxResults() {
+		final Drug[] drugs = this.controller.listDrugs("D", -1);
 		
-		assertThat(drugNames, is(arrayContaining(listStandardDrugNames("D", -1))));
+		assertThat(asList(drugs), containsDrugs(listDrugs("D", -1)));
 	}
 	
 	@Test(expected = NullPointerException.class)
-	public void testListStandardDrugNamesNullFilter() {
-		this.controller.listStandardDrugNames(null, 10);
+	public void testlistDrugsNullFilter() {
+		this.controller.listDrugs(null, 10);
 	}
 	
 	@Test(expected = NullPointerException.class)

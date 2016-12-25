@@ -160,17 +160,21 @@ public final class GeneDrugDataset {
 		.toArray(String[]::new);
 	}
 	
-	public static String[] listStandardDrugNames(String queryFilter, int maxResults) {
+	public static Drug[] listDrugs(String queryFilter, int maxResults) {
 		final String query = queryFilter.toUpperCase();
 		final int limit = maxResults <= 0 ? Integer.MAX_VALUE : maxResults;
 		
 		return stream(geneDrugsWithActiveDrugStatus())
-			.map(GeneDrug::getStandardDrugName)
-			.filter(gene -> gene.startsWith(query))
+			.map(GeneDrug::getDrug)
+			.filter(gd -> 
+				gd.getStandardName().startsWith(query) ||
+				gd.getShowName().startsWith(query) ||
+				gd.getCuratedDrugSourceNames().stream().anyMatch(dsn -> dsn.startsWith(query))
+			)
 			.distinct()
-			.sorted()
+			.sorted((d1, d2) -> d1.getShowName().compareTo(d2.getShowName()))
 			.limit(limit)
-		.toArray(String[]::new);
+		.toArray(Drug[]::new);
 	}
 	
 	public static DrugSource[] drugSources() {
