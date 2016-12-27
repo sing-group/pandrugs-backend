@@ -53,7 +53,7 @@ public class GeneDrugGroupInfos {
 					.thenByReverseOrderOf(GeneDrugGroup::getGScore)
 					.thenBy(GeneDrugGroup::getShowDrugName)
 					.thenBy(GeneDrugGroup::getStandardDrugName)
-					.thenByReverseOrderOfInt(GeneDrugGroup::countTargetGenes)
+					.thenByReverseOrderOfInt(GeneDrugGroup::countQueryGenes)
 					.thenByReverseOrderOfInt(GeneDrugGroup::countDirectGenes)
 					.thenByReverseOrderOfInt(GeneDrugGroup::countIndirectGenes)
 					.thenByArray(GeneDrugGroup::getFamilies)

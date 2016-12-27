@@ -288,7 +288,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 
-		assertThat(group.getTargetGenes(), is(arrayContainingInAnyOrder(genes)));
+		assertThat(group.getQueryGenes(), is(arrayContainingInAnyOrder(genes)));
 	}
 
 	@Test
@@ -413,7 +413,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.countTargetGenes(), is(3));
+		assertThat(group.countQueryGenes(), is(3));
 	}
 
 	@Test
@@ -525,10 +525,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugStatus status = DrugStatus.APPROVED;
 		final String[] genes = new String[] { "G1", "G2" };
 		
-		final Drug drug = newDrug("D1");
+		final Drug drug = newDrug("D1", status);
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", drug, status, null, null, null, null),
-			newGeneDrug("G2", drug, status, null, null, null, null)
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug)
 		);
 		
 		replayAll();
@@ -540,13 +540,13 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testGetCancer() {
-		final CancerType[] cancers = new CancerType[] { CancerType.CANCER };
+		final CancerType[] cancers = new CancerType[] { CancerType.CANCER, CancerType.BLOOD };
 		final String[] genes = new String[] { "G1", "G2" };
 		
-		final Drug drug = newDrug("D1");
+		final Drug drug = newDrug("D1", cancers);
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", drug, null, null, cancers, null, null),
-			newGeneDrug("G2", drug, null, null, cancers, null, null)
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug)
 		);
 		
 		replayAll();
@@ -561,10 +561,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final Extra extra = Extra.ANTIHORMONE_THERAPY;
 		final String[] genes = new String[] { "G1", "G2" };
 		
-		final Drug drug = newDrug("D1");
+		final Drug drug = newDrug("D1", extra);
 		final List<GeneDrug> geneDrugs = asList(
-			newGeneDrug("G1", drug, null, null, null, extra, null),
-			newGeneDrug("G2", drug, null, null, null, extra, null)
+			newGeneDrug("G1", drug),
+			newGeneDrug("G2", drug)
 		);
 		
 		replayAll();
@@ -854,6 +854,30 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		return drug;
 	}
 	
+	private final Drug newDrug(String drugName, Extra extra) {
+		final Drug drug = newDrug(drugName);
+		
+		expect(drug.getExtra()).andReturn(extra);
+		
+		return drug;
+	}
+	
+	private final Drug newDrug(String drugName, DrugStatus status) {
+		final Drug drug = newDrug(drugName);
+		
+		expect(drug.getStatus()).andReturn(status);
+		
+		return drug;
+	}
+	
+	private final Drug newDrug(String drugName, CancerType ... cancers) {
+		final Drug drug = newDrug(drugName);
+		
+		expect(drug.getCancers()).andReturn(cancers);
+		
+		return drug;
+	}
+	
 	private final Drug newDrug(String drugName, DrugSource ... drugSources) {
 		final Drug drug = newDrug(drugName);
 		
@@ -916,7 +940,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		return gd;
 	}
-
+	
 	private final GeneDrug newGeneDrug(
 		String gene,
 		Drug drug,

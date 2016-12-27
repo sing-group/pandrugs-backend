@@ -36,12 +36,12 @@ public class StaticGeneScoreCalculator implements GeneScoreCalculator {
 	}
 
 	@Override
-	public double directGScore(GeneDrug geneDrug) {
+	public double calculateDirectScore(GeneDrug geneDrug) {
 		return this.geneScore.getOrDefault(geneDrug.getGeneSymbol(), 0d);
 	}
 
 	@Override
-	public Map<String, Double> indirectGScores(GeneDrug geneDrug) {
+	public Map<String, Double> calculateIndirectScores(GeneDrug geneDrug) {
 		return geneDrug.getIndirectGeneSymbols().stream()
 			.collect(toMap(
 				Function.identity(),
@@ -50,7 +50,7 @@ public class StaticGeneScoreCalculator implements GeneScoreCalculator {
 	}
 	
 	@Override
-	public double indirectGScore(GeneDrug geneDrug, String indirectGene) {
+	public double calculateIndirectScore(GeneDrug geneDrug, String indirectGene) {
 		return geneScore.getOrDefault(indirectGene, 0d);
 	}
 }

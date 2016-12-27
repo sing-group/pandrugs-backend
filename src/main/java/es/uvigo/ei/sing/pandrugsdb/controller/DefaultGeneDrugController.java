@@ -50,6 +50,9 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGroupDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGeneDrugDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
@@ -151,7 +154,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugs(
 			this.dao.searchByGene(queryParameters, upperGeneNames),
 			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
-			gScoreCalculator
+			gScoreCalculator,
+			new ByGroupDrugScoreCalculator()
 		);
 	}
 
@@ -167,21 +171,23 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugs(
 			this.dao.searchByDrug(queryParameters, toUpperCase(drugNames)),
 			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters.getDirectIndirect()),
-			gScoreCalculator
+			gScoreCalculator,
+			new ByGeneDrugDrugScoreCalculator()
 		);
 	}
 
 	private List<GeneDrugGroup> searchForGeneDrugs(
 		Collection<GeneDrug> geneDrugs,
 		Function<Set<GeneDrug>, String[]> geneDrugToGenes,
-		GeneScoreCalculator gScoreCalculator
+		GeneScoreCalculator gScoreCalculator,
+		DrugScoreCalculator drugScoreCalculator
 	) {
 		final Collection<Set<GeneDrug>> groups = geneDrugs.stream()
 			.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
 		.values();
 		
 		return groups.stream()
-			.map(gdg -> new GeneDrugGroup(geneDrugToGenes.apply(gdg), gdg, gScoreCalculator))
+			.map(gdg -> new GeneDrugGroup(geneDrugToGenes.apply(gdg), gdg, gScoreCalculator, drugScoreCalculator))
 		.collect(toList());
 	}
 	

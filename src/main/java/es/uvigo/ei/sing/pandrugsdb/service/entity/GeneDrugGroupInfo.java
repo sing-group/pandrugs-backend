@@ -91,7 +91,7 @@ public class GeneDrugGroupInfo {
 	GeneDrugGroupInfo() {}
 	
 	public GeneDrugGroupInfo(GeneDrugGroup gdg) {
-		this.genes = gdg.getTargetGenes();
+		this.genes = gdg.getQueryGenes();
 		sort(this.genes);
 		
 		this.standardDrugName = gdg.getStandardDrugName();

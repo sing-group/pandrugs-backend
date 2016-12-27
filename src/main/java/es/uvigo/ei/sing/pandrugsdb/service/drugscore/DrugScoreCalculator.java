@@ -19,18 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.genescore;
+package es.uvigo.ei.sing.pandrugsdb.service.drugscore;
 
-import java.util.Map;
-
+import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 
-public interface GeneScoreCalculator {
-	public double calculateDirectScore(GeneDrug geneDrug);
+public interface DrugScoreCalculator {
+	public double calculateGeneDrugScore(GeneDrugGroup group, GeneDrug geneDrug);
 	
-	public Map<String, Double> calculateIndirectScores(GeneDrug geneDrug);
-	
-	public default double calculateIndirectScore(GeneDrug geneDrug, String indirectGene) {
-		return calculateIndirectScores(geneDrug).getOrDefault(indirectGene, 0d);
-	}
+	public double calculateGeneDrugGroupScore(GeneDrugGroup group);
 }

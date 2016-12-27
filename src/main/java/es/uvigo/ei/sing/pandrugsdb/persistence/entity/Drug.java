@@ -21,14 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
 
-import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -78,18 +79,18 @@ public class Drug implements Serializable {
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "pubchem", joinColumns = @JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_name"))
 	@Column(name = "pubchem_id", nullable = false)
-	private List<Integer> pubChemIds;
+	private Set<Integer> pubChemIds;
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "cancer", joinColumns = @JoinColumn(name = "drug_id"))
 	@Column(name = "name", length = 15, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private List<CancerType> cancers;
+	private Set<CancerType> cancers;
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "pathology", joinColumns = @JoinColumn(name = "drug_id"))
 	@Column(name = "name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false)
-	private List<String> pathologies;
+	private Set<String> pathologies;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "drug")
 	private List<DrugSource> drugSources;
@@ -114,9 +115,9 @@ public class Drug implements Serializable {
 		this.status = status;
 		this.extra = extra;
 		this.extraDetails = extraDetails;
-		this.pubChemIds = pubChemIds == null ? emptyList() : stream(pubChemIds).boxed().collect(toList());
-		this.cancers = cancers == null ? emptyList() : asList(cancers);
-		this.pathologies = pathologies == null ? emptyList() : asList(pathologies);
+		this.pubChemIds = pubChemIds == null ? emptySet() : stream(pubChemIds).boxed().collect(toSet());
+		this.cancers = cancers == null ? emptySet() : stream(cancers).collect(toSet());
+		this.pathologies = pathologies == null ? emptySet() : stream(pathologies).collect(toSet());
 		this.drugSources = drugSources;
 	}
 	
@@ -199,7 +200,12 @@ public class Drug implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((cancers == null) ? 0 : cancers.hashCode());
+		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
+		result = prime * result + ((extraDetails == null) ? 0 : extraDetails.hashCode());
 		result = prime * result + id;
+		result = prime * result + ((pathologies == null) ? 0 : pathologies.hashCode());
+		result = prime * result + ((pubChemIds == null) ? 0 : pubChemIds.hashCode());
 		result = prime * result + ((showName == null) ? 0 : showName.hashCode());
 		result = prime * result + ((standardName == null) ? 0 : standardName.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -215,7 +221,29 @@ public class Drug implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Drug other = (Drug) obj;
+		if (cancers == null) {
+			if (other.cancers != null)
+				return false;
+		} else if (!cancers.equals(other.cancers))
+			return false;
+		if (extra != other.extra)
+			return false;
+		if (extraDetails == null) {
+			if (other.extraDetails != null)
+				return false;
+		} else if (!extraDetails.equals(other.extraDetails))
+			return false;
 		if (id != other.id)
+			return false;
+		if (pathologies == null) {
+			if (other.pathologies != null)
+				return false;
+		} else if (!pathologies.equals(other.pathologies))
+			return false;
+		if (pubChemIds == null) {
+			if (other.pubChemIds != null)
+				return false;
+		} else if (!pubChemIds.equals(other.pubChemIds))
 			return false;
 		if (showName == null) {
 			if (other.showName != null)

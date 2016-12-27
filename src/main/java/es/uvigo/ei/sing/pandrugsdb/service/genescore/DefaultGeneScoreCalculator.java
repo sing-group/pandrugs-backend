@@ -32,14 +32,14 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
 
 public class DefaultGeneScoreCalculator implements GeneScoreCalculator {
 	@Override
-	public double directGScore(GeneDrug geneDrug) {
+	public double calculateDirectScore(GeneDrug geneDrug) {
 		return Optional.ofNullable(geneDrug.getGene())
 			.map(Gene::getGScore)
 		.orElse(0d);
 	}
 
 	@Override
-	public Map<String, Double> indirectGScores(GeneDrug geneDrug) {
+	public Map<String, Double> calculateIndirectScores(GeneDrug geneDrug) {
 		return geneDrug.getIndirectGenes().stream()
 			.collect(toMap(
 				IndirectGene::getGeneSymbol,

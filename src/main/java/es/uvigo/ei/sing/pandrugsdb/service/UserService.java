@@ -33,7 +33,6 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
  * Service to manage the user data.
  * 
  * @author Miguel Reboiro-Jato
- * @servicetag private
  */
 public interface UserService {
 	/**
