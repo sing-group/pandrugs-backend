@@ -97,6 +97,7 @@
 		<auth-constraint>
 			<role-name>ADMIN</role-name>
 			<role-name>USER</role-name>
+			<role-name>GUEST</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>NONE</transport-guarantee>
