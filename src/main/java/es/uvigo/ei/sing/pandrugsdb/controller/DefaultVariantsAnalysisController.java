@@ -29,6 +29,7 @@ import static org.apache.commons.io.FileUtils.readLines;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -61,6 +62,13 @@ import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.vcfparser.vcf.DefaultVCFMetaDataBuilder;
+import es.uvigo.ei.sing.vcfparser.vcf.DefaultVCFVariantDataBuilder;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFMetaData;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFParseException;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFReader;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFReaderFactory;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFVariant;
 
 @Controller
 public class DefaultVariantsAnalysisController implements
@@ -113,8 +121,14 @@ public class DefaultVariantsAnalysisController implements
 		if (computation == null) {
 			throw new IllegalArgumentException("computationId "+computationId+" not found.");
 		}
-		return new ComputationMetadata(computation, getAffectedGenes(computation));
+		try {
+			return new ComputationMetadata(computation, getAffectedGenes(computation), getVariantsInInput(computation));
+		} catch (IOException | VCFParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
+
+
 
 	@Override
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin) {
@@ -123,7 +137,14 @@ public class DefaultVariantsAnalysisController implements
 		Map<String, ComputationMetadata> computations = new HashMap<>();
 
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
-			computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes(computation)));
+			try {
+				computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes(computation),
+						getVariantsInInput(computation)));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} catch (VCFParseException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		return computations;
@@ -135,6 +156,32 @@ public class DefaultVariantsAnalysisController implements
 			) {
 
 			return this.getGeneRanking(computation).asMap().keySet().size();
+
+		} else {
+			return null;
+		}
+	}
+
+	private Integer getVariantsInInput(VariantsScoreUserComputation computation) throws IOException, VCFParseException {
+		if (computation.getComputationDetails().getStatus().isFinished() &&
+				!computation.getComputationDetails().getStatus().hasErrors()
+				) {
+
+			File variantsFile = this.obtainComputationFile(
+					computation,
+					computation.getComputationDetails().getParameters().getVcfFile());
+
+			try {
+				System.err.println("parsing..." + variantsFile.toURI().toURL());
+				VCFReader<VCFMetaData, VCFVariant<VCFMetaData>> reader = new VCFReader<>(
+						variantsFile.toURI().toURL(),
+						new DefaultVCFMetaDataBuilder(),
+						new DefaultVCFVariantDataBuilder());
+
+				return reader.getVariants().size();
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
 
 		} else {
 			return null;

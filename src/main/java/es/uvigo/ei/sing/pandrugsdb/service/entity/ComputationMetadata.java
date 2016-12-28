@@ -30,6 +30,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputati
 @XmlRootElement(name = "computationStatusMetadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ComputationMetadata {
+	private final Integer variantsInInput;
 	private String name;
 	private Integer affectedGenes;
 	private double overallProgress;
@@ -38,8 +39,10 @@ public class ComputationMetadata {
 	private boolean finished;
 	private boolean failed;
 
-	public ComputationMetadata(VariantsScoreUserComputation computation, Integer affectedGenes) {
+	public ComputationMetadata(VariantsScoreUserComputation computation, Integer affectedGenes, Integer
+			variantsInInput) {
 		this.affectedGenes = affectedGenes;
+		this.variantsInInput = variantsInInput;
 		this.name = computation.getName();
 		this.overallProgress = computation.getComputationDetails().getStatus().getOverallProgress();
 		this.taskProgress = computation.getComputationDetails().getStatus().getTaskProgress();
@@ -55,6 +58,8 @@ public class ComputationMetadata {
 	public Integer getAffectedGenes() {
 		return affectedGenes;
 	}
+
+	public Integer getVariantsInInput() { return variantsInInput; }
 
 	public double getOverallProgress() {
 		return overallProgress;

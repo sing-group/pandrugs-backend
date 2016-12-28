@@ -24,7 +24,6 @@ package es.uvigo.ei.sing.pandrugsdb.controller;
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
 import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
 import static java.util.Arrays.asList;
-import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.capture;
@@ -186,7 +185,6 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		ComputationMetadata metadata = controller.getComputationStatus(anId);
 
 		assertThat(metadata.getTaskName(), is("a task"));
-
 	}
 
 	@Test
@@ -224,7 +222,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		// provoke finish of computation, listeners will be called and computation
 		// and the results should be setted in usercomputation.details
 
-		createAffectedGenesFile("affected_genes.txt", capturedArgument.getValue().getComputationDetails()
+		createFileWithContents("affected_genes.txt", capturedArgument.getValue().getComputationDetails()
 				.getParameters().getResultsBasePath().toString(), anAffectedGenesFileContent());
 		aStatus.setOverallProgress(1.0);
 
@@ -240,8 +238,13 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	}
 
 	@Test
+	public void testInputVariantsForComputation() throws IOException {
+		testInputVariants(anVCFFileContent());
+	}
+
+	@Test
 	public void testDeleteComputation() throws IOException {
-		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent(), anVCFFileContent());
 		String anyId = "1";
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
@@ -255,7 +258,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 	@Test(expected=IllegalStateException.class)
 	public void testDeleteNonFinishedComputation() throws IOException {
-		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent(), anVCFFileContent());
 		String anyId = "1";
 
 		aComputation.getComputationDetails().getStatus().setOverallProgress(0.5);
@@ -271,7 +274,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	public void testComputationsForUser() throws IOException {
 		User aUser = UserDataset.anyUser();
 
-		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent());
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent(), anVCFFileContent());
 
 		expect(this.userDAO.get(aUser.getLogin())).andReturn(aUser);
 		expect(this.variantsScoreUserComputationDAO.retrieveComputationsBy(aUser)).andReturn(asList(aComputation));
@@ -296,8 +299,29 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		return sb.toString();
 	}
 
-	private void testGeneRankings(String geneRankingContents, double[] expectedRankings) throws IOException {
-		VariantsScoreUserComputation aComputation = prepareFinishedComputation(geneRankingContents);
+	private String anVCFFileContent() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("##fileformat=VCFv4.1\n");
+		sb.append("##INFO=<ID=AC,Number=A,Type=Integer,Description=\"Allele count in genotypes, for each ALT allele, in the same order as listed\">\n");
+		sb.append("##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n");
+		sb.append("##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total number of alleles in called genotypes\">\n");
+		sb.append("##INFO=<ID=DB,Number=0,Type=Flag,Description=\"dbSNP Membership\">\n");
+		sb.append("##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Approximate read depth; some reads may have been filtered\">\n");
+		sb.append("##INFO=<ID=MQ0,Number=1,Type=Integer,Description=\"Total Mapping Quality Zero Reads\">\n");
+		sb.append("#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO\n");
+		sb.append("chr1	109479864	.	GG	TT	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
+		sb.append("chr1	152277111	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
+		sb.append("chr1	152283563	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
+		sb.append("chr1	152944374	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
+		sb.append("\n");
+
+		return sb.toString();
+
+	}
+	private void testGeneRankings(String geneRankingContents, double[] expectedRankings) throws
+			IOException {
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation(geneRankingContents, "");
 
 		String anyId = "1";
 
@@ -315,10 +339,30 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		}
 	}
 
-	private VariantsScoreUserComputation prepareFinishedComputation(String geneRankingContents) throws IOException {
+	private void testInputVariants(String vcfContents) throws
+			IOException {
+		VariantsScoreUserComputation aComputation = prepareFinishedComputation("", vcfContents);
+
+		String anyId = "1";
+
+		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
+
+		super.replayAll();
+
+		ComputationMetadata status = controller.getComputationStatus(anyId);
+
+		assertThat(status.getVariantsInInput(), is(4));
+
+	}
+	private VariantsScoreUserComputation prepareFinishedComputation(String geneRankingContents, String vcfContent)
+			throws
+			IOException {
 		String affectedGenesFileName = "affected_genes.txt";
 		String basePath = "results";
-		createAffectedGenesFile(affectedGenesFileName, basePath, geneRankingContents);
+		createFileWithContents(affectedGenesFileName, basePath, geneRankingContents);
+
+		String vcfFileName = "input.vcf";
+		createFileWithContents(vcfFileName, basePath, vcfContent);
 
 		VariantsEffectPredictionResults aVEPResults = new VariantsEffectPredictionResults(Paths.get("vep_results.txt"));
 		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation(UUID.randomUUID().toString());
@@ -326,23 +370,25 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get(basePath));
 
+		aComputation.getComputationDetails().getParameters().setVcfFile(Paths.get(vcfFileName));
+
 		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
 			Paths.get("vscore.txt"),
-			Paths.get("affected_genes.txt")
+			Paths.get(affectedGenesFileName)
 		);
 
 		aComputation.getComputationDetails().setResults(results);
 		return aComputation;
 	}
 
-	private void createAffectedGenesFile(String affectedGenesFileName, String basePath, String geneRankingContents)
+	private void createFileWithContents(String fileName, String basePath, String content)
 			throws IOException {
 
-		File genesAffectedFile = new File(
-			aBaseDirectory + File.separator + basePath + File.separator + affectedGenesFileName);
+		File outFile = new File(
+			aBaseDirectory + File.separator + basePath + File.separator + fileName);
 
-		genesAffectedFile.deleteOnExit();
+		outFile.deleteOnExit();
 
-		FileUtils.write(genesAffectedFile, geneRankingContents);
+		FileUtils.write(outFile, content);
 	}
 }
