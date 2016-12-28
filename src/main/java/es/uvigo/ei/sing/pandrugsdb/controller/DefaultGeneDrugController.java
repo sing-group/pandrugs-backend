@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.controller;
 
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -50,8 +51,8 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGeneDrugDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
@@ -67,6 +68,16 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Inject
 	private VariantsAnalysisController variantsAnalysisController;
+	
+	@Override
+	public Map<String, Boolean> checkGenePresence(String ... geneSymbols) {
+		requireNonEmpty(geneSymbols);
+		requireNonNullArray(geneSymbols);
+		
+		geneSymbols = toUpperCase(geneSymbols);
+		
+		return this.dao.checkGenePresence(geneSymbols);
+	}
 
 	@Override
 	public String[] listGeneSymbols(String query, int maxResults) {

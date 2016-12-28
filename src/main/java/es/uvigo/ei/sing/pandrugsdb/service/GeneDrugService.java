@@ -170,7 +170,7 @@ public interface GeneDrugService {
 	 * @return a list of drug names associated to a drug ordered by ascending
 	 * alphabetical order.
 	 */
-	public Response listDrugNames(String query, int maxResults);
+	public abstract Response listDrugNames(String query, int maxResults);
 
 	/**
 	 * Returns a list of gene symbols associated to a drug ordered by ascending
@@ -185,4 +185,17 @@ public interface GeneDrugService {
 	 * alphabetical order.
 	 */
 	public abstract Response listGeneSymbols(String query, int maxResults);
+	
+	/**
+	 * Checks if a list of gene symbols are present or absent in the gene drug
+	 * information stored in the application.
+	 * 
+	 * The response returned includes a list of present genes and a list of
+	 * absent genes.
+	 * 
+	 * @param geneSymbols the gene symbols of the genes which presence will be
+	 * checked.
+	 * @return a list of present genes and a list of absent genes.
+	 */
+	public abstract Response checkPresence(Set<String> geneSymbols);
 }

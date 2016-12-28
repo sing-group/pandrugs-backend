@@ -23,11 +23,16 @@ package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus.activeDrugStatus;
 import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -42,6 +47,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -78,6 +84,26 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	@PostConstruct
 	private void createDAOHelper() {
 		this.dh = DAOHelper.of(GeneDrugId.class, GeneDrug.class, this.em);
+	}
+
+	@Override
+	public Map<String, Boolean> checkGenePresence(String[] geneSymbols) {
+		requireNonEmpty(geneSymbols);
+		requireNonNullArray(geneSymbols);
+		
+		geneSymbols = toUpperCase(geneSymbols);
+		
+		final CriteriaQuery<String> cq = dh.cb().createQuery(String.class);
+
+		final Root<GeneDrug> root = cq.from(dh.getEntityType());
+		
+		final Path<String> fieldGeneSymbol = root.get("geneSymbol");
+		
+		final List<String> present = dh.em().createQuery(cq.select(fieldGeneSymbol).distinct(true)
+			.where(fieldGeneSymbol.in((Object[]) geneSymbols))
+		).getResultList();
+		
+		return stream(geneSymbols).collect(toMap(identity(), present::contains));
 	}
 
 	@Override

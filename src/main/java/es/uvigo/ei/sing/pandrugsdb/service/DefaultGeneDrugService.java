@@ -27,6 +27,7 @@ import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -53,6 +54,7 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugsdb.service.entity.GenePresence;
 import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
 
 /**
@@ -204,6 +206,24 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			return Response.ok(DrugNames.of(drugs)).build();
 		} catch (NullPointerException e) {
 			LOG.warn("Error retrieving standard drug names", e);
+			throw createBadRequestException(e);
+		}
+	}
+
+	@GET
+	@Path("/gene/presence")
+	@ReturnType(clazz = GenePresence.class)
+	@Override
+	public Response checkPresence(@QueryParam("gene") Set<String> geneSymbols) {
+		try {
+			requireNonEmpty(geneSymbols, "At least one gene must be provided");
+			
+			final String[] gsArray = geneSymbols.stream().toArray(String[]::new);
+			final Map<String, Boolean> presence = this.controller.checkGenePresence(gsArray);
+			
+			return Response.ok(new GenePresence(presence)).build();
+		} catch (NullPointerException e) {
+			LOG.warn("Error checking gene presence", e);
 			throw createBadRequestException(e);
 		}
 	}

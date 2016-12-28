@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
@@ -39,4 +40,6 @@ public interface GeneDrugDAO {
 	public abstract String[] listGeneSymbols(String queryFilter, int maxResults);
 
 	public abstract Drug[] listDrugs(String query, int maxResults);
+
+	public abstract Map<String, Boolean> checkGenePresence(String[] geneSymbols);
 }
