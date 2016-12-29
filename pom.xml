@@ -406,6 +406,11 @@
 				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<warName>pandrugs-backend</warName>
+					<webResources>
+						<webResource>
+							<directory>${project.build.directory}/miredot</directory>
+						</webResource>
+					</webResources>
 				</configuration>
 			</plugin>
 
@@ -539,6 +544,7 @@
 						<goals>
 							<goal>restdoc</goal>
 						</goals>
+						<phase>prepare-package</phase>
 					</execution>
 				</executions>
 				<configuration>
@@ -587,7 +593,12 @@
 						</httpStatusCodes>
 					</restModel>
 					<output>
-						<html></html>
+						<html>
+							<baseUrl>http://pandrugs.bioinfo.cnio.es/pandrugs-backend</baseUrl>
+							<sections>
+								<strategy>singlepage</strategy>
+							</sections>
+						</html>
 					</output>
 				</configuration>
 			</plugin>
