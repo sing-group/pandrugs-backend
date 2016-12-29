@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugsdb.service.entity;
 
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,14 +34,14 @@ import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputati
 public class ComputationMetadata {
 	private final Integer variantsInInput;
 	private String name;
-	private Integer affectedGenes;
+	private Set<String> affectedGenes;
 	private double overallProgress;
 	private double taskProgress;
 	private String taskName;
 	private boolean finished;
 	private boolean failed;
 
-	public ComputationMetadata(VariantsScoreUserComputation computation, Integer affectedGenes, Integer
+	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes, Integer
 			variantsInInput) {
 		this.affectedGenes = affectedGenes;
 		this.variantsInInput = variantsInInput;
@@ -55,7 +57,7 @@ public class ComputationMetadata {
 		return name;
 	}
 
-	public Integer getAffectedGenes() {
+	public Set<String> getAffectedGenes() {
 		return affectedGenes;
 	}
 

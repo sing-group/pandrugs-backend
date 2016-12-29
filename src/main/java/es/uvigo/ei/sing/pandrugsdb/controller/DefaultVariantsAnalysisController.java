@@ -150,12 +150,12 @@ public class DefaultVariantsAnalysisController implements
 		return computations;
 	}
 
-	private Integer getAffectedGenes(VariantsScoreUserComputation computation) {
+	private Set<String> getAffectedGenes(VariantsScoreUserComputation computation) {
 		if (computation.getComputationDetails().getStatus().isFinished() &&
 			!computation.getComputationDetails().getStatus().hasErrors()
 			) {
 
-			return this.getGeneRanking(computation).asMap().keySet().size();
+			return this.getGeneRanking(computation).asMap().keySet();
 
 		} else {
 			return null;
