@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
+import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -38,10 +38,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.util.Compare;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.util.Compare;
 
 public final class GeneDrugDataset {
 	private static final String ABSENT_DRUG_NAME = "ABSENT DRUG";

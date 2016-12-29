@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,15 +19,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 
 /**
  * Service to manage the user data.

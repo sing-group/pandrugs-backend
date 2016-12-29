@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,10 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType.ADMIN;
-import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType.ADMIN;
+import static es.uvigo.ei.sing.pandrugs.util.EmptyInputStream.emptyInputStream;
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
@@ -52,23 +52,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.FileSystemConfiguration;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputation;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.VariantsScoreComputer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.VariantsScoreUserComputationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.FileSystemConfiguration;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputation;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationDetails;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {

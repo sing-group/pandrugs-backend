@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNegative;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
 
@@ -36,8 +36,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 
 @Controller
 @Transactional

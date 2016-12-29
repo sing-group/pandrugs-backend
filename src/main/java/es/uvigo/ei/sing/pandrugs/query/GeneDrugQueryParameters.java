@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.query;
+package es.uvigo.ei.sing.pandrugs.query;
 
 import static java.util.Arrays.asList;
 
 import java.util.Optional;
 import java.util.Set;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 
 public class GeneDrugQueryParameters {
 	public static final DirectIndirectStatus DEFAULT_DIRECT_INDIRECT = DirectIndirectStatus.BOTH;

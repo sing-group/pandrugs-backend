@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller.entity;
+package es.uvigo.ei.sing.pandrugs.controller.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.newGene;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.newGene;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
@@ -52,14 +52,14 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableSortedMap;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.OncodriveRole;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.OncodriveRole;
 
 public class GeneDrugGroupTest extends EasyMockSupport {
 	@After

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
+import es.uvigo.ei.sing.pandrugs.service.entity.CancerTypeNames;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({

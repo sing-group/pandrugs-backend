@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -26,4 +26,4 @@
  * @author michi
  *
  */
-package es.uvigo.ei.sing.pandrugsdb.service.security;
+package es.uvigo.ei.sing.pandrugs.service.security;

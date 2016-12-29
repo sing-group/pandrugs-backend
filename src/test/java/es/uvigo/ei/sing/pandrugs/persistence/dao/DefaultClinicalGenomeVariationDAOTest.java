@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToClinicalGenomeVariation.containsClinicalGenomeVariations;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToClinicalGenomeVariation.equalToClinicalGenomeVariation;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withChromosomeLocation;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withDbSnp;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationDataset.withId;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToClinicalGenomeVariation.containsClinicalGenomeVariations;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToClinicalGenomeVariation.equalToClinicalGenomeVariation;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.ClinicalGenomeVariationDataset.withChromosomeLocation;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.ClinicalGenomeVariationDataset.withDbSnp;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.ClinicalGenomeVariationDataset.withId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -47,7 +47,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ClinicalGenomeVariationId;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.ClinicalGenomeVariationId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional

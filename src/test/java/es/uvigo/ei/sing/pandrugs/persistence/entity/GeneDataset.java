@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;

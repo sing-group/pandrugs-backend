@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.ConversionUtils.toLinkedHashMap;
+import static es.uvigo.ei.sing.pandrugs.util.ConversionUtils.toLinkedHashMap;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "geneRanking", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "geneRanking", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneRanking {
 	@NotNull

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
@@ -40,9 +40,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
 
 public class DefaultVEPtoVariantsScoreCalculatorUnitTest extends EasyMockSupport {
 	@Rule	

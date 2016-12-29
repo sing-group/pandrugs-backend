@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.util;
+package es.uvigo.ei.sing.pandrugs.util;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.newStringFormatter;
+import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.newStringFormatter;
 
 import java.util.Arrays;
 

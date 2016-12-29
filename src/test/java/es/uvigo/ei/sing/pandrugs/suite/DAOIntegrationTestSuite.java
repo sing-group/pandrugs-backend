@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,19 +19,19 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugs.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAOTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDAOIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAOIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAOTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAOIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultSomaticMutationInCancerDAOTest;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultClinicalGenomeVariationDAOTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultGeneDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultGeneDrugDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultPrincipalSpliceIsoformDAOTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultRegistrationDAOIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultSomaticMutationInCancerDAOTest;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultUserDAOIntegrationTest;
 
 @SuiteClasses({
 	DefaultRegistrationDAOIntegrationTest.class,

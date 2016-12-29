@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -32,8 +32,8 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
+import es.uvigo.ei.sing.pandrugs.controller.UserController;
+import es.uvigo.ei.sing.pandrugs.service.entity.Login;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultSessionServiceUnitTest {

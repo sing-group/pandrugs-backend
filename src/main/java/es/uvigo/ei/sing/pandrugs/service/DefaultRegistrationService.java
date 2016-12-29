@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,10 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundException;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestException;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createNotFoundException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -45,11 +45,11 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.RegistrationController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UUID;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.controller.RegistrationController;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.service.entity.Message;
+import es.uvigo.ei.sing.pandrugs.service.entity.UUID;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
 
 @Path("registration")
 @Service

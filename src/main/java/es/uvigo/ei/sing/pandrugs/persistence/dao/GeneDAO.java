@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 
 public interface GeneDAO {
 	public Gene get(String geneSymbol);

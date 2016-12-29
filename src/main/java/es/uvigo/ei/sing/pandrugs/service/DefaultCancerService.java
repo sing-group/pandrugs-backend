@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.CancerTypeNames;
+import es.uvigo.ei.sing.pandrugs.service.entity.CancerTypeNames;
 
 /**
  * Service to get information about the cancer types used in the application.

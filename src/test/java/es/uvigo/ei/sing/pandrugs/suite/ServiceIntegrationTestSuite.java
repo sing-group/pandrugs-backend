@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,19 +19,19 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugs.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserServiceIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultCancerServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultGeneDrugServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultGeneServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultRegistrationServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultSessionServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultUserServiceIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.service.DefaultVariantsAnalysisServiceIntegrationTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({

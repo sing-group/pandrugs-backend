@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus.activeDrugStatus;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
-import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus.activeDrugStatus;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
+import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
@@ -55,16 +55,16 @@ import javax.persistence.criteria.Subquery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrugId;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.IndirectGene;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.ResistanceType;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.query.TargetMarkerStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugId;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.query.TargetMarkerStatus;
 
 @Repository
 @Transactional

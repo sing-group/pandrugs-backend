@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.absentUserPassword;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUserPassword;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.absentUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.absentUserPassword;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUserPassword;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
+import es.uvigo.ei.sing.pandrugs.service.entity.Login;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

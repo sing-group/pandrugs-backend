@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
 import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 /**
  * Service to query the gene drugs lists.

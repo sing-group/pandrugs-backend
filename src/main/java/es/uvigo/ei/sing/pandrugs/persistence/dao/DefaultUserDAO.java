@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
 import java.util.List;
 
@@ -30,8 +30,8 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
 @Repository
 @Transactional

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,16 +19,16 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 
 public interface VariantsAnalysisController {
 

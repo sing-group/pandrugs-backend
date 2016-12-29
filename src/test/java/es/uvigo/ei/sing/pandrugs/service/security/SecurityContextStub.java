@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.security;
+package es.uvigo.ei.sing.pandrugs.service.security;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
@@ -30,8 +30,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.SecurityContext;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
 public class SecurityContextStub implements SecurityContext {
 	private final Map<String, RoleType> userToRole;

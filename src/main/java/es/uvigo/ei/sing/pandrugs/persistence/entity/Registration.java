@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.entity;
+package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.EMAIL_PATTERN;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.UUID_PATTERN;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireEmail;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireUUID;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.EMAIL_PATTERN;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.UUID_PATTERN;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireEmail;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireUUID;
 
 import java.io.Serializable;
 import java.util.UUID;

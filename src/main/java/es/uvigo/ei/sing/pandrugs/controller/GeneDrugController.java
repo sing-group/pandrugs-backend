@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,15 +19,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
 import java.util.List;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 public interface GeneDrugController {
 	public abstract Map<String, Boolean> checkGenePresence(String ... geneSymbols);

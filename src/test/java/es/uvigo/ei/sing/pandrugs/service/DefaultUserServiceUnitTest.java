@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.anyUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.anyUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.users;
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -49,13 +49,13 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.UserController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Message;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfos;
+import es.uvigo.ei.sing.pandrugs.controller.UserController;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.service.entity.Message;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfos;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultUserServiceUnitTest {

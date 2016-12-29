@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest;
+package es.uvigo.ei.sing.pandrugs.matcher.hamcrest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import es.uvigo.ei.sing.pandrugsdb.util.Checks;
+import es.uvigo.ei.sing.pandrugs.util.Checks;
 
 public class IsAnUUIDMatcher extends TypeSafeMatcher<String> {
 	@Override

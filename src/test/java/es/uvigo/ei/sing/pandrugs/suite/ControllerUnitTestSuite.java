@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,19 +19,19 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugs.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroupTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneGScoreTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultGeneControllerUnitTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultGeneDrugControllerUnitTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultRegistrationControllerUnitTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultUserControllerUnitTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultVariantsAnalysisControllerUnitTest;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroupTest;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneGScoreTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerUnitTest.class,

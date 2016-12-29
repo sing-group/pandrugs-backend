@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import static java.util.Arrays.stream;
 
@@ -32,13 +32,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
-@XmlRootElement(name = "geneDrugInfo", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "geneDrugInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugInfo {
 	@XmlElementWrapper(name = "genes")

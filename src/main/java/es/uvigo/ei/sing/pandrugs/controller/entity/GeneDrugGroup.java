@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,10 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller.entity;
+package es.uvigo.ei.sing.pandrugs.controller.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.CompareCollections.equalsIgnoreOrder;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
@@ -41,16 +41,16 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugSource;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Extra;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGroupDrugScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.DrugScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.genescore.GeneScoreCalculator;
 
 public class GeneDrugGroup {
 	private final String[] queryGenes;

@@ -1,6 +1,6 @@
 <!--
   #%L
-  PanDrugsDB Backend
+  PanDrugs Backend
   %%
   Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
   %%
@@ -28,7 +28,7 @@
 		mail.smtp.auth="false"
 	/>
 		
-	<Resource name="jdbc/pandrugsdb/database"
+	<Resource name="jdbc/pandrugs/database"
 		auth="Container"
 		type="javax.sql.DataSource"
 		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
@@ -50,9 +50,9 @@
 	 />
    
 	<Realm className="org.apache.catalina.realm.LockOutRealm">
-		<Realm resourceName="PanDrugsDBRealm" 
+		<Realm resourceName="PanDrugsRealm" 
 			className="org.apache.catalina.realm.DataSourceRealm"
-			dataSourceName="jdbc/pandrugsdb/database"
+			dataSourceName="jdbc/pandrugs/database"
 			userTable="user"
 			userNameCol="login"
 			userCredCol="password"

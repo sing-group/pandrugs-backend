@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  PanDrugsDB Backend
+  PanDrugs Backend
   %%
   Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
   %%
@@ -32,7 +32,7 @@
         http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
  
- 	<context:component-scan base-package="es.uvigo.ei.sing.pandrugsdb*" />
+ 	<context:component-scan base-package="es.uvigo.ei.sing.pandrugs*" />
  	
  	<!-- JPA(hibernate) configuration -->
 	<tx:annotation-driven transaction-manager="transactionManager"/>
@@ -42,8 +42,8 @@
 	</bean>
 	
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="pandrugsdbDS" />
-		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugsdb.persistence.entity" />
+		<property name="dataSource" ref="pandrugsDS" />
+		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugs.persistence.entity" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
@@ -53,8 +53,8 @@
 		</property>
 	</bean>
 	
-	<bean id="pandrugsdbDS" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
-	    <property name="jndiName" value="java:comp/env/jdbc/pandrugsdb/database"/>
+	<bean id="pandrugsDS" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
+	    <property name="jndiName" value="java:comp/env/jdbc/pandrugs/database"/>
 	    <property name="resourceRef" value="true" />
 	</bean>
 	
@@ -68,12 +68,12 @@
 		<property name="corePoolSize" value="2" />
 		<property name="maxPoolSize" value="2" />
 	</bean>
-	<bean id="configuration" class="es.uvigo.ei.sing.pandrugsdb.Configuration" scope="singleton">
-        <property name="emailFrom" value="noreply@pandrugsdb.es"/>
-	    <property name="serverURL" value="http://localhost:8080/pandrugsdb-backend" />
+	<bean id="configuration" class="es.uvigo.ei.sing.pandrugs.Configuration" scope="singleton">
+        <property name="emailFrom" value="noreply@pandrugs.es"/>
+	    <property name="serverURL" value="http://localhost:8080/pandrugs-backend" />
     </bean>
 	
-	<bean id="mailer" class="es.uvigo.ei.sing.pandrugsdb.mail.DefaultMailer" scope="singleton"/>
+	<bean id="mailer" class="es.uvigo.ei.sing.pandrugs.mail.DefaultMailer" scope="singleton"/>
 
-	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="true"/>
+	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugs.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="true"/>
 </beans>

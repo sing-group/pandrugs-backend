@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import static java.util.stream.Collectors.toList;
 
@@ -32,9 +32,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.CancerType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 
-@XmlRootElement(name = "cancerNames", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "cancerNames", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CancerTypeNames {
 	@XmlElement(name = "name", nillable = false)

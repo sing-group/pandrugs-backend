@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,17 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugs.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneControllerIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugControllerIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationControllerIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserControllerIntegrationTest;
-import es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultGeneControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultGeneDrugControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultRegistrationControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultUserControllerIntegrationTest;
+import es.uvigo.ei.sing.pandrugs.controller.DefaultVariantsAnalysisControllerIntegrationTest;
 
 @SuiteClasses({
 	DefaultRegistrationControllerIntegrationTest.class,

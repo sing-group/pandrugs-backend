@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.drugscore;
+package es.uvigo.ei.sing.pandrugs.service.drugscore;
 
 import static java.util.Objects.requireNonNull;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
 public class ByGeneDrugDrugScoreCalculator implements DrugScoreCalculator {
 

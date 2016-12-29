@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
@@ -53,11 +53,11 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsScoreComputer.DefaultVariantsScoreComputation;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsEffectPredictionResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVariantsScoreComputer.DefaultVariantsScoreComputation;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.containsGenes;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.gene;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGene.containsGenes;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.absentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.gene;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.interactions;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
@@ -40,7 +40,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultGeneControllerUnitTest {

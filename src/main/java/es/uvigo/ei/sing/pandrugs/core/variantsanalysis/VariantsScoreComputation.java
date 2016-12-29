@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import java.util.concurrent.Future;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
 
 public interface VariantsScoreComputation extends
 		Future<VariantsScoreComputationResults> {

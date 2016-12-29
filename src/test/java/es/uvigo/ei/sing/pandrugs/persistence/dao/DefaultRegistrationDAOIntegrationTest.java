@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.registrations;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.absentRegistration;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.presentRegistration;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.registrations;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -46,7 +46,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional

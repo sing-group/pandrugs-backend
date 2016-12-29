@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createForbiddentException;
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createNotFoundException;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createForbiddentException;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createNotFoundException;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
 
 import java.io.InputStream;
 
@@ -52,10 +52,10 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.VariantsAnalysisController;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextUserAccessChecker;
+import es.uvigo.ei.sing.pandrugs.controller.VariantsAnalysisController;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.service.security.SecurityContextUserAccessChecker;
 
 @Path("variantsanalysis")
 @Service
@@ -189,7 +189,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	@GET
 	@Path("/{login}")
 	@RolesAllowed({ "ADMIN", "USER" })
-	@ReturnType("java.util.Map<java.lang.Integer, es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata>")
+	@ReturnType("java.util.Map<java.lang.Integer, es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata>")
 	@Override
 	public Response getComputationsForUser(
 		@PathParam("login") UserLogin login,

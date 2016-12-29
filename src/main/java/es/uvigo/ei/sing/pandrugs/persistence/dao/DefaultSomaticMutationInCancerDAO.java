@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerId;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancer;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerId;
 
 public class DefaultSomaticMutationInCancerDAO
 implements SomaticMutationInCancerDAO {

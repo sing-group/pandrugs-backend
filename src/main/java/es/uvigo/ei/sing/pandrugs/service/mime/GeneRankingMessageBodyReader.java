@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.mime;
+package es.uvigo.ei.sing.pandrugs.service.mime;
 
 import static java.lang.Double.parseDouble;
 
@@ -32,7 +32,7 @@ import java.util.Map;
 
 import javax.ws.rs.ext.Provider;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 @Provider
 public class GeneRankingMessageBodyReader extends MultipartMessageBodyReader<GeneRanking> {

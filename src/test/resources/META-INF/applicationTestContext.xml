@@ -1,6 +1,6 @@
 <!--
   #%L
-  PanDrugsDB Backend
+  PanDrugs Backend
   %%
   Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
   %%
@@ -33,7 +33,7 @@
 		http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
 	">
 
-	<context:component-scan base-package="es.uvigo.ei.sing.pandrugsdb*"/>
+	<context:component-scan base-package="es.uvigo.ei.sing.pandrugs*"/>
 
 	<!-- JPA(hibernate) configuration -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -43,8 +43,8 @@
 	</bean>
 
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="pandrugsdbTestDS" />
-		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugsdb.persistence.entity" />
+		<property name="dataSource" ref="pandrugsTestDS" />
+		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugs.persistence.entity" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />
@@ -54,7 +54,7 @@
 		</property>
 	</bean>
 
-	<jdbc:embedded-database id="pandrugsdbTestDS" type="HSQL" />
+	<jdbc:embedded-database id="pandrugsTestDS" type="HSQL" />
 
 	<bean id="hsqldbDataTypeFactory" class="org.dbunit.ext.hsqldb.HsqldbDataTypeFactory" />
 
@@ -67,12 +67,12 @@
 	<bean id="dbUnitDatabaseConnection"
 		class="com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean">
 		<property name="databaseConfig" ref="dbUnitDatabaseConfig" />
-		<property name="dataSource" ref="pandrugsdbTestDS" />
+		<property name="dataSource" ref="pandrugsTestDS" />
 	</bean>
 	
-	<bean id="configuration" class="es.uvigo.ei.sing.pandrugsdb.Configuration" scope="singleton">
-        <property name="emailFrom" value="noreply@pandrugsdb.es"/>
-	    <property name="serverURL" value="http://localhost:8080/pandrugsdb-backend" />
+	<bean id="configuration" class="es.uvigo.ei.sing.pandrugs.Configuration" scope="singleton">
+        <property name="emailFrom" value="noreply@pandrugs.es"/>
+	    <property name="serverURL" value="http://localhost:8080/pandrugs-backend" />
     </bean>
 
 	<bean id="threadExecutor"
@@ -81,28 +81,28 @@
 		<property name="maxPoolSize" value="10" />
 	</bean>
 
-	<bean id="mailer" class="es.uvigo.ei.sing.pandrugsdb.mailer.SpyMailer" scope="singleton"/>
-	<bean id="accessChecker" class="es.uvigo.ei.sing.pandrugsdb.service.security.CustomizableUserAccessChecker"/>
-	<bean id="securityContextFilter" class="es.uvigo.ei.sing.pandrugsdb.service.security.SecurityRequestFilter" scope="singleton"/>
+	<bean id="mailer" class="es.uvigo.ei.sing.pandrugs.mailer.SpyMailer" scope="singleton"/>
+	<bean id="accessChecker" class="es.uvigo.ei.sing.pandrugs.service.security.CustomizableUserAccessChecker"/>
+	<bean id="securityContextFilter" class="es.uvigo.ei.sing.pandrugs.service.security.SecurityRequestFilter" scope="singleton"/>
 	
-	<bean id="defaultRegistrationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultRegistrationDAO"/>
-	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultUserDAO"/>	
-	<bean id="defaultGeneDrugDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultGeneDrugDAO"/>
-	<bean id="defaultClinicalGenomeVariationDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultClinicalGenomeVariationDAO"/>
-	<bean id="defaultPrincipalSpliceIsoformDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultPrincipalSpliceIsoformDAO"/>
-	<bean id="defaultSomaticMutationInCancerDAO" class="es.uvigo.ei.sing.pandrugsdb.persistence.dao.DefaultSomaticMutationInCancerDAO"/>
-	<bean id="defaultRegistrationController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultRegistrationController"/>
-	<bean id="defaultFileSystemConfiguration" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultFileSystemConfiguration"/>
-	<bean id="defaultUserController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultUserController"/>
-	<bean id="defaultGeneDrugController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultGeneDrugController"/>
-	<bean id="defaultVariantsAnalysisController" class="es.uvigo.ei.sing.pandrugsdb.controller.DefaultVariantsAnalysisController"/>
-	<bean id="defaultVariantsAnalysisService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisService"/>
-	<bean id="defaultSessionService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService"/>
-	<bean id="defaultRegistrationService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService"/>
-	<bean id="defaultUserService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService"/>
-	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService"/>
-	<bean id="defaultCancerService" class="es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService"/>
+	<bean id="defaultRegistrationDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultRegistrationDAO"/>
+	<bean id="defaultUserDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultUserDAO"/>	
+	<bean id="defaultGeneDrugDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultGeneDrugDAO"/>
+	<bean id="defaultClinicalGenomeVariationDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultClinicalGenomeVariationDAO"/>
+	<bean id="defaultPrincipalSpliceIsoformDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultPrincipalSpliceIsoformDAO"/>
+	<bean id="defaultSomaticMutationInCancerDAO" class="es.uvigo.ei.sing.pandrugs.persistence.dao.DefaultSomaticMutationInCancerDAO"/>
+	<bean id="defaultRegistrationController" class="es.uvigo.ei.sing.pandrugs.controller.DefaultRegistrationController"/>
+	<bean id="defaultFileSystemConfiguration" class="es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultFileSystemConfiguration"/>
+	<bean id="defaultUserController" class="es.uvigo.ei.sing.pandrugs.controller.DefaultUserController"/>
+	<bean id="defaultGeneDrugController" class="es.uvigo.ei.sing.pandrugs.controller.DefaultGeneDrugController"/>
+	<bean id="defaultVariantsAnalysisController" class="es.uvigo.ei.sing.pandrugs.controller.DefaultVariantsAnalysisController"/>
+	<bean id="defaultVariantsAnalysisService" class="es.uvigo.ei.sing.pandrugs.service.DefaultVariantsAnalysisService"/>
+	<bean id="defaultSessionService" class="es.uvigo.ei.sing.pandrugs.service.DefaultSessionService"/>
+	<bean id="defaultRegistrationService" class="es.uvigo.ei.sing.pandrugs.service.DefaultRegistrationService"/>
+	<bean id="defaultUserService" class="es.uvigo.ei.sing.pandrugs.service.DefaultUserService"/>
+	<bean id="defaultGeneDrugService" class="es.uvigo.ei.sing.pandrugs.service.DefaultGeneDrugService"/>
+	<bean id="defaultCancerService" class="es.uvigo.ei.sing.pandrugs.service.DefaultCancerService"/>
 
-	<bean id="defaultveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculator" primary="true"/>
-	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="false"/>
+	<bean id="defaultveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculator" primary="true"/>
+	<bean id="perlveptovariantsscorecalculator" class="es.uvigo.ei.sing.pandrugs.core.variantsanalysis.PerlVEPtoVariantsScoreCalculator" primary="false"/>
 </beans>

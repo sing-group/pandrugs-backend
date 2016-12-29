@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest;
+package es.uvigo.ei.sing.pandrugs.matcher.hamcrest;
 
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -28,10 +28,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.TypeSafeMatcher;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserInfo;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
 
 public class HasTheSameUserDataMatcher extends TypeSafeMatcher<Object> {
 	private final String login;

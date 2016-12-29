@@ -1,27 +1,27 @@
 <!--
 
-    This file is part of PanDrugsDB Backend.
+    This file is part of PanDrugs Backend.
 
-    PanDrugsDB Backend is free software: you can redistribute it and/or modify
+    PanDrugs Backend is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    PanDrugsDB Backend is distributed in the hope that it will be useful,
+    PanDrugs Backend is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with PanDrugsDB Backend.  If not, see <http://www.gnu.org/licenses/>.
+    along with PanDrugs Backend.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.uvigo.ei.sing</groupId>
-	<artifactId>pandrugsdb-backend</artifactId>
-	<name>PanDrugsDB Backend</name>
+	<artifactId>pandrugs-backend</artifactId>
+	<name>PanDrugs Backend</name>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
@@ -398,14 +398,14 @@
 	</reporting>
 
 	<build>
-		<finalName>pandrugsdb-backend</finalName>
+		<finalName>pandrugs-backend</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<groupId>org.apache.maven.plugins</groupId>
 				<version>${maven-war-plugin.version}</version>
 				<configuration>
-					<warName>pandrugsdb-backend</warName>
+					<warName>pandrugs-backend</warName>
 				</configuration>
 			</plugin>
 
@@ -467,7 +467,7 @@
 				<version>${maven-surefire-plugins.version}</version>
 				<configuration>
 					<includes>
-						<includes>es/uvigo/ei/sing/pandrugsdb/suite/UnitTestSuite.java</includes>
+						<includes>es/uvigo/ei/sing/pandrugs/suite/UnitTestSuite.java</includes>
 					</includes>
 				</configuration>
 			</plugin>
@@ -478,7 +478,7 @@
 				<version>${maven-surefire-plugins.version}</version>
 				<configuration>
 					<includes>
-						<includes>es/uvigo/ei/sing/pandrugsdb/suite/IntegrationTestSuite.java</includes>
+						<includes>es/uvigo/ei/sing/pandrugs/suite/IntegrationTestSuite.java</includes>
 					</includes>
 				</configuration>
 				<executions>
@@ -543,7 +543,7 @@
 				</executions>
 				<configuration>
 					<organizationId>${miredot.organizationId}</organizationId>
-					<licence>${miredot.license.pandrugsdb}</licence>
+					<licence>${miredot.license.pandrugs}</licence>
 					<restModel>
 						<restFramework>
 							<name>jax-rs</name>
@@ -615,7 +615,7 @@
 				</dependencies>
 				<configuration>
 					<port>9080</port>
-					<path>/pandrugsdb-backend</path>
+					<path>/pandrugs-backend</path>
 					<contextFile>src/main/webapp/META-INF/context.xml</contextFile>
 					<useTestClasspath>false</useTestClasspath>
 					<path>/${project.build.finalName}</path>

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +55,7 @@ import org.springframework.web.context.request.RequestContextListener;
 
 import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
 
-import es.uvigo.ei.sing.pandrugsdb.UnexpectedExceptionMapper;
+import es.uvigo.ei.sing.pandrugs.UnexpectedExceptionMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

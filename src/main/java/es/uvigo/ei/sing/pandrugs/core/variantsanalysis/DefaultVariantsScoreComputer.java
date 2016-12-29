@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis;
+package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static java.util.Collections.synchronizedList;
 
@@ -37,11 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationDetails;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationParameters;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationResults;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreComputationStatus;
-import es.uvigo.ei.sing.pandrugsdb.util.FutureProxy;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationDetails;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
+import es.uvigo.ei.sing.pandrugs.util.FutureProxy;
 
 @Component
 public class DefaultVariantsScoreComputer implements VariantsScoreComputer {

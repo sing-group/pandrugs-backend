@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller.entity;
+package es.uvigo.ei.sing.pandrugs.controller.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.newGene;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel.CANDIDATE_DRIVER;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel.HIGH_CONFIDENCE_DRIVER;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.newGene;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.HIGHLY_SIGNIFICANTLY_MUTATED;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.NEAR_SIGNIFICANCE;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel.SIGNIFICANTLY_MUTATED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
@@ -37,10 +37,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.DriverLevel;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.OncodriveRole;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.TumorPortalMutationLevel;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DriverLevel;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.OncodriveRole;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLevel;
 
 @RunWith(Parameterized.class)
 public class GeneGScoreTest extends EasyMockSupport {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,15 +19,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.absentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.absentRegistration;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.absentUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.plainPassword;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.presentRegistration;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.presentUser;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -49,8 +49,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional

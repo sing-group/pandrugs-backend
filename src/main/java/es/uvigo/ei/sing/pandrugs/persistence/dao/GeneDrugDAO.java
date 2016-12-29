@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
 import java.util.List;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 
 public interface GeneDrugDAO {
 	public abstract List<GeneDrug> searchByGene(

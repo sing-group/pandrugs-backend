@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNullArray;
-import static es.uvigo.ei.sing.pandrugsdb.util.StringFormatter.toUpperCase;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
+import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -45,19 +45,19 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.GeneDrugDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugsdb.query.DirectIndirectStatus;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGeneDrugDrugScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.ByGroupDrugScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.drugscore.DrugScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.DefaultGeneScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.GeneScoreCalculator;
-import es.uvigo.ei.sing.pandrugsdb.service.genescore.StaticGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.query.DirectIndirectStatus;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.genescore.GeneScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.genescore.StaticGeneScoreCalculator;
 
 @Controller
 @Transactional

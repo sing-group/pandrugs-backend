@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.isEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestException;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.isEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
@@ -48,14 +48,14 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.GeneDrugController;
-import es.uvigo.ei.sing.pandrugsdb.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugsdb.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.DrugNames;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfos;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GenePresence;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.controller.GeneDrugController;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugs.service.entity.GenePresence;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 /**
  * Service to query the gene drugs lists.

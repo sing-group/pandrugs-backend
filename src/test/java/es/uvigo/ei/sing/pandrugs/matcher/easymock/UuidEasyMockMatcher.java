@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.matcher.easymock;
+package es.uvigo.ei.sing.pandrugs.matcher.easymock;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 
-import es.uvigo.ei.sing.pandrugsdb.util.Checks;
+import es.uvigo.ei.sing.pandrugs.util.Checks;
 
 public final class UuidEasyMockMatcher implements IArgumentMatcher {
 	private final static UuidEasyMockMatcher SINGLETON = new UuidEasyMockMatcher();

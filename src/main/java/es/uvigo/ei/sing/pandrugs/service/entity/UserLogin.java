@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "userLogin", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "userLogin", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserLogin {
 	@NotNull(message = "Login can not be null")

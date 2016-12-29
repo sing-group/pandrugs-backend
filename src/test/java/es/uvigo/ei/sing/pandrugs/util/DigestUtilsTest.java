@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.util;
+package es.uvigo.ei.sing.pandrugs.util;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.DigestUtils.md5Digest;
+import static es.uvigo.ei.sing.pandrugs.util.DigestUtils.md5Digest;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;

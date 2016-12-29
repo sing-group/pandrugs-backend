@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,17 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.suite;
+package es.uvigo.ei.sing.pandrugs.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultFileSystemConfigurationUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfigurationUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculatorUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsEffectPredictorUnitTest;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVariantsScoreComputerUnitTest;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultFileSystemConfigurationUnitTest;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPConfigurationUnitTest;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPtoVariantsScoreCalculatorUnitTest;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVariantsEffectPredictorUnitTest;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVariantsScoreComputerUnitTest;
 
 @SuiteClasses({
 	DefaultVariantsScoreComputerUnitTest.class,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.mail;
+package es.uvigo.ei.sing.pandrugs.mail;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,7 +31,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import es.uvigo.ei.sing.pandrugsdb.Configuration;
+import es.uvigo.ei.sing.pandrugs.Configuration;
 
 @Singleton
 public class DefaultMailer implements Mailer {
@@ -73,12 +73,12 @@ public class DefaultMailer implements Mailer {
 
 	private void sendConfirmSingUpWithURL(String to, String username, String url) {
 		this.send(this.configuration.getEmailFrom(),
-			to, "PanDrugsDB registration confirmation",
+			to, "PanDrugs registration confirmation",
 			String.format("Hi %s," +
-				"<p>In order to confirm your PanDrugsDB registration, please, click on the following link: " +
+				"<p>In order to confirm your PanDrugs registration, please, click on the following link: " +
 				"<a href=\"%s\">%s</a>.<p/>" +
 				"<p>Thanks for your registration,<br/><br/>" +
-				"The PanDrugsDB Team</p>",
+				"The PanDrugs Team</p>",
 				username, url, url
 			),
 			"text/html"

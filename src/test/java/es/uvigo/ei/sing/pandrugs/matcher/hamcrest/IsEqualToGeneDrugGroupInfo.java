@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest;
+package es.uvigo.ei.sing.pandrugs.matcher.hamcrest;
 
 import java.util.stream.StreamSupport;
 
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneDrugGroupInfo;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfo;
 
 //TODO: Enable gscore and dscore check
 public class IsEqualToGeneDrugGroupInfo extends IsEqualToEntity<GeneDrugGroupInfo> {

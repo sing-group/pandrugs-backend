@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb;
+package es.uvigo.ei.sing.pandrugs;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -31,7 +31,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ErrorMessage;
+import es.uvigo.ei.sing.pandrugs.service.entity.ErrorMessage;
 
 @Provider
 public class UnexpectedExceptionMapper implements ExceptionMapper<Throwable> {

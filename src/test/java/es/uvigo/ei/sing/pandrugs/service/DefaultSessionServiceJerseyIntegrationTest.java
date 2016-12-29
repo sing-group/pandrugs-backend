@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,10 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasNoContentStatus;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasUnauthorizedStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasNoContentStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasUnauthorizedStatus;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.junit.Assert.assertThat;
@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.Login;
+import es.uvigo.ei.sing.pandrugs.service.entity.Login;
 
 @DatabaseSetup("file:src/test/resources/META-INF/dataset.user.xml")
 public class DefaultSessionServiceJerseyIntegrationTest extends ConfiguredJerseyTest {

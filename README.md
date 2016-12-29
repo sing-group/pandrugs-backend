@@ -1,2 +1,2 @@
-# pandrugsdb-backend
-A Java backend for the PanDrugsDB.
+# pandrugs-backend
+A Java backend for the PanDrugs.

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
 import javax.inject.Inject;
 
@@ -27,12 +27,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.uvigo.ei.sing.pandrugsdb.mail.Mailer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.RegistrationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
+import es.uvigo.ei.sing.pandrugs.mail.Mailer;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.RegistrationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.util.DigestUtils;
 
 @Controller
 @Transactional

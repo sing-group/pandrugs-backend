@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.easymock.UuidEasyMockMatcher.anyUUID;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyRegistration;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.anyUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.RegistrationDataset.plainPassword;
+import static es.uvigo.ei.sing.pandrugs.matcher.easymock.UuidEasyMockMatcher.anyUUID;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasTheSameUserDataMatcher.hasTheSameUserDataAs;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsAnUUIDMatcher.anUUID;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.anyRegistration;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.anyUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.RegistrationDataset.plainPassword;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -41,13 +41,13 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.mail.Mailer;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.RegistrationDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Registration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.util.DigestUtils;
+import es.uvigo.ei.sing.pandrugs.mail.Mailer;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.RegistrationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Registration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.util.DigestUtils;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultRegistrationControllerUnitTest {

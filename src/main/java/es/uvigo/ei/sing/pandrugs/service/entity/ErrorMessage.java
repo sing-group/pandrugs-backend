@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "errorMessage", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "errorMessage", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ErrorMessage {
 	@XmlAttribute(required = true)

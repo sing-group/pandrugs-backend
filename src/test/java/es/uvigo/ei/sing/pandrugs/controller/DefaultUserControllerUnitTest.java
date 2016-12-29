@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,10 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.anyUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.anyUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.users;
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
@@ -41,8 +41,8 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.dao.UserDAO;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
 @RunWith(EasyMockRunner.class)
 public class DefaultUserControllerUnitTest {

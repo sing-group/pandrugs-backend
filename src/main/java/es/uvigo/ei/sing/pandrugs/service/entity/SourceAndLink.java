@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,16 +19,16 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugsdb.util.Compare;
+import es.uvigo.ei.sing.pandrugs.util.Compare;
 
-@XmlRootElement(name = "source-and-link", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "source-and-link", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SourceAndLink implements Comparable<SourceAndLink> {
 	@XmlAttribute(name = "name")

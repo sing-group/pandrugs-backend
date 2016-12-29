@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.EMAIL_PATTERN;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.MD5_PATTERN;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireEmail;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireMD5;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireStringSize;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.EMAIL_PATTERN;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.MD5_PATTERN;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireEmail;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireMD5;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,10 +37,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
-@XmlRootElement(name = "userInfo", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "userInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserInfo {
 	@NotNull(message = "Login can not be null")

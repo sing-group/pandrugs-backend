@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasCreatedStatus;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.presentUser2;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset.users;
-import static es.uvigo.ei.sing.pandrugsdb.util.EmptyInputStream.emptyInputStream;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasCreatedStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUser2;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.users;
+import static es.uvigo.ei.sing.pandrugs.util.EmptyInputStream.emptyInputStream;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
@@ -70,14 +70,14 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 
-import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.RoleType;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.ComputationMetadata;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
-import es.uvigo.ei.sing.pandrugsdb.service.security.SecurityContextStub;
+import es.uvigo.ei.sing.pandrugs.TestServletContext;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPConfiguration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.service.security.SecurityContextStub;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

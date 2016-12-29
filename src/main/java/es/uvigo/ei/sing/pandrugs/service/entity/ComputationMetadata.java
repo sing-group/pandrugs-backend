@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service.entity;
+package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import java.util.Set;
 
@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 
-@XmlRootElement(name = "computationStatusMetadata", namespace = "http://sing.ei.uvigo.es/pandrugsdb")
+@XmlRootElement(name = "computationStatusMetadata", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ComputationMetadata {
 	private final Integer variantsInInput;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.controller;
+package es.uvigo.ei.sing.pandrugs.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -58,14 +58,14 @@ import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.TestServletContext;
-import es.uvigo.ei.sing.pandrugsdb.core.variantsanalysis.DefaultVEPConfiguration;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.User;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.UserDataset;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.VariantsScoreUserComputationDataset;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRank;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneRanking;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.TestServletContext;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPConfiguration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRank;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

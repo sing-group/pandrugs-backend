@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb;
+package es.uvigo.ei.sing.pandrugs;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -30,18 +30,18 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.server.validation.ValidationFeature;
 
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultCancerService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneDrugService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultGeneService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultRegistrationService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultSessionService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultUserService;
-import es.uvigo.ei.sing.pandrugsdb.service.DefaultVariantsAnalysisService;
-import es.uvigo.ei.sing.pandrugsdb.service.mime.GeneRankingMessageBodyReader;
+import es.uvigo.ei.sing.pandrugs.service.DefaultCancerService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultGeneDrugService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultGeneService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultRegistrationService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultSessionService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultUserService;
+import es.uvigo.ei.sing.pandrugs.service.DefaultVariantsAnalysisService;
+import es.uvigo.ei.sing.pandrugs.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("api")
-public class PanDrugsDBApplication extends ResourceConfig {
-	public PanDrugsDBApplication() {
+public class PanDrugsApplication extends ResourceConfig {
+	public PanDrugsApplication() {
 		super(
 			DefaultRegistrationService.class,
 			DefaultGeneDrugService.class,

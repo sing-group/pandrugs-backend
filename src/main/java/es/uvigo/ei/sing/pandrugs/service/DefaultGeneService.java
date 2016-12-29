@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.service.ServiceUtils.createBadRequestException;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonEmpty;
-import static es.uvigo.ei.sing.pandrugsdb.util.Checks.requireNonNegative;
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestException;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNegative;
 import static java.util.Arrays.asList;
 
 import java.util.Comparator;
@@ -47,10 +47,10 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
-import es.uvigo.ei.sing.pandrugsdb.controller.GeneController;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
-import es.uvigo.ei.sing.pandrugsdb.util.Checks;
+import es.uvigo.ei.sing.pandrugs.controller.GeneController;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneInteraction;
+import es.uvigo.ei.sing.pandrugs.util.Checks;
 
 @Path("gene")
 @Service

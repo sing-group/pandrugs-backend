@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,17 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.service;
+package es.uvigo.ei.sing.pandrugs.service;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.HasHttpStatus.hasOkStatus;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbols;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.interactions;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.presentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGeneInteraction.containsGeneInteraction;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.absentGeneSymbols;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.geneSymbolsWithInteractionDegreeUpTo;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.geneSymbolsWithMaxInteractionDegree;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.interactions;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.presentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.presentGeneSymbols;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
@@ -54,7 +54,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.service.entity.GeneInteraction;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneInteraction;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/test/resources/META-INF/applicationTestContext.xml")

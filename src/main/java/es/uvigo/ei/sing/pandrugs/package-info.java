@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -20,9 +20,9 @@
  * #L%
  */
 /**
- * Contains the configuration classes of the PanDrugsDB Backend application.
+ * Contains the configuration classes of the PanDrugs Backend application.
  * 
  * @author Miguel Reboiro-Jato
  *
  */
-package es.uvigo.ei.sing.pandrugsdb;
+package es.uvigo.ei.sing.pandrugs;

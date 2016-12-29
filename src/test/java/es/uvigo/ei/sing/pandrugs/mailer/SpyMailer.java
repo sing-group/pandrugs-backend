@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.mailer;
+package es.uvigo.ei.sing.pandrugs.mailer;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import es.uvigo.ei.sing.pandrugsdb.mail.Mailer;
-import es.uvigo.ei.sing.pandrugsdb.mail.MailerException;
+import es.uvigo.ei.sing.pandrugs.mail.Mailer;
+import es.uvigo.ei.sing.pandrugs.mail.MailerException;
 
 public class SpyMailer implements Mailer {
 	private final Map<String, AtomicInteger> counts;

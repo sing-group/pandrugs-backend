@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,16 +19,16 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToSomaticMutationInCancer.containsSomaticMutationInCancers;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToSomaticMutationInCancer.equalSomaticMutationInCancer;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.invalidGeneAndMutationAA;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.invalidIds;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.validGeneAndMutationAA;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.validIds;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.withGeneAndMutationAA;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerDataset.withId;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToSomaticMutationInCancer.containsSomaticMutationInCancers;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToSomaticMutationInCancer.equalSomaticMutationInCancer;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.invalidGeneAndMutationAA;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.invalidIds;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.validGeneAndMutationAA;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.validIds;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.withGeneAndMutationAA;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerDataset.withId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -50,7 +50,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.SomaticMutationInCancerId;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.SomaticMutationInCancerId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional

@@ -1,6 +1,6 @@
 /*
  * #%L
- * PanDrugsDB Backend
+ * PanDrugs Backend
  * %%
  * Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugsdb.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToGene.equalToGene;
-import static es.uvigo.ei.sing.pandrugsdb.matcher.hamcrest.IsEqualToPathway.containsPathways;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.absentGeneSymbol;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genes;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithPathway;
-import static es.uvigo.ei.sing.pandrugsdb.persistence.entity.GeneDataset.genesWithoutPathway;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGene.equalToGene;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToPathway.containsPathways;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.genes;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.genesWithPathway;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDataset.genesWithoutPathway;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -48,8 +48,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Gene;
-import es.uvigo.ei.sing.pandrugsdb.persistence.entity.Pathway;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Pathway;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional

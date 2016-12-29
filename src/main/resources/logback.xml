@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  PanDrugsDB Backend
+  PanDrugs Backend
   %%
   Copyright (C) 2015 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
   %%
@@ -32,10 +32,10 @@
 	</appender>
 
 	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>pandrugsdb.log</File>
+		<File>pandrugs.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<FileNamePattern>pandrugsdb.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>pandrugs.%d{yyyy-MM-dd}.log</FileNamePattern>
 
 			<!-- keep 30 days' worth of history -->
 			<maxHistory>30</maxHistory>
@@ -47,7 +47,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="es.uvigo.ei.sing.pandrugsdb" additivity="false">
+	<logger name="es.uvigo.ei.sing.pandrugs" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender" />
 		<appender-ref ref="consoleAppender" />
