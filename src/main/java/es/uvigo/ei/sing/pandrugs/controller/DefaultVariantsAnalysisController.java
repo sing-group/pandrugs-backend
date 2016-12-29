@@ -171,7 +171,6 @@ public class DefaultVariantsAnalysisController implements
 					computation.getComputationDetails().getParameters().getVcfFile());
 
 			try {
-				System.err.println("parsing..." + variantsFile.toURI().toURL());
 				VCFReader<VCFMetaData, VCFVariant<VCFMetaData>> reader = new VCFReader<>(
 						variantsFile.toURI().toURL(),
 						new DefaultVCFMetaDataBuilder(),
