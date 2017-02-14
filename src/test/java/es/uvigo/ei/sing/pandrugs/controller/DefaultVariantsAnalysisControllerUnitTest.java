@@ -193,7 +193,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		final VariantsScoreComputationResults expectedResults = mockControl
 				.createMock(VariantsScoreComputationResults.class);
-		expect(expectedResults.getAffectedGenesPath()).andReturn(Paths.get("affected_genes.txt"));
+		expect(expectedResults.getAffectedGenesPath()).andReturn(Paths.get("affected_genes.txt")).times(4);
 
 		final VariantsScoreComputation expectedComputation = mockControl.createMock(VariantsScoreComputation.class);
 
@@ -227,6 +227,8 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		aStatus.setOverallProgress(1.0);
 
 		assertThat(controller.getComputationStatus(id).isFinished(), is(true));
+		assertThat(controller.getComputationStatus(id).getAffectedGenesInfo().get("KCNH5").get("branch"), is
+				("UNCLASSIFIED"));
 	}
 
 	@Test

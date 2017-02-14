@@ -32,9 +32,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -121,7 +123,10 @@ public class DefaultVariantsAnalysisController implements
 			throw new IllegalArgumentException("computationId "+computationId+" not found.");
 		}
 		try {
-			return new ComputationMetadata(computation, getAffectedGenes(computation), getVariantsInInput(computation));
+			return new ComputationMetadata(computation,
+					getAffectedGenes(computation),
+					getAffectedGenesInfo(computation),
+					getVariantsInInput(computation));
 		} catch (IOException | VCFParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -138,7 +143,7 @@ public class DefaultVariantsAnalysisController implements
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
 			try {
 				computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes(computation),
-						getVariantsInInput(computation)));
+						getAffectedGenesInfo(computation), getVariantsInInput(computation)));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			} catch (VCFParseException e) {
@@ -233,9 +238,7 @@ public class DefaultVariantsAnalysisController implements
 	private GeneRanking getGeneRanking(VariantsScoreUserComputation computation) {
 
 		try {
-			File affectedGenesFile = this.obtainComputationFile(
-					computation,
-					computation.getComputationDetails().getResults().getAffectedGenesPath());
+			File affectedGenesFile = getAffectedGenesFile(computation);
 
 			Map<String, Double> geneRankingMap =
 					readLines(affectedGenesFile).stream()
@@ -253,6 +256,47 @@ public class DefaultVariantsAnalysisController implements
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private Map<String, Map<String, String>> getAffectedGenesInfo(VariantsScoreUserComputation computation) {
+		if (computation.getComputationDetails().getStatus().isFinished() &&
+				!computation.getComputationDetails().getStatus().hasErrors()
+				) {
+			try {
+				Map<String, Map<String, String>> affectedGenesInfo = new HashMap<>();
+				File affectedGenesFile = getAffectedGenesFile(computation);
+				List<String> lines = readLines(affectedGenesFile);
+				if (lines.size() > 0) {
+					String[] headers = lines.get(0).split("\t");
+
+					for (int i = 1; i < lines.size(); i++) {
+						if (lines.get(i).length() == 0) continue;
+						String[] tokens = lines.get(i).split("\t");
+
+						Map<String, String> affectedGeneInfo = new HashMap<>();
+						for (int j = 0; j < tokens.length; j++) {
+							if (j == 0) {
+								affectedGenesInfo.put(tokens[j], affectedGeneInfo);
+							} else {
+								affectedGeneInfo.put(headers[j], tokens[j]);
+							}
+						}
+					}
+				}
+
+				return affectedGenesInfo;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private File getAffectedGenesFile(VariantsScoreUserComputation computation) {
+		return this.obtainComputationFile(
+				computation,
+				computation.getComputationDetails().getResults().getAffectedGenesPath());
 	}
 
 	private File createComputationDataDirectory(User user) {

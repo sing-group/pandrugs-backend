@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,15 +36,19 @@ public class ComputationMetadata {
 	private final Integer variantsInInput;
 	private String name;
 	private Set<String> affectedGenes;
+	private Map<String, Map<String, String>> affectedGenesInfo;
 	private double overallProgress;
 	private double taskProgress;
 	private String taskName;
 	private boolean finished;
 	private boolean failed;
 
-	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes, Integer
-			variantsInInput) {
+	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes,
+			Map<String, Map<String, String>> affectedGenesInfo,
+			Integer variantsInInput) {
+
 		this.affectedGenes = affectedGenes;
+		this.affectedGenesInfo = affectedGenesInfo;
 		this.variantsInInput = variantsInInput;
 		this.name = computation.getName();
 		this.overallProgress = computation.getComputationDetails().getStatus().getOverallProgress();
@@ -60,6 +65,8 @@ public class ComputationMetadata {
 	public Set<String> getAffectedGenes() {
 		return affectedGenes;
 	}
+
+	public Map<String, Map<String, String>> getAffectedGenesInfo() { return affectedGenesInfo; }
 
 	public Integer getVariantsInInput() { return variantsInInput; }
 
