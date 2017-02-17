@@ -49,7 +49,7 @@ import es.uvigo.ei.sing.pandrugs.util.StringJoiner;
 public class GeneDrugGroupInfo {
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
-	private String[] genes;
+	private GeneInfo[] genes;
 	
 	private String standardDrugName;
 	private String showDrugName;
@@ -76,8 +76,8 @@ public class GeneDrugGroupInfo {
 	private Extra therapy;
 	
 	@XmlElementWrapper(name = "indirectGenes")
-	@XmlElement(name = "indirect-gene")
-	private String[] indirect;
+	@XmlElement(name = "indirectGene")
+	private GeneInfo[] indirect;
 	
 	private boolean target;
 	private int[] pubchemId;
@@ -91,7 +91,9 @@ public class GeneDrugGroupInfo {
 	GeneDrugGroupInfo() {}
 	
 	public GeneDrugGroupInfo(GeneDrugGroup gdg) {
-		this.genes = gdg.getQueryGenes();
+		this.genes = stream(gdg.getQueryGenes())
+			.map(GeneInfo::new)
+		.toArray(GeneInfo[]::new);
 		sort(this.genes);
 		
 		this.standardDrugName = gdg.getStandardDrugName();
@@ -111,7 +113,9 @@ public class GeneDrugGroupInfo {
 		this.cancers = gdg.getCancers();
 		sort(this.cancers);
 		this.therapy = gdg.getExtra();
-		this.indirect = gdg.getIndirectGenes();
+		this.indirect = stream(gdg.getIndirectGenes())
+			.map(GeneInfo::new)
+		.toArray(GeneInfo[]::new);
 		sort(this.indirect);
 		this.target = gdg.isTarget();
 		this.pubchemId = gdg.getPubchemId();
@@ -185,11 +189,11 @@ public class GeneDrugGroupInfo {
 		.toArray(GeneDrugInfo[]::new);
 	}
 
-	public String[] getGenes() {
+	public GeneInfo[] getGenes() {
 		return genes;
 	}
 
-	public void setGenes(String[] gene) {
+	public void setGenes(GeneInfo[] gene) {
 		this.genes = gene;
 	}
 
@@ -257,11 +261,11 @@ public class GeneDrugGroupInfo {
 		this.cancers = cancer;
 	}
 
-	public String[] getIndirect() {
+	public GeneInfo[] getIndirect() {
 		return indirect;
 	}
 
-	public void setIndirect(String[] indirect) {
+	public void setIndirect(GeneInfo[] indirect) {
 		this.indirect = indirect;
 	}
 

@@ -86,14 +86,15 @@ public class IndirectGene implements Serializable {
 	IndirectGene() {
 	}
 	
-	public IndirectGene(GeneDrug geneDrug, String geneSymbol) {
-		this.indirectGeneSymbol = geneSymbol;
+	public IndirectGene(GeneDrug geneDrug, Gene gene) {
+		this.indirectGeneSymbol = gene.getGeneSymbol();
 		
 		this.directGeneSymbol = geneDrug.getGeneSymbol();
 		this.drugId = geneDrug.getDrug().getId();
 		this.target = geneDrug.isTarget();
 		
 		this.geneDrug = geneDrug;
+		this.gene = gene;
 	}
 
 	public String getGeneSymbol() {

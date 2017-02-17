@@ -22,9 +22,11 @@
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,13 +45,13 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 public class GeneDrugInfo {
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
-	private String[] genes;
+	private GeneInfo[] genes;
 	private String drug;
 	private String family;
 	private DrugStatus status;
 	private CancerType[] cancers;
 	private Extra therapy;
-	private String indirect;
+	private GeneInfo indirect;
 	private String target;
 	private String sensitivity;
 	private String alteration;
@@ -68,7 +70,9 @@ public class GeneDrugInfo {
 	}
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group, boolean forceIndirect) {
-		this.genes = group.getTargetGeneNames(geneDrug, forceIndirect);
+		this.genes = stream(group.getTargetGenes(geneDrug, forceIndirect))
+			.map(GeneInfo::new)
+		.toArray(GeneInfo[]::new);
 		this.drug = geneDrug.getStandardDrugName();
 		this.sources = geneDrug.getDrug().getDrugSourceNames().stream()
 			.toArray(String[]::new);
@@ -76,7 +80,9 @@ public class GeneDrugInfo {
 		this.status = geneDrug.getStatus();
 		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
-		this.indirect = group.getIndirectGeneName(geneDrug, forceIndirect);
+		this.indirect = Optional.ofNullable(group.getIndirectGene(geneDrug, forceIndirect))
+			.map(GeneInfo::new)
+		.orElse(null);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
 		this.sensitivity = geneDrug.getResistance().name();
 		this.alteration = geneDrug.getAlteration();
@@ -93,6 +99,7 @@ public class GeneDrugInfo {
 					group.getIndirectGScores(geneDrug);
 				
 				this.gScore = stream(this.genes)
+					.map(GeneInfo::getGeneSymbol)
 					.mapToDouble(indirectGScores::get)
 				.max().orElse(0d);
 				
@@ -118,7 +125,7 @@ public class GeneDrugInfo {
 		this.dScore = group.getDScore(geneDrug);
 	}
 	
-	public String[] getGenes() {
+	public GeneInfo[] getGenes() {
 		return genes;
 	}
 	
@@ -146,7 +153,7 @@ public class GeneDrugInfo {
 		return therapy;
 	}
 	
-	public String getIndirect() {
+	public GeneInfo getIndirect() {
 		return indirect;
 	}
 	
@@ -174,17 +181,23 @@ public class GeneDrugInfo {
 		return gScore;
 	}
 	
-	private final static String joinGeneNames(String ... geneNames) {
-		if (geneNames.length == 1) {
-			return geneNames[0];
-		} else if (geneNames.length == 2) {
-			return String.join(" and ", geneNames);
+	private final static String joinGeneNames(GeneInfo ... genes) {
+		if (genes.length == 1) {
+			return genes[0].getGeneSymbol();
+		} else if (genes.length == 2) {
+			return stream(genes)
+				.map(GeneInfo::getGeneSymbol)
+			.collect(joining(" and "));
 		} else {
-			final String[] subGeneNames = new String[geneNames.length - 1];
-			System.arraycopy(geneNames, 0, subGeneNames, 0, subGeneNames.length);
-			final String lastGene = geneNames[geneNames.length - 1];
+			final GeneInfo[] subGeneNames = new GeneInfo[genes.length - 1];
+			System.arraycopy(genes, 0, subGeneNames, 0, subGeneNames.length);
+			final GeneInfo lastGene = genes[genes.length - 1];
 			
-			return String.join(", ", subGeneNames) + " and " + lastGene;
+			final String csvNames = stream(genes)
+				.map(GeneInfo::getGeneSymbol)
+			.collect(joining(", "));
+			
+			return csvNames + " and " + lastGene.getGeneSymbol();
 		}
 	}
 

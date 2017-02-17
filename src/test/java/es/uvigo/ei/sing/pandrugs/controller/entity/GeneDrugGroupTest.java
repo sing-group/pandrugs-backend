@@ -288,7 +288,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 
-		assertThat(group.getQueryGenes(), is(arrayContainingInAnyOrder(genes)));
+		assertThat(group.getQueryGeneSymbols(), is(arrayContainingInAnyOrder(genes)));
 	}
 
 	@Test
@@ -305,7 +305,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 
-		assertThat(group.getDirectGenes(), is(arrayContaining("G1", "G2")));
+		assertThat(group.getDirectGeneSymbols(), is(arrayContaining("G1", "G2")));
 	}
 
 	@Test
@@ -322,7 +322,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 
-		assertThat(group.getIndirectGenes(), is(arrayContaining("IG1")));
+		assertThat(group.getIndirectGeneSymbols(), is(arrayContaining("IG1")));
 	}
 
 	@Test
@@ -797,9 +797,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getTargetGeneNames(gd1, false), is(arrayContaining("G1")));
-		assertThat(group.getTargetGeneNames(gd2, false), is(arrayContaining("G2")));
-		assertThat(group.getTargetGeneNames(gd3, false), is(arrayContaining("IG1", "IG2")));
+		assertThat(group.getTargetGeneSymbols(gd1, false), is(arrayContaining("G1")));
+		assertThat(group.getTargetGeneSymbols(gd2, false), is(arrayContaining("G2")));
+		assertThat(group.getTargetGeneSymbols(gd3, false), is(arrayContaining("IG1", "IG2")));
 	}
 
 	@Test
@@ -817,9 +817,9 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
 		
-		assertThat(group.getIndirectGeneName(gd1, false), is(nullValue()));
-		assertThat(group.getIndirectGeneName(gd2, false), is(nullValue()));
-		assertThat(group.getIndirectGeneName(gd3, false), is("G3"));
+		assertThat(group.getIndirectGeneSymbol(gd1, false), is(nullValue()));
+		assertThat(group.getIndirectGeneSymbol(gd2, false), is(nullValue()));
+		assertThat(group.getIndirectGeneSymbol(gd3, false), is("G3"));
 	}
 	
 	@Test

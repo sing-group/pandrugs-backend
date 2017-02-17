@@ -240,7 +240,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			break;
 		default:
 			getGenes = gd -> gd.isTarget() ?
-				gd.getDirectAndIndirectGenes() :
+				gd.getDirectAndIndirectGeneSymbols() :
 				asList(gd.getGeneSymbol());
 			break;
 		}

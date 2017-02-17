@@ -46,7 +46,9 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
@@ -123,11 +125,26 @@ public class GeneDrugGroup {
 		return unmodifiableList(geneDrugs);
 	}
 
-	public String[] getQueryGenes() {
+	public String[] getQueryGeneSymbols() {
 		return this.queryGenes;
 	}
+	
+	public Gene[] getQueryGenes() {
+		return stream(getQueryGeneSymbols())
+			.map(this::getGeneFromGeneDrugs)
+		.toArray(Gene[]::new);
+	}
+	
+	private Gene getGeneFromGeneDrugs(final String geneSymbol) {
+		return this.geneDrugs.stream()
+			.map(GeneDrug::getDirectAndIndirectGenes)
+			.flatMap(List::stream)
+			.filter(gd -> gd.getGeneSymbol().equals(geneSymbol))	
+			.findAny()
+		.orElseThrow(() -> new IllegalArgumentException("Invalid gene symbol: " + geneSymbol));
+	}
 
-	public String[] getDirectGenes() {
+	public String[] getDirectGeneSymbols() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getGeneSymbol)
 			.filter(this::isInTargetGenes)
@@ -136,7 +153,7 @@ public class GeneDrugGroup {
 		.toArray(String[]::new);
 	}
 
-	public String[] getIndirectGenes() {
+	public String[] getIndirectGeneSymbols() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getIndirectGeneSymbols)
 			.flatMap(List::stream)
@@ -144,6 +161,12 @@ public class GeneDrugGroup {
 			.distinct()
 			.sorted()
 		.toArray(String[]::new);
+	}
+	
+	public Gene[] getIndirectGenes() {
+		return stream(getIndirectGeneSymbols())
+			.map(this::getGeneFromGeneDrugs)
+		.toArray(Gene[]::new);
 	}
 
 	public boolean isDirect(GeneDrug geneDrug) {
@@ -159,7 +182,7 @@ public class GeneDrugGroup {
 		
 		final List<String> gdIndirect = geneDrug.getIndirectGeneSymbols();
 		
-		return stream(this.getIndirectGenes())
+		return stream(this.getIndirectGeneSymbols())
 			.anyMatch(gdIndirect::contains);
 	}
 	
@@ -287,15 +310,29 @@ public class GeneDrugGroup {
 			.anyMatch(GeneDrug::isResistance);
 	}
 	
-	public String[] getTargetGeneNames(GeneDrug geneDrug, boolean forceIndirect) {
+	public Gene[] getTargetGenes(GeneDrug geneDrug, boolean forceIndirect) {
+		return !forceIndirect && this.isDirect(geneDrug) ?
+			new Gene[] { geneDrug.getGene() } :
+			geneDrug.getIndirectGenes().stream()
+				.filter(this::isInTargetGenes)
+				.map(IndirectGene::getGene)
+			.toArray(Gene[]::new);
+	}
+	
+	public String[] getTargetGeneSymbols(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			new String[] { geneDrug.getGeneSymbol() } :
 			geneDrug.getIndirectGeneSymbols().stream()
 				.filter(this::isInTargetGenes)
 			.toArray(String[]::new);
 	}
+	
+	public Gene getIndirectGene(GeneDrug geneDrug, boolean forceIndirect) {
+		return !forceIndirect && this.isDirect(geneDrug) ?
+			null : geneDrug.getGene();
+	}
 
-	public String getIndirectGeneName(GeneDrug geneDrug, boolean forceIndirect) {
+	public String getIndirectGeneSymbol(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			null : geneDrug.getGeneSymbol();
 	}
@@ -340,6 +377,10 @@ public class GeneDrugGroup {
 		.max().orElse(0d);
 		
 		return Math.max(maxDirect, maxIndirect);
+	}
+	
+	private boolean isInTargetGenes(IndirectGene indirectGene) {
+		return isInTargetGenes(indirectGene.getGeneSymbol());
 	}
 	
 	private boolean isInTargetGenes(String geneSymbol) {

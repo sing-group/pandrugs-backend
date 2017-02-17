@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -48,6 +49,18 @@ public class Gene implements Serializable {
 	@Id
 	@Column(name = "gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
 	private String geneSymbol;
+	
+	@ElementCollection
+	@CollectionTable(
+		name = "gene_entrez",
+		joinColumns = @JoinColumn(
+			name = "gene_symbol",
+			insertable = false, updatable = false,
+			nullable = true
+		)
+	)
+	@Column(name = "entrez_id", nullable = false, updatable = false, insertable = false)
+	private Set<Integer> entrezIds;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tumor_portal_mutation_level", nullable = true)
@@ -134,6 +147,7 @@ public class Gene implements Serializable {
 			emptySet(),
 			emptySet(),
 			emptySet(),
+			emptySet(),
 			emptySet()
 		);
 	}
@@ -147,11 +161,11 @@ public class Gene implements Serializable {
 		Double geneEssentialityScore,
 		boolean ccle,
 		OncodriveRole oncodriveRole,
+		Set<Integer> entrezIds,
 		Set<String> cancerDomains,
 		Set<GeneDrug> geneDrugs,
 		Set<Protein> proteins,
-		Set<Gene> interactingGene,
-		Set<Pathway> pathways
+		Set<Gene> interactingGene, Set<Pathway> pathways
 	) {
 		this.geneSymbol = requireNonNull(geneSymbol);
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
@@ -160,6 +174,7 @@ public class Gene implements Serializable {
 		this.geneEssentialityScore = geneEssentialityScore;
 		this.ccle = ccle;
 		this.oncodriveRole = requireNonNull(oncodriveRole);
+		this.entrezIds = entrezIds;
 		this.cancerDomains = cancerDomains;
 		this.geneDrugs = geneDrugs;
 		this.proteins = proteins;
@@ -216,6 +231,10 @@ public class Gene implements Serializable {
 		}
 		
 		return gScore;
+	}
+	
+	public Set<Integer> getEntrezIds() {
+		return unmodifiableSet(entrezIds);
 	}
 	
 	public Set<Protein> getProteins() {

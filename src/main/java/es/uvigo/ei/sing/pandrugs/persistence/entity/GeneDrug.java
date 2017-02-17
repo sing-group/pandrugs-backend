@@ -27,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -100,7 +101,7 @@ public class GeneDrug implements Serializable {
 		String alteration,
 		ResistanceType resistance,
 		double score,
-		List<String> inverseGene
+		List<Gene> inverseGene
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
 		this.gene = gene;
@@ -126,6 +127,10 @@ public class GeneDrug implements Serializable {
 	
 	public String getGeneSymbol() {
 		return this.geneSymbol;
+	}
+	
+	public Gene getGene() {
+		return gene;
 	}
 
 	public String getStandardDrugName() {
@@ -180,7 +185,17 @@ public class GeneDrug implements Serializable {
 		return score;
 	}
 	
-	public List<String> getDirectAndIndirectGenes() {
+	public List<Gene> getDirectAndIndirectGenes() {
+		return Stream.concat(
+			Stream.of(this.getGene()),
+			this.getIndirectGenes().stream()
+				.map(IndirectGene::getGene)
+		)
+			.distinct()
+		.collect(toList());
+	}
+	
+	public List<String> getDirectAndIndirectGeneSymbols() {
 		final List<String> genes = new ArrayList<>(getIndirectGeneSymbols());
 		genes.add(this.getGeneSymbol());
 		
@@ -195,10 +210,6 @@ public class GeneDrug implements Serializable {
 		return this.indirectGenes.stream()
 			.map(IndirectGene::getGeneSymbol)
 		.collect(toList());
-	}
-	
-	public Gene getGene() {
-		return gene;
 	}
 	
 	@Override
