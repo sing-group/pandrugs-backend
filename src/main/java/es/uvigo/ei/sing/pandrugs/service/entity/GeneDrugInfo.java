@@ -46,24 +46,31 @@ public class GeneDrugInfo {
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
 	private GeneInfo[] genes;
+	
 	private String drug;
-	private String family;
+	
 	private DrugStatus status;
+	
 	private CancerType[] cancers;
+	
 	private Extra therapy;
-	private GeneInfo indirect;
+	
+	private IndirectGeneInfo indirect;
+	
+	private String family;
 	private String target;
 	private String sensitivity;
 	private String alteration;
 	private String drugStatusInfo;
+	
 	private double dScore;
 	private double gScore;
+	
 	@XmlElementWrapper(name = "sources")
 	@XmlElement(name = "source")
 	private String[] sources;
-
-	GeneDrugInfo() {
-	}
+	
+	GeneDrugInfo() {}
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group) {
 		this(geneDrug, group, false);
@@ -81,7 +88,7 @@ public class GeneDrugInfo {
 		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
 		this.indirect = Optional.ofNullable(group.getIndirectGene(geneDrug, forceIndirect))
-			.map(GeneInfo::new)
+			.map(indirectGene -> new IndirectGeneInfo(geneDrug.getGeneSymbol(), indirectGene))
 		.orElse(null);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
 		this.sensitivity = geneDrug.getResistance().name();
@@ -153,7 +160,7 @@ public class GeneDrugInfo {
 		return therapy;
 	}
 	
-	public GeneInfo getIndirect() {
+	public IndirectGeneInfo getIndirect() {
 		return indirect;
 	}
 	

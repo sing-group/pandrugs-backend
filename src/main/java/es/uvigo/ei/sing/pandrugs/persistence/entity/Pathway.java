@@ -61,6 +61,12 @@ public class Pathway implements Serializable {
 	public String getName() {
 		return name;
 	}
+
+	public boolean hasGene(String directGeneSymbol) {
+		return this.genes.stream()
+			.map(Gene::getGeneSymbol)
+		.anyMatch(directGeneSymbol::equals);
+	}
 	
 	public Set<Gene> getGenes() {
 		return unmodifiableSet(genes);
