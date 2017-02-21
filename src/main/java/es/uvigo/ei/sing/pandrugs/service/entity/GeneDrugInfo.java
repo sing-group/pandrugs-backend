@@ -99,7 +99,7 @@ public class GeneDrugInfo {
 				this.gScore = group.getGScore(geneDrug);
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s",
-					this.drug, geneDrug.getStatus().getDescription(), this.genes[0]
+					this.drug, geneDrug.getStatus().getDescription(), this.genes[0].getGeneSymbol()
 				);
 			} else if (group.isIndirect(geneDrug)) {
 				final Map<String, Double> indirectGScores =
@@ -113,7 +113,7 @@ public class GeneDrugInfo {
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s, a protein downstream to %s",
 					this.drug, geneDrug.getStatus().getDescription(),
-					this.indirect, joinGeneNames(this.genes)
+					this.indirect.getGeneInfo().getGeneSymbol(), joinGeneNames(this.genes)
 				);
 			} else {
 				throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is not indirect but indirect mode was forced.");
@@ -123,7 +123,7 @@ public class GeneDrugInfo {
 			
 			this.drugStatusInfo = String.format(
 				"Molecular alterations in %s are associated to response to %s, a drug %s",
-				this.genes[0], this.drug, geneDrug.getStatus().getDescription() 
+				this.genes[0].getGeneSymbol(), this.drug, geneDrug.getStatus().getDescription() 
 			);
 		} else {
 			throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is indirect and marker.");
