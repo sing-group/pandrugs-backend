@@ -21,8 +21,14 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
+import static java.util.Arrays.stream;
+
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Pathway;
@@ -34,12 +40,20 @@ public class PathwayInfo implements Comparable<PathwayInfo> {
 	private String keggId;
 	
 	private String name;
+
+	@XmlElementWrapper(name = "genes")
+	@XmlElement(name = "gene")
+	private GeneInfo[] gene;
 	
 	PathwayInfo() {}
 	
-	public PathwayInfo(Pathway pathway) {
+	public PathwayInfo(Pathway pathway, GeneInfo[] geneInfos) {
 		this.keggId = pathway.getId();
 		this.name = pathway.getName();
+		
+		this.gene = stream(geneInfos)
+			.filter(gene -> pathway.hasAnyGene(gene.getGeneSymbol()))
+		.toArray(GeneInfo[]::new);
 	}
 
 	public String getKeggId() {
@@ -62,6 +76,7 @@ public class PathwayInfo implements Comparable<PathwayInfo> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + Arrays.hashCode(gene);
 		result = prime * result + ((keggId == null) ? 0 : keggId.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -76,6 +91,8 @@ public class PathwayInfo implements Comparable<PathwayInfo> {
 		if (getClass() != obj.getClass())
 			return false;
 		PathwayInfo other = (PathwayInfo) obj;
+		if (!Arrays.equals(gene, other.gene))
+			return false;
 		if (keggId == null) {
 			if (other.keggId != null)
 				return false;

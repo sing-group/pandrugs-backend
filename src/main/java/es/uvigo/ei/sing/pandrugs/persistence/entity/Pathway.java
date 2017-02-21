@@ -21,7 +21,9 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -62,12 +64,14 @@ public class Pathway implements Serializable {
 		return name;
 	}
 
-	public boolean hasGene(String directGeneSymbol) {
+	public boolean hasAnyGene(String ... genes) {
+		final Set<String> geneSet = stream(genes).collect(toSet());
+		
 		return this.genes.stream()
 			.map(Gene::getGeneSymbol)
-		.anyMatch(directGeneSymbol::equals);
+		.anyMatch(geneSet::contains);
 	}
-	
+
 	public Set<Gene> getGenes() {
 		return unmodifiableSet(genes);
 	}

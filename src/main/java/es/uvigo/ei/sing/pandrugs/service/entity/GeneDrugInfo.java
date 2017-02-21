@@ -88,7 +88,7 @@ public class GeneDrugInfo {
 		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
 		this.indirect = Optional.ofNullable(group.getIndirectGene(geneDrug, forceIndirect))
-			.map(indirectGene -> new IndirectGeneInfo(geneDrug.getGeneSymbol(), indirectGene))
+			.map(indirectGene -> new IndirectGeneInfo(geneDrug.getGeneSymbol(), indirectGene, genes))
 		.orElse(null);
 		this.target = geneDrug.isTarget() ? "target" : "marker";
 		this.sensitivity = geneDrug.getResistance().name();

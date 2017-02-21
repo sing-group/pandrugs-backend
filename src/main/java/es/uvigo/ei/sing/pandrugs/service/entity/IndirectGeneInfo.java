@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
+import static java.util.Arrays.stream;
+
 import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -41,11 +43,15 @@ public class IndirectGeneInfo implements Comparable<IndirectGeneInfo> {
 	@XmlElement(name = "pathway")
 	private PathwayInfo[] pathways;
 
-	public IndirectGeneInfo(String directGeneSymbol, Gene gene) {
+	public IndirectGeneInfo(String directGeneSymbol, Gene gene, GeneInfo[] queryGenes) {
+		final String[] queryGeneSymbols = stream(queryGenes)
+			.map(GeneInfo::getGeneSymbol)
+		.toArray(String[]::new);
+		
 		this.geneInfo = new GeneInfo(gene);
 		this.pathways = gene.getPathways().stream()
-			.filter(pathway -> pathway.hasGene(directGeneSymbol))
-			.map(PathwayInfo::new)
+			.filter(pathway -> pathway.hasAnyGene(queryGeneSymbols))
+			.map(pathway -> new PathwayInfo(pathway, queryGenes))
 			.sorted()
 		.toArray(PathwayInfo[]::new);
 	}
