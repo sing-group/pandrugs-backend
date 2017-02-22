@@ -156,7 +156,7 @@ public interface GeneDrugService {
 	) throws BadRequestException;
 	
 	/**
-	 * Returns a list of drug names associated to a drug ordered by	ascending
+	 * Returns a list of drug names associated with a drug ordered by	ascending
 	 * alphabetical order of the show drug name. The drugs included are those
 	 * with a CLINICAL, APPROVED or EXPERIMENTAL status.
 	 * 
@@ -167,13 +167,13 @@ public interface GeneDrugService {
 	 * empty value or ignore it for no filtering.
 	 * @param maxResults the maximum number of results to return. Use negative
 	 * numbers or ignore it for no limit.
-	 * @return a list of drug names associated to a drug ordered by ascending
+	 * @return a list of drug names associated with a drug ordered by ascending
 	 * alphabetical order.
 	 */
 	public abstract Response listDrugNames(String query, int maxResults);
 
 	/**
-	 * Returns a list of gene symbols associated to a drug ordered by ascending
+	 * Returns a list of gene symbols associated with a drug ordered by ascending
 	 * alphabetical order. Only genes related to drugs with an CLINICAL,
 	 * APPROVED or EXPERIMENTAL status. 
 	 * 
@@ -181,7 +181,7 @@ public interface GeneDrugService {
 	 * value or ignore it for no filtering.
 	 * @param maxResults the maximum number of results to return. Use negative
 	 * numbers or ignore it for no limit.
-	 * @return a list of gene symbols associated to a drug ordered by ascending
+	 * @return a list of gene symbols associated with a drug ordered by ascending
 	 * alphabetical order.
 	 */
 	public abstract Response listGeneSymbols(String query, int maxResults);

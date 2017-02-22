@@ -122,7 +122,7 @@ public class GeneDrugInfo {
 			this.gScore = group.getGScore(geneDrug);
 			
 			this.drugStatusInfo = String.format(
-				"Molecular alterations in %s are associated to response to %s, a drug %s",
+				"Molecular alterations in %s are associated with response to %s, a drug %s",
 				this.genes[0].getGeneSymbol(), this.drug, geneDrug.getStatus().getDescription() 
 			);
 		} else {
