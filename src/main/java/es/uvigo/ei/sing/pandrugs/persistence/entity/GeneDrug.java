@@ -60,10 +60,11 @@ public class GeneDrug implements Serializable {
 	@Column(name = "target")
 	private boolean target;
 
-	@Column(name = "family", length = 100, columnDefinition = "VARCHAR(100)")
+	@Column(name = "family", length = 500, columnDefinition = "VARCHAR(500)")
 	private String family;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(name = "resistance", length = 12)
 	private ResistanceType resistance;
 
 	@Column(name = "alteration", length = 100, columnDefinition = "VARCHAR(100)")
