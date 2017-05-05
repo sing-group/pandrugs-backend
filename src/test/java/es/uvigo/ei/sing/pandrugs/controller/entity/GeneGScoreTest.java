@@ -55,11 +55,14 @@ public class GeneGScoreTest extends EasyMockSupport {
 		boolean cgc,
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
+		boolean ccle,
+		Double oncoscapeScore,
+		OncodriveRole oncodriveRole,
 		double gScore
 	) {
 		this.gene = newGene(
 			geneSymbol, tumorPortalMutationLevel, cgc, driverLevel,
-			geneEssentialityScore, false, OncodriveRole.NONE
+			geneEssentialityScore, ccle, oncodriveRole, oncoscapeScore
 		);
 		this.gScore = gScore;
 	}
@@ -67,19 +70,22 @@ public class GeneGScoreTest extends EasyMockSupport {
 	@Parameters(name = "{0}")
 	public static Object[][] parameters() {
 		return new Object[][] {
-			{ "NoScore", null, false, null, null, 0d },
-			{ "TPM_NS", NEAR_SIGNIFICANCE, false, null, null, NEAR_SIGNIFICANCE.getWeight()},
-			{ "TPM_SM", SIGNIFICANTLY_MUTATED, false, null, null, SIGNIFICANTLY_MUTATED.getWeight() },
-			{ "TPM_HSM", HIGHLY_SIGNIFICANTLY_MUTATED, false, null, null, HIGHLY_SIGNIFICANTLY_MUTATED.getWeight() },
-			{ "CGC", null, true, null, null, 0.2d },
-			{ "DL_CD", null, false, CANDIDATE_DRIVER, null, CANDIDATE_DRIVER.getWeight() },
-			{ "DL_HCD", null, false, HIGH_CONFIDENCE_DRIVER, null, HIGH_CONFIDENCE_DRIVER.getWeight() },
-			{ "GES_0.0", null, false, null, 0d, 0d },
-			{ "GES_0.5", null, false, null, 0.5d, 0.2d },
-			{ "GES_1.0", null, false, null, 1.0d, 0.4d },
-			{ "LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, 0.2d },
-			{ "MEDIUM", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, 0.6d },
-			{ "HIGHEST", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, 1d }
+			{ "NoScore", null, false, null, null, false, 0d, OncodriveRole.NONE, 0d },
+			{ "TPM_NS", NEAR_SIGNIFICANCE, false, null, null, false, 0d, OncodriveRole.NONE, NEAR_SIGNIFICANCE.getWeight() },
+			{ "TPM_SM", SIGNIFICANTLY_MUTATED, false, null, null, false, 0d, OncodriveRole.NONE, SIGNIFICANTLY_MUTATED.getWeight() },
+			{ "TPM_HSM", HIGHLY_SIGNIFICANTLY_MUTATED, false, null, null, false, 0d, OncodriveRole.NONE, HIGHLY_SIGNIFICANTLY_MUTATED.getWeight() },
+			{ "CGC", null, true, null, null, false, 0d, OncodriveRole.NONE, 0.1d },
+			{ "DL_CD", null, false, CANDIDATE_DRIVER, null, false, 0d, OncodriveRole.NONE, CANDIDATE_DRIVER.getWeight() },
+			{ "DL_HCD", null, false, HIGH_CONFIDENCE_DRIVER, null, false, 0d, OncodriveRole.NONE, HIGH_CONFIDENCE_DRIVER.getWeight() },
+			{ "GES_0.1", null, false, null, 0.1d, false, 0d, OncodriveRole.NONE, 0.04d },
+			{ "GES_0.5", null, false, null, 0.5d, false, 0d, OncodriveRole.NONE, 0.2d },
+			{ "GES_1.0", null, false, null, 1.0d, false, 0d, OncodriveRole.NONE, 0.4d },
+			{ "OS_1", null, false, null, 0d, false, 1d, OncodriveRole.NONE, 0.075d },
+			{ "OS_2", null, false, null, 0d, false, 2d, OncodriveRole.NONE, 0.15d },
+			{ "OS_3", null, false, null, 0d, false, 4d, OncodriveRole.NONE, 0.3d },
+			{ "LOW", NEAR_SIGNIFICANCE, false, CANDIDATE_DRIVER, 0.125d, false, 0d, OncodriveRole.NONE, 0.125d },
+			{ "MEDIUM", SIGNIFICANTLY_MUTATED, true, CANDIDATE_DRIVER, 0.5d, false, 2d, OncodriveRole.LOSS_OF_FUNCTION, 0.55d },
+			{ "HIGHEST", HIGHLY_SIGNIFICANTLY_MUTATED, true, HIGH_CONFIDENCE_DRIVER, 1d, true, 4d, OncodriveRole.ACTIVATING, 1d }
 		};
 	}
 	

@@ -49,83 +49,61 @@ public class Gene implements Serializable {
 	@Id
 	@Column(name = "gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
 	private String geneSymbol;
-	
+
 	@ElementCollection
-	@CollectionTable(
-		name = "gene_entrez",
-		joinColumns = @JoinColumn(
-			name = "gene_symbol",
-			insertable = false, updatable = false,
-			nullable = true
-		)
-	)
+	@CollectionTable(name = "gene_entrez", joinColumns = @JoinColumn(name = "gene_symbol", insertable = false, updatable = false, nullable = true))
 	@Column(name = "entrez_id", nullable = false, updatable = false, insertable = false)
 	private Set<Integer> entrezIds;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tumor_portal_mutation_level", nullable = true)
 	private TumorPortalMutationLevel tumorPortalMutationLevel;
-	
+
 	@Column(name = "cgc", nullable = false)
 	private boolean cgc;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "driver_level", nullable = true)
 	private DriverLevel driverLevel;
 
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
-	
+
+	@Column(name = "oncoscape_score", nullable = true, precision = 10)
+	private Double oncoscapeScore;
+
 	@Column(name = "ccle", nullable = false)
 	private boolean ccle;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "oncodrive_role", nullable = false)
 	private OncodriveRole oncodriveRole;
-	
+
 	@OneToMany(mappedBy = "gene", fetch = FetchType.LAZY)
 	private Set<GeneDrug> geneDrugs;
-	
+
 	@ManyToMany(mappedBy = "genes", fetch = FetchType.LAZY)
 	private Set<Protein> proteins;
-	
+
 	@ElementCollection
-	@JoinTable(
-		name = "cancer_domain",
-		joinColumns = @JoinColumn(
-			name = "gene_symbol",
-			referencedColumnName = "gene_symbol",
-			columnDefinition = "VARCHAR(50)",
-			insertable = false, updatable = false,
-			nullable = true
-		)
-	)
+	@JoinTable(name = "cancer_domain", joinColumns = @JoinColumn(name = "gene_symbol", referencedColumnName = "gene_symbol", columnDefinition = "VARCHAR(50)", insertable = false, updatable = false, nullable = true))
 	@Column(name = "code", length = 7, columnDefinition = "CHAR(7)", nullable = false, updatable = false, insertable = false)
 	private Set<String> cancerDomains;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-		name = "gene_gene",
-		joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"),
-		inverseJoinColumns = @JoinColumn(name = "gene_interacting_gene_symbol", referencedColumnName = "gene_symbol")
-	)
+	@JoinTable(name = "gene_gene", joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"), inverseJoinColumns = @JoinColumn(name = "gene_interacting_gene_symbol", referencedColumnName = "gene_symbol"))
 	private Set<Gene> interactingGene;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-		name = "gene_pathway",
-		joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"),
-		inverseJoinColumns = @JoinColumn(name = "pathway_kegg_id", referencedColumnName = "kegg_id")
-	)
+	@JoinTable(name = "gene_pathway", joinColumns = @JoinColumn(name = "gene_gene_symbol", referencedColumnName = "gene_symbol"), inverseJoinColumns = @JoinColumn(name = "pathway_kegg_id", referencedColumnName = "kegg_id"))
 	private Set<Pathway> pathways;
-	
-	Gene() {
-	}
-	
+
+	Gene() {}
+
 	Gene(String geneSymbol) {
-		this(geneSymbol, null, false, null, null, false, OncodriveRole.NONE);
+		this(geneSymbol, null, false, null, null, false, null, OncodriveRole.NONE);
 	}
-	
+
 	Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
@@ -133,6 +111,7 @@ public class Gene implements Serializable {
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
 		boolean ccle,
+		Double oncoscapeScore,
 		OncodriveRole oncodriveRole
 	) {
 		this(
@@ -142,6 +121,7 @@ public class Gene implements Serializable {
 			driverLevel,
 			geneEssentialityScore,
 			ccle,
+			oncoscapeScore,
 			oncodriveRole,
 			emptySet(),
 			emptySet(),
@@ -152,7 +132,6 @@ public class Gene implements Serializable {
 		);
 	}
 
-	
 	Gene(
 		String geneSymbol,
 		TumorPortalMutationLevel tumorPortalMutationLevel,
@@ -160,6 +139,7 @@ public class Gene implements Serializable {
 		DriverLevel driverLevel,
 		Double geneEssentialityScore,
 		boolean ccle,
+		Double oncoscapeScore,
 		OncodriveRole oncodriveRole,
 		Set<Integer> entrezIds,
 		Set<String> cancerDomains,
@@ -174,6 +154,7 @@ public class Gene implements Serializable {
 		this.geneEssentialityScore = geneEssentialityScore;
 		this.ccle = ccle;
 		this.oncodriveRole = requireNonNull(oncodriveRole);
+		this.oncoscapeScore = oncoscapeScore;
 		this.entrezIds = entrezIds;
 		this.cancerDomains = cancerDomains;
 		this.geneDrugs = geneDrugs;
@@ -197,11 +178,11 @@ public class Gene implements Serializable {
 	public DriverLevel getDriverLevel() {
 		return driverLevel;
 	}
-	
+
 	public boolean isCcle() {
 		return ccle;
 	}
-	
+
 	public OncodriveRole getOncodriveRole() {
 		return oncodriveRole;
 	}
@@ -211,40 +192,49 @@ public class Gene implements Serializable {
 			.orElse(0d);
 	}
 
+	public double getOncoscapeScore() {
+		return Optional.ofNullable(this.oncoscapeScore)
+			.orElse(0d);
+	}
+
 	public double getGScore() {
 		double gScore = 0d;
-		
+
 		if (this.tumorPortalMutationLevel != null) {
-			gScore += this.tumorPortalMutationLevel.getWeight();
+			gScore += this.tumorPortalMutationLevel.getWeight(); // Max 0.1
 		}
-		
+
 		if (this.cgc) {
-			gScore += 0.2d;
+			gScore += 0.1d;
 		}
-		
+
 		if (this.driverLevel != null) {
-			gScore += this.driverLevel.getWeight();
+			gScore += this.driverLevel.getWeight(); // Max 0.1
 		}
-		
+
 		if (this.geneEssentialityScore != null) {
 			gScore += this.geneEssentialityScore * 0.4d;
 		}
-		
+
+		if (this.oncoscapeScore != null) {
+			gScore += (this.oncoscapeScore / 4) * 0.3d;
+		}
+
 		return gScore;
 	}
-	
+
 	public Set<Integer> getEntrezIds() {
 		return unmodifiableSet(entrezIds);
 	}
-	
+
 	public Set<Protein> getProteins() {
 		return unmodifiableSet(proteins);
 	}
-	
+
 	public Set<Gene> getInteractingGenes() {
 		return unmodifiableSet(interactingGene);
 	}
-	
+
 	public Set<GeneDrug> getGeneDrugs() {
 		return unmodifiableSet(geneDrugs);
 	}
@@ -256,7 +246,7 @@ public class Gene implements Serializable {
 	public Set<String> getCancerDomains() {
 		return unmodifiableSet(cancerDomains);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -266,6 +256,8 @@ public class Gene implements Serializable {
 		result = prime * result + ((driverLevel == null) ? 0 : driverLevel.hashCode());
 		result = prime * result + ((geneEssentialityScore == null) ? 0 : geneEssentialityScore.hashCode());
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
+		result = prime * result + ((oncoscapeScore == null) ? 0 : oncoscapeScore.hashCode());
+		result = prime * result + ((oncodriveRole == null) ? 0 : oncodriveRole.hashCode());
 		result = prime * result + ((tumorPortalMutationLevel == null) ? 0 : tumorPortalMutationLevel.hashCode());
 		return result;
 	}
@@ -295,11 +287,18 @@ public class Gene implements Serializable {
 				return false;
 		} else if (!geneSymbol.equals(other.geneSymbol))
 			return false;
+		if (oncoscapeScore == null) {
+			if (other.oncoscapeScore != null)
+				return false;
+		} else if (!oncoscapeScore.equals(other.oncoscapeScore))
+			return false;
+		if (oncodriveRole != other.oncodriveRole)
+			return false;
 		if (tumorPortalMutationLevel != other.tumorPortalMutationLevel)
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return new StringBuilder(this.geneSymbol)
@@ -308,7 +307,8 @@ public class Gene implements Serializable {
 			.append(", DL: ").append(this.driverLevel)
 			.append(", GES: ").append(this.geneEssentialityScore)
 			.append(", CCLE: ").append(this.ccle)
+			.append(", OS: ").append(this.oncoscapeScore)
 			.append("]")
-		.toString();
+			.toString();
 	}
 }

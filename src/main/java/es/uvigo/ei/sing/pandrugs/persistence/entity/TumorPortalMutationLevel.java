@@ -23,9 +23,9 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 
 public enum TumorPortalMutationLevel implements Weighted {
-	NEAR_SIGNIFICANCE(0.05d),
-	SIGNIFICANTLY_MUTATED(0.1d),
-	HIGHLY_SIGNIFICANTLY_MUTATED(0.2d);
+	NEAR_SIGNIFICANCE(0.025d),
+	SIGNIFICANTLY_MUTATED(0.05d),
+	HIGHLY_SIGNIFICANTLY_MUTATED(0.1d);
 	
 	private final double weight;
 	

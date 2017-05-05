@@ -23,8 +23,8 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 
 public enum DriverLevel implements Weighted {
-	CANDIDATE_DRIVER(0.1d),
-	HIGH_CONFIDENCE_DRIVER(0.2d);
+	CANDIDATE_DRIVER(0.05d),
+	HIGH_CONFIDENCE_DRIVER(0.1d);
 	
 	private final double weight;
 	
