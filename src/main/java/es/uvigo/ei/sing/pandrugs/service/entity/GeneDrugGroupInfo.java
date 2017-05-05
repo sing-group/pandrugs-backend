@@ -179,7 +179,7 @@ public class GeneDrugGroupInfo {
 					.thenByArray(GeneDrugInfo::getGenes)
 					.thenBy(GeneDrugInfo::getIndirect)
 					.thenByArray(GeneDrugInfo::getCancers)
-					.thenBy(GeneDrugInfo::getFamily)
+					.thenByArray(GeneDrugInfo::getFamilies)
 					.thenBy(GeneDrugInfo::getAlteration)
 					.thenBy(GeneDrugInfo::getTherapy)
 					.thenByArray(GeneDrugInfo::getSources)

@@ -59,9 +59,6 @@ public class GeneDrug implements Serializable {
 	@Id
 	@Column(name = "target")
 	private boolean target;
-
-	@Column(name = "family", length = 500, columnDefinition = "VARCHAR(500)")
-	private String family;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "resistance", length = 12)
@@ -98,7 +95,6 @@ public class GeneDrug implements Serializable {
 		Gene gene,
 		Drug drug,
 		boolean isTarget,
-		String family,
 		String alteration,
 		ResistanceType resistance,
 		double score,
@@ -108,7 +104,6 @@ public class GeneDrug implements Serializable {
 		this.gene = gene;
 		this.drugId = drug.getId();
 		this.drug = drug;
-		this.family = family;
 		this.target = isTarget;
 		this.resistance = resistance;
 		this.alteration = alteration;
@@ -140,10 +135,6 @@ public class GeneDrug implements Serializable {
 
 	public String getShowDrugName() {
 		return this.drug.getShowName();
-	}
-
-	public String getFamily() {
-		return family;
 	}
 
 	public DrugStatus getStatus() {
@@ -219,7 +210,6 @@ public class GeneDrug implements Serializable {
 		int result = 1;
 		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
 		result = prime * result + drugId;
-		result = prime * result + ((family == null) ? 0 : family.hashCode());
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		result = prime * result + ((resistance == null) ? 0 : resistance.hashCode());
 		long temp;
@@ -244,11 +234,6 @@ public class GeneDrug implements Serializable {
 		} else if (!alteration.equals(other.alteration))
 			return false;
 		if (drugId != other.drugId)
-			return false;
-		if (family == null) {
-			if (other.family != null)
-				return false;
-		} else if (!family.equals(other.family))
 			return false;
 		if (geneSymbol == null) {
 			if (other.geneSymbol != null)

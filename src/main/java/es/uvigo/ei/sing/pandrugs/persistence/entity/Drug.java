@@ -75,6 +75,11 @@ public class Drug implements Serializable {
 	
 	@Column(name = "extra_details", length = 1000, columnDefinition = "VARCHAR(1000)", nullable = true)
 	private String extraDetails;
+
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "family", joinColumns = @JoinColumn(name = "drug_id"))
+	@Column(name = "name", length = 500, columnDefinition = "VARCHAR(500)")
+	private Set<String> families;
 	
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "pubchem", joinColumns = @JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_name"))
@@ -104,6 +109,7 @@ public class Drug implements Serializable {
 		DrugStatus status,
 		Extra extra,
 		String extraDetails,
+		String[] family,
 		int[] pubChemIds,
 		CancerType[] cancers,
 		String[] pathologies,
@@ -115,6 +121,7 @@ public class Drug implements Serializable {
 		this.status = status;
 		this.extra = extra;
 		this.extraDetails = extraDetails;
+		this.families = family == null ? emptySet() : stream(family).collect(toSet());
 		this.pubChemIds = pubChemIds == null ? emptySet() : stream(pubChemIds).boxed().collect(toSet());
 		this.cancers = cancers == null ? emptySet() : stream(cancers).collect(toSet());
 		this.pathologies = pathologies == null ? emptySet() : stream(pathologies).collect(toSet());
@@ -145,6 +152,12 @@ public class Drug implements Serializable {
 		return extraDetails;
 	}
 
+	public String[] getFamilies() {
+		return this.families.stream()
+			.sorted()
+		.toArray(String[]::new);
+	}
+	
 	public int[] getPubChemIds() {
 		return pubChemIds.stream()
 			.mapToInt(Integer::intValue)
@@ -203,6 +216,7 @@ public class Drug implements Serializable {
 		result = prime * result + ((cancers == null) ? 0 : cancers.hashCode());
 		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
 		result = prime * result + ((extraDetails == null) ? 0 : extraDetails.hashCode());
+		result = prime * result + ((families == null) ? 0 : families.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((pathologies == null) ? 0 : pathologies.hashCode());
 		result = prime * result + ((pubChemIds == null) ? 0 : pubChemIds.hashCode());
@@ -232,6 +246,11 @@ public class Drug implements Serializable {
 			if (other.extraDetails != null)
 				return false;
 		} else if (!extraDetails.equals(other.extraDetails))
+			return false;
+		if (families == null) {
+			if (other.families != null)
+				return false;
+		} else if (!families.equals(other.families))
 			return false;
 		if (id != other.id)
 			return false;

@@ -93,14 +93,14 @@ public final class GeneDrugDataset {
 		}
 		
 		final Drug[] drugs = new Drug[] {
-			new Drug(0, DRUG_NAME_1, "Show Drug 1", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, sources[0]),
-			new Drug(1, DRUG_NAME_2, "Show Drug 2", DrugStatus.APPROVED, null, null, null, null, null, sources[1]),
-			new Drug(2, DRUG_NAME_3, "Show Drug 3", DrugStatus.EXPERIMENTAL, null, null, null, null, null, sources[2]),
-			new Drug(10, DRUG_NAME_10, "Show Drug 10", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, sources[3]),
-			new Drug(11, DRUG_NAME_11, "Show Drug 11", DrugStatus.APPROVED, null, null, null, null, null, sources[4]),
-			new Drug(12, DRUG_NAME_12, "Show Drug 12", DrugStatus.EXPERIMENTAL, null, null, null, null, null, sources[5]),
-			new Drug(21, DRUG_NAME_21, "Show Drug 21", DrugStatus.WITHDRAWN, null, null, null, null, null, sources[6]),
-			new Drug(22, DRUG_NAME_22, "Show Drug 22", DrugStatus.UNDEFINED, null, null, null, null, null, sources[7])
+			new Drug(0, DRUG_NAME_1, "Show Drug 1", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sources[0]),
+			new Drug(1, DRUG_NAME_2, "Show Drug 2", DrugStatus.APPROVED, null, null, null, null, null, null, sources[1]),
+			new Drug(2, DRUG_NAME_3, "Show Drug 3", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sources[2]),
+			new Drug(10, DRUG_NAME_10, "Show Drug 10", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sources[3]),
+			new Drug(11, DRUG_NAME_11, "Show Drug 11", DrugStatus.APPROVED, null, null, null, null, null, null, sources[4]),
+			new Drug(12, DRUG_NAME_12, "Show Drug 12", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sources[5]),
+			new Drug(21, DRUG_NAME_21, "Show Drug 21", DrugStatus.WITHDRAWN, null, null, null, null, null, null, sources[6]),
+			new Drug(22, DRUG_NAME_22, "Show Drug 22", DrugStatus.UNDEFINED, null, null, null, null, null, null, sources[7])
 		};
 		
 		final DrugSource[] drugSources = drugSources(drugs);
@@ -222,7 +222,6 @@ public final class GeneDrugDataset {
 				drugs[6],
 				true,
 				null,
-				null,
 				ResistanceType.SENSITIVITY,
 				0.5,
 				emptyList()
@@ -231,7 +230,6 @@ public final class GeneDrugDataset {
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
 				drugs[7],
 				true,
-				null,
 				null,
 				ResistanceType.SENSITIVITY,
 				0.5,
@@ -245,7 +243,6 @@ public final class GeneDrugDataset {
 			genes().get(singleGeneSymbolDirect()),
 			drugs()[0],
 			true,
-			null,
 			null,
 			ResistanceType.SENSITIVITY,
 			0.1,
@@ -264,7 +261,6 @@ public final class GeneDrugDataset {
 				drugs[0],
 				true,
 				null,
-				null,
 				ResistanceType.SENSITIVITY,
 				0.2,
 				emptyList()
@@ -274,7 +270,6 @@ public final class GeneDrugDataset {
 				drugs[1],
 				true,
 				null,
-				null,
 				ResistanceType.SENSITIVITY,
 				0.3,
 				emptyList()
@@ -283,7 +278,6 @@ public final class GeneDrugDataset {
 				genes.get(DIRECT_GENE_SYMBOL_2),
 				drugs[2],
 				true,
-				null,
 				null,
 				ResistanceType.SENSITIVITY,
 				0.4,
@@ -297,7 +291,6 @@ public final class GeneDrugDataset {
 			genes().get(WITH_INDIRECT_GENE_SYMBOL_1),
 			drugs()[3],
 			true,
-			null,
 			null,
 			ResistanceType.SENSITIVITY,
 			0.1,
@@ -316,7 +309,6 @@ public final class GeneDrugDataset {
 				drugs[3],
 				true,
 				null,
-				null,
 				ResistanceType.SENSITIVITY,
 				0.2,
 				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
@@ -326,7 +318,6 @@ public final class GeneDrugDataset {
 				drugs[4],
 				true,
 				null,
-				null,
 				ResistanceType.SENSITIVITY,
 				0.3,
 				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
@@ -335,7 +326,6 @@ public final class GeneDrugDataset {
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
 				drugs[5],
 				true,
-				null,
 				null,
 				ResistanceType.SENSITIVITY,
 				0.4,

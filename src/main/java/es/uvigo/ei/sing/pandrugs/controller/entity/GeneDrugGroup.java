@@ -238,7 +238,9 @@ public class GeneDrugGroup {
 
 	public String[] getFamilies() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getFamily)
+			.map(GeneDrug::getDrug)
+			.map(Drug::getFamilies)
+			.flatMap(Arrays::stream)
 			.distinct()
 			.sorted()
 		.toArray(String[]::new);

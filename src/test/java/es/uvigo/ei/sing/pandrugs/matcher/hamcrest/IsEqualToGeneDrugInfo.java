@@ -44,7 +44,7 @@ public class IsEqualToGeneDrugInfo extends IsEqualToEntity<GeneDrugInfo> {
 				&& checkAttribute("gScore", GeneDrugInfo::getGScore, actual)
 				&& */checkArrayAttribute("genes", GeneDrugInfo::getGenes, actual)
 				&& checkAttribute("drug", GeneDrugInfo::getDrug, actual)
-				&& checkAttribute("family", GeneDrugInfo::getFamily, actual)
+				&& checkArrayAttribute("families", GeneDrugInfo::getFamilies, actual)
 				&& checkAttribute("status", GeneDrugInfo::getStatus, actual)
 				&& checkArrayAttribute("cancers", GeneDrugInfo::getCancers, actual)
 				&& checkAttribute("therapy", GeneDrugInfo::getTherapy, actual)

@@ -56,8 +56,10 @@ public class GeneDrugInfo {
 	private Extra therapy;
 	
 	private IndirectGeneInfo indirect;
-	
-	private String family;
+
+	@XmlElementWrapper(name = "families")
+	@XmlElement(name = "family")
+	private String[] families;
 	private String target;
 	private String sensitivity;
 	private String alteration;
@@ -83,7 +85,7 @@ public class GeneDrugInfo {
 		this.drug = geneDrug.getStandardDrugName();
 		this.sources = geneDrug.getDrug().getDrugSourceNames().stream()
 			.toArray(String[]::new);
-		this.family = geneDrug.getFamily();
+		this.families = geneDrug.getDrug().getFamilies();
 		this.status = geneDrug.getStatus();
 		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
@@ -144,8 +146,8 @@ public class GeneDrugInfo {
 		return drug;
 	}
 	
-	public String getFamily() {
-		return family;
+	public String[] getFamilies() {
+		return families;
 	}
 	
 	public DrugStatus getStatus() {
@@ -219,7 +221,7 @@ public class GeneDrugInfo {
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
 		result = prime * result + ((drugStatusInfo == null) ? 0 : drugStatusInfo.hashCode());
-		result = prime * result + ((family == null) ? 0 : family.hashCode());
+		result = prime * result + ((families == null) ? 0 : families.hashCode());
 		temp = Double.doubleToLongBits(gScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
@@ -260,10 +262,10 @@ public class GeneDrugInfo {
 				return false;
 		} else if (!drugStatusInfo.equals(other.drugStatusInfo))
 			return false;
-		if (family == null) {
-			if (other.family != null)
+		if (families == null) {
+			if (other.families != null)
 				return false;
-		} else if (!family.equals(other.family))
+		} else if (!families.equals(other.families))
 			return false;
 		if (Double.doubleToLongBits(gScore) != Double.doubleToLongBits(other.gScore))
 			return false;
