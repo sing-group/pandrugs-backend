@@ -30,6 +30,7 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.TumorPortalMutationLe
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.is;
@@ -74,7 +75,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, genesDrugs);
+		new GeneDrugGroup(genes, genesDrugs, emptySet());
 	}
 
 	@Test
@@ -89,7 +90,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test
@@ -99,7 +100,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test
@@ -114,7 +115,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test
@@ -130,7 +131,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -140,7 +141,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -150,14 +151,14 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNullGeneDrug() {
 		final String[] genes = new String[] { "G1" };
 		
-		new GeneDrugGroup(genes, null);
+		new GeneDrugGroup(genes, null, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -166,7 +167,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(new String[0], geneDrugs);
+		new GeneDrugGroup(new String[0], geneDrugs, emptySet());
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -175,7 +176,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 		replayAll();
 		
-		new GeneDrugGroup(null, geneDrugs);
+		new GeneDrugGroup(null, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -192,7 +193,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, asList(gd));
+		new GeneDrugGroup(genes, asList(gd), emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -207,7 +208,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -222,7 +223,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -237,7 +238,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -252,7 +253,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		new GeneDrugGroup(genes, geneDrugs);
+		new GeneDrugGroup(genes, geneDrugs, emptySet());
 	}
 
 	@Test
@@ -268,7 +269,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		replayAll();
 		
 		final GeneDrugGroup group = new GeneDrugGroup(
-			targetGenes, asList(geneDrugs)
+			targetGenes, asList(geneDrugs), emptySet()
 		);
 		
 		assertThat(group.getGeneDrugs(), containsInAnyOrder(geneDrugs));
@@ -286,7 +287,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 
 		assertThat(group.getQueryGeneSymbols(), is(arrayContainingInAnyOrder(genes)));
 	}
@@ -303,7 +304,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 
 		assertThat(group.getDirectGeneSymbols(), is(arrayContaining("G1", "G2")));
 	}
@@ -320,7 +321,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 
 		assertThat(group.getIndirectGeneSymbols(), is(arrayContaining("IG1")));
 	}
@@ -338,7 +339,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertTrue(group.isDirect(directGeneDrug));
 	}
@@ -356,7 +357,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertTrue(group.isIndirect(indirectGeneDrug));
 	}
@@ -374,7 +375,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		group.isDirect(notPresentGD);
 	}
@@ -394,7 +395,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		group.isDirect(notPresentGD);
 	}
@@ -411,7 +412,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.countQueryGenes(), is(3));
 	}
@@ -428,7 +429,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 
 		assertThat(group.countDirectGenes(), is(2));
 	}
@@ -445,7 +446,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 
 		assertThat(group.countIndirectGenes(), is(1));
 	}
@@ -462,7 +463,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertFalse(group.isOnlyIndirect());
 	}
@@ -479,7 +480,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertTrue(group.isOnlyIndirect());
 	}
@@ -497,7 +498,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertFalse(group.isOnlyIndirect());
 	}
@@ -515,7 +516,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getStandardDrugName(), is("D1"));
 	}
@@ -533,7 +534,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getStatus(), is(status));
 	}
@@ -551,7 +552,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getCancers(), arrayContainingInAnyOrder(cancers));
 	}
@@ -569,7 +570,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getExtra(), is(extra));
 	}
@@ -587,7 +588,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getFamilies(), arrayContaining("F1", "F2"));
 	}
@@ -606,7 +607,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getSources(), is(arrayContainingInAnyOrder(ds1, ds2, ds3)));
@@ -622,7 +624,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getSourceNames(),
@@ -657,7 +660,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			targetGenes,
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		
@@ -678,7 +682,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getCuratedSources(),
@@ -699,7 +704,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getCuratedSources(), is(emptyArray()));
@@ -719,7 +725,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getCuratedSourceNames(),
@@ -741,7 +748,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertThat(geneDrugGroup.getCuratedSourceNames(),
@@ -759,7 +767,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertTrue(geneDrugGroup.isTarget());
@@ -776,7 +785,8 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
-			asList(gd1, gd2, gd3)
+			asList(gd1, gd2, gd3),
+			emptySet()
 		);
 		
 		assertFalse(geneDrugGroup.isTarget());
@@ -795,7 +805,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getTargetGeneSymbols(gd1, false), is(arrayContaining("G1")));
 		assertThat(group.getTargetGeneSymbols(gd2, false), is(arrayContaining("G2")));
@@ -815,7 +825,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getIndirectGeneSymbol(gd1, false), is(nullValue()));
 		assertThat(group.getIndirectGeneSymbol(gd2, false), is(nullValue()));
@@ -840,7 +850,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs);
+		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptySet());
 		
 		assertThat(group.getGScore(), is(1d));
 	}

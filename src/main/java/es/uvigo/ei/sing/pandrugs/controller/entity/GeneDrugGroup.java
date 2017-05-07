@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -32,8 +33,10 @@ import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -45,6 +48,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
@@ -60,17 +64,21 @@ public class GeneDrugGroup {
 	private final List<GeneDrug> geneDrugs;
 	private final GeneScoreCalculator geneScoreCalculator;
 	private final DrugScoreCalculator drugScoreCalculator;
+	
+	private final Set<GeneDrugWarning> warnings;
 
 	public GeneDrugGroup(
-		String[] targetGenes,
-		Collection<GeneDrug> geneDrugs
+		String[] queryGenes,
+		Collection<GeneDrug> geneDrugs,
+		Set<GeneDrugWarning> drugWarnings
 	) {
-		this(targetGenes, geneDrugs, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
+		this(queryGenes, geneDrugs, drugWarnings, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
+		Set<GeneDrugWarning> drugWarnings,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
@@ -79,6 +87,7 @@ public class GeneDrugGroup {
 		
 		this.geneScoreCalculator = requireNonNull(geneScoreCalculator);
 		this.drugScoreCalculator = requireNonNull(drugScoreCalculator);
+		this.warnings = new HashSet<>(drugWarnings);
 		
 		final Predicate<String> isInGenes =
 			gd -> Stream.of(queryGenes).anyMatch(gd::equals);
@@ -123,6 +132,10 @@ public class GeneDrugGroup {
 	
 	public List<GeneDrug> getGeneDrugs() {
 		return unmodifiableList(geneDrugs);
+	}
+	
+	public Set<GeneDrugWarning> getDrugWarnings() {
+		return unmodifiableSet(this.warnings);
 	}
 
 	public String[] getQueryGeneSymbols() {

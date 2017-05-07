@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -46,8 +48,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
@@ -66,6 +70,9 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	@Inject
 	private GeneDrugDAO dao;
 
+	@Inject
+	private GeneDrugWarningDAO drugWarningDao;
+	
 	@Inject
 	private VariantsAnalysisController variantsAnalysisController;
 	
@@ -198,8 +205,28 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		.values();
 		
 		return groups.stream()
-			.map(gdg -> new GeneDrugGroup(geneDrugToGenes.apply(gdg), gdg, gScoreCalculator, drugScoreCalculator))
+			.map(gdg -> {
+				final String[] queryGenes = geneDrugToGenes.apply(gdg);
+				final Drug drug = gdg.iterator().next().getDrug();
+				
+				return new GeneDrugGroup(
+					queryGenes,
+					gdg,
+					getWarnings(drug, queryGenes),
+					gScoreCalculator,
+					drugScoreCalculator
+				);
+			})
 		.collect(toList());
+	}
+	
+	private Set<GeneDrugWarning> getWarnings(Drug drug, String ... genes) {
+		final String drugName = drug.getStandardName();
+		
+		return stream(genes)
+			.map(gene -> this.drugWarningDao.findForGeneDrug(gene, drugName))
+			.filter(Objects::nonNull)
+		.collect(toSet());
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(

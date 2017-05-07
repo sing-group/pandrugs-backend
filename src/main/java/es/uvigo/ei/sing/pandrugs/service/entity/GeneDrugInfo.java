@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
@@ -64,6 +65,10 @@ public class GeneDrugInfo {
 	private String sensitivity;
 	private String alteration;
 	private String drugStatusInfo;
+
+	@XmlElementWrapper(name = "warnings")
+	@XmlElement(name = "warning")
+	private String[] warnings;
 	
 	private double dScore;
 	private double gScore;
@@ -95,6 +100,11 @@ public class GeneDrugInfo {
 		this.target = geneDrug.isTarget() ? "target" : "marker";
 		this.sensitivity = geneDrug.getResistance().name();
 		this.alteration = geneDrug.getAlteration();
+		
+		this.warnings = group.getDrugWarnings().stream()
+			.filter(dw -> stream(this.genes).anyMatch(g -> g.getGeneSymbol().equals(dw.getGeneSymbol())))
+			.map(GeneDrugWarning::getWarning)
+		.toArray(String[]::new);
 		
 		if (geneDrug.isTarget()) {
 			if (!forceIndirect && group.isDirect(geneDrug)) {
@@ -182,6 +192,10 @@ public class GeneDrugInfo {
 		return drugStatusInfo;
 	}
 	
+	public String[] getWarnings() {
+		return warnings;
+	}
+	
 	public double getDScore() {
 		return dScore;
 	}
@@ -221,7 +235,7 @@ public class GeneDrugInfo {
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
 		result = prime * result + ((drugStatusInfo == null) ? 0 : drugStatusInfo.hashCode());
-		result = prime * result + ((families == null) ? 0 : families.hashCode());
+		result = prime * result + Arrays.hashCode(families);
 		temp = Double.doubleToLongBits(gScore);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
@@ -231,6 +245,7 @@ public class GeneDrugInfo {
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
 		result = prime * result + ((therapy == null) ? 0 : therapy.hashCode());
+		result = prime * result + ((warnings == null) ? 0 : warnings.hashCode());
 		return result;
 	}
 
@@ -262,10 +277,7 @@ public class GeneDrugInfo {
 				return false;
 		} else if (!drugStatusInfo.equals(other.drugStatusInfo))
 			return false;
-		if (families == null) {
-			if (other.families != null)
-				return false;
-		} else if (!families.equals(other.families))
+		if (!Arrays.equals(families, other.families))
 			return false;
 		if (Double.doubleToLongBits(gScore) != Double.doubleToLongBits(other.gScore))
 			return false;
@@ -291,6 +303,11 @@ public class GeneDrugInfo {
 		} else if (!target.equals(other.target))
 			return false;
 		if (therapy != other.therapy)
+			return false;
+		if (warnings == null) {
+			if (other.warnings != null)
+				return false;
+		} else if (!warnings.equals(other.warnings))
 			return false;
 		return true;
 	}

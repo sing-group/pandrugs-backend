@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -344,7 +345,8 @@ public final class GeneDrugDataset {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { singleGeneSymbolDirect() },
-				asList(singleGeneDrugDirect())
+				asList(singleGeneDrugDirect()),
+				emptySet()
 			)
 		};
 	}
@@ -358,15 +360,18 @@ public final class GeneDrugDataset {
 				asList(
 					multipleGeneDirect[0],
 					multipleGeneDirect[1]
-				)
+				),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneDirect[2])
+				asList(multipleGeneDirect[2]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneDirect[3])
+				asList(multipleGeneDirect[3]),
+				emptySet()
 			)
 		};
 	}
@@ -375,7 +380,8 @@ public final class GeneDrugDataset {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { INDIRECT_GENE_SYMBOL_1 },
-				asList(singleGeneIndirect())
+				asList(singleGeneIndirect()),
+				emptySet()
 			)
 		};
 	}
@@ -389,15 +395,18 @@ public final class GeneDrugDataset {
 				asList(
 					multipleGeneIndirect[0],
 					multipleGeneIndirect[1]
-				)
+				),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneIndirect[2])
+				asList(multipleGeneIndirect[2]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneIndirect[3])
+				asList(multipleGeneIndirect[3]),
+				emptySet()
 			)
 		};
 	}
@@ -411,30 +420,36 @@ public final class GeneDrugDataset {
 				asList(
 					multipleGeneMixed[0],
 					multipleGeneMixed[1]
-				)
+				),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[2])
+				asList(multipleGeneMixed[2]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[3])
+				asList(multipleGeneMixed[3]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { singleGeneSymbolIndirect(), INDIRECT_GENE_SYMBOL_2 },
 				asList(
 					multipleGeneMixed[4],
 					multipleGeneMixed[5]
-				)
+				),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[6])
+				asList(multipleGeneMixed[6]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[7])
+				asList(multipleGeneMixed[7]),
+				emptySet()
 			)
 		};
 	}
@@ -511,7 +526,8 @@ public final class GeneDrugDataset {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_1, DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[0], geneDrugs[1])
+				asList(geneDrugs[0], geneDrugs[1]),
+				emptySet()
 			)
 		};
 	}
@@ -522,27 +538,33 @@ public final class GeneDrugDataset {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[7])
+				asList(geneDrugs[7]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[8])
+				asList(geneDrugs[8]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_1, DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[0], geneDrugs[1])
+				asList(geneDrugs[0], geneDrugs[1]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[2])
+				asList(geneDrugs[2]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[3])
+				asList(geneDrugs[3]),
+				emptySet()
 			),
 			new GeneDrugGroup(
 				new String[] { WITH_INDIRECT_GENE_SYMBOL_1, WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[5], geneDrugs[6])
+				asList(geneDrugs[5], geneDrugs[6]),
+				emptySet()
 			)
 		};
 	}

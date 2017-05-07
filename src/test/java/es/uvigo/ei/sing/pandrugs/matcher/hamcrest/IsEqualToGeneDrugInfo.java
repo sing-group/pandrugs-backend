@@ -53,6 +53,7 @@ public class IsEqualToGeneDrugInfo extends IsEqualToEntity<GeneDrugInfo> {
 				&& checkAttribute("sensitivity", GeneDrugInfo::getSensitivity, actual)
 				&& checkAttribute("alteration", GeneDrugInfo::getAlteration, actual)
 				&& checkAttribute("drugStatusInfo", GeneDrugInfo::getDrugStatusInfo, actual)
+				&& checkArrayAttribute("warnings", GeneDrugInfo::getWarnings, actual)
 				&& checkArrayAttribute("sources", GeneDrugInfo::getSources, actual);
 		}
 	}

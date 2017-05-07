@@ -51,6 +51,7 @@ import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -68,10 +69,12 @@ import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
@@ -87,9 +90,25 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Mock
 	private GeneDrugDAO dao;
 	
+	@Mock
+	private GeneDrugWarningDAO drugWarningDao;
+	
+	@Before
+	public void setUp() {
+		expect(this.drugWarningDao.findForGeneDrug(anyString(), anyString()))
+			.andReturn(null)
+		.anyTimes();
+	}
+	
 	@After
 	public void verifyDao() {
 		verify(dao);
+		verify(drugWarningDao);
+	}
+	
+	private void replayAll() {
+		replay(dao);
+		replay(drugWarningDao);
 	}
 	
 	@Test
@@ -133,7 +152,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testListGeneSymbolsNullFilter() {
-		replay(dao);
+		replayAll();
 		
 		this.controller.listGeneSymbols(null, 10);
 	}
@@ -179,21 +198,21 @@ public class DefaultGeneDrugControllerUnitTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testlistDrugsNullFilter() {
-		replay(dao);
+		replayAll();
 		
 		this.controller.listDrugs(null, 10);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testSearchByGenesEmptyGenes() {
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByGenes(new GeneDrugQueryParameters(), new String[0]);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testSearchByGenesNullGenes() {
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByGenes(new GeneDrugQueryParameters(), (String[]) null);
 	}
@@ -202,7 +221,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	public void testRankedSearchEmptyGenes() {
 		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
 
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByRanking(queryParameters, new GeneRanking(emptyMap()));
 	}
@@ -212,7 +231,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
 		final String[] query = null;
 		
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByGenes(queryParameters, query);
 	}
@@ -222,7 +241,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
 		final Map<String, Double> geneRank = null;
 	
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByRanking(queryParameters, new GeneRanking(geneRank));
 	}
@@ -232,7 +251,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		final GeneDrugQueryParameters queryParameters = null;
 		final String[] query = multipleGeneSymbolsDirect();
 		
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByGenes(queryParameters, query);
 	}
@@ -242,7 +261,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		final GeneDrugQueryParameters queryParameters = null;
 		final GeneRanking geneRank = rankingFor("GENE");
 
-		replay(dao);
+		replayAll();
 		
 		this.controller.searchByRanking(queryParameters, geneRank);
 	}
@@ -453,7 +472,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		expect(dao.searchByGene(queryParameters, toUpperCase(geneNames)))
 			.andReturn(response);
 		
-		replay(dao);
+		replayAll();
 	}
 	
 	private void prepareSearchByDrug(
@@ -472,18 +491,18 @@ public class DefaultGeneDrugControllerUnitTest {
 		expect(dao.searchByDrug(queryParameters, toUpperCase(drugNames)))
 			.andReturn(response);
 		
-		replay(dao);
+		replayAll();
 	}
 	
 	private void prepareListGeneSymbols(String query, int maxResults, String[] expected) {
 		expect(dao.listGeneSymbols(query, maxResults)).andReturn(expected);
 		
-		replay(dao);
+		replayAll();
 	}
 	
 	private void preparelistDrugs(String query, int maxResults, Drug[] expected) {
 		expect(dao.listDrugs(query, maxResults)).andReturn(expected);
 		
-		replay(dao);
+		replayAll();
 	}
 }
