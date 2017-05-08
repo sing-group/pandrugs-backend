@@ -27,7 +27,9 @@
 		mail.smtp.port="25"
 		mail.smtp.auth="false"
 	/>
-		
+
+	<Valve className="org.sing_group.tomcat.NoWWWAuthenticateForAJAXValve"></Valve>
+
 	<Resource name="jdbc/pandrugs/database"
 		auth="Container"
 		type="javax.sql.DataSource"
