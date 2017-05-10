@@ -88,7 +88,7 @@ public class GeneDrugInfo {
 			.map(GeneInfo::new)
 		.toArray(GeneInfo[]::new);
 		this.drug = geneDrug.getStandardDrugName();
-		this.sources = geneDrug.getDrug().getDrugSourceNames().stream()
+		this.sources = geneDrug.getDrugSourceNames().stream()
 			.toArray(String[]::new);
 		this.families = geneDrug.getDrug().getFamilies();
 		this.status = geneDrug.getStatus();

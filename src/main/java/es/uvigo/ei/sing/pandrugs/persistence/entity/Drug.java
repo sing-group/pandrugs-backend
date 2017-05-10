@@ -23,7 +23,7 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -98,7 +98,7 @@ public class Drug implements Serializable {
 	private Set<String> pathologies;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "drug")
-	private List<DrugSource> drugSources;
+	private Set<DrugSource> drugSources;
 	
 	Drug() {}
 
@@ -113,7 +113,7 @@ public class Drug implements Serializable {
 		int[] pubChemIds,
 		CancerType[] cancers,
 		String[] pathologies,
-		List<DrugSource> drugSources
+		Set<DrugSource> drugSources
 	) {
 		this.id = id;
 		this.standardName = standardName;
@@ -177,8 +177,8 @@ public class Drug implements Serializable {
 		.toArray(String[]::new);
 	}
 	
-	public List<DrugSource> getDrugSources() {
-		return unmodifiableList(drugSources);
+	public Set<DrugSource> getDrugSources() {
+		return unmodifiableSet(drugSources);
 	}
 
 	public List<String> getDrugSourceNames() {

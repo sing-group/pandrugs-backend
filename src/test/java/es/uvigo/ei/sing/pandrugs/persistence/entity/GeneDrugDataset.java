@@ -30,9 +30,8 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,9 +87,9 @@ public final class GeneDrugDataset {
 	
 	public static Drug[] drugs() {
 		@SuppressWarnings("unchecked")
-		final List<DrugSource>[] sources = new List[8];
+		final Set<DrugSource>[] sources = new Set[8];
 		for (int i = 0; i < sources.length; i++) {
-			sources[i] = new ArrayList<>();
+			sources[i] = new HashSet<>();
 		}
 		
 		final Drug[] drugs = new Drug[] {
@@ -225,7 +224,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.5,
-				emptyList()
+				emptyList(), emptySet()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -234,7 +233,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.5,
-				emptyList()
+				emptyList(), emptySet()
 			)
 		};
 	}
@@ -247,7 +246,7 @@ public final class GeneDrugDataset {
 			null,
 			ResistanceType.SENSITIVITY,
 			0.1,
-			emptyList()
+			emptyList(), emptySet()
 		);
 	}
 	
@@ -264,7 +263,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.2,
-				emptyList()
+				emptyList(), emptySet()
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
@@ -273,7 +272,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.3,
-				emptyList()
+				emptyList(), emptySet()
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
@@ -282,7 +281,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.4,
-				emptyList()
+				emptyList(), emptySet()
 			)
 		};
 	}
@@ -295,7 +294,7 @@ public final class GeneDrugDataset {
 			null,
 			ResistanceType.SENSITIVITY,
 			0.1,
-			asList(new Gene(singleGeneSymbolIndirect()))
+			asList(new Gene(singleGeneSymbolIndirect())), emptySet()
 		);
 	}
 	
@@ -312,7 +311,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.2,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)), emptySet()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -321,7 +320,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.3,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)), emptySet()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -330,7 +329,7 @@ public final class GeneDrugDataset {
 				null,
 				ResistanceType.SENSITIVITY,
 				0.4,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)), emptySet()
 			)
 		};
 	}

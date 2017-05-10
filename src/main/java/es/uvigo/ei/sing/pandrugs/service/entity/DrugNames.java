@@ -59,7 +59,6 @@ public class DrugNames {
 		this.sourceNames = drug.getCuratedDrugSources().stream()
 			.map(DrugSourceName::new)
 		.toArray(DrugSourceName[]::new);
-		
 	}
 
 	public String getStandardName() {

@@ -51,7 +51,7 @@ public class ByGroupDrugScoreCalculator implements DrugScoreCalculator {
 			if (group.isOnlyIndirect())
 				score -= 0.01d;
 			
-			score += min(9, geneDrug.getDrug().getCuratedDrugSourceNames().size()) * 0.001d + 0.001d;
+			score += min(9, geneDrug.getCuratedDrugSourceNames().size()) * 0.001d + 0.001d;
 			break;
 		default:
 			return Double.NaN;

@@ -48,10 +48,10 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
@@ -261,9 +261,8 @@ public class GeneDrugGroup {
 
 	public DrugSource[] getSources() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getDrug)
-			.map(Drug::getDrugSources)
-			.flatMap(List::stream)
+			.map(GeneDrug::getDrugSources)
+			.flatMap(Set::stream)
 			.distinct()
 		.toArray(DrugSource[]::new);
 	}
@@ -300,8 +299,7 @@ public class GeneDrugGroup {
 	
 	public DrugSource[] getCuratedSources() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getDrug)
-			.map(Drug::getCuratedDrugSources)
+			.map(GeneDrug::getCuratedDrugSources)
 			.flatMap(List::stream)
 			.distinct()
 		.toArray(DrugSource[]::new);

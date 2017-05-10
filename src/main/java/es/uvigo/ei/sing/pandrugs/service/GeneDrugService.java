@@ -156,7 +156,7 @@ public interface GeneDrugService {
 	) throws BadRequestException;
 	
 	/**
-	 * Returns a list of drug names associated with a drug ordered by	ascending
+	 * Returns a list of drug names associated with a drug ordered by ascending
 	 * alphabetical order of the show drug name. The drugs included are those
 	 * with a CLINICAL, APPROVED or EXPERIMENTAL status.
 	 * 

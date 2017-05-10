@@ -22,11 +22,13 @@
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.persistence.Column;
@@ -37,6 +39,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -87,6 +91,36 @@ public class GeneDrug implements Serializable {
 		nullable = true
 	)
 	private Gene gene;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "gene_drug_to_drug_source",
+		joinColumns = {
+			@JoinColumn(
+				name = "gene_symbol", referencedColumnName = "gene_symbol",
+				insertable = false, updatable = false, nullable = false
+			),
+			@JoinColumn(
+				name = "drug_id", referencedColumnName = "drug_id",
+				insertable = false, updatable = false, nullable = false
+			),
+			@JoinColumn(
+				name = "target", referencedColumnName = "target",
+				insertable = false, updatable = false, nullable = false
+			)
+		},
+		inverseJoinColumns = {
+			@JoinColumn(
+				name = "source", referencedColumnName = "source",
+				insertable = false, updatable = false, nullable = false
+			),
+			@JoinColumn(
+				name = "source_drug_name", referencedColumnName = "source_drug_name",
+				insertable = false, updatable = false, nullable = false
+			)
+		}
+	)
+	private Set<DrugSource> drugSources;
 
 	GeneDrug() {
 	}
@@ -98,7 +132,8 @@ public class GeneDrug implements Serializable {
 		String alteration,
 		ResistanceType resistance,
 		double score,
-		List<Gene> inverseGene
+		List<Gene> inverseGene,
+		Set<DrugSource> drugSources
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
 		this.gene = gene;
@@ -111,6 +146,7 @@ public class GeneDrug implements Serializable {
 		this.indirectGenes = inverseGene.stream()
 			.map(gs -> new IndirectGene(this, gs))
 		.collect(toList());
+		this.drugSources = drugSources;
 	}
 	
 	public int getDrugId() {
@@ -171,6 +207,38 @@ public class GeneDrug implements Serializable {
 
 	public String getAlteration() {
 		return alteration;
+	}
+	
+	public Set<DrugSource> getDrugSources() {
+		return unmodifiableSet(drugSources);
+	}
+	
+	public List<String> getDrugSourceNames() {
+		return this.drugSources.stream()
+			.map(DrugSource::getSource)
+			.distinct()
+			.sorted()
+		.collect(toList());
+	}
+	
+	public List<DrugSource> getCuratedDrugSources() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+		.collect(toList());
+	}
+	
+	public List<String> getCuratedDrugSourceNames() {
+		return this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+			.map(DrugSource::getSource)
+			.distinct()
+		.collect(toList());
+	}
+	
+	public int countCuratedDrugSources() {
+		return (int) this.drugSources.stream()
+			.filter(DrugSource::isCurated)
+		.count();
 	}
 
 	public double getScore() {
