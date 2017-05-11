@@ -25,7 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -33,11 +33,12 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -48,11 +49,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator;
@@ -200,33 +201,41 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		GeneScoreCalculator gScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
-		final Collection<Set<GeneDrug>> groups = geneDrugs.stream()
-			.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
-		.values();
-		
-		return groups.stream()
-			.map(gdg -> {
-				final String[] queryGenes = geneDrugToGenes.apply(gdg);
-				final Drug drug = gdg.iterator().next().getDrug();
-				
-				return new GeneDrugGroup(
-					queryGenes,
-					gdg,
-					getWarnings(drug, queryGenes),
-					gScoreCalculator,
-					drugScoreCalculator
-				);
-			})
-		.collect(toList());
-	}
+		if (geneDrugs.isEmpty()) {
+			return emptyList();
+		} else {
+			final Collection<Set<GeneDrug>> groups = geneDrugs.stream()
+				.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
+			.values();
+			
+			final Set<GeneDrugWarning> warnings =
+				this.drugWarningDao.findForGeneDrugs(geneDrugs);
 	
-	private Set<GeneDrugWarning> getWarnings(Drug drug, String ... genes) {
-		final String drugName = drug.getStandardName();
-		
-		return stream(genes)
-			.map(gene -> this.drugWarningDao.findForGeneDrug(gene, drugName))
-			.filter(Objects::nonNull)
-		.collect(toSet());
+			final BiFunction<String, String[], Set<GeneDrugWarning>> getWarnings =
+				(drug, genes) -> {
+					final Set<String> geneSet = new HashSet<>(asList(genes));
+					
+					return warnings.stream()
+						.filter(warning -> warning.getStandardDrugName().equals(drug))
+						.filter(warning -> geneSet.contains(warning.getGeneSymbol()))
+					.collect(toSet());
+				};
+			
+			return groups.stream()
+				.map(gdg -> {
+					final String[] queryGenes = geneDrugToGenes.apply(gdg);
+					final Drug drug = gdg.iterator().next().getDrug();
+					
+					return new GeneDrugGroup(
+						queryGenes,
+						gdg,
+						getWarnings.apply(drug.getStandardName(), queryGenes),
+						gScoreCalculator,
+						drugScoreCalculator
+					);
+				})
+			.collect(toList());
+		}
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(

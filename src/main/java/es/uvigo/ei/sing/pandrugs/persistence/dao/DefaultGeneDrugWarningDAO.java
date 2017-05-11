@@ -21,19 +21,26 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
-import static java.util.Objects.requireNonNull;
+import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 
 @Repository
@@ -55,29 +62,30 @@ public class DefaultGeneDrugWarningDAO implements GeneDrugWarningDAO {
 	private void createDAOHelper() {
 		this.dh = DAOHelper.of(Long.class, GeneDrugWarning.class, em);
 	}
-	
+
 	@Override
-	public GeneDrugWarning findForGeneDrug(String geneSymbol, String standardDrugName) {
-		requireNonNull(geneSymbol, "geneSymbol can't be null");
-		requireNonNull(standardDrugName, "standardDrugName can't be null");
+	public Set<GeneDrugWarning> findForGeneDrugs(Collection<GeneDrug> geneDrugs) {
+		requireNonEmpty(geneDrugs, "At least one GeneDrug should be provided");
 		
 		final CriteriaBuilder cb = dh.cb();
 		
 		final CriteriaQuery<GeneDrugWarning> query = dh.createCBQuery();
 		final Root<GeneDrugWarning> root = query.from(GeneDrugWarning.class);
 		
-		try {
-			return em.createQuery(
-				query.select(root)
-					.where(cb.and(
-						cb.equal(root.get("geneSymbol"), geneSymbol),
-						cb.equal(root.get("standardDrugName"), standardDrugName)
-					))
-			)
-			.getSingleResult();
-		} catch (NoResultException nre) {
-			return null;
-		}
-	}
+		final Path<Object> geneSymbolField = root.get("geneSymbol");
+		final Path<Object> drugField = root.get("standardDrugName");
+		
+		final Predicate[] predicates = geneDrugs.stream()
+			.map(gd -> cb.and(
+				cb.equal(geneSymbolField, gd.getGeneSymbol()),
+				cb.equal(drugField, gd.getStandardDrugName())
+			))
+		.toArray(Predicate[]::new);
 
+		final List<GeneDrugWarning> results = em.createQuery(query.select(root).where(cb.or(predicates)))
+			.getResultList();
+		
+		
+		return new HashSet<>(results);
+	}
 }

@@ -51,7 +51,8 @@ import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static org.easymock.EasyMock.anyString;
+import static java.util.Collections.emptySet;
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -74,8 +75,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
-import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
@@ -95,8 +96,8 @@ public class DefaultGeneDrugControllerUnitTest {
 	
 	@Before
 	public void setUp() {
-		expect(this.drugWarningDao.findForGeneDrug(anyString(), anyString()))
-			.andReturn(null)
+		expect(this.drugWarningDao.findForGeneDrugs(anyObject()))
+			.andReturn(emptySet())
 		.anyTimes();
 	}
 	

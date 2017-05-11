@@ -21,8 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
+import java.util.Collection;
+import java.util.Set;
+
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 
 public interface GeneDrugWarningDAO {
-	public GeneDrugWarning findForGeneDrug(String geneSymbol, String standardDrugName);
+	public Set<GeneDrugWarning> findForGeneDrugs(Collection<GeneDrug> geneDrugs);
 }
