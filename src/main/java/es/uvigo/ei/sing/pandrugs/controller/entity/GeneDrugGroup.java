@@ -24,11 +24,15 @@ package es.uvigo.ei.sing.pandrugs.controller.entity;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,19 +70,22 @@ public class GeneDrugGroup {
 	private final DrugScoreCalculator drugScoreCalculator;
 	
 	private final Set<GeneDrugWarning> warnings;
+	private final Map<String, Set<String>> resistanceCausedBy;
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
-		Set<GeneDrugWarning> drugWarnings
+		Set<GeneDrugWarning> drugWarnings,
+		Map<String, Set<String>> resistanceCausedBy
 	) {
-		this(queryGenes, geneDrugs, drugWarnings, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
+		this(queryGenes, geneDrugs, drugWarnings, resistanceCausedBy, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
 		Set<GeneDrugWarning> drugWarnings,
+		Map<String, Set<String>> resistanceCausedBy,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
@@ -87,7 +94,18 @@ public class GeneDrugGroup {
 		
 		this.geneScoreCalculator = requireNonNull(geneScoreCalculator);
 		this.drugScoreCalculator = requireNonNull(drugScoreCalculator);
-		this.warnings = new HashSet<>(drugWarnings);
+		
+		if (drugWarnings.isEmpty()) {
+			this.warnings = emptySet();
+		} else {
+			this.warnings = unmodifiableSet(new HashSet<>(drugWarnings));
+		}
+		
+		if (resistanceCausedBy.isEmpty()) {
+			this.resistanceCausedBy = emptyMap();
+		} else {
+			this.resistanceCausedBy = unmodifiableMap(resistanceCausedBy); // TODO: Make map' sets unmodifiable
+		}
 		
 		final Predicate<String> isInGenes =
 			gd -> Stream.of(queryGenes).anyMatch(gd::equals);
@@ -137,7 +155,24 @@ public class GeneDrugGroup {
 	public Set<GeneDrugWarning> getDrugWarnings() {
 		return unmodifiableSet(this.warnings);
 	}
-
+	
+	public Set<GeneDrugWarning> getDrugWarnings(Collection<String> geneSymbols) {
+		return this.warnings.stream()
+			.filter(dw -> geneSymbols.contains(dw.getGeneSymbol()))
+		.collect(toSet());
+	}
+	
+	public Set<String> getIndirectResistance(String geneSymbol) {
+		return this.resistanceCausedBy.get(geneSymbol);
+	}
+	
+	public boolean hasIndirectResistances(GeneDrug geneDrug) {
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
+		
+		return this.resistanceCausedBy.containsKey(geneDrug.getGeneSymbol());
+	}
+	
 	public String[] getQueryGeneSymbols() {
 		return this.queryGenes;
 	}
@@ -160,7 +195,7 @@ public class GeneDrugGroup {
 	public String[] getDirectGeneSymbols() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getGeneSymbol)
-			.filter(this::isInTargetGenes)
+			.filter(this::isInQueryGenes)
 			.distinct()
 			.sorted()
 		.toArray(String[]::new);
@@ -170,7 +205,7 @@ public class GeneDrugGroup {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getIndirectGeneSymbols)
 			.flatMap(List::stream)
-			.filter(this::isInTargetGenes)
+			.filter(this::isInQueryGenes)
 			.distinct()
 			.sorted()
 		.toArray(String[]::new);
@@ -186,7 +221,7 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		return this.isInTargetGenes(geneDrug.getGeneSymbol());
+		return this.isInQueryGenes(geneDrug.getGeneSymbol());
 	}
 
 	public boolean isIndirect(GeneDrug geneDrug) {
@@ -210,14 +245,14 @@ public class GeneDrugGroup {
 	public int countDirectGenes() {
 		return (int) this.geneDrugs.stream()
 			.map(GeneDrug::getGeneSymbol)
-			.filter(this::isInTargetGenes)
+			.filter(this::isInQueryGenes)
 		.count();
 	}
 	
 	public int countIndirectGenes() {
 		return (int) this.geneDrugs.stream()
 			.map(GeneDrug::getGeneSymbol)
-			.filter(this::isNotInTargetGenes)
+			.filter(this::isNotInQueryGenes)
 		.count();
 	}
 	
@@ -318,25 +353,30 @@ public class GeneDrugGroup {
 			.anyMatch(GeneDrug::isTarget);
 	}
 	
-	public boolean hasResistance() {
-		return this.geneDrugs.stream()
-			.anyMatch(GeneDrug::isResistance);
+	public boolean isResistance(GeneDrug geneDrug) {
+		return geneDrug.isResistance()
+			|| (geneDrug.isTarget() && this.hasIndirectResistances(geneDrug));
 	}
 	
-	public Gene[] getTargetGenes(GeneDrug geneDrug, boolean forceIndirect) {
+	public boolean hasResistance() {
+		return this.geneDrugs.stream()
+			.anyMatch(this::isResistance);
+	}
+	
+	public Gene[] getQueryGenesForGeneDrug(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			new Gene[] { geneDrug.getGene() } :
 			geneDrug.getIndirectGenes().stream()
-				.filter(this::isInTargetGenes)
+				.filter(this::isInQueryGenes)
 				.map(IndirectGene::getGene)
 			.toArray(Gene[]::new);
 	}
 	
-	public String[] getTargetGeneSymbols(GeneDrug geneDrug, boolean forceIndirect) {
+	public String[] getQueryGeneSymbolsForGeneDrug(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			new String[] { geneDrug.getGeneSymbol() } :
 			geneDrug.getIndirectGeneSymbols().stream()
-				.filter(this::isInTargetGenes)
+				.filter(this::isInQueryGenes)
 			.toArray(String[]::new);
 	}
 	
@@ -392,16 +432,16 @@ public class GeneDrugGroup {
 		return Math.max(maxDirect, maxIndirect);
 	}
 	
-	private boolean isInTargetGenes(IndirectGene indirectGene) {
-		return isInTargetGenes(indirectGene.getGeneSymbol());
+	private boolean isInQueryGenes(IndirectGene indirectGene) {
+		return isInQueryGenes(indirectGene.getGeneSymbol());
 	}
 	
-	private boolean isInTargetGenes(String geneSymbol) {
+	private boolean isInQueryGenes(String geneSymbol) {
 		return Stream.of(this.queryGenes)
 			.anyMatch(tg -> tg.equals(geneSymbol));
 	}
 	
-	private boolean isNotInTargetGenes(String geneSymbol) {
+	private boolean isNotInQueryGenes(String geneSymbol) {
 		return Stream.of(this.queryGenes)
 			.noneMatch(tg -> tg.equals(geneSymbol));
 	}

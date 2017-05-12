@@ -21,12 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType.RESISTANCE;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,34 +40,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType;
 
 @XmlRootElement(name = "geneDrugInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugInfo {
+	private String drug;
+	
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
 	private GeneInfo[] genes;
-	
-	private String drug;
-	
+
+	private String target;
+	private String alteration;
 	private DrugStatus status;
+	private String drugStatusInfo;
+	private Extra therapy;
+	private IndirectGeneInfo indirect;
 	
+	private ResistanceType originalSensitivity;
+	private ResistanceType sensitivity;
+
+	@XmlElementWrapper(name = "indirectResistances")
+	@XmlElement(name = "indirectResistance")
+	private String[] indirectResistances;
+
+	@XmlElementWrapper(name = "cancers")
+	@XmlElement(name = "cancer")
 	private CancerType[] cancers;
 	
-	private Extra therapy;
-	
-	private IndirectGeneInfo indirect;
+	@XmlElementWrapper(name = "sources")
+	@XmlElement(name = "source")
+	private String[] sources;
 
 	@XmlElementWrapper(name = "families")
 	@XmlElement(name = "family")
 	private String[] families;
-	private String target;
-	private String sensitivity;
-	private String alteration;
-	private String drugStatusInfo;
 
 	@XmlElementWrapper(name = "warnings")
 	@XmlElement(name = "warning")
@@ -73,10 +88,6 @@ public class GeneDrugInfo {
 	private double dScore;
 	private double gScore;
 	
-	@XmlElementWrapper(name = "sources")
-	@XmlElement(name = "source")
-	private String[] sources;
-	
 	GeneDrugInfo() {}
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group) {
@@ -84,25 +95,42 @@ public class GeneDrugInfo {
 	}
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group, boolean forceIndirect) {
-		this.genes = stream(group.getTargetGenes(geneDrug, forceIndirect))
+		final Gene[] queryGenes = group.getQueryGenesForGeneDrug(geneDrug, forceIndirect);
+		final Set<String> queryGeneSymbols = stream(group.getQueryGeneSymbolsForGeneDrug(geneDrug, forceIndirect))
+			.collect(toSet());
+		
+		this.drug = geneDrug.getStandardDrugName();
+		
+		this.genes = stream(queryGenes)
 			.map(GeneInfo::new)
 		.toArray(GeneInfo[]::new);
-		this.drug = geneDrug.getStandardDrugName();
-		this.sources = geneDrug.getDrugSourceNames().stream()
-			.toArray(String[]::new);
-		this.families = geneDrug.getDrug().getFamilies();
+		
+		this.target = geneDrug.isTarget() ? "target" : "marker";
+		this.alteration = geneDrug.getAlteration();
 		this.status = geneDrug.getStatus();
-		this.cancers = geneDrug.getCancers();
 		this.therapy = geneDrug.getExtra();
 		this.indirect = Optional.ofNullable(group.getIndirectGene(geneDrug, forceIndirect))
 			.map(indirectGene -> new IndirectGeneInfo(geneDrug.getGeneSymbol(), indirectGene, genes))
 		.orElse(null);
-		this.target = geneDrug.isTarget() ? "target" : "marker";
-		this.sensitivity = geneDrug.getResistance().name();
-		this.alteration = geneDrug.getAlteration();
 		
-		this.warnings = group.getDrugWarnings().stream()
-			.filter(dw -> stream(this.genes).anyMatch(g -> g.getGeneSymbol().equals(dw.getGeneSymbol())))
+		this.originalSensitivity = geneDrug.getResistance();
+		this.sensitivity = group.isResistance(geneDrug) ? RESISTANCE : this.originalSensitivity;
+
+		if (group.isResistance(geneDrug) && group.hasIndirectResistances(geneDrug)) {
+			this.indirectResistances = stream(queryGenes)
+				.map(Gene::getGeneSymbol)
+				.flatMap(affectedGene -> group.getIndirectResistance(affectedGene).stream()
+					.map(resistance -> String.format("%s overactivation is associated with resistance to %s inhibition", resistance, affectedGene))
+				)
+			.toArray(String[]::new);
+		} else {
+			this.indirectResistances = new String[0];
+		}
+		
+		this.cancers = geneDrug.getCancers();
+		this.sources = geneDrug.getDrugSourceNames().stream().toArray(String[]::new);
+		this.families = geneDrug.getDrug().getFamilies();
+		this.warnings = group.getDrugWarnings(queryGeneSymbols).stream()
 			.map(GeneDrugWarning::getWarning)
 		.toArray(String[]::new);
 		
@@ -180,8 +208,12 @@ public class GeneDrugInfo {
 		return target;
 	}
 	
-	public String getSensitivity() {
+	public ResistanceType getSensitivity() {
 		return sensitivity;
+	}
+	
+	public String[] getIndirectResistances() {
+		return indirectResistances;
 	}
 	
 	public String getAlteration() {
@@ -240,12 +272,13 @@ public class GeneDrugInfo {
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
 		result = prime * result + ((indirect == null) ? 0 : indirect.hashCode());
+		result = prime * result + Arrays.hashCode(indirectResistances);
 		result = prime * result + ((sensitivity == null) ? 0 : sensitivity.hashCode());
 		result = prime * result + Arrays.hashCode(sources);
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
 		result = prime * result + ((therapy == null) ? 0 : therapy.hashCode());
-		result = prime * result + ((warnings == null) ? 0 : warnings.hashCode());
+		result = prime * result + Arrays.hashCode(warnings);
 		return result;
 	}
 
@@ -288,6 +321,8 @@ public class GeneDrugInfo {
 				return false;
 		} else if (!indirect.equals(other.indirect))
 			return false;
+		if (!Arrays.equals(indirectResistances, other.indirectResistances))
+			return false;
 		if (sensitivity == null) {
 			if (other.sensitivity != null)
 				return false;
@@ -304,10 +339,7 @@ public class GeneDrugInfo {
 			return false;
 		if (therapy != other.therapy)
 			return false;
-		if (warnings == null) {
-			if (other.warnings != null)
-				return false;
-		} else if (!warnings.equals(other.warnings))
+		if (!Arrays.equals(warnings, other.warnings))
 			return false;
 		return true;
 	}

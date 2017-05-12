@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.IndirectResistanceDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
@@ -73,6 +74,9 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Inject
 	private GeneDrugWarningDAO drugWarningDao;
+	
+	@Inject
+	private IndirectResistanceDAO indirectResistanceDao;
 	
 	@Inject
 	private VariantsAnalysisController variantsAnalysisController;
@@ -208,18 +212,10 @@ public class DefaultGeneDrugController implements GeneDrugController {
 				.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
 			.values();
 			
-			final Set<GeneDrugWarning> warnings =
-				this.drugWarningDao.findForGeneDrugs(geneDrugs);
-	
 			final BiFunction<String, String[], Set<GeneDrugWarning>> getWarnings =
-				(drug, genes) -> {
-					final Set<String> geneSet = new HashSet<>(asList(genes));
-					
-					return warnings.stream()
-						.filter(warning -> warning.getStandardDrugName().equals(drug))
-						.filter(warning -> geneSet.contains(warning.getGeneSymbol()))
-					.collect(toSet());
-				};
+				getGeneDrugWarningMapper(geneDrugs);
+				
+			final Map<String, Set<String>> indirectResistances = getIndirectResistances(groups);
 			
 			return groups.stream()
 				.map(gdg -> {
@@ -230,12 +226,39 @@ public class DefaultGeneDrugController implements GeneDrugController {
 						queryGenes,
 						gdg,
 						getWarnings.apply(drug.getStandardName(), queryGenes),
+						indirectResistances,
 						gScoreCalculator,
 						drugScoreCalculator
 					);
 				})
 			.collect(toList());
 		}
+	}
+
+	protected Map<String, Set<String>> getIndirectResistances(final Collection<Set<GeneDrug>> groups) {
+		final Set<String> geneSymbols = groups.stream()
+			.flatMap(Set::stream)
+			.map(GeneDrug::getGeneSymbol)
+		.collect(toSet());
+		
+		return this.indirectResistanceDao.getIndirectResistancesFor(geneSymbols);
+	}
+	
+	private BiFunction<String, String[], Set<GeneDrugWarning>> getGeneDrugWarningMapper(Collection<GeneDrug> geneDrugs) {
+		final Set<GeneDrugWarning> warnings =
+			this.drugWarningDao.findForGeneDrugs(geneDrugs);
+
+		final BiFunction<String, String[], Set<GeneDrugWarning>> getWarnings =
+			(drug, genes) -> {
+				final Set<String> geneSet = new HashSet<>(asList(genes));
+				
+				return warnings.stream()
+					.filter(warning -> warning.getStandardDrugName().equals(drug))
+					.filter(warning -> geneSet.contains(warning.getGeneSymbol()))
+				.collect(toSet());
+			};
+			
+		return getWarnings;
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(
