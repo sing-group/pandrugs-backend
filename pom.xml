@@ -103,7 +103,7 @@
 		<license-maven-plugin.version>1.8</license-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
 		<maven-surefire-plugins.version>2.19.1</maven-surefire-plugins.version>
-		<miredot-plugin.version>2.0.2</miredot-plugin.version>
+		<miredot-plugin.version>2.0.3</miredot-plugin.version>
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		<maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
@@ -594,11 +594,12 @@
 					</restModel>
 					<output>
 						<html>
-							<baseUrl>http://pandrugs.bioinfo.cnio.es/pandrugs-backend</baseUrl>
+							<baseUrl>http://www.pandrugs.org/pandrugs-backend</baseUrl>
 							<sections>
 								<strategy>singlepage</strategy>
 							</sections>
 						</html>
+						<docx></docx>
 					</output>
 				</configuration>
 			</plugin>
