@@ -50,6 +50,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugInfo {
 	private String drug;
+	private String showDrugName;
 	
 	@XmlElementWrapper(name = "genes")
 	@XmlElement(name = "gene")
@@ -100,6 +101,7 @@ public class GeneDrugInfo {
 			.collect(toSet());
 		
 		this.drug = geneDrug.getStandardDrugName();
+		this.showDrugName = geneDrug.getShowDrugName();
 		
 		this.genes = stream(queryGenes)
 			.map(GeneInfo::new)
@@ -139,7 +141,7 @@ public class GeneDrugInfo {
 				this.gScore = group.getGScore(geneDrug);
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s",
-					this.drug, geneDrug.getStatus().getDescription(), this.genes[0].getGeneSymbol()
+					this.showDrugName, geneDrug.getStatus().getDescription(), this.genes[0].getGeneSymbol()
 				);
 			} else if (group.isIndirect(geneDrug)) {
 				final Map<String, Double> indirectGScores =
@@ -152,7 +154,7 @@ public class GeneDrugInfo {
 				
 				this.drugStatusInfo = String.format(
 					"%s is a drug %s that acts as an inhibitor of %s, a protein downstream to %s",
-					this.drug, geneDrug.getStatus().getDescription(),
+					this.showDrugName, geneDrug.getStatus().getDescription(),
 					this.indirect.getGeneInfo().getGeneSymbol(), joinGeneNames(this.genes)
 				);
 			} else {
@@ -163,7 +165,7 @@ public class GeneDrugInfo {
 			
 			this.drugStatusInfo = String.format(
 				"Molecular alterations in %s are associated with response to %s, a drug %s",
-				this.genes[0].getGeneSymbol(), this.drug, geneDrug.getStatus().getDescription() 
+				this.genes[0].getGeneSymbol(), this.showDrugName, geneDrug.getStatus().getDescription() 
 			);
 		} else {
 			throw new IllegalArgumentException(geneDrug.getGeneSymbol() + " is indirect and marker.");
@@ -182,6 +184,10 @@ public class GeneDrugInfo {
 	
 	public String getDrug() {
 		return drug;
+	}
+	
+	public String getShowDrugName() {
+		return showDrugName;
 	}
 	
 	public String[] getFamilies() {
@@ -248,7 +254,7 @@ public class GeneDrugInfo {
 			System.arraycopy(genes, 0, subGeneNames, 0, subGeneNames.length);
 			final GeneInfo lastGene = genes[genes.length - 1];
 			
-			final String csvNames = stream(genes)
+			final String csvNames = stream(subGeneNames)
 				.map(GeneInfo::getGeneSymbol)
 			.collect(joining(", "));
 			
@@ -273,7 +279,9 @@ public class GeneDrugInfo {
 		result = prime * result + Arrays.hashCode(genes);
 		result = prime * result + ((indirect == null) ? 0 : indirect.hashCode());
 		result = prime * result + Arrays.hashCode(indirectResistances);
+		result = prime * result + ((originalSensitivity == null) ? 0 : originalSensitivity.hashCode());
 		result = prime * result + ((sensitivity == null) ? 0 : sensitivity.hashCode());
+		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(sources);
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
@@ -323,10 +331,14 @@ public class GeneDrugInfo {
 			return false;
 		if (!Arrays.equals(indirectResistances, other.indirectResistances))
 			return false;
-		if (sensitivity == null) {
-			if (other.sensitivity != null)
+		if (originalSensitivity != other.originalSensitivity)
+			return false;
+		if (sensitivity != other.sensitivity)
+			return false;
+		if (showDrugName == null) {
+			if (other.showDrugName != null)
 				return false;
-		} else if (!sensitivity.equals(other.sensitivity))
+		} else if (!showDrugName.equals(other.showDrugName))
 			return false;
 		if (!Arrays.equals(sources, other.sources))
 			return false;
