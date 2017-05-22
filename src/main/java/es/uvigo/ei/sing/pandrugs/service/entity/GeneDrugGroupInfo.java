@@ -161,15 +161,15 @@ public class GeneDrugGroupInfo {
 	}
 
 	private static GeneDrugInfo[] createGeneDrugInfos(GeneDrugGroup gdg) {
-		final Stream<GeneDrugInfo> directGDIs = gdg.getGeneDrugs().stream()
+		final Stream<GeneDrugInfo> directAndIndirectGDIs = gdg.getGeneDrugs().stream()
 			.map(gd -> new GeneDrugInfo(gd, gdg));
 		
-		final Stream<GeneDrugInfo> indirectGDIs = gdg.getGeneDrugs().stream()
+		final Stream<GeneDrugInfo> directAsIndirectGDIs = gdg.getGeneDrugs().stream()
 			.filter(gdg::isDirectAndIndirect)
 			.filter(GeneDrug::isTarget)
 		.map(gd -> new GeneDrugInfo(gd, gdg, true));
 		
-		return Stream.concat(directGDIs, indirectGDIs)
+		return Stream.concat(directAndIndirectGDIs, directAsIndirectGDIs)
 			.sorted((g1, g2) -> Compare.objects(g1, g2)
 				.byReverseOrderOf(GeneDrugInfo::getDScore)
 					.thenByReverseOrderOf(GeneDrugInfo::getGScore)
