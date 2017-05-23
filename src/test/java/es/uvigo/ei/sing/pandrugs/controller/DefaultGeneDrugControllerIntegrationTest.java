@@ -349,6 +349,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 			new GeneDrugQueryParameters(
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
 				GeneDrugQueryParameters.DEFAULT_TARGET_MARKER,
 				DirectIndirectStatus.DIRECT
 			), 
@@ -364,6 +365,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 			new GeneDrugQueryParameters(
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
 				GeneDrugQueryParameters.DEFAULT_TARGET_MARKER,
 				DirectIndirectStatus.INDIRECT
 			), 

@@ -21,6 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import static java.util.Arrays.stream;
 
 public enum CancerType {
 	ADRENAL_GLAND(true),
@@ -61,5 +62,11 @@ public enum CancerType {
 	
 	public boolean canBeQueried() {
 		return this.canBeQueried;
+	}
+	
+	public static CancerType[] getQueryableCancerTypes() {
+		return stream(values())
+			.filter(CancerType::canBeQueried)
+		.toArray(CancerType[]::new);
 	}
 }

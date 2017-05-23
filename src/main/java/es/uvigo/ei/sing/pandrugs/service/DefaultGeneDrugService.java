@@ -81,6 +81,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("drug") Set<String> drugs,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
 	) throws BadRequestException {
@@ -92,7 +93,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else if (isEmpty(drugs)) {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByGenes(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, target, direct
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
 					),
 					genes.stream().sorted().toArray(String[]::new)
 				);
@@ -101,7 +102,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByDrugs(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, target, direct
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
 					),
 					drugs.stream().sorted().toArray(String[]::new)
 				);
@@ -122,6 +123,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		GeneRanking geneRanking,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
 	) throws BadRequestException {
@@ -131,7 +133,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			
 			final List<GeneDrugGroup> geneDrugs = controller.searchByRanking(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, target, direct
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
 				),
 				geneRanking
 			);
@@ -152,6 +154,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("computationId") String computationId,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("target") String target,
 		@QueryParam("direct") String direct
 	) throws BadRequestException {
@@ -160,7 +163,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 			final List<GeneDrugGroup> geneDrugs = controller.searchFromComputationId(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, target, direct
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
 				),
 				computationId
 			);

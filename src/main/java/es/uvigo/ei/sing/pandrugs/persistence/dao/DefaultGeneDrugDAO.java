@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus.activeDrug
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
@@ -265,7 +266,7 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		CriteriaQuery<GeneDrug> query,
 		GeneDrugQueryParameters queryParameters
 	) {
-		if (queryParameters.areAllDrugStatusIncluded()) {
+		if (queryParameters.areAllDrugStatusIncluded() && queryParameters.areAllCancerTypesIncluded()) {
 			return null;
 		} else {
 			final CriteriaBuilder cb = dh.cb();
@@ -277,7 +278,9 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 			final List<Predicate> predicates = new LinkedList<>();
 			
 			if (queryParameters.areCancerDrugStatusIncluded()) {
-				final Predicate isCancer = joinCancers.isNotNull();
+				final Predicate isCancer = queryParameters.areAllCancerTypesIncluded()
+					? joinCancers.isNotNull()
+					: joinCancers.in(asList(queryParameters.getCancerTypes()));
 				
 				if (queryParameters.isAnyCancerDrugStatus()) {
 					predicates.add(isCancer);

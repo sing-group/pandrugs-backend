@@ -21,16 +21,22 @@
  */
 package es.uvigo.ei.sing.pandrugs.query;
 
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType.getQueryableCancerTypes;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Optional;
 import java.util.Set;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 
 public class GeneDrugQueryParameters {
 	public static final DirectIndirectStatus DEFAULT_DIRECT_INDIRECT = DirectIndirectStatus.BOTH;
 	public static final TargetMarkerStatus DEFAULT_TARGET_MARKER = TargetMarkerStatus.BOTH;
+	public static final CancerType[] DEFAULT_CANCER_TYPES = getQueryableCancerTypes();
 	public static final DrugStatus[] DEFAULT_CANCER_DRUG_STATUS =
 		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL_TRIALS };
 	public static final DrugStatus[] DEFAULT_NON_CANCER_DRUG_STATUS =
@@ -38,6 +44,7 @@ public class GeneDrugQueryParameters {
 
 	private final DrugStatus[] cancerDrugStatus;
 	private final DrugStatus[] nonCancerDrugStatus;
+	private final CancerType[] cancerTypes;
 	private final TargetMarkerStatus targetMarker;
 	private final DirectIndirectStatus directIndirect;
 	
@@ -45,6 +52,7 @@ public class GeneDrugQueryParameters {
 		this(
 			DEFAULT_CANCER_DRUG_STATUS,
 			DEFAULT_NON_CANCER_DRUG_STATUS,
+			DEFAULT_CANCER_TYPES,
 			DEFAULT_TARGET_MARKER,
 			DEFAULT_DIRECT_INDIRECT
 		);
@@ -53,6 +61,7 @@ public class GeneDrugQueryParameters {
 	public GeneDrugQueryParameters(
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
 		String targetMarker,
 		String directIndirect
 	) {
@@ -66,6 +75,11 @@ public class GeneDrugQueryParameters {
 				nonCancerDrugStatus,
 				DEFAULT_NON_CANCER_DRUG_STATUS,
 				"Invalid non cancer drug status values"
+			),
+			parseCancerTypes(
+				cancerTypes,
+				DEFAULT_CANCER_TYPES,
+				"Invalid cancer types"
 			),
 			parseEnum(
 				TargetMarkerStatus.class,
@@ -85,6 +99,7 @@ public class GeneDrugQueryParameters {
 	public GeneDrugQueryParameters(
 		DrugStatus[] cancerDrugStatus,
 		DrugStatus[] nonCancerDrugStatus,
+		CancerType[] cancerTypes,
 		TargetMarkerStatus targetMarker,
 		DirectIndirectStatus directIndirect
 	) {
@@ -92,6 +107,8 @@ public class GeneDrugQueryParameters {
 			.orElse(DEFAULT_CANCER_DRUG_STATUS);
 		this.nonCancerDrugStatus = Optional.ofNullable(nonCancerDrugStatus)
 			.orElse(DEFAULT_NON_CANCER_DRUG_STATUS);
+		this.cancerTypes = Optional.ofNullable(cancerTypes)
+			.orElse(DEFAULT_CANCER_TYPES);
 		this.targetMarker = Optional.ofNullable(targetMarker)
 			.orElse(DEFAULT_TARGET_MARKER);
 		this.directIndirect = Optional.ofNullable(directIndirect)
@@ -149,6 +166,10 @@ public class GeneDrugQueryParameters {
 		return targetMarker;
 	}
 	
+	public CancerType[] getCancerTypes() {
+		return cancerTypes;
+	}
+	
 	public boolean isAnyCancerDrugStatus() {
 		return hasAllDrugStatus(this.cancerDrugStatus);
 	}
@@ -174,6 +195,36 @@ public class GeneDrugQueryParameters {
 		}
 	}
 	
+	private final static CancerType[] parseCancerTypes(
+		Set<String> cancerTypes, CancerType[] defaultValues, String parseErrorMessage
+	) {
+		if (cancerTypes == null || cancerTypes.isEmpty()) {
+			return defaultValues;
+		} else {
+			try {
+				final CancerType[] converted = cancerTypes.stream()
+					.map(String::toUpperCase)
+					.map(CancerType::valueOf)
+				.toArray(CancerType[]::new);
+				
+				if (hasInvalidCancerType(converted)) {
+					final String invalidCancerTypes = stream(converted)
+						.filter(ct -> !ct.canBeQueried())
+						.map(CancerType::name)
+					.collect(joining(", "));
+					
+					if (!invalidCancerTypes.isEmpty()) {
+						throw new IllegalArgumentException("Invalid cancer types: " + invalidCancerTypes);
+					}
+				}
+				
+				return converted;
+			} catch (RuntimeException e) {
+				throw new IllegalArgumentException(parseErrorMessage, e);
+			}
+		}
+	}
+	
 	private final static DrugStatus[] parseDrugStatus(
 		Set<String> status, DrugStatus[] defaultValues, String parseErrorMessage
 	) {
@@ -196,5 +247,17 @@ public class GeneDrugQueryParameters {
 				throw new IllegalArgumentException(parseErrorMessage, e);
 			}
 		}
+	}
+	
+	private static boolean hasInvalidCancerType(CancerType[] cancerTypes) {
+		return !stream(cancerTypes)
+			.allMatch(CancerType::canBeQueried);
+	}
+
+	public boolean areAllCancerTypesIncluded() {
+		final Set<CancerType> selected = stream(this.cancerTypes).collect(toSet());
+		final Set<CancerType> queryable = stream(getQueryableCancerTypes()).collect(toSet());
+		
+		return selected.equals(queryable);
 	}
 }

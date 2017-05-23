@@ -36,7 +36,7 @@ import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 public interface GeneDrugService {
 	/**
 	 * Returns a list of genes-drug interactions with the provided gene
-	 * symbol/s or standar drug name/s.
+	 * symbol/s or standard drug name/s.
 	 * 
 	 * @param genes a list of gene symbol names to search in the database.
 	 * The use of this and the {@code drugs} parameter is mutually exclusive,
@@ -62,6 +62,10 @@ public interface GeneDrugService {
 	 * can't be used, at the same time for, cancerDrugStatus and
 	 * nonCancerDrugStatus parameters.<br>
 	 * Default value is: CLINICAL, APPROVED and EXPERIMENTAL.
+	 * @param cancerTypes list of cancer types of interest. Results will be
+	 * filtered using this cancer types, including only drugs related to these
+	 * cancer types. If this parameter is not provided, then all cancer types
+	 * will be included.
 	 * @param target a target field filter. Valid values are: TARGET, MARKER
 	 * and BOTH. Default value is BOTH.
 	 * @param direct a filter for direct/indirect genes. Valid values are: 
@@ -74,6 +78,7 @@ public interface GeneDrugService {
 		Set<String> drugs,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
 		String target,
 		String direct
 	) throws BadRequestException;
@@ -100,6 +105,10 @@ public interface GeneDrugService {
 	 * can't be used, at the same time for, cancerDrugStatus and
 	 * nonCancerDrugStatus parameters.<br>
 	 * Default value is: CLINICAL, APPROVED and EXPERIMENTAL.
+	 * @param cancerTypes list of cancer types of interest. Results will be
+	 * filtered using this cancer types, including only drugs related to these
+	 * cancer types. If this parameter is not provided, then all cancer types
+	 * will be included.
 	 * @param target a target field filter. Valid values are: TARGET, MARKER
 	 * and BOTH. Default value is BOTH.
 	 * @param direct a filter for direct/indirect genes. Valid values are:
@@ -111,6 +120,7 @@ public interface GeneDrugService {
 		String computationId,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
 		String target,
 		String direct
 	) throws BadRequestException;
@@ -140,6 +150,10 @@ public interface GeneDrugService {
 	 * can't be used, at the same time for, cancerDrugStatus and
 	 * nonCancerDrugStatus parameters.<br>
 	 * Default value is: CLINICAL, APPROVED and EXPERIMENTAL.
+	 * @param cancerTypes list of cancer types of interest. Results will be
+	 * filtered using this cancer types, including only drugs related to these
+	 * cancer types. If this parameter is not provided, then all cancer types
+	 * will be included.
 	 * @param target a target field filter. Valid values are: TARGET, MARKER
 	 * and BOTH. Default value is BOTH.
 	 * @param direct a filter for direct/indirect genes. Valid values are: 
@@ -151,6 +165,7 @@ public interface GeneDrugService {
 		GeneRanking genesRanking,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
 		String target,
 		String direct
 	) throws BadRequestException;
