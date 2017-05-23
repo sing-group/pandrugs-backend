@@ -23,33 +23,43 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 
 public enum CancerType {
-	ADRENAL_GLAND,
-	BLADDER,
-	BLOOD,
-	BONE,
-	BONE_MARROW,
-	BRAIN,
-	BREAST,
-	CANCER, // Added
-	CERVIX,
-	CLINICAL_CANCER, // Added
-	COLON,
-	HEAD_AND_NECK,
-	INTESTINE,
-	KIDNEY,
-	LIVER,
-	LUNG,
-	NECK,
-	NERVOUS_SYSTEM,
-	OVARY,
-	PANCREAS,
-	PROSTATE,
-	RECTUM,
-	RETINA,
-	SKIN,
-	SOFT_TISSUE,
-	STOMACH,
-	TESTIS,
-	THYROID,
-	UTERUS;
+	ADRENAL_GLAND(true),
+	BLADDER(true),
+	BLOOD(true),
+	BONE(true),
+	BONE_MARROW(true),
+	BRAIN(true),
+	BREAST(true),
+	CANCER(false), // Added
+	CERVIX(true),
+	CLINICAL_CANCER(false), // Added
+	COLON(true),
+	HEAD_AND_NECK(true),
+	INTESTINE(true),
+	KIDNEY(true),
+	LIVER(true),
+	LUNG(true),
+	NECK(true),
+	NERVOUS_SYSTEM(true),
+	OVARY(true),
+	PANCREAS(true),
+	PROSTATE(true),
+	RECTUM(true),
+	RETINA(true),
+	SKIN(true),
+	SOFT_TISSUE(true),
+	STOMACH(true),
+	TESTIS(true),
+	THYROID(true),
+	UTERUS(true);
+	
+	private boolean canBeQueried;
+	
+	private CancerType(boolean canBeQueried) {
+		this.canBeQueried = canBeQueried;
+	}
+	
+	public boolean canBeQueried() {
+		return this.canBeQueried;
+	}
 }

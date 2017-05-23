@@ -21,10 +21,7 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.Arrays;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,32 +31,32 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 
-@XmlRootElement(name = "cancerNames", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "cancerTypes", namespace = "http://sing.ei.uvigo.es/pandrugs")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CancerTypeNames {
-	@XmlElement(name = "name", nillable = false)
+	@XmlElement(name = "cancer", nillable = false)
 	@NotNull
-	private List<String> names;
+	private CancerTypeInfo[] cancerTypes;
 	
 	public CancerTypeNames() {
-		this.names = Arrays.stream(CancerType.values())
-			.map(CancerType::name)
-		.collect(toList());
+		this.cancerTypes = Arrays.stream(CancerType.values())
+			.map(CancerTypeInfo::new)
+		.toArray(CancerTypeInfo[]::new);
 	}
 
-	public List<String> getNames() {
-		return names;
+	public CancerTypeInfo[] getCancerTypes() {
+		return cancerTypes;
 	}
 
-	public void setNames(List<String> names) {
-		this.names = names;
+	public void setCancerTypes(CancerTypeInfo[] cancerTypes) {
+		this.cancerTypes = cancerTypes;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((names == null) ? 0 : names.hashCode());
+		result = prime * result + Arrays.hashCode(cancerTypes);
 		return result;
 	}
 
@@ -72,11 +69,9 @@ public class CancerTypeNames {
 		if (getClass() != obj.getClass())
 			return false;
 		CancerTypeNames other = (CancerTypeNames) obj;
-		if (names == null) {
-			if (other.names != null)
-				return false;
-		} else if (!names.equals(other.names))
+		if (!Arrays.equals(cancerTypes, other.cancerTypes))
 			return false;
 		return true;
 	}
+
 }
