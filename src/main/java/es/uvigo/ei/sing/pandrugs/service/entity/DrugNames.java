@@ -56,7 +56,7 @@ public class DrugNames {
 		this.standardName = drug.getStandardName();
 		this.showName = drug.getShowName();
 		
-		this.sourceNames = drug.getCuratedDrugSources().stream()
+		this.sourceNames = drug.getDrugSources().stream()
 			.map(DrugSourceName::new)
 		.toArray(DrugSourceName[]::new);
 	}
@@ -64,7 +64,6 @@ public class DrugNames {
 	public String getStandardName() {
 		return standardName;
 	}
-
 
 	public String getShowName() {
 		return showName;
