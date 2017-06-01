@@ -96,6 +96,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <miredot.output.directory>${project.build.directory}/miredot</miredot.output.directory>
 
 		<!-- Plugins -->
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
@@ -107,6 +108,7 @@
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		<maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
@@ -406,6 +408,7 @@
 				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<warName>pandrugs-backend</warName>
+          <webappDirectory>${war.webapp.directory}</webappDirectory>
 					<webResources>
 						<webResource>
 							<directory>${project.build.directory}/miredot</directory>
@@ -593,6 +596,7 @@
 						</httpStatusCodes>
 					</restModel>
 					<output>
+            <location>${miredot.output.directory}</location>
 						<html>
 							<baseUrl>http://www.pandrugs.org/pandrugs-backend</baseUrl>
 							<sections>
@@ -603,6 +607,27 @@
 					</output>
 				</configuration>
 			</plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>rename-pandrugs-documentation</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            
+            <configuration>
+              <target>
+                <move file="${miredot.output.directory}/MireDot.docx" tofile="${miredot.output.directory}/PanDrugs.docx"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
