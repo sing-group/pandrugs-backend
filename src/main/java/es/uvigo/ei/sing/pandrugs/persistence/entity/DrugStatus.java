@@ -26,7 +26,7 @@ import java.util.Arrays;
 public enum DrugStatus {
 	EXPERIMENTAL(true, "in pre-clinical studies", "Experimental"),
 	APPROVED(true, "approved by FDA", "Approved"),
-	CLINICAL_TRIALS(true, "in Clinical Trials", "Cancer Clinical Trials"),
+	CLINICAL_TRIALS(true, "in Clinical Trials", "Clinical Trials"),
 	WITHDRAWN(false, null, "Withdrawn"),
 	UNDEFINED(false, null, "Undefined");
 	
