@@ -30,13 +30,13 @@
 		<developer>
 			<name>Miguel Reboiro-Jato</name>
 			<organization>SING Group - University of Vigo</organization>
-			<organizationUrl>http://sing.ei.uvigo.es/</organizationUrl>
+			<organizationUrl>http://www.sing-group.org/</organizationUrl>
 			<email>mrjato@uvigo.es</email>
 		</developer>
 		<developer>
 			<name>Daniel Glez-Peña</name>
 			<organization>SING Group - University of Vigo</organization>
-			<organizationUrl>http://sing.ei.uvigo.es/</organizationUrl>
+			<organizationUrl>http://www.sing-group.org/</organizationUrl>
 			<email>dgpena@uvigo.es</email>
 		</developer>
 	</developers>
