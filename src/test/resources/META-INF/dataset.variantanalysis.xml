@@ -46,7 +46,7 @@
 			parameter_consequence_filter_active = "true"
 			parameter_gene_frequency_threshold = "0.0"
 
-			status_task_name="Finished"
+			status_task_name="Annotation Process Finished"
 			status_task_progress="1.0"
 			status_overall_progress="1.0"
 
@@ -63,7 +63,7 @@
 			parameter_consequence_filter_active = "true"
 			parameter_gene_frequency_threshold = "0.0"
 
-			status_task_name="Finished"
+			status_task_name="Annotation Process Finished"
 			status_task_progress="1.0"
 			status_overall_progress="1.0"
 

@@ -149,7 +149,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		expectLastCall().once();
 		status.setStatus("Computing Variant Scores", 0.0, 0.5);
 		expectLastCall().once();
-		status.setStatus("Finished", 0.0, 1.0);
+		status.setStatus("Annotation Process Finished", 0.0, 1.0);
 		expectLastCall().once();
 
 		// easy mock replay

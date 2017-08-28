@@ -111,7 +111,7 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 					if (exception == null) {
 						LOG.info("Finished VSCORE computation. Path: " + parameters.getResultsBasePath());
 						
-						notifications.submit(() -> computation.getStatus().setStatus("Finished", 0.0, 1.0));
+						notifications.submit(() -> computation.getStatus().setStatus("Annotation Process Finished", 0.0, 1.0));
 					} else if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException) {
 						LOG.warn("Interrupted computation in path " + parameters.getResultsBasePath());
 						

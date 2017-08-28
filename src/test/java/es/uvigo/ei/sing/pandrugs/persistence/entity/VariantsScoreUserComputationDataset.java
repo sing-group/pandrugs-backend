@@ -34,9 +34,10 @@ public class VariantsScoreUserComputationDataset {
 	public static void copyComputationFilesToDir(String systemTmpDir) throws IOException {
 		for (VariantsScoreUserComputation computation : VariantsScoreUserComputationDataset.computations()) {
 			File computationDir = new File(
-					systemTmpDir +
-							File.separator +
-							computation.getComputationDetails().getParameters().getResultsBasePath().toString());
+				systemTmpDir +
+					File.separator +
+					computation.getComputationDetails().getParameters().getResultsBasePath().toString()
+			);
 
 			if (!computationDir.exists()) {
 				computationDir.mkdir();
@@ -57,64 +58,70 @@ public class VariantsScoreUserComputationDataset {
 		}
 	}
 
-	private static void copyComputationFile(String fileName, File computationDir, VariantsScoreUserComputation
-			computation)
-			throws IOException {
+	private static void copyComputationFile(String fileName, File computationDir, VariantsScoreUserComputation computation)
+		throws IOException {
 		copyInputStreamToFile(
-				openComputationFileStream(
-						"/META-INF/dataset.variantanalysis.xml.files/" +
-								computation.getComputationDetails().getParameters().getResultsBasePath().toString() + "/" +
-								fileName
-				),
-				new	File(computationDir.getAbsolutePath() + File.separator + fileName)
+			openComputationFileStream(
+				"/META-INF/dataset.variantanalysis.xml.files/" +
+					computation.getComputationDetails().getParameters().getResultsBasePath().toString() + "/" +
+					fileName
+			),
+			new File(computationDir.getAbsolutePath() + File.separator + fileName)
 		);
 	}
 
 	private static InputStream openComputationFileStream(String name) {
 		return VariantsScoreUserComputationDataset.class.getResourceAsStream(name);
 	}
+
 	public final static VariantsScoreUserComputation[] computations() {
 		return new VariantsScoreUserComputation[] {
-				new VariantsScoreUserComputation(
-						"1", UserDataset.users()[0],
-						new VariantsScoreComputationDetails(
-								new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-1"),
-								new VariantsScoreComputationStatus(
-										"Computing Variant Scores",
-										0.0,
-										0.5),
-								new VariantsScoreComputationResults(
-										new VariantsEffectPredictionResults(Paths.get("vep.txt")), null, null)
-						)
-				),
-				new VariantsScoreUserComputation(
-						"2", UserDataset.users()[1],
-						new VariantsScoreComputationDetails(
-								new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-2"),
-								new VariantsScoreComputationStatus(
-										"Finished",
-										1.0,
-										1.0),
-								new VariantsScoreComputationResults(
-										new VariantsEffectPredictionResults(Paths.get("vep.txt")),
-										Paths.get("vep_data.csv"),
-										Paths.get("genes_affected.csv"))
-						)
-				),
-				new VariantsScoreUserComputation(
-						"3", UserDataset.guestUser(),
-						new VariantsScoreComputationDetails(
-								new VariantsScoreComputationParameters("inputVCF.vcf", "guest-3"),
-								new VariantsScoreComputationStatus(
-										"Finished",
-										1.0,
-										1.0),
-								new VariantsScoreComputationResults(
-										new VariantsEffectPredictionResults(Paths.get("vep.txt")),
-										Paths.get("vep_data.csv"),
-										Paths.get("genes_affected.csv"))
-						)
+			new VariantsScoreUserComputation(
+				"1", UserDataset.users()[0],
+				new VariantsScoreComputationDetails(
+					new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-1"),
+					new VariantsScoreComputationStatus(
+						"Computing Variant Scores",
+						0.0,
+						0.5
+					),
+					new VariantsScoreComputationResults(
+						new VariantsEffectPredictionResults(Paths.get("vep.txt")), null, null
+					)
 				)
-			};
+			),
+			new VariantsScoreUserComputation(
+				"2", UserDataset.users()[1],
+				new VariantsScoreComputationDetails(
+					new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-2"),
+					new VariantsScoreComputationStatus(
+						"Annotation Process Finished",
+						1.0,
+						1.0
+					),
+					new VariantsScoreComputationResults(
+						new VariantsEffectPredictionResults(Paths.get("vep.txt")),
+						Paths.get("vep_data.csv"),
+						Paths.get("genes_affected.csv")
+					)
+				)
+			),
+			new VariantsScoreUserComputation(
+				"3", UserDataset.guestUser(),
+				new VariantsScoreComputationDetails(
+					new VariantsScoreComputationParameters("inputVCF.vcf", "guest-3"),
+					new VariantsScoreComputationStatus(
+						"Annotation Process Finished",
+						1.0,
+						1.0
+					),
+					new VariantsScoreComputationResults(
+						new VariantsEffectPredictionResults(Paths.get("vep.txt")),
+						Paths.get("vep_data.csv"),
+						Paths.get("genes_affected.csv")
+					)
+				)
+			)
+		};
 	}
 }

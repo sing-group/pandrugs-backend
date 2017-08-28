@@ -145,7 +145,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		assertFalse(controller.getComputationStatus("2").isFailed());
 		assertThat(controller.getComputationStatus("2").getOverallProgress(), is(1.0));
 		assertThat(controller.getComputationStatus("2").getTaskProgress(), is(1.0));
-		assertThat(controller.getComputationStatus("2").getTaskName(), is("Finished"));
+		assertThat(controller.getComputationStatus("2").getTaskName(), is("Annotation Process Finished"));
 	}
 	
 	@Test
