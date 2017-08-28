@@ -101,7 +101,7 @@
 		<!-- Plugins -->
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
 		<maven-compiler-plugin.version>3.5</maven-compiler-plugin.version>
-		<license-maven-plugin.version>1.8</license-maven-plugin.version>
+		<license-maven-plugin.version>1.13</license-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
 		<maven-surefire-plugins.version>2.19.1</maven-surefire-plugins.version>
 		<miredot-plugin.version>2.0.3</miredot-plugin.version>
@@ -428,11 +428,20 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>${license-maven-plugin.version}</version>
-			</plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>first</id>
+            <goals>
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
