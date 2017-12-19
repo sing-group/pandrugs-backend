@@ -79,6 +79,20 @@ public interface VariantsAnalysisService {
 	) throws ForbiddenException, NotAuthorizedException;
 
 	/**
+	 * Obtains the variant score computation details for each variant
+	 *
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 *
+	 * @param login login of the user.
+	 * @param computationId the computation id to query.
+	 * @return the variant score computation details of the computation.
+	 */
+	public Response downloadVariantsScoreComputationDetails(
+			UserLogin login,
+			String computationId
+	);
+
+	/**
 	 * Deletes a computation.
 	 *
 	 * @see VariantsAnalysisService#startVariantsScoreUserComputation

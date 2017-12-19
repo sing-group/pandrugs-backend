@@ -38,6 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -139,7 +140,6 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 	public void testGetUnexistentComputationStatusForPresentUser() {
 		final User accesingUser = users()[0];
 
-		//computation id=2 is not owned by presentUser2()
 		testGetComputationStatus("99", accesingUser, accesingUser);
 	}
 
@@ -157,6 +157,20 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User targetUser = presentUser2();
 
 		testGetComputationStatus("1", accesingUser, targetUser);
+	}
+
+	@Test
+	public void testDownloadVariantScoreComputationDetailsForPresentUser() {
+		final User accesingUser = users()[0];
+
+		testDownloadVariantsScoreComputationDetails("2", accesingUser, accesingUser);
+	}
+
+	@Test(expected = NotFoundException.class)
+	public void testDownloadUnexistentVariantScoreComputationDetailsForPresentUser() {
+		final User accesingUser = users()[0];
+
+		testDownloadVariantsScoreComputationDetails("99", accesingUser, accesingUser);
 	}
 
 	@Test
@@ -254,5 +268,14 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		
 
 		return capture.getValue().substring(1);
+	}
+
+	private void testDownloadVariantsScoreComputationDetails(String computationId, User accesingUser, User targetUser) {
+		final SecurityContextStub security = new SecurityContextStub(users(), accesingUser.getLogin());
+
+		final Response response = service.downloadVariantsScoreComputationDetails(new UserLogin(targetUser.getLogin
+				()), computationId);
+
+		assertThat(response.getEntity(), instanceOf(File.class));
 	}
 }

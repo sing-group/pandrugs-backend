@@ -21,12 +21,15 @@
  */
 package es.uvigo.ei.sing.pandrugs.service;
 
+import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestException;
 import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createForbiddentException;
 import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createNotFoundException;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -145,6 +148,38 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
+	}
+
+	@GET
+	@Path("files/{login}/{computationId}/vscorefile")
+	@PermitAll
+	@ReturnType(clazz = OutputStream.class)
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Override
+	public Response downloadVariantsScoreComputationDetails(
+			@PathParam("login") UserLogin login,
+			@PathParam("computationId") String computationId
+	) {
+		final String userLogin = login.getLogin();
+
+		try {
+			controller.getUserOfComputation(computationId);
+		} catch (IllegalArgumentException e) {
+			throw createNotFoundException("Computation id %s not found", computationId);
+		}
+
+		if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
+			throw createForbiddentException("You do not have a computation with id %s", computationId);
+		}
+
+		if (!controller.getComputationStatus(computationId).isFinished()) {
+			throw createBadRequestException("The computation has not finished yet");
+		}
+
+		return Response.ok(
+				controller.getVariantsScoreFile(computationId)
+		).header("Content-Disposition", "attachment; filename=\"" + computationId + "-vscore.tsv\"" )
+				.build();
 	}
 
 	@DELETE

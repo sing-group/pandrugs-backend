@@ -21,10 +21,12 @@
  */
 package es.uvigo.ei.sing.pandrugs.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
@@ -35,6 +37,8 @@ public interface VariantsAnalysisController {
 	public UserInfo getUserOfComputation(String computationId);
 
 	public GeneRanking getGeneRankingForComputation(String computationId);
+
+	public File getVariantsScoreFile(String computationId);
 
 	public String startVariantsScopeUserComputation(
 			UserLogin userLogin,
@@ -47,4 +51,6 @@ public interface VariantsAnalysisController {
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
 
 	void deleteComputation(String computationId);
+
+
 }

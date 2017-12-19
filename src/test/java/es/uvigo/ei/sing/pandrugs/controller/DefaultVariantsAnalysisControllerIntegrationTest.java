@@ -28,6 +28,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -188,6 +189,18 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	@Test(expected = IllegalStateException.class)
 	public void testGetAffectedGenesRankingOfNonCompletedComputation() {
 		controller.getGeneRankingForComputation("1").getGeneRank();
+	}
+
+	@Test
+	public void testGetVariantsScoreFile() throws FileNotFoundException {
+		final File variantsScoreFile = controller.getVariantsScoreFile("2");
+
+		assertThat(variantsScoreFile.exists(), is(true));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testGetVariantsScoreFileOfNonCompletedComputation() throws FileNotFoundException {
+		final File variantsScoreFile = controller.getVariantsScoreFile("1");
 	}
 
 	private void waitWhileOrFail(BooleanSupplier condition, long timeout) throws InterruptedException {

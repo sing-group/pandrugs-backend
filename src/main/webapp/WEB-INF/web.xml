@@ -117,6 +117,7 @@
 			<url-pattern>/api/gene/*</url-pattern>
 			<url-pattern>/api/registration/*</url-pattern>
 			<url-pattern>/api/session/*</url-pattern>
+			<url-pattern>/api/variantsanalysis/files/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 			<http-method>PUT</http-method>

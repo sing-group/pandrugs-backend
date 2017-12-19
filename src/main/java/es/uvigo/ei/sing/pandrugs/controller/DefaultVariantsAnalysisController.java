@@ -298,6 +298,18 @@ public class DefaultVariantsAnalysisController implements
 				computation.getComputationDetails().getResults().getAffectedGenesPath());
 	}
 
+	@Override
+	public File getVariantsScoreFile(String computationId) {
+		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
+
+		if (!computation.getComputationDetails().getStatus().isFinished()) {
+			throw new IllegalStateException("Computation has not finished yet");
+		}
+
+		return this.obtainComputationFile(
+				computation, computation.getComputationDetails().getResults().getVscorePath());
+	}
+
 	private File createComputationDataDirectory(User user) {
 		File computationDir = new File(fileSystemConfiguration.getUserDataBaseDirectory() +
 				File.separator + user.getLogin() +
