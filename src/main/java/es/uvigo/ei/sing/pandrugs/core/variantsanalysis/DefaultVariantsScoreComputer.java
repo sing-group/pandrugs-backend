@@ -146,7 +146,14 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 		}
 		
 		public void submit(Runnable notification) {
-			this.submittedNotifications.add(notificationExecutorService.submit(notification));
+			this.submittedNotifications.add(notificationExecutorService.submit(() -> {
+				try {
+					notification.run();
+				} catch(Exception e) {
+					LOG.error("Exception during notification processing: "+e.getMessage());
+					e.printStackTrace();
+				}
+			}));
 		}
 	}
 	
