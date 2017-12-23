@@ -45,6 +45,9 @@ public interface VariantsAnalysisService {
 	 * @param login login of the user.
 	 * @param vcfFile variants in VCF format to analyze.
 	 * @param computationName the name for the computation.
+	 * @param resultsURLTemplate a URL where the results can be seen (normally in a front-end application). This will
+	 *                              be used to send an email to the user, when results are available. The template
+	 *                              should contain a "%s" which will be replaced by the computationID. It can be null.
 	 * @param security security context object. Should be provided by the container.
 	 * @param currentUri the current URI information
 	 * @return the computation id as an integer value
@@ -55,6 +58,7 @@ public interface VariantsAnalysisService {
 		UserLogin login,
 		InputStream vcfFile,
 		String computationName,
+		String resultsURLTemplate,
 		SecurityContext security,
 		UriInfo currentUri
 	) throws ForbiddenException, NotAuthorizedException;

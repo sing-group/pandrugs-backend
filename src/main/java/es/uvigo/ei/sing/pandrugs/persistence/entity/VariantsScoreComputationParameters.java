@@ -37,6 +37,9 @@ public class VariantsScoreComputationParameters {
 	@Column(name="parameter_base_path")
 	private String basePath;
 
+	@Column(name="results_url_template")
+	private String resultsURLTemplate;
+
 	@Column(name="parameter_consequence_filter_active")
 	private boolean consequenceFilterActive = true;
 
@@ -51,6 +54,12 @@ public class VariantsScoreComputationParameters {
 	public VariantsScoreComputationParameters(String vcfFile, String basePath) {
 		this.vcfFile = vcfFile;
 		this.basePath = basePath;
+	}
+
+	public VariantsScoreComputationParameters(String vcfFile, String basePath, String resultsURLTemplate) {
+		this.vcfFile = vcfFile;
+		this.basePath = basePath;
+		this.resultsURLTemplate = resultsURLTemplate;
 	}
 
 	public Path getVcfFile() {
@@ -68,6 +77,14 @@ public class VariantsScoreComputationParameters {
 	
 	public Path getResultsBasePath() {
 		return Paths.get(this.basePath);
+	}
+
+	public String getResultsURLTemplate() {
+		return resultsURLTemplate;
+	}
+
+	public void setResultsURLTemplate(String resultsURLTemplate) {
+		this.resultsURLTemplate = resultsURLTemplate;
 	}
 
 	public boolean isConsequenceFilterActive() {

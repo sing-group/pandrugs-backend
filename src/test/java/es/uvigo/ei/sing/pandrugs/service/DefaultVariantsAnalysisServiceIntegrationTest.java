@@ -253,7 +253,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		replay(currentUri);
 		replay(uriBuilder);
 		final Response response = service.startVariantsScoreUserComputation(
-			new UserLogin(login), emptyInputStream(), UUID.randomUUID().toString(), security, currentUri
+			new UserLogin(login), emptyInputStream(), UUID.randomUUID().toString(), null, security, currentUri
 		);
 		
 		assertThat(response, hasCreatedStatus());

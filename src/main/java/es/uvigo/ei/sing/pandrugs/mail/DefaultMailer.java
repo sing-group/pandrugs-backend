@@ -32,6 +32,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import es.uvigo.ei.sing.pandrugs.Configuration;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 
 @Singleton
 public class DefaultMailer implements Mailer {
@@ -69,6 +70,26 @@ public class DefaultMailer implements Mailer {
 	@Override
 	public void sendConfirmSingUp(String to, String username, String uuid, String urlTemplate) throws MailerException {
 		sendConfirmSingUpWithURL(to, username, String.format(urlTemplate, uuid));
+	}
+
+	@Override
+	public void sendComputationFinished(VariantsScoreUserComputation userComputation) throws MailerException {
+		final String url = String.format(userComputation.getComputationDetails().getParameters()
+				.getResultsURLTemplate(), userComputation.getId());
+		final String mailBody = String.format("Hi %s," +
+						"<p>Your computation \""+userComputation.getName()+"\" has finished. You can see the results " +
+						"in " +
+						"<a href=\"%s\">%s</a>.<p/>" +
+						"<p>The PanDrugs Team</p>",
+				userComputation.getUser().getLogin(), url, url
+		);
+		System.out.println("sending computation finished mail to: "+userComputation.getUser()
+				.getEmail()+"\nbody:\n"+mailBody);
+		this.send(this.configuration.getEmailFrom(),
+				userComputation.getUser().getEmail(), "PanDrugs genomic variants computation finished",
+				mailBody,
+				"text/html"
+		);
 	}
 
 	private void sendConfirmSingUpWithURL(String to, String username, String url) {

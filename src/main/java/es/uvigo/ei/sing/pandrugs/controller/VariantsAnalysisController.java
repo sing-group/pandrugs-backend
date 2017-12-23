@@ -46,11 +46,13 @@ public interface VariantsAnalysisController {
 			String computationName
 	) throws IOException;
 
+	public String startVariantsScopeUserComputation(UserLogin login, InputStream vcfFile, String computationName, String
+			resultsURLTemplate) throws IOException;
+
 	public ComputationMetadata getComputationStatus(String computationId);
 
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
 
+
 	void deleteComputation(String computationId);
-
-
 }

@@ -53,6 +53,7 @@ import org.springframework.stereotype.Controller;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugs.mail.Mailer;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.VariantsScoreUserComputationDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
@@ -83,6 +84,9 @@ public class DefaultVariantsAnalysisController implements
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
 
 	@Inject
+	private Mailer mailer;
+
+	@Inject
 	private UserDAO userDAO;
 
 	@Inject
@@ -93,12 +97,11 @@ public class DefaultVariantsAnalysisController implements
 	private FileSystemConfiguration fileSystemConfiguration;
 	
 
-
 	@Override
 	public String startVariantsScopeUserComputation(
 			UserLogin userLogin,
 			InputStream vcfFileInputStream,
-			String computationName)
+			String computationName, String resultsURLTemplate)
 			throws IOException {
 
 		User user = userDAO.get(userLogin.getLogin());
@@ -109,10 +112,20 @@ public class DefaultVariantsAnalysisController implements
 		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
 		parameters.setResultsBasePath(dataDir.toPath().getFileName());
 		parameters.setVcfFile(Paths.get(INPUT_VCF_NAME));
+		parameters.setResultsURLTemplate(resultsURLTemplate);
 
 		VariantsScoreUserComputation computation = this.startVariantsScoreComputation(user, computationName,
 				parameters);
 		return computation.getId();
+	}
+
+	@Override
+	public String startVariantsScopeUserComputation(
+			UserLogin userLogin,
+			InputStream vcfFileInputStream,
+			String computationName)
+			throws IOException {
+		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, computationName, null);
 	}
 
 	@Override
@@ -369,6 +382,19 @@ public class DefaultVariantsAnalysisController implements
 		}
 
 		variantsScoreUserComputationDAO.update(userComputation);
+
+		// send confirmation mail
+		if (computation.getStatus().isFinished()) {
+			try {
+				if (!userComputation.getUser().getLogin().equals("guest")) {
+					final User user = userComputation.getUser();
+					mailer.sendComputationFinished(userComputation);
+				}
+			} catch (Exception e) {
+				LOG.error("Error sending mail " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private Set<Integer> resumedComputations = new HashSet<>();

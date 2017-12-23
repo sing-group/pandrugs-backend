@@ -81,6 +81,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 		@PathParam("login") UserLogin login,
 		InputStream vcfFile,
 		@QueryParam("name") String computationName,
+		@QueryParam("resultsurltemplate") String resultsURLTemplate,
 		@Context SecurityContext security,
 		@Context UriInfo currentUri
 	) throws ForbiddenException, NotAuthorizedException {
@@ -93,7 +94,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
 				
 				final String computationId = controller.startVariantsScopeUserComputation(login, vcfFile,
-						computationName);
+						computationName, resultsURLTemplate);
 				
 				return Response.created(
 					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()

@@ -21,6 +21,8 @@
  */
 package es.uvigo.ei.sing.pandrugs.mail;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
+
 public interface Mailer {
 	public abstract void sendConfirmSingUp(
 		String to, String username, String uuid
@@ -29,4 +31,8 @@ public interface Mailer {
 	public abstract void sendConfirmSingUp(
 			String to, String username, String uuid, String urlTemplate
 	) throws MailerException;
+
+	public abstract void sendComputationFinished(VariantsScoreUserComputation userComputation) throws
+			MailerException;
+
 }

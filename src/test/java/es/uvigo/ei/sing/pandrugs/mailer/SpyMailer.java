@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import es.uvigo.ei.sing.pandrugs.mail.Mailer;
 import es.uvigo.ei.sing.pandrugs.mail.MailerException;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 
 public class SpyMailer implements Mailer {
 	private final Map<String, AtomicInteger> counts;
@@ -46,5 +47,11 @@ public class SpyMailer implements Mailer {
 	public void sendConfirmSingUp(String to, String username, String uuid, String urlTemplate) throws MailerException {
 		this.counts.putIfAbsent("sendConfirmSingUp", new AtomicInteger(0));
 		this.counts.get("sendConfirmSingUp").incrementAndGet();
+	}
+
+	@Override
+	public void sendComputationFinished(VariantsScoreUserComputation userComputation) throws MailerException {
+		this.counts.putIfAbsent("sendComputationFinished", new AtomicInteger(0));
+		this.counts.get("sendComputationFinished").incrementAndGet();
 	}
 }
