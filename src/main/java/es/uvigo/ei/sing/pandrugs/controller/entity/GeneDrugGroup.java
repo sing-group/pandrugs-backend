@@ -170,12 +170,11 @@ public class GeneDrugGroup {
 		return this.resistanceCausedBy.containsKey(geneSymbol);
 	}
 	
-	public boolean hasIndirectResistances(GeneDrug geneDrug, boolean forceIndirect) {
+	public boolean hasIndirectResistances(GeneDrug geneDrug) {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		return stream(this.getQueryGeneSymbolsForGeneDrug(geneDrug, forceIndirect))
-			.anyMatch(this.resistanceCausedBy::containsKey);
+		return this.resistanceCausedBy.containsKey(geneDrug.getGeneSymbol());
 	}
 	
 	public String[] getQueryGeneSymbols() {
@@ -358,18 +357,14 @@ public class GeneDrugGroup {
 			.anyMatch(GeneDrug::isTarget);
 	}
 	
-	public boolean isResistance(GeneDrug geneDrug, boolean forceIndirect) {
+	public boolean isResistance(GeneDrug geneDrug) {
 		return geneDrug.isResistance()
-			|| (geneDrug.isTarget() && this.hasIndirectResistances(geneDrug, forceIndirect));
+			|| (geneDrug.isTarget() && this.hasIndirectResistances(geneDrug));
 	}
 	
 	public boolean hasResistance() {
 		for (GeneDrug geneDrug : this.getGeneDrugs()) {
-			if (this.isResistance(geneDrug, false)) {
-				return true;
-			}
-			
-			if (this.isDirectAndIndirect(geneDrug) && this.isResistance(geneDrug, true)) {
+			if (this.isResistance(geneDrug)) {
 				return true;
 			}
 		}

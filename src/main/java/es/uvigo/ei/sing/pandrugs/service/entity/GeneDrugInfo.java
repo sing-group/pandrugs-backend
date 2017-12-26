@@ -116,9 +116,9 @@ public class GeneDrugInfo {
 		.orElse(null);
 		
 		this.originalSensitivity = geneDrug.getResistance();
-		this.sensitivity = group.isResistance(geneDrug, forceIndirect) ? RESISTANCE : this.originalSensitivity;
+		this.sensitivity = group.isResistance(geneDrug) ? RESISTANCE : this.originalSensitivity;
 
-		if (group.isResistance(geneDrug, forceIndirect) && group.hasIndirectResistances(geneDrug, forceIndirect)) {
+		if (group.isResistance(geneDrug) && group.hasIndirectResistances(geneDrug)) {
 			this.indirectResistances = stream(queryGenes)
 				.map(Gene::getGeneSymbol)
 				.filter(group::hasIndirectResistance)

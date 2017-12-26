@@ -24,7 +24,7 @@
 	<name>PanDrugs Backend</name>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>war</packaging>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 
 	<developers>
 		<developer>
