@@ -27,7 +27,6 @@ import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.newCapture;
@@ -327,7 +326,6 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		sb.append("chr1	152277111	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
 		sb.append("chr1	152283563	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
 		sb.append("chr1	152944374	.	C	T	255.0	PASS	AC=1;AF=0.500;AN=2;DB;DP=220;MQ0=0\n");
-		sb.append("\n");
 
 		return sb.toString();
 
