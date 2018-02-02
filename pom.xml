@@ -24,7 +24,7 @@
 	<name>PanDrugs Backend</name>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>war</packaging>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 
 	<developers>
 		<developer>
@@ -69,6 +69,19 @@
 		</license>
 	</licenses>
 
+	<distributionManagement>
+		<repository>
+			<id>sing-maven-releases</id>
+			<name>SING Maven Releases</name>
+			<url>http://maven.sing-group.org/repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>sing-maven-releases</id>
+			<name>SING Maven Snapshots</name>
+			<url>http://maven.sing-group.org/repository/maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>miredot</id>
@@ -83,28 +96,28 @@
 			<name>Miredot Releases</name>
 			<url>http://nexus.qmino.com/content/repositories/miredot</url>
 		</repository>
-    <repository>
-      <id>sing-maven-releases</id>
-      <name>SING Maven Releases</name>
-      <url>https://maven.sing-group.org/repository/maven-releases/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>sing-maven-snapshots</id>
-      <name>SING Maven Snapshots</name>
-      <url>https://maven.sing-group.org/repository/maven-snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
+		<repository>
+			<id>sing-maven-releases</id>
+			<name>SING Maven Releases</name>
+			<url>https://maven.sing-group.org/repository/maven-releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>sing-maven-snapshots</id>
+			<name>SING Maven Snapshots</name>
+			<url>https://maven.sing-group.org/repository/maven-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<properties>
@@ -113,7 +126,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <miredot.output.directory>${project.build.directory}/miredot</miredot.output.directory>
+		<miredot.output.directory>${project.build.directory}/miredot</miredot.output.directory>
 
 		<!-- Plugins -->
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
@@ -125,7 +138,8 @@
 		<tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
 		<maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
-    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
@@ -408,11 +422,11 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-jxr-plugin</artifactId>
-	            <version>${maven-jxr-plugin.version}</version>
-	        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>${maven-jxr-plugin.version}</version>
+			</plugin>
 		</plugins>
 	</reporting>
 
@@ -425,7 +439,7 @@
 				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<warName>pandrugs-backend</warName>
-          <webappDirectory>${war.webapp.directory}</webappDirectory>
+					<webappDirectory>${war.webapp.directory}</webappDirectory>
 					<webResources>
 						<webResource>
 							<directory>${project.build.directory}/miredot</directory>
@@ -445,20 +459,20 @@
 				</configuration>
 			</plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>${license-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>first</id>
-            <goals>
-              <goal>update-file-header</goal>
-            </goals>
-            <phase>process-sources</phase>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>${license-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -549,7 +563,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -562,6 +576,28 @@
 						</tag>
 					</tags>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -622,7 +658,7 @@
 						</httpStatusCodes>
 					</restModel>
 					<output>
-            <location>${miredot.output.directory}</location>
+						<location>${miredot.output.directory}</location>
 						<html>
 							<baseUrl>http://www.pandrugs.org/pandrugs-backend</baseUrl>
 							<sections>
@@ -634,26 +670,27 @@
 				</configuration>
 			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven-antrun-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>rename-pandrugs-documentation</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            
-            <configuration>
-              <target>
-                <move file="${miredot.output.directory}/MireDot.docx" tofile="${miredot.output.directory}/PanDrugs.docx"/>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>${maven-antrun-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>rename-pandrugs-documentation</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+
+						<configuration>
+							<target>
+								<move file="${miredot.output.directory}/MireDot.docx"
+									tofile="${miredot.output.directory}/PanDrugs.docx" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
@@ -688,7 +725,7 @@
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
