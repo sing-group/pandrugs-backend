@@ -34,9 +34,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -132,10 +134,13 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 
 		controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
+				new UserLogin(aUser.getLogin()), new ByteArrayInputStream(anVCFFileContent().getBytes()), UUID
+						.randomUUID()
+						.toString());
 
 		assertEquals(aUser, capturedArgument.getValue().getUser());
 		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
+		assertEquals((Integer)4, capturedParameters.getValue().getNumberOfInputVariants());
 	}
 	
 	@Test
@@ -293,7 +298,10 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		this.replayAll();
 
-		controller.getComputationsForUser(new UserLogin(aUser.getLogin()));
+		Map<String, ComputationMetadata> computations =  controller.getComputationsForUser(new UserLogin(aUser.getLogin
+				()));
+
+		assertThat(computations.values().iterator().next().getVariantsInInput(), is(4));
 	}
 
 	private String anAffectedGenesFileContent() {
@@ -382,6 +390,8 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		aComputation.getComputationDetails().getParameters().setResultsBasePath(Paths.get(basePath));
 
 		aComputation.getComputationDetails().getParameters().setVcfFile(Paths.get(vcfFileName));
+
+		aComputation.getComputationDetails().getParameters().setNumberOfInputVariants(4);
 
 		VariantsScoreComputationResults results = new VariantsScoreComputationResults(aVEPResults,
 			Paths.get("vscore.txt"),

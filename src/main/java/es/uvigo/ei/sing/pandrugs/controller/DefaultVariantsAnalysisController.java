@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -65,11 +67,11 @@ import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 import es.uvigo.ei.sing.vcfparser.vcf.DefaultVCFMetaDataBuilder;
-import es.uvigo.ei.sing.vcfparser.vcf.DefaultVCFVariantDataBuilder;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFMetaData;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFParseException;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFReader;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFVariant;
+import es.uvigo.ei.sing.vcfparser.vcf.VCFVariantDataBuilder;
 
 @Controller
 public class DefaultVariantsAnalysisController implements
@@ -78,7 +80,7 @@ public class DefaultVariantsAnalysisController implements
 	public static final String INPUT_VCF_NAME = "input.vcf";
 
 	private Logger LOG = LoggerFactory.getLogger(DefaultVariantsAnalysisController.class);
-    
+
 
 	@Inject
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
@@ -90,12 +92,12 @@ public class DefaultVariantsAnalysisController implements
 	private UserDAO userDAO;
 
 	@Inject
-	private VariantsScoreComputer 
-		variantsScoreComputer;
-	
+	private VariantsScoreComputer
+			variantsScoreComputer;
+
 	@Inject
 	private FileSystemConfiguration fileSystemConfiguration;
-	
+
 
 	@Override
 	public String startVariantsScopeUserComputation(
@@ -112,6 +114,11 @@ public class DefaultVariantsAnalysisController implements
 		final VariantsScoreComputationParameters parameters = new VariantsScoreComputationParameters();
 		parameters.setResultsBasePath(dataDir.toPath().getFileName());
 		parameters.setVcfFile(Paths.get(INPUT_VCF_NAME));
+		try {
+			parameters.setNumberOfInputVariants(this.countVariantsInInput(vcfFile));
+		} catch (VCFParseException e) {
+			throw new IOException(e);
+		}
 		parameters.setResultsURLTemplate(resultsURLTemplate);
 
 		VariantsScoreUserComputation computation = this.startVariantsScoreComputation(user, computationName,
@@ -132,18 +139,12 @@ public class DefaultVariantsAnalysisController implements
 	public ComputationMetadata getComputationStatus(String computationId) {
 		VariantsScoreUserComputation computation = variantsScoreUserComputationDAO.get(computationId);
 		if (computation == null) {
-			throw new IllegalArgumentException("computationId "+computationId+" not found.");
+			throw new IllegalArgumentException("computationId " + computationId + " not found.");
 		}
-		try {
-			return new ComputationMetadata(computation,
-					getAffectedGenes(computation),
-					getAffectedGenesInfo(computation),
-					getVariantsInInput(computation));
-		} catch (IOException | VCFParseException e) {
-			throw new RuntimeException(e);
-		}
+		return new ComputationMetadata(computation,
+				getAffectedGenes(computation),
+				getAffectedGenesInfo(computation));
 	}
-
 
 
 	@Override
@@ -153,14 +154,9 @@ public class DefaultVariantsAnalysisController implements
 		Map<String, ComputationMetadata> computations = new HashMap<>();
 
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
-			try {
-				computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes(computation),
-						getAffectedGenesInfo(computation), getVariantsInInput(computation)));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} catch (VCFParseException e) {
-				throw new RuntimeException(e);
-			}
+				computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes
+						(computation),
+						getAffectedGenesInfo(computation)));
 		}
 
 		return computations;
@@ -168,8 +164,8 @@ public class DefaultVariantsAnalysisController implements
 
 	private Set<String> getAffectedGenes(VariantsScoreUserComputation computation) {
 		if (computation.getComputationDetails().getStatus().isFinished() &&
-			!computation.getComputationDetails().getStatus().hasErrors()
-			) {
+				!computation.getComputationDetails().getStatus().hasErrors()
+				) {
 
 			return this.getGeneRanking(computation).asMap().keySet();
 
@@ -178,35 +174,88 @@ public class DefaultVariantsAnalysisController implements
 		}
 	}
 
-	private Integer getVariantsInInput(VariantsScoreUserComputation computation) throws IOException, VCFParseException {
-		if (computation.getComputationDetails().getStatus().isFinished() &&
-				!computation.getComputationDetails().getStatus().hasErrors()
-				) {
+	private Integer countVariantsInInput(File variantsFile) throws IOException,
+			VCFParseException {
 
-			File variantsFile = this.obtainComputationFile(
-					computation,
-					computation.getComputationDetails().getParameters().getVcfFile());
+			final AtomicInteger variantsCount = new AtomicInteger(0);
 
 			try {
-				VCFReader<VCFMetaData, VCFVariant<VCFMetaData>> reader = new VCFReader<>(
+				new VCFReader<>(
 						variantsFile.toURI().toURL(),
 						new DefaultVCFMetaDataBuilder(),
-						new DefaultVCFVariantDataBuilder());
+						new VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>>() {
 
-				return reader.getVariants().size();
+							// count variants
+							@Override
+							public VCFVariantDataBuilder endVariant() {
+								variantsCount.incrementAndGet();
+								return this;
+							}
+
+							// dummy methods
+							@Override
+							public VCFVariantDataBuilder setMetadata(VCFMetaData vcfMetaData) {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantQuality(double v) {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantHasNoFilters() {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantPassesFilters() {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantId(String s) {
+								return this;
+							}
+
+							@Override
+							public Collection build() {
+								return null;
+							}
+
+							@Override
+							public VCFVariantDataBuilder addVariantSample(String s, Map map) {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantInfo(Map map) {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder setVariantFilters(List list) {
+								return this;
+							}
+
+							@Override
+							public VCFVariantDataBuilder startVariant(String s, long l, String s1, Set set) {
+								return
+										this;
+							}
+						}).getVariants();
+
+				return variantsCount.intValue();
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
 
-		} else {
-			return null;
-		}
 	}
 
 	@Override
 	public void deleteComputation(String computationId) {
 		VariantsScoreUserComputation variantsScoreUserComputation = variantsScoreUserComputationDAO.get(computationId);
-		requireNonNull(variantsScoreUserComputation, "computation with id ="+computationId);
+		requireNonNull(variantsScoreUserComputation, "computation with id =" + computationId);
 
 		if (!variantsScoreUserComputation.getComputationDetails().getStatus().isFinished()) {
 			throw new IllegalStateException("Only finished computations can be deleted");
@@ -214,10 +263,10 @@ public class DefaultVariantsAnalysisController implements
 
 		File computationDataDir = this.obtainComputationFile(variantsScoreUserComputation, Paths.get("."));
 		try {
-			LOG.info("Deleting dir: "+computationDataDir);
+			LOG.info("Deleting dir: " + computationDataDir);
 			deleteDirectory(computationDataDir);
 		} catch (IOException e) {
-				LOG.warn("Could not delete computation directory: " + computationDataDir);
+			LOG.warn("Could not delete computation directory: " + computationDataDir);
 		}
 
 		variantsScoreUserComputationDAO.remove(variantsScoreUserComputation);
@@ -226,7 +275,7 @@ public class DefaultVariantsAnalysisController implements
 	@Override
 	public UserInfo getUserOfComputation(String computationId) {
 		if (variantsScoreUserComputationDAO.get(computationId) == null) {
-			throw new IllegalArgumentException("computationId "+computationId+" not found");
+			throw new IllegalArgumentException("computationId " + computationId + " not found");
 		}
 
 		return new UserInfo(variantsScoreUserComputationDAO.get(computationId).getUser());
@@ -237,7 +286,7 @@ public class DefaultVariantsAnalysisController implements
 		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
 
 		if (computation == null) {
-			throw new IllegalArgumentException("Computation with id "+computationId+" not found");
+			throw new IllegalArgumentException("Computation with id " + computationId + " not found");
 		}
 
 		if (!computation.getComputationDetails().getStatus().isFinished()) {
@@ -254,15 +303,15 @@ public class DefaultVariantsAnalysisController implements
 
 			Map<String, Double> geneRankingMap =
 					readLines(affectedGenesFile).stream()
-					.skip(1)
-					.filter(line -> line.length() > 0)
-					.map(line -> line.split("\t"))
-					.collect(toMap(
-						tokens -> tokens[0],
-						tokens -> Double.parseDouble(tokens[1]),
-						(d1, __) -> d1,
-						LinkedHashMap::new
-					));
+							.skip(1)
+							.filter(line -> line.length() > 0)
+							.map(line -> line.split("\t"))
+							.collect(toMap(
+									tokens -> tokens[0],
+									tokens -> Double.parseDouble(tokens[1]),
+									(d1, __) -> d1,
+									LinkedHashMap::new
+							));
 
 			return new GeneRanking(geneRankingMap);
 		} catch (IOException e) {
@@ -326,7 +375,7 @@ public class DefaultVariantsAnalysisController implements
 	private File createComputationDataDirectory(User user) {
 		File computationDir = new File(fileSystemConfiguration.getUserDataBaseDirectory() +
 				File.separator + user.getLogin() +
-				"-"+
+				"-" +
 				UUID.randomUUID());
 		computationDir.mkdir();
 		return computationDir;
@@ -335,7 +384,8 @@ public class DefaultVariantsAnalysisController implements
 	private VariantsScoreUserComputation
 	startVariantsScoreComputation(User user, String computationName, VariantsScoreComputationParameters parameters) {
 
-		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(parameters.getResultsBasePath()).toFile();
+		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(parameters
+				.getResultsBasePath()).toFile();
 
 		if (!userDir.exists()) {
 			userDir.mkdir();
@@ -360,16 +410,17 @@ public class DefaultVariantsAnalysisController implements
 		return userComputation;
 	}
 
-	private void addChangeListener(VariantsScoreUserComputation userComputation, VariantsScoreComputation computation) {
-		computation.getStatus().onChange((status)-> {
+	private void addChangeListener(VariantsScoreUserComputation userComputation, VariantsScoreComputation
+			computation) {
+		computation.getStatus().onChange((status) -> {
 			processStatus(userComputation, computation, status);
 		});
 	}
 
 
 	public void processStatus(VariantsScoreUserComputation userComputation, VariantsScoreComputation computation,
-			VariantsScoreComputationStatus status) {
-		
+							  VariantsScoreComputationStatus status) {
+
 		userComputation.getComputationDetails().setStatus(status);
 		if (computation.getStatus().isFinished()) {
 			try {
@@ -396,22 +447,22 @@ public class DefaultVariantsAnalysisController implements
 			}
 		}
 	}
-	
+
 	private Set<Integer> resumedComputations = new HashSet<>();
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-			LOG.info("Context refresh event. Trying to resume computations...");
-			for (VariantsScoreUserComputation userComputation: this.variantsScoreUserComputationDAO.list()) {
-		
+		LOG.info("Context refresh event. Trying to resume computations...");
+		for (VariantsScoreUserComputation userComputation : this.variantsScoreUserComputationDAO.list()) {
+
 			// resume unfinished computations that have not been resumed by previous
 			// refreshing events
 			if (!userComputation.getComputationDetails().getStatus().isFinished() &&
 					!resumedComputations.contains(userComputation.getId())) {
-				LOG.info("Resuming computation id="+userComputation.getId());
-				VariantsScoreComputation computation = 
-				variantsScoreComputer.resumeComputation(userComputation.getComputationDetails());
-				
+				LOG.info("Resuming computation id=" + userComputation.getId());
+				VariantsScoreComputation computation =
+						variantsScoreComputer.resumeComputation(userComputation.getComputationDetails());
+
 				addChangeListener(userComputation, computation);
 
 				//speculate if the computation has already finished before the listener could be added...
@@ -422,8 +473,8 @@ public class DefaultVariantsAnalysisController implements
 
 	private File obtainComputationFile(VariantsScoreUserComputation computation, Path elementPath) {
 		try {
-			return new File(this.fileSystemConfiguration.getUserDataBaseDirectory()+
-					File.separator+
+			return new File(this.fileSystemConfiguration.getUserDataBaseDirectory() +
+					File.separator +
 					computation.getComputationDetails().getParameters().getResultsBasePath().resolve(elementPath)
 							.toString()).getCanonicalFile();
 		} catch (IOException e) {

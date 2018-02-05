@@ -33,6 +33,9 @@ public class VariantsScoreComputationParameters {
 
 	@Column(name="parameter_vcf_file")
 	private String vcfFile;
+
+	@Column(name="parameter_number_of_input_variants")
+	private Integer numberOfInputVariants;
 	
 	@Column(name="parameter_base_path")
 	private String basePath;
@@ -69,7 +72,15 @@ public class VariantsScoreComputationParameters {
 	public void setVcfFile(Path vcfFile) {
 		this.vcfFile = vcfFile.toString();
 	}
-	
+
+	public Integer getNumberOfInputVariants() {
+		return numberOfInputVariants;
+	}
+
+	public void setNumberOfInputVariants(Integer numberOfInputVariants) {
+		this.numberOfInputVariants = numberOfInputVariants;
+	}
+
 	public void setResultsBasePath(Path resultsBasePath) {
 		this.resultsBasePath = resultsBasePath;
 		this.basePath = resultsBasePath.toString();

@@ -44,13 +44,12 @@ public class ComputationMetadata {
 	private boolean failed;
 
 	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes,
-			Map<String, Map<String, String>> affectedGenesInfo,
-			Integer variantsInInput) {
+			Map<String, Map<String, String>> affectedGenesInfo) {
 
 		this.affectedGenes = affectedGenes;
 		this.affectedGenesInfo = affectedGenesInfo;
-		this.variantsInInput = variantsInInput;
 		this.name = computation.getName();
+		this.variantsInInput = computation.getComputationDetails().getParameters().getNumberOfInputVariants();
 		this.overallProgress = computation.getComputationDetails().getStatus().getOverallProgress();
 		this.taskProgress = computation.getComputationDetails().getStatus().getTaskProgress();
 		this.taskName = computation.getComputationDetails().getStatus().getTaskName();
