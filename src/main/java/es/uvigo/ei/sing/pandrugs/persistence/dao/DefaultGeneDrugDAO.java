@@ -29,8 +29,10 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +67,6 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugId;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
-import es.uvigo.ei.sing.pandrugs.query.TargetMarkerStatus;
 
 @Repository
 @Transactional
@@ -196,10 +197,37 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		requireNonNull(queryParameters, "Query parameters can't be null");
 		requireNonEmpty(geneNames, "At least one gene name must be provided");
 
-		return searchWithQueryParameters(
+		final List<GeneDrug> geneDrugs = searchWithQueryParameters(
 			queryParameters,
 			(root, join, query) -> createDirectIndirectPredicate(root, join, query, queryParameters, toUpperCase(geneNames))
 		);
+		
+		return filterGeneDrugs(asList(geneNames), geneDrugs, queryParameters);
+	}
+	
+	private final static List<GeneDrug> filterGeneDrugs(
+		Collection<String> queryGenes,
+		Collection<GeneDrug> geneDrugs,
+		GeneDrugQueryParameters queryParameters
+	) {
+		java.util.function.Predicate<GeneDrug> filter = gd -> false;
+		java.util.function.Predicate<GeneDrug> isDirect = gd -> queryGenes.contains(gd.getGeneSymbol());
+		
+		if (queryParameters.isBiomarker()) {
+			filter = filter.or(gd -> !gd.isTarget());
+		}
+		
+		if (queryParameters.isDirectTarget()) {
+			filter = filter.or(gd -> gd.isTarget() && isDirect.test(gd));
+		}
+		
+		if (queryParameters.isPathwayMember()) {
+			filter = filter.or(gd -> gd.isTarget() && !isDirect.test(gd));
+		}
+		
+		return geneDrugs.stream()
+			.filter(filter)
+		.collect(toList());
 	}
 
 	@Override
@@ -247,16 +275,19 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		Root<GeneDrug> root,
 		GeneDrugQueryParameters queryParameters
 	) {
-		if (queryParameters.getTargetMarker() == TargetMarkerStatus.BOTH) {
-			return null;
-		} else {
+		final boolean isTarget = queryParameters.areTargetIncluded();
+		final boolean isMarker = queryParameters.areMarkerIncluded();
+		
+		if (isTarget != isMarker) {
 			final Expression<Boolean> targetField = root.get("target");
 			
-			if (queryParameters.getTargetMarker() == TargetMarkerStatus.TARGET) {
+			if (isTarget) {
 				return dh.cb().isTrue(targetField);
 			} else {
 				return dh.cb().isFalse(targetField);
 			}
+		} else {
+			return null;
 		}
 	}
 	

@@ -82,8 +82,9 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("cancer") Set<String> cancerTypes,
-		@QueryParam("target") String target,
-		@QueryParam("direct") String direct
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
 	) throws BadRequestException {
 		try {
 			if (!isEmpty(genes) && !isEmpty(drugs)) {
@@ -93,7 +94,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else if (isEmpty(drugs)) {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByGenes(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 					),
 					genes.stream().sorted().toArray(String[]::new)
 				);
@@ -102,7 +103,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByDrugs(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 					),
 					drugs.stream().sorted().toArray(String[]::new)
 				);
@@ -124,8 +125,9 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("cancer") Set<String> cancerTypes,
-		@QueryParam("target") String target,
-		@QueryParam("direct") String direct
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
 	) throws BadRequestException {
 		try {
 			requireNonNull(geneRanking, "geneRanking can't be null");
@@ -133,7 +135,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			
 			final List<GeneDrugGroup> geneDrugs = controller.searchByRanking(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 				),
 				geneRanking
 			);
@@ -155,15 +157,16 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("cancer") Set<String> cancerTypes,
-		@QueryParam("target") String target,
-		@QueryParam("direct") String direct
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
 	) throws BadRequestException {
 		try {
 			requireNonNull(computationId, "A computation Id must be provided");
 
 			final List<GeneDrugGroup> geneDrugs = controller.searchFromComputationId(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, target, direct
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 				),
 				computationId
 			);

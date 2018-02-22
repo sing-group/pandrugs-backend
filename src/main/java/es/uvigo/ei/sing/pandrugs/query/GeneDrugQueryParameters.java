@@ -34,27 +34,30 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 
 public class GeneDrugQueryParameters {
-	public static final DirectIndirectStatus DEFAULT_DIRECT_INDIRECT = DirectIndirectStatus.BOTH;
-	public static final TargetMarkerStatus DEFAULT_TARGET_MARKER = TargetMarkerStatus.BOTH;
 	public static final CancerType[] DEFAULT_CANCER_TYPES = getQueryableCancerTypes();
 	public static final DrugStatus[] DEFAULT_CANCER_DRUG_STATUS =
 		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL_TRIALS };
 	public static final DrugStatus[] DEFAULT_NON_CANCER_DRUG_STATUS =
 		new DrugStatus[] { DrugStatus.APPROVED, DrugStatus.CLINICAL_TRIALS, DrugStatus.EXPERIMENTAL };
+	public static final boolean DEFAULT_BIOMARKER = true;
+	public static final boolean DEFAULT_PATHWAY_MEMBER = true;
+	public static final boolean DEFAULT_DIRECT_TARGET = true;
 
 	private final DrugStatus[] cancerDrugStatus;
 	private final DrugStatus[] nonCancerDrugStatus;
 	private final CancerType[] cancerTypes;
-	private final TargetMarkerStatus targetMarker;
-	private final DirectIndirectStatus directIndirect;
+	private final boolean biomarker;
+	private final boolean pathwayMember;
+	private final boolean directTarget;
 	
 	public GeneDrugQueryParameters() {
 		this(
 			DEFAULT_CANCER_DRUG_STATUS,
 			DEFAULT_NON_CANCER_DRUG_STATUS,
 			DEFAULT_CANCER_TYPES,
-			DEFAULT_TARGET_MARKER,
-			DEFAULT_DIRECT_INDIRECT
+			DEFAULT_DIRECT_TARGET,
+			DEFAULT_BIOMARKER,
+			DEFAULT_PATHWAY_MEMBER
 		);
 	}
 	
@@ -62,8 +65,9 @@ public class GeneDrugQueryParameters {
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		Set<String> cancerTypes,
-		String targetMarker,
-		String directIndirect
+		boolean directTarget,
+		boolean biomarker,
+		boolean pathwayMember
 	) {
 		this(
 			parseDrugStatus(
@@ -81,18 +85,9 @@ public class GeneDrugQueryParameters {
 				DEFAULT_CANCER_TYPES,
 				"Invalid cancer types"
 			),
-			parseEnum(
-				TargetMarkerStatus.class,
-				DEFAULT_TARGET_MARKER,
-				targetMarker,
-				"Invalid target value"
-			),
-			parseEnum(
-				DirectIndirectStatus.class,
-				DEFAULT_DIRECT_INDIRECT,
-				directIndirect,
-				"Invalid direct value"
-			)
+			directTarget,
+			biomarker,
+			pathwayMember
 		);
 	}
 	
@@ -100,8 +95,9 @@ public class GeneDrugQueryParameters {
 		DrugStatus[] cancerDrugStatus,
 		DrugStatus[] nonCancerDrugStatus,
 		CancerType[] cancerTypes,
-		TargetMarkerStatus targetMarker,
-		DirectIndirectStatus directIndirect
+		boolean directTarget,
+		boolean biomarker,
+		boolean pathwayMember
 	) {
 		this.cancerDrugStatus = Optional.ofNullable(cancerDrugStatus)
 			.orElse(DEFAULT_CANCER_DRUG_STATUS);
@@ -109,10 +105,9 @@ public class GeneDrugQueryParameters {
 			.orElse(DEFAULT_NON_CANCER_DRUG_STATUS);
 		this.cancerTypes = Optional.ofNullable(cancerTypes)
 			.orElse(DEFAULT_CANCER_TYPES);
-		this.targetMarker = Optional.ofNullable(targetMarker)
-			.orElse(DEFAULT_TARGET_MARKER);
-		this.directIndirect = Optional.ofNullable(directIndirect)
-			.orElse(DEFAULT_DIRECT_INDIRECT);
+		this.biomarker = biomarker;
+		this.pathwayMember = pathwayMember;
+		this.directTarget = directTarget;
 		
 		if (!this.areCancerDrugStatusIncluded() && 
 			!this.areNonCancerDrugStatusIncluded()
@@ -129,26 +124,6 @@ public class GeneDrugQueryParameters {
 	public DrugStatus[] getNonCancerDrugStatus() {
 		return nonCancerDrugStatus;
 	}
-
-	public DirectIndirectStatus getDirectIndirect() {
-		return directIndirect;
-	}
-	
-	public boolean areDirectIncluded() {
-		return this.directIndirect != DirectIndirectStatus.INDIRECT;
-	}
-	
-	public boolean areIndirectIncluded() {
-		return this.directIndirect != DirectIndirectStatus.DIRECT;
-	}
-	
-	public boolean areTargetIncluded() {
-		return this.targetMarker != TargetMarkerStatus.MARKER;
-	}
-	
-	public boolean areMarkerIncluded() {
-		return this.targetMarker != TargetMarkerStatus.TARGET;
-	}
 	
 	public boolean areAllDrugStatusIncluded() {
 		return this.isAnyCancerDrugStatus() && this.isAnyNonCancerDrugStatus();
@@ -160,10 +135,6 @@ public class GeneDrugQueryParameters {
 	
 	public boolean areNonCancerDrugStatusIncluded() {
 		return this.nonCancerDrugStatus.length > 0;
-	}
-
-	public TargetMarkerStatus getTargetMarker() {
-		return targetMarker;
 	}
 	
 	public CancerType[] getCancerTypes() {
@@ -182,19 +153,18 @@ public class GeneDrugQueryParameters {
 		return asList(status).containsAll(asList(DrugStatus.values()));
 	}
 	
-	private final static <T extends Enum<T>> T parseEnum(
-		Class<T> enumType, T defaultValue, String value, String parseErrorMessage
-	) {
-		try {
-			return Optional.ofNullable(value)
-				.map(String::toUpperCase)
-				.map(name -> Enum.valueOf(enumType, name))
-			.orElse(defaultValue);
-		} catch (RuntimeException iae) {
-			throw new IllegalArgumentException(parseErrorMessage);
-		}
+	public boolean isBiomarker() {
+		return biomarker;
 	}
-	
+
+	public boolean isPathwayMember() {
+		return pathwayMember;
+	}
+
+	public boolean isDirectTarget() {
+		return directTarget;
+	}
+
 	private final static CancerType[] parseCancerTypes(
 		Set<String> cancerTypes, CancerType[] defaultValues, String parseErrorMessage
 	) {
@@ -259,5 +229,21 @@ public class GeneDrugQueryParameters {
 		final Set<CancerType> queryable = stream(getQueryableCancerTypes()).collect(toSet());
 		
 		return selected.equals(queryable);
+	}
+
+	public boolean areDirectIncluded() {
+		return this.biomarker || this.directTarget;
+	}
+
+	public boolean areIndirectIncluded() {
+		return this.pathwayMember;
+	}
+
+	public boolean areTargetIncluded() {
+		return this.pathwayMember || this.directTarget;
+	}
+
+	public boolean areMarkerIncluded() {
+		return this.biomarker;
 	}
 }

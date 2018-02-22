@@ -25,6 +25,7 @@ import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonNullArray;
 import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -55,7 +57,6 @@ import es.uvigo.ei.sing.pandrugs.persistence.dao.IndirectResistanceDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
-import es.uvigo.ei.sing.pandrugs.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
@@ -176,7 +177,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return searchForGeneDrugs(
 			this.dao.searchByGene(queryParameters, upperGeneNames),
-			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters.getDirectIndirect()),
+			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGroupDrugScoreCalculator()
 		);
@@ -193,7 +194,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return searchForGeneDrugs(
 			this.dao.searchByDrug(queryParameters, toUpperCase(drugNames)),
-			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters.getDirectIndirect()),
+			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGeneDrugDrugScoreCalculator()
 		);
@@ -283,25 +284,35 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			));
 	}
 	
-	private final static String[] filterGenesInGeneDrugs(
+	private final static Stream<String> filterGenesInGeneDrugs(
 		String[] geneNames,
 		Collection<GeneDrug> geneDrugs,
-		DirectIndirectStatus directIndirectStatus
+		GeneDrugQueryParameters queryParameters
+	) {
+		final Predicate<String> relationFilter = createRelationFilter(geneDrugs, queryParameters);
+		
+		return stream(geneNames).filter(relationFilter);
+	}
+
+	private static Predicate<String> createRelationFilter(
+		Collection<GeneDrug> geneDrugs,
+		GeneDrugQueryParameters queryParameters
 	) {
 		final Function<GeneDrug, List<String>> getGenes;
 		
-		switch(directIndirectStatus) {
-		case DIRECT:
-			getGenes = gd -> asList(gd.getGeneSymbol());
-			break;
-		case INDIRECT:
-			getGenes = GeneDrug::getIndirectGeneSymbols;
-			break;
-		default:
+		final boolean isDirect = queryParameters.areDirectIncluded();
+		final boolean isIndirect = queryParameters.areIndirectIncluded();
+		
+		if (isDirect != isIndirect) {
+			if (isDirect) {
+				getGenes = gd -> asList(gd.getGeneSymbol());
+			} else {
+				getGenes = GeneDrug::getIndirectGeneSymbols;
+			}
+		} else {
 			getGenes = gd -> gd.isTarget() ?
 				gd.getDirectAndIndirectGeneSymbols() :
 				asList(gd.getGeneSymbol());
-			break;
 		}
 		
 		final Set<String> geneDrugNames = geneDrugs.stream()
@@ -309,8 +320,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			.flatMap(List::stream)
 		.collect(toSet());
 		
-		return Stream.of(geneNames)
-			.filter(geneDrugNames::contains)
-		.toArray(String[]::new);
+		return geneDrugNames::contains;
 	}
 }
