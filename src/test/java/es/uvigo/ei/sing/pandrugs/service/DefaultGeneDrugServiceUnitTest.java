@@ -98,35 +98,35 @@ public class DefaultGeneDrugServiceUnitTest {
 	public void testListWithNullGenes() {
 		replay(controller);
 	
-		service.list(null, null, null, null, null, null, null);
+		service.list(null, null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenes() {
 		replay(controller);
 		
-		service.list(emptySet(), null, null, null, null, null, null);
+		service.list(emptySet(), null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyDrugs() {
 		replay(controller);
 		
-		service.list(null, emptySet(), null, null, null, null, null);
+		service.list(null, emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenesAndDrugs() {
 		replay(controller);
 		
-		service.list(emptySet(), emptySet(), null, null, null, null, null);
+		service.list(emptySet(), emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithGenesAndDrugs() {
 		replay(controller);
 		
-		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, null, null);
+		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
 	}
 	
 	@Test
@@ -178,14 +178,14 @@ public class DefaultGeneDrugServiceUnitTest {
 	public void testListRankedWithNullGenes() {
 		replay(controller);
 	
-		service.listRanked((GeneRanking) null, null, null, null, null, null);
+		service.listRanked((GeneRanking) null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListRankedWithEmptyGenes() {
 		replay(controller);
 		
-		service.listRanked(new GeneRanking(emptyMap()), null, null, null, null, null);
+		service.listRanked(new GeneRanking(emptyMap()), null, null, null, true, true, true);
 	}
 	
 	@Test
@@ -232,7 +232,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		checkListResults(
 			controller -> expect(controller.searchByGenes(anyObject(), arrayToEasyMockMatchers(query)))
 				.andReturn(asList(controllerResult)),
-			service -> service.list(stream(query).collect(toSet()), null, null, null, null, null, null),
+			service -> service.list(stream(query).collect(toSet()), null, null, null, null, true, true, true),
 			expectedResult
 		);
 	}
@@ -245,7 +245,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		checkListResults(
 			controller -> expect(controller.searchByDrugs(anyObject(), arrayToEasyMockMatchers(query)))
 				.andReturn(asList(controllerResult)),
-			service -> service.list(null, stream(query).collect(toSet()), null, null, null, null, null),
+			service -> service.list(null, stream(query).collect(toSet()), null, null, null, true, true, true),
 			expectedResult
 		);
 	}
@@ -254,7 +254,7 @@ public class DefaultGeneDrugServiceUnitTest {
 		checkListResults(
 			controller -> expect(controller.searchByRanking(anyObject(), eq(ranking)))
 				.andReturn(asList(controllerResult)),
-			service -> service.listRanked(ranking, null, null, null, null, null),
+			service -> service.listRanked(ranking, null, null, null, true, true, true),
 			expectedResult
 		);
 	}

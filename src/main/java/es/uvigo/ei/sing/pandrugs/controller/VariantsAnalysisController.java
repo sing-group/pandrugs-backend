@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
@@ -41,18 +40,21 @@ public interface VariantsAnalysisController {
 	public File getVariantsScoreFile(String computationId);
 
 	public String startVariantsScopeUserComputation(
-			UserLogin userLogin,
-			InputStream vcfFile,
-			String computationName
+		UserLogin userLogin,
+		InputStream vcfFile,
+		String computationName
 	) throws IOException;
 
-	public String startVariantsScopeUserComputation(UserLogin login, InputStream vcfFile, String computationName, String
-			resultsURLTemplate) throws IOException;
+	public String startVariantsScopeUserComputation(
+		UserLogin login,
+		InputStream vcfFile,
+		String computationName,
+		String resultsURLTemplate
+	) throws IOException;
 
 	public ComputationMetadata getComputationStatus(String computationId);
 
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
-
 
 	void deleteComputation(String computationId);
 }

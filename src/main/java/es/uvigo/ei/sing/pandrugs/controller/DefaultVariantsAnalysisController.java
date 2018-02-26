@@ -34,7 +34,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,69 +180,69 @@ public class DefaultVariantsAnalysisController implements
 
 			try {
 				new VCFReader<>(
-						variantsFile.toURI().toURL(),
-						new DefaultVCFMetaDataBuilder(),
-						new VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>>() {
+					variantsFile.toURI().toURL(),
+					new DefaultVCFMetaDataBuilder(),
+					new VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>>() {
 
-							// count variants
-							@Override
-							public VCFVariantDataBuilder endVariant() {
-								variantsCount.incrementAndGet();
-								return this;
-							}
+						// count variants
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> endVariant() {
+							variantsCount.incrementAndGet();
+							return this;
+						}
 
-							// dummy methods
-							@Override
-							public VCFVariantDataBuilder setMetadata(VCFMetaData vcfMetaData) {
-								return this;
-							}
+						// dummy methods
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setMetadata(VCFMetaData vcfMetaData) {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantQuality(double v) {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantQuality(double v) {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantHasNoFilters() {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantHasNoFilters() {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantPassesFilters() {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantPassesFilters() {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantId(String s) {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantId(String s) {
+							return this;
+						}
 
-							@Override
-							public Collection build() {
-								return null;
-							}
+						@Override
+						public Collection<VCFVariant<VCFMetaData>> build() {
+							return null;
+						}
 
-							@Override
-							public VCFVariantDataBuilder addVariantSample(String s, Map map) {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> addVariantSample(String s, Map<String, List<String>> map) {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantInfo(Map map) {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantInfo(Map<String, List<String>> map) {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder setVariantFilters(List list) {
-								return this;
-							}
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> setVariantFilters(List<String> list) {
+							return this;
+						}
 
-							@Override
-							public VCFVariantDataBuilder startVariant(String s, long l, String s1, Set set) {
-								return
-										this;
-							}
-						}).getVariants();
+						@Override
+						public VCFVariantDataBuilder<VCFMetaData, VCFVariant<VCFMetaData>> startVariant(String s, long l, String s1, Set<String> set) {
+							return this;
+						}
+					}
+				).getVariants();
 
 				return variantsCount.intValue();
 			} catch (MalformedURLException e) {
@@ -438,7 +437,7 @@ public class DefaultVariantsAnalysisController implements
 		if (computation.getStatus().isFinished()) {
 			try {
 				if (!userComputation.getUser().getLogin().equals("guest")) {
-					final User user = userComputation.getUser();
+					userComputation.getUser();
 					mailer.sendComputationFinished(userComputation);
 				}
 			} catch (Exception e) {
@@ -448,8 +447,6 @@ public class DefaultVariantsAnalysisController implements
 		}
 	}
 
-	private Set<Integer> resumedComputations = new HashSet<>();
-
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		LOG.info("Context refresh event. Trying to resume computations...");
@@ -457,8 +454,7 @@ public class DefaultVariantsAnalysisController implements
 
 			// resume unfinished computations that have not been resumed by previous
 			// refreshing events
-			if (!userComputation.getComputationDetails().getStatus().isFinished() &&
-					!resumedComputations.contains(userComputation.getId())) {
+			if (!userComputation.getComputationDetails().getStatus().isFinished()) {
 				LOG.info("Resuming computation id=" + userComputation.getId());
 				VariantsScoreComputation computation =
 						variantsScoreComputer.resumeComputation(userComputation.getComputationDetails());

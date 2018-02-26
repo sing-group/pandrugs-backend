@@ -72,7 +72,6 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugs.query.DirectIndirectStatus;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -350,8 +349,9 @@ public class DefaultGeneDrugControllerIntegrationTest {
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
-				GeneDrugQueryParameters.DEFAULT_TARGET_MARKER,
-				DirectIndirectStatus.DIRECT
+				true,
+				true,
+				false
 			), 
 			multipleGeneSymbolsMixed()
 		);
@@ -366,8 +366,9 @@ public class DefaultGeneDrugControllerIntegrationTest {
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
-				GeneDrugQueryParameters.DEFAULT_TARGET_MARKER,
-				DirectIndirectStatus.INDIRECT
+				false,
+				false,
+				true
 			), 
 			multipleGeneSymbolsMixed()
 		);

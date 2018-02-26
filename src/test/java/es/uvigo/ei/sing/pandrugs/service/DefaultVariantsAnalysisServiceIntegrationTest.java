@@ -271,7 +271,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 	}
 
 	private void testDownloadVariantsScoreComputationDetails(String computationId, User accesingUser, User targetUser) {
-		final SecurityContextStub security = new SecurityContextStub(users(), accesingUser.getLogin());
+		new SecurityContextStub(users(), accesingUser.getLogin());
 
 		final Response response = service.downloadVariantsScoreComputationDetails(new UserLogin(targetUser.getLogin
 				()), computationId);

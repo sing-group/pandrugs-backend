@@ -200,7 +200,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetVariantsScoreFileOfNonCompletedComputation() throws FileNotFoundException {
-		final File variantsScoreFile = controller.getVariantsScoreFile("1");
+		controller.getVariantsScoreFile("1");
 	}
 
 	private void waitWhileOrFail(BooleanSupplier condition, long timeout) throws InterruptedException {
