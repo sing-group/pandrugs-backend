@@ -21,10 +21,18 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.TemporalType.TIMESTAMP;
+
+import java.util.Date;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
 
 @Entity(name = "variants_score_user_computation")
 public class VariantsScoreUserComputation {
@@ -33,6 +41,11 @@ public class VariantsScoreUserComputation {
 	private String id;
 
 	private String name;
+	
+	@Basic(optional = false, fetch = LAZY)
+	@Temporal(TIMESTAMP)
+	@Column(name = "creation_date", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Date creationDate;
 
 	@ManyToOne
 	private User user;
@@ -41,17 +54,17 @@ public class VariantsScoreUserComputation {
 	private VariantsScoreComputationDetails computationDetails =
 		new VariantsScoreComputationDetails();
 
-	VariantsScoreUserComputation() { }
+	VariantsScoreUserComputation() {}
 
 	public VariantsScoreUserComputation(String id) {
-		this.id = id;
+		this(id, null, null);
 	}
 
 	public VariantsScoreUserComputation(
-			String id,
-			User user,
-			VariantsScoreComputationDetails details) {
-
+		String id,
+		User user,
+		VariantsScoreComputationDetails details
+	) {
 		this.id = id;
 		this.user = user;
 		this.computationDetails = details;
