@@ -51,13 +51,12 @@ public class VariantsScoreUserComputation {
 	private User user;
 	
 	@Embedded
-	private VariantsScoreComputationDetails computationDetails =
-		new VariantsScoreComputationDetails();
+	private VariantsScoreComputationDetails computationDetails;
 
 	VariantsScoreUserComputation() {}
 
 	public VariantsScoreUserComputation(String id) {
-		this(id, null, null);
+		this(id, null, new VariantsScoreComputationDetails());
 	}
 
 	public VariantsScoreUserComputation(
@@ -68,7 +67,6 @@ public class VariantsScoreUserComputation {
 		this.id = id;
 		this.user = user;
 		this.computationDetails = details;
-
 	}
 
 	public User getUser() {

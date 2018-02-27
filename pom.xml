@@ -660,7 +660,7 @@
 					<output>
 						<location>${miredot.output.directory}</location>
 						<html>
-							<baseUrl>http://www.pandrugs.org/pandrugs-backend</baseUrl>
+							<baseUrl>https://www.pandrugs.org/pandrugs-backend</baseUrl>
 							<sections>
 								<strategy>singlepage</strategy>
 							</sections>
