@@ -357,14 +357,9 @@ public class GeneDrugGroup {
 			.anyMatch(GeneDrug::isTarget);
 	}
 	
-	public boolean isResistance(GeneDrug geneDrug) {
-		return geneDrug.isResistance()
-			|| (geneDrug.isTarget() && this.hasIndirectResistances(geneDrug));
-	}
-	
 	public boolean hasResistance() {
 		for (GeneDrug geneDrug : this.getGeneDrugs()) {
-			if (this.isResistance(geneDrug)) {
+			if (geneDrug.isResistance()) {
 				return true;
 			}
 		}

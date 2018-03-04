@@ -21,7 +21,6 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType.RESISTANCE;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
@@ -30,6 +29,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -63,12 +63,7 @@ public class GeneDrugInfo {
 	private Extra therapy;
 	private IndirectGeneInfo indirect;
 	
-	private ResistanceType originalSensitivity;
 	private ResistanceType sensitivity;
-
-	@XmlElementWrapper(name = "indirectResistances")
-	@XmlElement(name = "indirectResistance")
-	private String[] indirectResistances;
 
 	@XmlElementWrapper(name = "cancers")
 	@XmlElement(name = "cancer")
@@ -115,27 +110,29 @@ public class GeneDrugInfo {
 			.map(indirectGene -> new IndirectGeneInfo(geneDrug.getGeneSymbol(), indirectGene, genes))
 		.orElse(null);
 		
-		this.originalSensitivity = geneDrug.getResistance();
-		this.sensitivity = group.isResistance(geneDrug) ? RESISTANCE : this.originalSensitivity;
-
-		if (group.isResistance(geneDrug) && group.hasIndirectResistances(geneDrug)) {
-			this.indirectResistances = stream(queryGenes)
-				.map(Gene::getGeneSymbol)
-				.filter(group::hasIndirectResistance)
-				.flatMap(affectedGene -> group.getIndirectResistance(affectedGene).stream()
-					.map(resistance -> String.format("%s overactivation is associated with resistance to %s inhibition", resistance, affectedGene))
-				)
-			.toArray(String[]::new);
-		} else {
-			this.indirectResistances = new String[0];
-		}
+		this.sensitivity = geneDrug.getResistance();
 		
 		this.cancers = geneDrug.getCancers();
 		this.sources = geneDrug.getDrugSourceNames().stream().toArray(String[]::new);
 		this.families = geneDrug.getDrug().getFamilies();
-		this.warnings = group.getDrugWarnings(queryGeneSymbols).stream()
-			.map(GeneDrugWarning::getWarning)
-		.toArray(String[]::new);
+
+		final Stream<String> indirectResistances;
+		if (group.hasIndirectResistances(geneDrug)) {
+			indirectResistances = stream(queryGenes)
+				.map(Gene::getGeneSymbol)
+				.filter(group::hasIndirectResistance)
+				.flatMap(affectedGene -> group.getIndirectResistance(affectedGene).stream()
+					.map(resistance -> String.format("%s amplifications induce %s resistance", resistance, affectedGene))
+				);
+		} else {
+			indirectResistances = Stream.empty();
+		}
+		
+		final Stream<String> drugWarnings = group.getDrugWarnings(queryGeneSymbols).stream()
+			.map(GeneDrugWarning::getWarning);
+		
+		this.warnings = Stream.concat(indirectResistances, drugWarnings)
+			.toArray(String[]::new);
 		
 		if (geneDrug.isTarget()) {
 			if (!forceIndirect && group.isDirect(geneDrug)) {
@@ -219,10 +216,6 @@ public class GeneDrugInfo {
 		return sensitivity;
 	}
 	
-	public String[] getIndirectResistances() {
-		return indirectResistances;
-	}
-	
 	public String getAlteration() {
 		return alteration;
 	}
@@ -279,8 +272,6 @@ public class GeneDrugInfo {
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
 		result = prime * result + ((indirect == null) ? 0 : indirect.hashCode());
-		result = prime * result + Arrays.hashCode(indirectResistances);
-		result = prime * result + ((originalSensitivity == null) ? 0 : originalSensitivity.hashCode());
 		result = prime * result + ((sensitivity == null) ? 0 : sensitivity.hashCode());
 		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(sources);
@@ -329,10 +320,6 @@ public class GeneDrugInfo {
 			if (other.indirect != null)
 				return false;
 		} else if (!indirect.equals(other.indirect))
-			return false;
-		if (!Arrays.equals(indirectResistances, other.indirectResistances))
-			return false;
-		if (originalSensitivity != other.originalSensitivity)
 			return false;
 		if (sensitivity != other.sensitivity)
 			return false;
