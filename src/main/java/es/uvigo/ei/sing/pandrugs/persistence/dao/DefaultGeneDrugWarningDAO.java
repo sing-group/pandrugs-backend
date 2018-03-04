@@ -22,6 +22,7 @@
 package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -77,15 +78,44 @@ public class DefaultGeneDrugWarningDAO implements GeneDrugWarningDAO {
 		
 		final Predicate[] predicates = geneDrugs.stream()
 			.map(gd -> cb.and(
-				cb.equal(geneSymbolField, gd.getGeneSymbol()),
-				cb.equal(drugField, gd.getStandardDrugName())
+				cb.or(
+					cb.equal(geneSymbolField, gd.getGeneSymbol()),
+					cb.equal(geneSymbolField, "*")
+				),
+				cb.or(
+					cb.equal(drugField, gd.getStandardDrugName()),
+					cb.equal(drugField, "*")
+				)
 			))
 		.toArray(Predicate[]::new);
 
 		final List<GeneDrugWarning> results = em.createQuery(query.select(root).where(cb.or(predicates)))
 			.getResultList();
 		
+		final Set<GeneDrugWarning> warnings = new HashSet<>();
 		
-		return new HashSet<>(results);
+		final Set<String> genes = geneDrugs.stream()
+			.map(GeneDrug::getGeneSymbol)
+		.collect(toSet());
+		
+		final Set<String> drugs = geneDrugs.stream()
+			.map(GeneDrug::getStandardDrugName)
+		.collect(toSet());
+		
+		for (GeneDrugWarning warning : results) {
+			if ("*".equals(warning.getGeneSymbol())) {
+				genes.forEach(gene -> warnings.add(
+					new GeneDrugWarning(gene, warning.getStandardDrugName(), warning.getWarning())
+				));
+			} else if ("*".equals(warning.getStandardDrugName())) {
+				drugs.forEach(drug -> warnings.add(
+					new GeneDrugWarning(warning.getGeneSymbol(), drug, warning.getWarning())
+				));
+			} else {
+				warnings.add(warning);
+			}
+		}
+		
+		return warnings;
 	}
 }

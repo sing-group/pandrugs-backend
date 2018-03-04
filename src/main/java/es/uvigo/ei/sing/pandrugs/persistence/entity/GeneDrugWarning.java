@@ -46,6 +46,14 @@ public class GeneDrugWarning implements Serializable {
 	@Column(name = "warning", length = 100, columnDefinition = "VARCHAR(100)")
 	private String warning;
 	
+	GeneDrugWarning() {}
+	
+	public GeneDrugWarning(String geneSymbol, String standardDrugName, String warning) {
+		this.geneSymbol = geneSymbol;
+		this.standardDrugName = standardDrugName;
+		this.warning = warning;
+	}
+
 	public Long getId() {
 		return id;
 	}
