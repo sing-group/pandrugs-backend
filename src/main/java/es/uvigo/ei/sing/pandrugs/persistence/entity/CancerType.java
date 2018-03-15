@@ -35,6 +35,8 @@ public enum CancerType {
 	CERVIX(true),
 	CLINICAL_CANCER(false), // Added
 	COLON(true),
+	ESOPHAGUS(true),
+	FALLOPIAN_TUBE(true),
 	HEAD_AND_NECK(true),
 	INTESTINE(true),
 	KIDNEY(true),
@@ -44,6 +46,7 @@ public enum CancerType {
 	NERVOUS_SYSTEM(true),
 	OVARY(true),
 	PANCREAS(true),
+	PERITONEUM(true),
 	PROSTATE(true),
 	RECTUM(true),
 	RETINA(true),
