@@ -103,7 +103,6 @@ public class DrugSource implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
-		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		result = prime * result + ((sourceDrugName == null) ? 0 : sourceDrugName.hashCode());
 		return result;
 	}
@@ -121,11 +120,6 @@ public class DrugSource implements Serializable {
 			if (other.drug != null)
 				return false;
 		} else if (!drug.equals(other.drug))
-			return false;
-		if (source == null) {
-			if (other.source != null)
-				return false;
-		} else if (!source.equals(other.source))
 			return false;
 		if (sourceDrugName == null) {
 			if (other.sourceDrugName != null)

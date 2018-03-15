@@ -22,12 +22,16 @@
 package es.uvigo.ei.sing.pandrugs.persistence.dao;
 
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -65,7 +69,7 @@ public class DefaultGeneDrugWarningDAO implements GeneDrugWarningDAO {
 	}
 
 	@Override
-	public Set<GeneDrugWarning> findForGeneDrugs(Collection<GeneDrug> geneDrugs) {
+	public Map<GeneDrug, Set<GeneDrugWarning>> findForGeneDrugs(Collection<GeneDrug> geneDrugs) {
 		requireNonEmpty(geneDrugs, "At least one GeneDrug should be provided");
 		
 		final CriteriaBuilder cb = dh.cb();
@@ -73,49 +77,67 @@ public class DefaultGeneDrugWarningDAO implements GeneDrugWarningDAO {
 		final CriteriaQuery<GeneDrugWarning> query = dh.createCBQuery();
 		final Root<GeneDrugWarning> root = query.from(GeneDrugWarning.class);
 		
-		final Path<Object> geneSymbolField = root.get("geneSymbol");
-		final Path<Object> drugField = root.get("standardDrugName");
+		final Path<String> geneSymbolField = root.get("affectedGene");
+		final Path<String> drugField = root.get("standardDrugName");
 		
-		final Predicate[] predicates = geneDrugs.stream()
+		final Predicate[] geneDrugPredicates = geneDrugs.stream()
 			.map(gd -> cb.and(
-				cb.or(
-					cb.equal(geneSymbolField, gd.getGeneSymbol()),
-					cb.equal(geneSymbolField, "*")
-				),
-				cb.or(
-					cb.equal(drugField, gd.getStandardDrugName()),
-					cb.equal(drugField, "*")
-				)
+				cb.equal(geneSymbolField, gd.getGeneSymbol()),
+				cb.equal(drugField, gd.getStandardDrugName())
 			))
 		.toArray(Predicate[]::new);
 
-		final List<GeneDrugWarning> results = em.createQuery(query.select(root).where(cb.or(predicates)))
-			.getResultList();
+		final List<GeneDrugWarning> results = em.createQuery(
+			query.select(root)
+				.where(cb.or(geneDrugPredicates))
+		).getResultList();
 		
-		final Set<GeneDrugWarning> warnings = new HashSet<>();
+		final Function<GeneDrug, Set<GeneDrugWarningMessage>> getGeneDrugWarnings = geneDrug -> results.stream()
+			.filter(warning -> isWarningForGeneDrug(warning, geneDrug))
+			.map(warning -> new GeneDrugWarningMessage(geneDrug, warning))
+			.collect(toSet());
 		
-		final Set<String> genes = geneDrugs.stream()
-			.map(GeneDrug::getGeneSymbol)
-		.collect(toSet());
-		
-		final Set<String> drugs = geneDrugs.stream()
-			.map(GeneDrug::getStandardDrugName)
-		.collect(toSet());
-		
-		for (GeneDrugWarning warning : results) {
-			if ("*".equals(warning.getGeneSymbol())) {
-				genes.forEach(gene -> warnings.add(
-					new GeneDrugWarning(gene, warning.getStandardDrugName(), warning.getWarning())
-				));
-			} else if ("*".equals(warning.getStandardDrugName())) {
-				drugs.forEach(drug -> warnings.add(
-					new GeneDrugWarning(warning.getGeneSymbol(), drug, warning.getWarning())
-				));
-			} else {
-				warnings.add(warning);
+		return geneDrugs.stream()
+			.map(getGeneDrugWarnings)
+			.flatMap(Set::stream)
+		.collect(groupingBy(GeneDrugWarningMessage::getGeneDrug, mapping(GeneDrugWarningMessage::getWarning, toSet())));
+			
+	}
+	
+	private final static boolean isWarningForGeneDrug(GeneDrugWarning warning, GeneDrug geneDrug) {
+		if (warning.getAffectedGene().equals(geneDrug.getGeneSymbol())
+			&& warning.getStandardDrugName().equals(geneDrug.getStandardDrugName())
+		) {
+			switch (warning.getInteractionType()) {
+			case DIRECT_TARGET:
+				return geneDrug.isTarget();
+			case BIOMARKER:
+				return !geneDrug.isTarget();
+			case PATHWAY_MEMBER:
+				return geneDrug.isTarget() && geneDrug.getIndirectGeneSymbols().contains(warning.getIndirectGene());
+			default:
+				throw new IllegalStateException("GeneDrugWarning must have a valid interaction type");
 			}
+		} else {
+			return false;
+		}
+	}
+	
+	private final static class GeneDrugWarningMessage {
+		private final GeneDrug geneDrug;
+		private final GeneDrugWarning warning;
+		
+		public GeneDrugWarningMessage(GeneDrug geneDrug, GeneDrugWarning warningMessage) {
+			this.geneDrug = requireNonNull(geneDrug);
+			this.warning = requireNonNull(warningMessage);
 		}
 		
-		return warnings;
+		public GeneDrug getGeneDrug() {
+			return geneDrug;
+		}
+		
+		public GeneDrugWarning getWarning() {
+			return warning;
+		}
 	}
 }

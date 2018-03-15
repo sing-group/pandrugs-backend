@@ -51,7 +51,6 @@ import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -101,7 +100,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Before
 	public void setUp() {
 		expect(this.drugWarningDao.findForGeneDrugs(anyObject()))
-			.andReturn(emptySet())
+			.andReturn(emptyMap())
 		.anyTimes();
 		
 		expect(this.indirectResistanceDao.getIndirectResistancesFor(anyObject()))

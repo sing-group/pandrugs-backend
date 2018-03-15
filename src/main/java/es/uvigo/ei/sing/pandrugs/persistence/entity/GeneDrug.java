@@ -262,6 +262,10 @@ public class GeneDrug implements Serializable {
 		return genes;
 	}
 	
+	public boolean hasIndirectGenes() {
+		return !this.indirectGenes.isEmpty();
+	}
+	
 	public List<IndirectGene> getIndirectGenes() {
 		return unmodifiableList(this.indirectGenes);
 	}

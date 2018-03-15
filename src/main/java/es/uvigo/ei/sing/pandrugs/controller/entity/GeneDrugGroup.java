@@ -25,10 +25,8 @@ import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -37,7 +35,7 @@ import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +55,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.InteractionType;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
@@ -69,22 +68,22 @@ public class GeneDrugGroup {
 	private final GeneScoreCalculator geneScoreCalculator;
 	private final DrugScoreCalculator drugScoreCalculator;
 	
-	private final Set<GeneDrugWarning> warnings;
+	private final Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings;
 	private final Map<String, Set<String>> resistanceCausedBy;
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
-		Set<GeneDrugWarning> drugWarnings,
+		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		Map<String, Set<String>> resistanceCausedBy
 	) {
-		this(queryGenes, geneDrugs, drugWarnings, resistanceCausedBy, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
+		this(queryGenes, geneDrugs, geneDrugWarnings, resistanceCausedBy, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
-		Set<GeneDrugWarning> drugWarnings,
+		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		Map<String, Set<String>> resistanceCausedBy,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
@@ -95,10 +94,10 @@ public class GeneDrugGroup {
 		this.geneScoreCalculator = requireNonNull(geneScoreCalculator);
 		this.drugScoreCalculator = requireNonNull(drugScoreCalculator);
 		
-		if (drugWarnings.isEmpty()) {
-			this.warnings = emptySet();
+		if (!geneDrugs.containsAll(geneDrugWarnings.keySet())) {
+			throw new IllegalArgumentException("drugWarnings contains gene drugs that do not belong to this group");
 		} else {
-			this.warnings = unmodifiableSet(new HashSet<>(drugWarnings));
+			this.geneDrugWarnings = new HashMap<>(geneDrugWarnings);
 		}
 		
 		if (resistanceCausedBy.isEmpty()) {
@@ -152,14 +151,32 @@ public class GeneDrugGroup {
 		return unmodifiableList(geneDrugs);
 	}
 	
-	public Set<GeneDrugWarning> getDrugWarnings() {
-		return unmodifiableSet(this.warnings);
+	public Set<GeneDrugWarning> getWarning(GeneDrug geneDrug, boolean forceIndirect) {
+		if (this.hasWarning(geneDrug, forceIndirect)) {
+			return this.geneDrugWarnings.get(geneDrug).stream()
+				.filter(warning -> this.isWarningApplicableTo(warning, geneDrug, forceIndirect))
+			.collect(toSet());
+		} else {
+			return null;
+		}
 	}
 	
-	public Set<GeneDrugWarning> getDrugWarnings(Collection<String> geneSymbols) {
-		return this.warnings.stream()
-			.filter(dw -> geneSymbols.contains(dw.getGeneSymbol()))
-		.collect(toSet());
+	public boolean hasWarning(GeneDrug geneDrug, boolean forceIndirect) {
+		if (this.geneDrugWarnings.containsKey(geneDrug)) {
+			final Set<GeneDrugWarning> warnings = this.geneDrugWarnings.get(geneDrug);
+			
+			return warnings.stream()
+				.anyMatch(warning -> this.isWarningApplicableTo(warning, geneDrug, forceIndirect));
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean isWarningApplicableTo(GeneDrugWarning warning, GeneDrug geneDrug, boolean forceIndirect) {
+		final InteractionType interactionType = warning.getInteractionType();
+		
+		return ((this.isDirect(geneDrug) && !forceIndirect) && interactionType != InteractionType.PATHWAY_MEMBER)
+			|| ((this.isIndirect(geneDrug) || forceIndirect) && interactionType == InteractionType.PATHWAY_MEMBER);
 	}
 	
 	public Set<String> getIndirectResistance(String geneSymbol) {

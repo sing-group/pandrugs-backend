@@ -25,11 +25,22 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.PostLoad;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity(name = "gene_drug_warning")
+@Table(
+	indexes = @Index(name = "IDX_gene_drug_warning_affected_gene", columnList = "affected_gene", unique = false),
+	uniqueConstraints = @UniqueConstraint(columnNames = { "affected_gene", "standard_drug_name", "interaction_type", "indirect_gene" })
+	
+)
 public class GeneDrugWarning implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -37,29 +48,39 @@ public class GeneDrugWarning implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "gene_symbol", length = 100, columnDefinition = "VARCHAR(100)")
-	private String geneSymbol;
+	@Column(name = "affected_gene", length = 100, columnDefinition = "VARCHAR(100)", nullable = false)
+	private String affectedGene;
 
-	@Column(name = "standard_drug_name", length = 2000, columnDefinition = "VARCHAR(2000)")
+	@Column(name = "standard_drug_name", length = 2000, columnDefinition = "VARCHAR(2000)", nullable = false)
 	private String standardDrugName;
 	
-	@Column(name = "warning", length = 100, columnDefinition = "VARCHAR(100)")
+	@Column(name = "warning", length = 1000, columnDefinition = "VARCHAR(1000)", nullable = false)
 	private String warning;
 	
-	GeneDrugWarning() {}
+	@Column(name = "interaction_type", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private InteractionType interactionType;
 	
-	public GeneDrugWarning(String geneSymbol, String standardDrugName, String warning) {
-		this.geneSymbol = geneSymbol;
-		this.standardDrugName = standardDrugName;
-		this.warning = warning;
-	}
+	@Column(name = "indirect_gene", length = 100, columnDefinition = "VARCHAR(100)", nullable = true)
+	private String indirectGene;
+	
+	GeneDrugWarning() {}
 
+	@PostLoad
+	public void validate() {
+		if (this.interactionType == InteractionType.PATHWAY_MEMBER && this.indirectGene == null) {
+			throw new IllegalStateException("Missing indirect gene for PATHWAY_MEMBER relation");
+		} else if (this.interactionType != InteractionType.PATHWAY_MEMBER && this.indirectGene != null) {
+			throw new IllegalStateException("Indirect gene is not supported in interaction types different from PATHWAY_MEMBER");
+		}
+	}
+	
 	public Long getId() {
 		return id;
 	}
 
-	public String getGeneSymbol() {
-		return geneSymbol;
+	public String getAffectedGene() {
+		return affectedGene;
 	}
 
 	public String getStandardDrugName() {
@@ -70,14 +91,19 @@ public class GeneDrugWarning implements Serializable {
 		return warning;
 	}
 
+	public InteractionType getInteractionType() {
+		return interactionType;
+	}
+
+	public String getIndirectGene() {
+		return indirectGene;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((standardDrugName == null) ? 0 : standardDrugName.hashCode());
-		result = prime * result + ((warning == null) ? 0 : warning.hashCode());
 		return result;
 	}
 
@@ -90,25 +116,10 @@ public class GeneDrugWarning implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		GeneDrugWarning other = (GeneDrugWarning) obj;
-		if (geneSymbol == null) {
-			if (other.geneSymbol != null)
-				return false;
-		} else if (!geneSymbol.equals(other.geneSymbol))
-			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
-			return false;
-		if (standardDrugName == null) {
-			if (other.standardDrugName != null)
-				return false;
-		} else if (!standardDrugName.equals(other.standardDrugName))
-			return false;
-		if (warning == null) {
-			if (other.warning != null)
-				return false;
-		} else if (!warning.equals(other.warning))
 			return false;
 		return true;
 	}

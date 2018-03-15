@@ -1,8 +1,8 @@
-/*
+/*-
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2017 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ * Copyright (C) 2015 - 2018 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -19,15 +19,10 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-package es.uvigo.ei.sing.pandrugs.persistence.dao;
+package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
-
-public interface GeneDrugWarningDAO {
-	public Map<GeneDrug, Set<GeneDrugWarning>> findForGeneDrugs(Collection<GeneDrug> geneDrugs);
+public enum InteractionType {
+	DIRECT_TARGET,
+	BIOMARKER,
+	PATHWAY_MEMBER;
 }

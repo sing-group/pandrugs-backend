@@ -46,7 +46,7 @@
 		<property name="packagesToScan" value="es.uvigo.ei.sing.pandrugs.persistence.entity" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+				<property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect" />
 				<property name="generateDdl" value="true" />
 				<property name="showSql" value="false" />
 			</bean>

@@ -23,12 +23,10 @@ package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -92,8 +90,6 @@ public class GeneDrugInfo {
 
 	public GeneDrugInfo(GeneDrug geneDrug, GeneDrugGroup group, boolean forceIndirect) {
 		final Gene[] queryGenes = group.getQueryGenesForGeneDrug(geneDrug, forceIndirect);
-		final Set<String> queryGeneSymbols = stream(group.getQueryGeneSymbolsForGeneDrug(geneDrug, forceIndirect))
-			.collect(toSet());
 		
 		this.drug = geneDrug.getStandardDrugName();
 		this.showDrugName = geneDrug.getShowDrugName();
@@ -128,10 +124,14 @@ public class GeneDrugInfo {
 			indirectResistances = Stream.empty();
 		}
 		
-		final Stream<String> drugWarnings = group.getDrugWarnings(queryGeneSymbols).stream()
-			.map(GeneDrugWarning::getWarning);
+		if (geneDrug.getStandardDrugName().equals("391210-10-9")) {
+		}
 		
-		this.warnings = Stream.concat(indirectResistances, drugWarnings)
+		final Stream<String> geneDrugWarnings = group.hasWarning(geneDrug, forceIndirect)
+			? group.getWarning(geneDrug, forceIndirect).stream().map(GeneDrugWarning::getWarning)
+			: Stream.empty();
+		
+		this.warnings = Stream.concat(indirectResistances, geneDrugWarnings)
 			.toArray(String[]::new);
 		
 		if (geneDrug.isTarget()) {

@@ -34,12 +34,10 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -213,20 +211,22 @@ public class DefaultGeneDrugController implements GeneDrugController {
 				.collect(groupingBy(GeneDrug::getStandardDrugName, toSet()))
 			.values();
 			
-			final BiFunction<String, String[], Set<GeneDrugWarning>> getWarnings =
-				getGeneDrugWarningMapper(geneDrugs);
+			final Map<GeneDrug, Set<GeneDrugWarning>> warnings = this.drugWarningDao.findForGeneDrugs(geneDrugs);
 				
 			final Map<String, Set<String>> indirectResistances = getIndirectResistances(groups);
 			
 			return groups.stream()
 				.map(gdg -> {
 					final String[] queryGenes = geneDrugToGenes.apply(gdg);
-					final Drug drug = gdg.iterator().next().getDrug();
+					
+					final Map<GeneDrug, Set<GeneDrugWarning>> gdgWarnings = warnings.entrySet().stream()
+						.filter(entry -> gdg.contains(entry.getKey()))
+					.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					
 					return new GeneDrugGroup(
 						queryGenes,
 						gdg,
-						getWarnings.apply(drug.getStandardName(), queryGenes),
+						gdgWarnings,
 						indirectResistances,
 						gScoreCalculator,
 						drugScoreCalculator
@@ -243,23 +243,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		.collect(toSet());
 		
 		return this.indirectResistanceDao.getIndirectResistancesFor(geneSymbols);
-	}
-	
-	private BiFunction<String, String[], Set<GeneDrugWarning>> getGeneDrugWarningMapper(Collection<GeneDrug> geneDrugs) {
-		final Set<GeneDrugWarning> warnings =
-			this.drugWarningDao.findForGeneDrugs(geneDrugs);
-
-		final BiFunction<String, String[], Set<GeneDrugWarning>> getWarnings =
-			(drug, genes) -> {
-				final Set<String> geneSet = new HashSet<>(asList(genes));
-				
-				return warnings.stream()
-					.filter(warning -> warning.getStandardDrugName().equals(drug))
-					.filter(warning -> geneSet.contains(warning.getGeneSymbol()))
-				.collect(toSet());
-			};
-			
-		return getWarnings;
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(
