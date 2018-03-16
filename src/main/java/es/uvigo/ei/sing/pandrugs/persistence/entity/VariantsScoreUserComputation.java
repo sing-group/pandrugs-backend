@@ -44,7 +44,7 @@ public class VariantsScoreUserComputation {
 	
 	@Basic(optional = false, fetch = LAZY)
 	@Temporal(TIMESTAMP)
-	@Column(name = "creation_date", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	@Column(name = "creation_date", nullable = false)
 	private Date creationDate;
 
 	@ManyToOne
@@ -67,6 +67,11 @@ public class VariantsScoreUserComputation {
 		this.id = id;
 		this.user = user;
 		this.computationDetails = details;
+		this.creationDate = new Date();
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public User getUser() {
@@ -87,9 +92,5 @@ public class VariantsScoreUserComputation {
 
 	public void setComputationDetails(VariantsScoreComputationDetails computationDetails) {
 		this.computationDetails = computationDetails;
-	}
-
-	public String getId() {
-		return id;
 	}
 }

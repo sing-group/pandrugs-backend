@@ -21,12 +21,18 @@
  */
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.TemporalType.TIMESTAMP;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
 @Embeddable
@@ -39,6 +45,11 @@ public class VariantsScoreComputationStatus {
 	
 	@Column(name="status_task_name")
 	private String taskName = "";
+	
+	@Basic(optional = true, fetch = LAZY)
+	@Temporal(TIMESTAMP)
+	@Column(name = "finishing_date", nullable = true)
+	private Date finishingDate;
 	
 	@Transient
 	private List<Consumer<VariantsScoreComputationStatus>> changeListeners = new ArrayList<>();
@@ -67,6 +78,11 @@ public class VariantsScoreComputationStatus {
 	
 	public void setOverallProgress(double overallProgress) {
 		this.overallProgress = overallProgress;
+
+		if (this.isFinished()) {
+			this.finishingDate = new Date();
+		}
+		
 		notifyListeners();
 	}
 	
@@ -82,6 +98,11 @@ public class VariantsScoreComputationStatus {
 		this.taskName = taskName;
 		this.taskProgress = taskProgress;
 		this.overallProgress = overallProgress;
+		
+		if (this.isFinished()) {
+			this.finishingDate = new Date();
+		}
+		
 		notifyListeners();
 	}
 

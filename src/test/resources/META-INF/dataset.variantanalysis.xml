@@ -36,6 +36,8 @@
 			status_overall_progress="0.5"
 
 			results_vep_file="vep.txt"
+      
+      creation_date="2018-02-27 11:35:36"
 			/>
 	<variants_score_user_computation
 			id = "2"
@@ -53,6 +55,9 @@
 			results_vep_file="vep.txt"
 			results_vscore_file="vep_data.csv"
 			results_affectedgenes_file="genes_affected.csv"
+      
+      creation_date="2018-02-27 11:35:36"
+      finishing_date="2018-02-27 23:35:36"
 			/>
 	<variants_score_user_computation
 			id = "3"
@@ -70,5 +75,8 @@
 			results_vep_file="vep.txt"
 			results_vscore_file="vep_data.csv"
 			results_affectedgenes_file="genes_affected.csv"
+      
+      creation_date="2018-02-27 11:35:36"
+      finishing_date="2018-02-27 23:35:36"
 	/>
 </dataset>
