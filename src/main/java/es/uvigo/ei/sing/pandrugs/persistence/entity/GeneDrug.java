@@ -68,7 +68,7 @@ public class GeneDrug implements Serializable {
 	@Column(name = "resistance", length = 12)
 	private ResistanceType resistance;
 
-	@Column(name = "alteration", length = 100, columnDefinition = "VARCHAR(100)")
+	@Column(name = "alteration", length = 255, columnDefinition = "VARCHAR(255)")
 	private String alteration;
 	
 	@Column(name = "score")
