@@ -332,25 +332,23 @@ public class GeneDrugGroup {
 	}
 	
 	public SortedMap<String, String> getSourceLinks() {
-		return new TreeMap<>(
-			Stream.of(this.getSources())
-			.collect(toMap(
-				DrugSource::getSource,
-				ds -> ds.getDrugURL(this.queryGenes),
-				(v1, v2) -> v1
-			))
-		);
+		final SortedMap<String, String> sourceLinks = new TreeMap<>();
+		
+		for (DrugSource source : this.getSources()) {
+			sourceLinks.put(source.getSource(), source.getDrugURL(this.queryGenes));
+		}
+
+		return sourceLinks;
 	}
 	
 	public SortedMap<String, String> getSourceShortNames() {
-		return new TreeMap<>(
-			Stream.of(this.getSources())
+		return Stream.of(this.getSources())
 			.collect(toMap(
 				DrugSource::getSource,
 				ds -> ds.getSourceInformation().getShortName(),
-				(v1, v2) -> v1
-			))
-		);
+				(v1, v2) -> v1,
+				TreeMap::new
+			));
 	}
 	
 	public DrugSource[] getCuratedSources() {
