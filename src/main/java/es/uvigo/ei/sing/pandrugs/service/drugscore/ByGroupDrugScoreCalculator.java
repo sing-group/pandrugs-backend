@@ -24,6 +24,10 @@ package es.uvigo.ei.sing.pandrugs.service.drugscore;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
@@ -57,16 +61,18 @@ public class ByGroupDrugScoreCalculator implements DrugScoreCalculator {
 			return Double.NaN;
 		}
 		
-		return group.hasResistance() ? -score : score;
+		return geneDrug.isResistance() ? -score : score;
 	}
 	
 	@Override
 	public double calculateGeneDrugGroupScore(GeneDrugGroup group) {
-		final double dScore = group.getGeneDrugs().stream()
-			.mapToDouble(geneDrug -> calculateGeneDrugScore(group, geneDrug))
-			.map(Math::abs)
-		.max().orElse(Double.NaN);
+		final SortedSet<Double> dScore = group.getGeneDrugs().stream()
+			.map(geneDrug -> calculateGeneDrugScore(group, geneDrug))
+		.collect(toCollection(TreeSet::new));
 		
-		return group.hasResistance() ? -dScore : dScore;
+		final double min = dScore.first();
+		final double max = dScore.last();
+		
+		return abs(max) < abs(min) ? min : max; // On equality, max is returned
 	}
 }
