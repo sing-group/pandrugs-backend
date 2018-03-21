@@ -176,7 +176,7 @@ public class GeneDrugGroup {
 		final InteractionType interactionType = warning.getInteractionType();
 		
 		return ((this.isDirect(geneDrug) && !forceIndirect) && interactionType != InteractionType.PATHWAY_MEMBER)
-			|| ((this.isIndirect(geneDrug) || forceIndirect) && interactionType == InteractionType.PATHWAY_MEMBER);
+			|| ((this.isIndirect(geneDrug) || forceIndirect) && interactionType == InteractionType.PATHWAY_MEMBER && this.isInQueryGenes(warning.getIndirectGene()));
 	}
 	
 	public Set<String> getIndirectResistance(String geneSymbol) {
