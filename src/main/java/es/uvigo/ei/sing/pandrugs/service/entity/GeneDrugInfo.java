@@ -112,27 +112,12 @@ public class GeneDrugInfo {
 		this.sources = geneDrug.getDrugSourceNames().stream().toArray(String[]::new);
 		this.families = geneDrug.getDrug().getFamilies();
 
-		final Stream<String> indirectResistances;
-		if (group.hasIndirectResistances(geneDrug)) {
-			indirectResistances = stream(queryGenes)
-				.map(Gene::getGeneSymbol)
-				.filter(group::hasIndirectResistance)
-				.flatMap(affectedGene -> group.getIndirectResistance(affectedGene).stream()
-					.map(resistance -> String.format("%s amplifications induce %s resistance", resistance, affectedGene))
-				);
-		} else {
-			indirectResistances = Stream.empty();
-		}
-		
-		if (geneDrug.getStandardDrugName().equals("391210-10-9")) {
-		}
 		
 		final Stream<String> geneDrugWarnings = group.hasWarning(geneDrug, forceIndirect)
 			? group.getWarning(geneDrug, forceIndirect).stream().map(GeneDrugWarning::getWarning)
 			: Stream.empty();
 		
-		this.warnings = Stream.concat(indirectResistances, geneDrugWarnings)
-			.toArray(String[]::new);
+		this.warnings = geneDrugWarnings.toArray(String[]::new);
 		
 		if (geneDrug.isTarget()) {
 			if (!forceIndirect && group.isDirect(geneDrug)) {

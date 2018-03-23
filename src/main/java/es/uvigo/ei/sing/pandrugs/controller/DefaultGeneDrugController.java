@@ -51,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
-import es.uvigo.ei.sing.pandrugs.persistence.dao.IndirectResistanceDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
@@ -73,9 +72,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Inject
 	private GeneDrugWarningDAO drugWarningDao;
-	
-	@Inject
-	private IndirectResistanceDAO indirectResistanceDao;
 	
 	@Inject
 	private VariantsAnalysisController variantsAnalysisController;
@@ -213,8 +209,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			
 			final Map<GeneDrug, Set<GeneDrugWarning>> warnings = this.drugWarningDao.findForGeneDrugs(geneDrugs);
 				
-			final Map<String, Set<String>> indirectResistances = getIndirectResistances(groups);
-			
 			return groups.stream()
 				.map(gdg -> {
 					final String[] queryGenes = geneDrugToGenes.apply(gdg);
@@ -227,22 +221,12 @@ public class DefaultGeneDrugController implements GeneDrugController {
 						queryGenes,
 						gdg,
 						gdgWarnings,
-						indirectResistances,
 						gScoreCalculator,
 						drugScoreCalculator
 					);
 				})
 			.collect(toList());
 		}
-	}
-
-	protected Map<String, Set<String>> getIndirectResistances(final Collection<Set<GeneDrug>> groups) {
-		final Set<String> geneSymbols = groups.stream()
-			.flatMap(Set::stream)
-			.map(GeneDrug::getGeneSymbol)
-		.collect(toSet());
-		
-		return this.indirectResistanceDao.getIndirectResistancesFor(geneSymbols);
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(

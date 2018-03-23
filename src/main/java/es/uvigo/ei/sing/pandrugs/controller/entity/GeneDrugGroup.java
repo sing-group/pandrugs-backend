@@ -24,9 +24,7 @@ package es.uvigo.ei.sing.pandrugs.controller.entity;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.CompareCollections.equalsIgnoreOrder;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -69,22 +67,19 @@ public class GeneDrugGroup {
 	private final DrugScoreCalculator drugScoreCalculator;
 	
 	private final Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings;
-	private final Map<String, Set<String>> resistanceCausedBy;
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
-		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
-		Map<String, Set<String>> resistanceCausedBy
+		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings
 	) {
-		this(queryGenes, geneDrugs, geneDrugWarnings, resistanceCausedBy, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
+		this(queryGenes, geneDrugs, geneDrugWarnings, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
-		Map<String, Set<String>> resistanceCausedBy,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
@@ -98,12 +93,6 @@ public class GeneDrugGroup {
 			throw new IllegalArgumentException("drugWarnings contains gene drugs that do not belong to this group");
 		} else {
 			this.geneDrugWarnings = new HashMap<>(geneDrugWarnings);
-		}
-		
-		if (resistanceCausedBy.isEmpty()) {
-			this.resistanceCausedBy = emptyMap();
-		} else {
-			this.resistanceCausedBy = unmodifiableMap(resistanceCausedBy); // TODO: Make map' sets unmodifiable
 		}
 		
 		final Predicate<String> isInGenes =
@@ -177,21 +166,6 @@ public class GeneDrugGroup {
 		
 		return ((this.isDirect(geneDrug) && !forceIndirect) && interactionType != InteractionType.PATHWAY_MEMBER)
 			|| ((this.isIndirect(geneDrug) || forceIndirect) && interactionType == InteractionType.PATHWAY_MEMBER && this.isInQueryGenes(warning.getIndirectGene()));
-	}
-	
-	public Set<String> getIndirectResistance(String geneSymbol) {
-		return this.resistanceCausedBy.get(geneSymbol);
-	}
-	
-	public boolean hasIndirectResistance(String geneSymbol) {
-		return this.resistanceCausedBy.containsKey(geneSymbol);
-	}
-	
-	public boolean hasIndirectResistances(GeneDrug geneDrug) {
-		if (!this.geneDrugs.contains(geneDrug))
-			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
-		
-		return this.resistanceCausedBy.containsKey(geneDrug.getGeneSymbol());
 	}
 	
 	public String[] getQueryGeneSymbols() {

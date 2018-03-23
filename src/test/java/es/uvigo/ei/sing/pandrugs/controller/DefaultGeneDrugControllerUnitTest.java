@@ -76,7 +76,6 @@ import org.junit.runner.RunWith;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
-import es.uvigo.ei.sing.pandrugs.persistence.dao.IndirectResistanceDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
@@ -94,16 +93,9 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Mock
 	private GeneDrugWarningDAO drugWarningDao;
 	
-	@Mock
-	private IndirectResistanceDAO indirectResistanceDao;
-	
 	@Before
 	public void setUp() {
 		expect(this.drugWarningDao.findForGeneDrugs(anyObject()))
-			.andReturn(emptyMap())
-		.anyTimes();
-		
-		expect(this.indirectResistanceDao.getIndirectResistancesFor(anyObject()))
 			.andReturn(emptyMap())
 		.anyTimes();
 	}
@@ -112,13 +104,11 @@ public class DefaultGeneDrugControllerUnitTest {
 	public void verifyDao() {
 		verify(dao);
 		verify(drugWarningDao);
-		verify(indirectResistanceDao);
 	}
 	
 	private void replayAll() {
 		replay(dao);
 		replay(drugWarningDao);
-		replay(indirectResistanceDao);
 	}
 	
 	@Test
