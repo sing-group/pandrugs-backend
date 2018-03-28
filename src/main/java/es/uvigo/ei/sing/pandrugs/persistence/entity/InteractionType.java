@@ -19,6 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
 public enum InteractionType {

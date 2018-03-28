@@ -1,8 +1,8 @@
-/*
+/*-
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2016 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
+ * Copyright (C) 2015 - 2018 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -19,6 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
 package es.uvigo.ei.sing.pandrugs.service.drugscore;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
