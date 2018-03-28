@@ -48,6 +48,7 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singl
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static es.uvigo.ei.sing.pandrugs.util.ExpectWithVarargs.expectWithUnorderedVarargs;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
@@ -67,7 +68,6 @@ import java.util.function.Function;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
-import org.easymock.EasyMock;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -77,6 +77,7 @@ import org.junit.runner.RunWith;
 
 import es.uvigo.ei.sing.pandrugs.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -218,19 +219,13 @@ public class DefaultGeneDrugServiceUnitTest {
 		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneGroupMixed(), multipleGeneGroupInfosMixed());
 	}
 	
-	private static String[] arrayToEasyMockMatchers(final String[] query) {
-		return stream(query)
-			.map(EasyMock::eq)
-		.toArray(String[]::new);
-	}
-	
 	private void testListByGene(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
 		testListByGene(new String[] { query }, controllerResult, expectedResult);
 	}
 
 	private void testListByGene(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
-			controller -> expect(controller.searchByGenes(anyObject(), arrayToEasyMockMatchers(query)))
+			controller -> expectWithUnorderedVarargs(controller, "searchByGenes", query, GeneDrugQueryParameters.class)
 				.andReturn(asList(controllerResult)),
 			service -> service.list(stream(query).collect(toSet()), null, null, null, null, true, true, true),
 			expectedResult
@@ -243,7 +238,7 @@ public class DefaultGeneDrugServiceUnitTest {
 	
 	private void testSearchByDrug(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
-			controller -> expect(controller.searchByDrugs(anyObject(), arrayToEasyMockMatchers(query)))
+			controller -> expectWithUnorderedVarargs(controller, "searchByDrugs", query, GeneDrugQueryParameters.class)
 				.andReturn(asList(controllerResult)),
 			service -> service.list(null, stream(query).collect(toSet()), null, null, null, true, true, true),
 			expectedResult

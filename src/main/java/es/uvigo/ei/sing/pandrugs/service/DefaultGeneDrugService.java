@@ -96,7 +96,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					new GeneDrugQueryParameters(
 						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 					),
-					genes.stream().sorted().toArray(String[]::new)
+					genes.stream().toArray(String[]::new)
 				);
 				
 				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
@@ -105,7 +105,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					new GeneDrugQueryParameters(
 						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
 					),
-					drugs.stream().sorted().toArray(String[]::new)
+					drugs.stream().toArray(String[]::new)
 				);
 				
 				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();

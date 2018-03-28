@@ -171,7 +171,7 @@
 		<dbunit.version>2.5.0</dbunit.version>
 		<hsqldb.version>2.3.4</hsqldb.version>
 		<springtestdbunit.version>1.3.0</springtestdbunit.version>
-		<easymock.version>3.4</easymock.version>
+		<easymock.version>3.5.1</easymock.version>
 		<guava-collections.version>r03</guava-collections.version>
 	</properties>
 

@@ -47,11 +47,13 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singl
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static es.uvigo.ei.sing.pandrugs.util.ExpectWithVarargs.expectWithUnorderedVarargs;
 import static es.uvigo.ei.sing.pandrugs.util.StringFormatter.toUpperCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -397,7 +399,7 @@ public class DefaultGeneDrugControllerUnitTest {
 	@Test
 	public void testSearchByGenesMultipleGeneMixed() {
 		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
-		final String[] query = multipleGeneSymbolsMixed();
+		final String[] query = {"DIRECT GENE 1", "DIRECT GENE 2", "IG1", "IG2"};//multipleGeneSymbolsMixed();
 
 		prepareSearchByGene(queryParameters, query, asList(multipleGeneMixed()));
 		
@@ -461,7 +463,10 @@ public class DefaultGeneDrugControllerUnitTest {
 		String geneName,
 		List<GeneDrug> response
 	) {
-		prepareSearchByGene(queryParameters, new String[] { geneName }, response);
+		expect(dao.searchByGene(queryParameters, geneName.toUpperCase()))
+			.andReturn(response);
+	
+		replayAll();
 	}
 	
 	private void prepareSearchByGene(
@@ -469,7 +474,9 @@ public class DefaultGeneDrugControllerUnitTest {
 		String[] geneNames,
 		List<GeneDrug> response
 	) {
-		expect(dao.searchByGene(queryParameters, toUpperCase(geneNames)))
+		geneNames = toUpperCase(geneNames);
+		
+		expectWithUnorderedVarargs(dao, "searchByGene", geneNames, eq(queryParameters))
 			.andReturn(response);
 		
 		replayAll();
@@ -488,9 +495,11 @@ public class DefaultGeneDrugControllerUnitTest {
 		String[] drugNames,
 		List<GeneDrug> response
 	) {
-		expect(dao.searchByDrug(queryParameters, toUpperCase(drugNames)))
-			.andReturn(response);
+		drugNames = toUpperCase(drugNames);
 		
+		expectWithUnorderedVarargs(dao, "searchByDrug", drugNames, eq(queryParameters))
+			.andReturn(response);
+
 		replayAll();
 	}
 	

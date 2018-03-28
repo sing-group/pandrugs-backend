@@ -34,7 +34,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +109,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			new LinkedHashSet<>(asList(geneNames)),
+			stream(geneNames).collect(toSet()),
 			new DefaultGeneScoreCalculator()
 		);
 	}
@@ -123,7 +123,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return searchForGeneDrugsWithDrugs(
 			queryParameters,
-			new LinkedHashSet<>(asList(standardDrugNames)),
+			stream(standardDrugNames).collect(toSet()),
 			new DefaultGeneScoreCalculator()
 		);
 	}
@@ -140,7 +140,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			new LinkedHashSet<>(geneRank.keySet()),
+			new HashSet<>(geneRank.keySet()),
 			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
 		);
 	}
@@ -157,7 +157,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			new LinkedHashSet<>(geneRank.keySet()),
+			new HashSet<>(geneRank.keySet()),
 			new StaticGeneScoreCalculator(geneRank)
 		);
 	}
