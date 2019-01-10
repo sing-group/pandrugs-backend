@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 
-@XmlRootElement(name = "cancerType", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "cancerType", namespace = "https://www.pandrugs.org")
 public class CancerTypeInfo {
 	private String name;
 	private boolean canBeQueried;

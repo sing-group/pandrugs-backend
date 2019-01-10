@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
-@XmlRootElement(name = "userInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "userInfo", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserInfo {
 	@NotNull(message = "Login can not be null")

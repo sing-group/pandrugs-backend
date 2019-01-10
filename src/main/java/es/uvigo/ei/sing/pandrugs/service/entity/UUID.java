@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "uuid", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "uuid", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UUID {
 	@NotNull(message = "UUID can not be null")

@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "message", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "message", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Message {
 	@NotNull(message = "Text can not be null")

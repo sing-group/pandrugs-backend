@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
-@XmlRootElement(name = "indirect-gene", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "indirectGene", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class IndirectGeneInfo implements Comparable<IndirectGeneInfo> {
 	private GeneInfo geneInfo;
@@ -43,6 +43,8 @@ public class IndirectGeneInfo implements Comparable<IndirectGeneInfo> {
 	@XmlElementWrapper(name = "pathways")
 	@XmlElement(name = "pathway")
 	private PathwayInfo[] pathways;
+
+	IndirectGeneInfo() {}
 
 	public IndirectGeneInfo(String directGeneSymbol, Gene gene, GeneInfo[] queryGenes) {
 		final String[] queryGeneSymbols = stream(queryGenes)

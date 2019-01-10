@@ -45,7 +45,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 import es.uvigo.ei.sing.pandrugs.util.StringJoiner;
 
-@XmlRootElement(name = "gene-drug-info", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "geneDrugInfo", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugGroupInfo {
 	@XmlElementWrapper(name = "genes")

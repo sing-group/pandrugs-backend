@@ -28,20 +28,20 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
 
-@XmlRootElement(name = "geneDrugGroups", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "geneDrugGroup", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugGroupInfos {
-	@NotNull
+	@XmlElementWrapper(name = "geneDrugGroups")
 	@XmlElement(name = "geneDrugGroup")
 	private List<GeneDrugGroupInfo> geneDrugs;
 	

@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "genePresence", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "genePresence", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GenePresence {
 	@XmlElement(name = "present")

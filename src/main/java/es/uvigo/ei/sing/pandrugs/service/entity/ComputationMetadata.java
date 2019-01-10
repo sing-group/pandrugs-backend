@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
 
-@XmlRootElement(name = "computationStatusMetadata", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "computationStatusMetadata", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ComputationMetadata {
 	private final Integer variantsInInput;

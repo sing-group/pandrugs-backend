@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 
-@XmlRootElement(name = "userInfos", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "userInfos", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserInfos {
 	@NotNull

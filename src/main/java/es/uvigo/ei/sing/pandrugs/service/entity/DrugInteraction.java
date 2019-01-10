@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
-@XmlRootElement(name = "drugInteraction", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "drugInteraction", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugInteraction {
 	private String standardDrugName;

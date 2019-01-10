@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 
-@XmlRootElement(name = "drugNames", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "drugNames", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugNames {
 	public static DrugNames[] of(Drug ... drugs) {

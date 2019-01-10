@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
-@XmlRootElement(name = "geneInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "geneInfo", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneInfo implements Comparable<GeneInfo> {
 	@XmlElement(name = "geneSymbol")

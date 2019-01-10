@@ -45,7 +45,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.ResistanceType;
 
-@XmlRootElement(name = "geneDrugInfo", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "geneDrugInfo", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneDrugInfo {
 	private String drug;

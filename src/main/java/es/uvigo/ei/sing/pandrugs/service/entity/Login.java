@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "login", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "login", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Login {
 	@NotNull(message = "Username can not be null")

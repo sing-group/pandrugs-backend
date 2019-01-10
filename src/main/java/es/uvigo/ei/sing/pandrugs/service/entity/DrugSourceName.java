@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 
-@XmlRootElement(name = "drugSourceName", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "drugSourceName", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DrugSourceName {
 	

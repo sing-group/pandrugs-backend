@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Pathway;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
-@XmlRootElement(name = "pathway", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "pathway", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PathwayInfo implements Comparable<PathwayInfo> {
 	private String keggId;

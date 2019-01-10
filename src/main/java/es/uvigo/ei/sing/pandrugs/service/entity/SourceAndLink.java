@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
-@XmlRootElement(name = "source-and-link", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "source-and-link", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SourceAndLink implements Comparable<SourceAndLink> {
 	@XmlAttribute(name = "name")

@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
-@XmlRootElement(name = "geneInteraction", namespace = "http://sing.ei.uvigo.es/pandrugs")
+@XmlRootElement(name = "geneInteraction", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GeneInteraction {
 	private String geneSymbol;
