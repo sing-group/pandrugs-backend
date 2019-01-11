@@ -24,7 +24,7 @@
 	<name>PanDrugs Backend</name>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>war</packaging>
-	<version>1.1.1</version>
+	<version>1.1.2</version>
 
 	<developers>
 		<developer>
@@ -140,6 +140,7 @@
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		<dependency-check-maven.version>4.0.2</dependency-check-maven.version>
 
 		<!-- license-maven-plugin configuration -->
 		<license.licenseName>gpl_v3</license.licenseName>
@@ -148,20 +149,21 @@
 		<license.addJavaLicenseAfterPackage>false</license.addJavaLicenseAfterPackage>
 
 		<!-- Dependencies -->
-		<spring.version>4.3.3.RELEASE</spring.version>
+		<spring.version>4.3.22.RELEASE</spring.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
-		<hibernate.version>5.2.15.Final</hibernate.version>
+		<hibernate.version>5.2.17.Final</hibernate.version>
 		<hibernate.validator.version>5.3.0.Final</hibernate.validator.version>
-		<jersey.version>2.24</jersey.version>
+		<jersey.version>2.27</jersey.version>
 		<miredot-annotations.version>1.5.0</miredot-annotations.version>
-		<mysql.version>5.1.34</mysql.version>
-		<logback.version>1.1.2</logback.version>
+		<mysql.version>8.0.13</mysql.version>
+		<logback.version>1.1.11</logback.version>
 		<jcloverslf4j.version>1.7.22</jcloverslf4j.version>
 		<mail.version>1.5.2</mail.version>
 		<activation.version>1.1.1</activation.version>
 		<commons-io.version>2.4</commons-io.version>
 		<vcfparser.version>1.2-SNAPSHOT</vcfparser.version>
 		<commons-lang.version>2.6</commons-lang.version>
+		<jackson-databind.version>2.8.11.3</jackson-databind.version>
 
 		<!-- Testing dependencies -->
 		<junit.version>4.12</junit.version>
@@ -186,10 +188,11 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet-api.version}</version>
 		</dependency>
+		
 		<!-- Jersey-Spring -->
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring3</artifactId>
+			<artifactId>jersey-spring4</artifactId>
 			<version>${jersey.version}</version>
 			<exclusions>
 				<exclusion>
@@ -205,6 +208,10 @@
 					<artifactId>spring-beans</artifactId>
 				</exclusion>
 				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>org.glassfish.hk2.external</groupId>
 					<artifactId>bean-validator</artifactId>
 				</exclusion>
@@ -214,6 +221,17 @@
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson-databind.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
@@ -241,7 +259,7 @@
 			<version>${miredot-annotations.version}</version>
 		</dependency>
 
-		<!-- Spring 3 dependencies -->
+		<!-- Spring 4 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -270,6 +288,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 
@@ -474,6 +497,19 @@
 				</executions>
 			</plugin>
 
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>${dependency-check-maven.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+            
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
