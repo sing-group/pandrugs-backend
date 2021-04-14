@@ -26,7 +26,7 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 public enum Extra {
 	CHEMOTHERAPY,
 	TARGETED_THERAPY,
-	ANTIHORMONE_THERAPY,
+	HORMONE_THERAPY,
 	IMMUNOTHERAPY,
 	PHOTODYNAMIC_THERAPY;
 }

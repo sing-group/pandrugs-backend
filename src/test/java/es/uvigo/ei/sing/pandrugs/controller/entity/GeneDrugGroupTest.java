@@ -562,7 +562,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 
 	@Test
 	public void testGetExtra() {
-		final Extra extra = Extra.ANTIHORMONE_THERAPY;
+		final Extra extra = Extra.HORMONE_THERAPY;
 		final String[] genes = new String[] { "G1", "G2" };
 		
 		final Drug drug = newDrug("D1", extra);
