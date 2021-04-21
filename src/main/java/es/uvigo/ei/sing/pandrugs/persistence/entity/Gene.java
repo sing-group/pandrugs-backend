@@ -51,6 +51,9 @@ public class Gene implements Serializable {
 	@Id
 	@Column(name = "gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
 	private String geneSymbol;
+	
+	@Column(name = "gscore", nullable = true)
+	private Double gscore;
 
 	@ElementCollection
 	@CollectionTable(name = "gene_entrez", joinColumns = @JoinColumn(name = "gene_symbol", insertable = false, updatable = false, nullable = true))
@@ -163,6 +166,7 @@ public class Gene implements Serializable {
 		this.proteins = proteins;
 		this.interactingGene = interactingGene;
 		this.pathways = pathways;
+		this.gscore = this.calculateGScore();
 	}
 
 	public String getGeneSymbol() {
@@ -200,6 +204,10 @@ public class Gene implements Serializable {
 	}
 
 	public double getGScore() {
+		return this.gscore == null ? this.calculateGScore() : this.gscore;
+	}
+	
+	private double calculateGScore() {
 		double gScore = 0d;
 
 		if (this.tumorPortalMutationLevel != null) {

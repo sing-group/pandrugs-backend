@@ -182,7 +182,6 @@ public class GeneDrugGroupInfo {
 					.thenBy(GeneDrugInfo::getIndirect)
 					.thenByArray(GeneDrugInfo::getCancers)
 					.thenByArray(GeneDrugInfo::getFamilies)
-					.thenBy(GeneDrugInfo::getAlteration)
 					.thenBy(GeneDrugInfo::getTherapy)
 					.thenByArray(GeneDrugInfo::getSources)
 					.thenBy(GeneDrugInfo::getDrugStatusInfo)

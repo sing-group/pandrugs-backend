@@ -40,6 +40,7 @@ import javax.persistence.Temporal;
 public class VariantsScoreUserComputation {
 
 	@Id
+	@Column(length = 36, columnDefinition = "CHAR(36)")
 	private String id;
 
 	private String name;

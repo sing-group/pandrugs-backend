@@ -43,8 +43,7 @@ public final class CompareCollections {
 			final List<?> l1 = stream(i1.spliterator(), false)
 				.collect(toList());
 			
-			return stream(i2.spliterator(), false)
-				.allMatch(l1::remove) && l1.isEmpty();
+			return stream(i2.spliterator(), false).allMatch(l1::remove) && l1.isEmpty();
 		}
 	}
 

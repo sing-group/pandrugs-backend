@@ -23,6 +23,7 @@
 
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import java.util.Arrays;
 
 public class UserDataset {
 	private UserDataset() {}
@@ -37,6 +38,12 @@ public class UserDataset {
 			new User("admin1", "admin1@email.com", "e00cf25ad42683b3df678c61f42c6bda", RoleType.ADMIN),
 			new User("guest", "guest@guest.com", "084e0343a0486ff05530df6c705c8bb4", RoleType.GUEST)
 		};
+	}
+	
+	public final static User user(String login) {
+		return Arrays.stream(users())
+			.filter(user -> user.getLogin().equals(login))
+		.findAny().orElseThrow(() -> new IllegalArgumentException("Unknown user: " + login));
 	}
 	
 	public final static User presentUser() {

@@ -47,7 +47,7 @@ public class ProteinPfam implements Serializable {
 	private int end;
 
 	@Id
-	@Column(name = "protein_uniprot_id", insertable = false, updatable = false)
+	@Column(name = "protein_uniprot_id", length = 10, columnDefinition = "VARCHAR(10)", insertable = false, updatable = false)
 	private String uniprotId;
 	
 	@Id

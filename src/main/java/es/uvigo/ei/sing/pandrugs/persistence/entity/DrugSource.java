@@ -97,7 +97,7 @@ public class DrugSource implements Serializable {
 			.map(SourceInformation::getUrlTemplate)
 			.map(template -> template.replaceAll("\\[GENES\\]", geneNames))
 			.map(template -> template.replaceAll("\\[DRUG\\]", this.getDrug().getStandardName()))
-		.orElse(null);
+		.orElse("");
 	}
 
 	@Override

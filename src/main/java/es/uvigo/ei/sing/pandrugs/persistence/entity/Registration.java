@@ -44,7 +44,7 @@ public class Registration implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(length = 36)
+	@Column(length = 36, columnDefinition = "CHAR(36)")
 	@NotNull
 	@Size(min = 36, max = 36, message = "Invalid registration UUID")
 	@Pattern(regexp = UUID_PATTERN)

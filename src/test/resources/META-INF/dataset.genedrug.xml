@@ -62,6 +62,17 @@
 	<gene_drug drug_id="12" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.4"/>
 	<gene_drug drug_id="21" gene_symbol="GENE WITH INDIRECT 2" target="1" resistance="SENSITIVITY" score="0.5"/>
 	
+	<gene_drug_to_drug_source drug_id="0" gene_symbol="DIRECT GENE 1" target="1" source="Source 1" source_drug_name="Source Drug 1"/>
+	<gene_drug_to_drug_source drug_id="0" gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 1"/>
+	<gene_drug_to_drug_source drug_id="1" gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 2"/>
+	<gene_drug_to_drug_source drug_id="2" gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 20"/>
+	<gene_drug_to_drug_source drug_id="20" gene_symbol="DIRECT GENE 2" target="1" source="Source 2" source_drug_name="Source Drug 20"/>
+	<gene_drug_to_drug_source drug_id="10" gene_symbol="GENE WITH INDIRECT 1" target="1" source="Source 1" source_drug_name="Source Drug 10"/>
+	<gene_drug_to_drug_source drug_id="10" gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 10"/>
+	<gene_drug_to_drug_source drug_id="11" gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 1" source_drug_name="Source Drug 11"/>
+	<gene_drug_to_drug_source drug_id="12" gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 12"/>
+	<gene_drug_to_drug_source drug_id="21" gene_symbol="GENE WITH INDIRECT 2" target="1" source="Source 2" source_drug_name="Source Drug 21"/>
+	
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 1" indirect_gene_symbol="IG1" target="1" drug_id="10"/>
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="10"/>
 	<indirect_gene direct_gene_symbol="GENE WITH INDIRECT 2" indirect_gene_symbol="IG2" target="1" drug_id="11"/>

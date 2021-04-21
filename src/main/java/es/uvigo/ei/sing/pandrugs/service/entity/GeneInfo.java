@@ -105,5 +105,9 @@ public class GeneInfo implements Comparable<GeneInfo> {
 			return false;
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "GeneInfo [geneSymbol=" + geneSymbol + ", entrezIds=" + Arrays.toString(entrezIds) + "]";
+	}
 }

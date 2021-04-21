@@ -38,7 +38,7 @@ import javax.persistence.OneToMany;
 @Entity(name = "protein")
 public class Protein {
 	@Id
-	@Column(name = "uniprot_id")
+	@Column(name = "uniprot_id", length = 10, columnDefinition = "VARCHAR(10)")
 	private String uniprotId;
 	
 	@ManyToMany(fetch = FetchType.LAZY)

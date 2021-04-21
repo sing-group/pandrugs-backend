@@ -34,6 +34,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -51,6 +52,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.easymock.EasyMockSupport;
+import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Test;
 
@@ -63,6 +65,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugToDrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.OncodriveRole;
 
 public class GeneDrugGroupTest extends EasyMockSupport {
@@ -602,11 +605,20 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		final DrugSource ds2 = newDrugSource("DS2");
 		final DrugSource ds3 = newDrugSource("DS3");
 		
-		final GeneDrug gd1 = newGeneDrugWithDrugSources("G1", newDrug("D1", ds1), asSet(ds1));
-		final GeneDrug gd2 = newGeneDrugWithDrugSources("G2", newDrug("D1", ds2), asSet(ds2));
-		final GeneDrug gd3 = newGeneDrugWithDrugSources("G3", newDrug("D1", ds1, ds3), asSet(ds1, ds3));
+		final Drug drug1 = newDrug("D1", ds1);
+		final Drug drug2 = newDrug("D1", ds2);
+		final Drug drug13 = newDrug("D1", ds1, ds3);
+		
+		final GeneDrug gd1 = newGeneDrugWithDrugSources("G1", drug1, asSet(ds1));
+		final GeneDrug gd2 = newGeneDrugWithDrugSources("G2", drug2, asSet(ds2));
+		final GeneDrug gd3 = newGeneDrugWithDrugSources("G3", drug13, asSet(ds1, ds3));
 		
 		replayAll();
+		
+		final GeneDrugToDrugSource gd1ds1 = new GeneDrugToDrugSource(gd1, ds1, null);
+		final GeneDrugToDrugSource gd2ds2 = new GeneDrugToDrugSource(gd2, ds2, null);
+		final GeneDrugToDrugSource gd3ds1 = new GeneDrugToDrugSource(gd3, ds1, null);
+		final GeneDrugToDrugSource gd3ds3 = new GeneDrugToDrugSource(gd3, ds3, null);
 		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
@@ -614,7 +626,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			emptyMap()
 		);
 		
-		assertThat(geneDrugGroup.getSources(), is(arrayContainingInAnyOrder(ds1, ds2, ds3)));
+		assertThat(geneDrugGroup.getSources(), is(arrayContainingInAnyOrder(gd1ds1, gd2ds2, gd3ds1, gd3ds3)));
 	}
 
 	@Test
@@ -671,7 +683,6 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			emptyMap()
 		);
 		
-		
 		assertThat(geneDrugGroup.getSourceLinks(), is(expectedLinks));
 	}
 
@@ -687,6 +698,10 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		replayAll();
 		
+		final GeneDrugToDrugSource gd1ds1 = new GeneDrugToDrugSource(gd1, ds1, null);
+		final GeneDrugToDrugSource gd3ds1 = new GeneDrugToDrugSource(gd3, ds1, null);
+		final GeneDrugToDrugSource gd3ds3 = new GeneDrugToDrugSource(gd3, ds3, null);
+		
 		final GeneDrugGroup geneDrugGroup = new GeneDrugGroup(
 			new String[] { "G1", "G2", "G3" },
 			asList(gd1, gd2, gd3),
@@ -694,7 +709,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		);
 		
 		assertThat(geneDrugGroup.getCuratedSources(),
-			is(arrayContainingInAnyOrder(ds1, ds3)));
+			is(arrayContainingInAnyOrder(gd1ds1, gd3ds1, gd3ds3)));
 	}
 
 	@Test
@@ -961,13 +976,21 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 	private final GeneDrug newGeneDrugWithIndirect(String gene, Drug drug, Set<DrugSource> drugSources, List<DrugSource> curatedDrugSources, String ... indirect) {
 		final GeneDrug gd = createNiceMock(GeneDrug.class);
 		
+		final IAnswer<Set<GeneDrugToDrugSource>> drugSourcesAnswer = () -> drugSources.stream()
+			.map(ds -> new GeneDrugToDrugSource(gd, ds, null))
+		.collect(toSet());
+		
+		final IAnswer<List<GeneDrugToDrugSource>> drugSourcesCuratedAnswer = () -> curatedDrugSources.stream()
+			.map(ds -> new GeneDrugToDrugSource(gd, ds, null))
+		.collect(toList());
+		
 		expect(gd.getGeneSymbol()).andReturn(gene).anyTimes();
 		expect(gd.getDrug()).andReturn(drug).anyTimes();
 		expect(gd.getDrugId()).andAnswer(drug::getId).anyTimes();
 		expect(gd.getStandardDrugName()).andAnswer(drug::getStandardName).anyTimes();
 		expect(gd.getIndirectGeneSymbols()).andReturn(asList(indirect)).anyTimes();
-		expect(gd.getDrugSources()).andReturn(drugSources).anyTimes();
-		expect(gd.getCuratedDrugSources()).andReturn(curatedDrugSources).anyTimes();
+		expect(gd.getDrugSources()).andAnswer(drugSourcesAnswer).anyTimes();
+		expect(gd.getCuratedDrugSources()).andAnswer(drugSourcesCuratedAnswer).anyTimes();
 		
 		return gd;
 	}

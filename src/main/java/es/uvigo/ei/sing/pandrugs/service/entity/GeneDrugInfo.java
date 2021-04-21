@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -57,7 +58,6 @@ public class GeneDrugInfo {
 	private GeneInfo[] genes;
 
 	private String target;
-	private String alteration;
 	private DrugStatus status;
 	private String drugStatusInfo;
 	private Extra therapy;
@@ -76,6 +76,10 @@ public class GeneDrugInfo {
 	@XmlElementWrapper(name = "families")
 	@XmlElement(name = "family")
 	private String[] families;
+	
+	@XmlElementWrapper(name = "alterations")
+	@XmlElement(name = "alteration")
+	private AlterationInfo[] alterations;
 
 	@XmlElementWrapper(name = "warnings")
 	@XmlElement(name = "warning")
@@ -101,7 +105,6 @@ public class GeneDrugInfo {
 		.toArray(GeneInfo[]::new);
 		
 		this.target = geneDrug.isTarget() ? "target" : "marker";
-		this.alteration = geneDrug.getAlteration();
 		this.status = geneDrug.getStatus();
 		this.therapy = geneDrug.getExtra();
 		this.indirect = Optional.ofNullable(group.getIndirectGene(geneDrug, forceIndirect))
@@ -113,8 +116,13 @@ public class GeneDrugInfo {
 		this.cancers = geneDrug.getCancers();
 		this.sources = geneDrug.getDrugSourceNames().stream().toArray(String[]::new);
 		this.families = geneDrug.getDrug().getFamilies();
-
 		
+		this.alterations = geneDrug.getDrugSources().stream()
+			.filter(ds -> ds.getAlteration() != null)
+			.map(ds -> new AlterationInfo(ds.getGeneDrug().getGeneSymbol(), ds.getAlteration(), ds.getDrugSource().getSource()))
+			.distinct()
+		.toArray(AlterationInfo[]::new);
+
 		final Stream<String> geneDrugWarnings = group.hasWarning(geneDrug, forceIndirect)
 			? group.getWarning(geneDrug, forceIndirect).stream().map(GeneDrugWarning::getWarning)
 			: Stream.empty();
@@ -203,12 +211,12 @@ public class GeneDrugInfo {
 		return sensitivity;
 	}
 	
-	public String getAlteration() {
-		return alteration;
-	}
-	
 	public String getDrugStatusInfo() {
 		return drugStatusInfo;
+	}
+	
+	public AlterationInfo[] getAlterations() {
+		return alterations;
 	}
 	
 	public String[] getWarnings() {
@@ -247,25 +255,13 @@ public class GeneDrugInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
+		result = prime * result + Arrays.hashCode(alterations);
 		result = prime * result + Arrays.hashCode(cancers);
-		long temp;
-		temp = Double.doubleToLongBits(dScore);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((drug == null) ? 0 : drug.hashCode());
-		result = prime * result + ((drugStatusInfo == null) ? 0 : drugStatusInfo.hashCode());
 		result = prime * result + Arrays.hashCode(families);
-		temp = Double.doubleToLongBits(gScore);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + Arrays.hashCode(genes);
-		result = prime * result + ((indirect == null) ? 0 : indirect.hashCode());
-		result = prime * result + ((sensitivity == null) ? 0 : sensitivity.hashCode());
-		result = prime * result + ((showDrugName == null) ? 0 : showDrugName.hashCode());
 		result = prime * result + Arrays.hashCode(sources);
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((target == null) ? 0 : target.hashCode());
-		result = prime * result + ((therapy == null) ? 0 : therapy.hashCode());
 		result = prime * result + Arrays.hashCode(warnings);
+		result = prime * result + Objects.hash(dScore, drug, drugStatusInfo, gScore, indirect, sensitivity, showDrugName, status, target, therapy);
 		return result;
 	}
 
@@ -278,56 +274,13 @@ public class GeneDrugInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		GeneDrugInfo other = (GeneDrugInfo) obj;
-		if (alteration == null) {
-			if (other.alteration != null)
-				return false;
-		} else if (!alteration.equals(other.alteration))
-			return false;
-		if (!Arrays.equals(cancers, other.cancers))
-			return false;
-		if (Double.doubleToLongBits(dScore) != Double.doubleToLongBits(other.dScore))
-			return false;
-		if (drug == null) {
-			if (other.drug != null)
-				return false;
-		} else if (!drug.equals(other.drug))
-			return false;
-		if (drugStatusInfo == null) {
-			if (other.drugStatusInfo != null)
-				return false;
-		} else if (!drugStatusInfo.equals(other.drugStatusInfo))
-			return false;
-		if (!Arrays.equals(families, other.families))
-			return false;
-		if (Double.doubleToLongBits(gScore) != Double.doubleToLongBits(other.gScore))
-			return false;
-		if (!Arrays.equals(genes, other.genes))
-			return false;
-		if (indirect == null) {
-			if (other.indirect != null)
-				return false;
-		} else if (!indirect.equals(other.indirect))
-			return false;
-		if (sensitivity != other.sensitivity)
-			return false;
-		if (showDrugName == null) {
-			if (other.showDrugName != null)
-				return false;
-		} else if (!showDrugName.equals(other.showDrugName))
-			return false;
-		if (!Arrays.equals(sources, other.sources))
-			return false;
-		if (status != other.status)
-			return false;
-		if (target == null) {
-			if (other.target != null)
-				return false;
-		} else if (!target.equals(other.target))
-			return false;
-		if (therapy != other.therapy)
-			return false;
-		if (!Arrays.equals(warnings, other.warnings))
-			return false;
-		return true;
+		
+		return Arrays.equals(alterations, other.alterations) && Arrays.equals(cancers, other.cancers)
+			&& Double.doubleToLongBits(dScore) == Double.doubleToLongBits(other.dScore) && Objects.equals(drug, other.drug)
+			&& Objects.equals(drugStatusInfo, other.drugStatusInfo) && Arrays.equals(families, other.families)
+			&& Double.doubleToLongBits(gScore) == Double.doubleToLongBits(other.gScore) && Arrays.equals(genes, other.genes)
+			&& Objects.equals(indirect, other.indirect) && sensitivity == other.sensitivity && Objects.equals(showDrugName, other.showDrugName)
+			&& Arrays.equals(sources, other.sources) && status == other.status && Objects.equals(target, other.target) && therapy == other.therapy
+			&& Arrays.equals(warnings, other.warnings);
 	}
 }

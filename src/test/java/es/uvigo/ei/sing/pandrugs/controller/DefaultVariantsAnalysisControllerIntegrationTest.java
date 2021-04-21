@@ -23,6 +23,7 @@
 
 package es.uvigo.ei.sing.pandrugs.controller;
 
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset.computationIds;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertFalse;
@@ -66,6 +67,7 @@ import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVEPConfiguration;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRank;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
@@ -138,17 +140,19 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test
 	public void testGetComputationStatus() throws InterruptedException {
-		assertFalse(controller.getComputationStatus("1").isFinished());
-		assertFalse(controller.getComputationStatus("1").isFailed());
-		assertThat(controller.getComputationStatus("1").getOverallProgress(), is(0.5));
-		assertThat(controller.getComputationStatus("1").getTaskProgress(), is(0.0));
-		assertThat(controller.getComputationStatus("1").getTaskName(), is("Computing Variant Scores"));
+		final ComputationMetadata computationStatus1 = controller.getComputationStatus(computationIds()[0]);
+		assertFalse(computationStatus1.isFinished());
+		assertFalse(computationStatus1.isFailed());
+		assertThat(computationStatus1.getOverallProgress(), is(0.5));
+		assertThat(computationStatus1.getTaskProgress(), is(0.0));
+		assertThat(computationStatus1.getTaskName(), is("Computing Variant Scores"));
 
-		assertTrue(controller.getComputationStatus("2").isFinished());
-		assertFalse(controller.getComputationStatus("2").isFailed());
-		assertThat(controller.getComputationStatus("2").getOverallProgress(), is(1.0));
-		assertThat(controller.getComputationStatus("2").getTaskProgress(), is(1.0));
-		assertThat(controller.getComputationStatus("2").getTaskName(), is("Annotation Process Finished"));
+		final ComputationMetadata computationStatus2 = controller.getComputationStatus(computationIds()[1]);
+		assertTrue(computationStatus2.isFinished());
+		assertFalse(computationStatus2.isFailed());
+		assertThat(computationStatus2.getOverallProgress(), is(1.0));
+		assertThat(computationStatus2.getTaskProgress(), is(1.0));
+		assertThat(computationStatus2.getTaskName(), is("Annotation Process Finished"));
 	}
 	
 	@Test
@@ -165,12 +169,12 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		controller.onApplicationEvent(null); //resume computations
 
 		// wait for computations
-		waitWhileOrFail(() ->!controller.getComputationStatus("1").isFinished(), 10000);
+		waitWhileOrFail(() ->!controller.getComputationStatus(computationIds()[0]).isFinished(), 10000);
 	}
 
 	@Test
 	public void testGetAffectedGenesRanking() {
-		final GeneRanking geneRanking = controller.getGeneRankingForComputation("2");
+		final GeneRanking geneRanking = controller.getGeneRankingForComputation(computationIds()[1]);
 		final List<GeneRank> geneRank = geneRanking.getGeneRank();
 		
 		assertThat(geneRank, hasSize(6));
@@ -190,19 +194,19 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetAffectedGenesRankingOfNonCompletedComputation() {
-		controller.getGeneRankingForComputation("1").getGeneRank();
+		controller.getGeneRankingForComputation(computationIds()[0]).getGeneRank();
 	}
 
 	@Test
 	public void testGetVariantsScoreFile() throws FileNotFoundException {
-		final File variantsScoreFile = controller.getVariantsScoreFile("2");
+		final File variantsScoreFile = controller.getVariantsScoreFile(computationIds()[1]);
 
 		assertThat(variantsScoreFile.exists(), is(true));
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testGetVariantsScoreFileOfNonCompletedComputation() throws FileNotFoundException {
-		controller.getVariantsScoreFile("1");
+		controller.getVariantsScoreFile(computationIds()[0]);
 	}
 
 	private void waitWhileOrFail(BooleanSupplier condition, long timeout) throws InterruptedException {

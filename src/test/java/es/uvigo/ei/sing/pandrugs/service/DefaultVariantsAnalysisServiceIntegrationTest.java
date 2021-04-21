@@ -28,6 +28,8 @@ import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStat
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUser;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.presentUser2;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.users;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset.computationIds;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset.unexistantComputationId;
 import static es.uvigo.ei.sing.pandrugs.util.EmptyInputStream.emptyInputStream;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.createNiceMock;
@@ -135,14 +137,14 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = users()[0];
 
 		//computation id=2 is not owned by presentUser2()
-		testGetComputationStatus("1", accesingUser, accesingUser);
+		testGetComputationStatus(computationIds()[0], accesingUser, accesingUser);
 	}
 
 	@Test(expected = NotFoundException.class)
 	public void testGetUnexistentComputationStatusForPresentUser() {
 		final User accesingUser = users()[0];
 
-		testGetComputationStatus("99", accesingUser, accesingUser);
+		testGetComputationStatus(unexistantComputationId(), accesingUser, accesingUser);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -150,7 +152,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = presentUser2();
 
 		//computation id=1 is not owned by presentUser2()
-		testGetComputationStatus("1", accesingUser, accesingUser);
+		testGetComputationStatus(computationIds()[0], accesingUser, accesingUser);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -158,21 +160,21 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		final User accesingUser = users()[0];
 		final User targetUser = presentUser2();
 
-		testGetComputationStatus("1", accesingUser, targetUser);
+		testGetComputationStatus(computationIds()[0], accesingUser, targetUser);
 	}
 
 	@Test
 	public void testDownloadVariantScoreComputationDetailsForPresentUser() {
 		final User accesingUser = users()[0];
 
-		testDownloadVariantsScoreComputationDetails("2", accesingUser, accesingUser);
+		testDownloadVariantsScoreComputationDetails(computationIds()[1], accesingUser, accesingUser);
 	}
 
 	@Test(expected = NotFoundException.class)
 	public void testDownloadUnexistentVariantScoreComputationDetailsForPresentUser() {
 		final User accesingUser = users()[0];
 
-		testDownloadVariantsScoreComputationDetails("99", accesingUser, accesingUser);
+		testDownloadVariantsScoreComputationDetails(unexistantComputationId(), accesingUser, accesingUser);
 	}
 
 	@Test
@@ -201,7 +203,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(user.getLogin()), "2", security);
+		service.deleteComputation(new UserLogin(user.getLogin()), computationIds()[1], security);
 	}
 
 	@Test(expected = ForbiddenException.class)
@@ -209,7 +211,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(users()[1].getLogin()), "2", security);
+		service.deleteComputation(new UserLogin(users()[1].getLogin()), computationIds()[1], security);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -217,7 +219,7 @@ public class DefaultVariantsAnalysisServiceIntegrationTest {
 		User user = users()[0];
 		final SecurityContextStub security = new SecurityContextStub(users(), user.getLogin());
 
-		service.deleteComputation(new UserLogin(user.getLogin()), "99", security);
+		service.deleteComputation(new UserLogin(user.getLogin()), unexistantComputationId(), security);
 	}
 
 	private void testGetComputationStatus(String computationId, User accesingUser, User targetUser) {

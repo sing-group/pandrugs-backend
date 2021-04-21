@@ -24,7 +24,7 @@
 
 <dataset>
 	<variants_score_user_computation
-			id = "1"
+			id = "a37a71a5-d7a5-4848-9cc2-db465e996ec8"
 			user_login="pepe"
 
 			parameter_vcf_file="inputVCF.vcf"
@@ -41,7 +41,7 @@
       creation_date="2018-02-27 11:35:36"
 			/>
 	<variants_score_user_computation
-			id = "2"
+			id = "0504448a-41e1-4664-b053-37e327f7992c"
 			user_login="pepe"
 
 			parameter_vcf_file="inputVCF.vcf"
@@ -61,7 +61,7 @@
       finishing_date="2018-02-27 23:35:36"
 			/>
 	<variants_score_user_computation
-			id = "3"
+			id = "318678c4-fb9b-4dc7-a47e-53b532d34840"
 			user_login="guest"
 
 			parameter_vcf_file="inputVCF.vcf"

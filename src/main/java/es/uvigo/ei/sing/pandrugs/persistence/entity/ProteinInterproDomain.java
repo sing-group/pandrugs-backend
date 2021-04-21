@@ -40,6 +40,7 @@ public class ProteinInterproDomain implements Serializable {
 	@Id
 	@Column(
 		name = "uniprot_id",
+		length = 10, columnDefinition = "VARCHAR(10)",
 		insertable = false, updatable = false
 	)
 	private String uniprotId;

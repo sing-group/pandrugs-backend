@@ -23,12 +23,15 @@
 
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.guestUser;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset.user;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class VariantsScoreUserComputationDataset {
 	private VariantsScoreUserComputationDataset() {}
@@ -75,11 +78,12 @@ public class VariantsScoreUserComputationDataset {
 	private static InputStream openComputationFileStream(String name) {
 		return VariantsScoreUserComputationDataset.class.getResourceAsStream(name);
 	}
-
+	
 	public final static VariantsScoreUserComputation[] computations() {
 		return new VariantsScoreUserComputation[] {
 			new VariantsScoreUserComputation(
-				"1", UserDataset.users()[0],
+				"a37a71a5-d7a5-4848-9cc2-db465e996ec8",
+				user("pepe"),
 				new VariantsScoreComputationDetails(
 					new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-1"),
 					new VariantsScoreComputationStatus(
@@ -93,7 +97,8 @@ public class VariantsScoreUserComputationDataset {
 				)
 			),
 			new VariantsScoreUserComputation(
-				"2", UserDataset.users()[1],
+				"0504448a-41e1-4664-b053-37e327f7992c",
+				user("pepe"),
 				new VariantsScoreComputationDetails(
 					new VariantsScoreComputationParameters("inputVCF.vcf", "pepe-2"),
 					new VariantsScoreComputationStatus(
@@ -109,7 +114,8 @@ public class VariantsScoreUserComputationDataset {
 				)
 			),
 			new VariantsScoreUserComputation(
-				"3", UserDataset.guestUser(),
+				"318678c4-fb9b-4dc7-a47e-53b532d34840",
+				guestUser(),
 				new VariantsScoreComputationDetails(
 					new VariantsScoreComputationParameters("inputVCF.vcf", "guest-3"),
 					new VariantsScoreComputationStatus(
@@ -125,5 +131,15 @@ public class VariantsScoreUserComputationDataset {
 				)
 			)
 		};
+	}
+
+	public final static String[] computationIds() {
+		return Arrays.stream(computations())
+			.map(VariantsScoreUserComputation::getId)
+		.toArray(String[]::new);
+	}
+	
+	public final static String unexistantComputationId() {
+		return "aaaaaaaa-bbbb-cccc-dddd-000000000000";
 	}
 }

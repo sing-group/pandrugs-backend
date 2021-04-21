@@ -44,6 +44,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
@@ -53,6 +54,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugToDrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.InteractionType;
@@ -291,16 +293,17 @@ public class GeneDrugGroup {
 		.toArray(String[]::new);
 	}
 
-	public DrugSource[] getSources() {
+	public GeneDrugToDrugSource[] getSources() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getDrugSources)
 			.flatMap(Set::stream)
 			.distinct()
-		.toArray(DrugSource[]::new);
+		.toArray(GeneDrugToDrugSource[]::new);
 	}
 	
 	public String[] getSourceNames() {
 		return Stream.of(this.getSources())
+			.map(GeneDrugToDrugSource::getDrugSource)
 			.map(DrugSource::getSource)
 			.sorted()
 			.distinct()
@@ -308,17 +311,28 @@ public class GeneDrugGroup {
 	}
 	
 	public SortedMap<String, String> getSourceLinks() {
-		final SortedMap<String, String> sourceLinks = new TreeMap<>();
-		
-		for (DrugSource source : this.getSources()) {
-			sourceLinks.put(source.getSource(), source.getDrugURL(this.queryGenes));
-		}
-
-		return sourceLinks;
+		return stream(this.getSources())
+			.map(GeneDrugToDrugSource::getDrugSource)
+			.distinct()
+			.collect(
+				Collectors.toMap(
+					DrugSource::getSource,
+					source -> source.getDrugURL(this.queryGenes),
+					(u, v) -> {
+						if (!u.equals(v)) {
+							throw new IllegalStateException(String.format("Duplicate key with different values: %s, %s", u, v));
+						} else {
+							return u;
+						}
+					},
+					TreeMap::new
+				)
+			);
 	}
 	
 	public SortedMap<String, String> getSourceShortNames() {
 		return Stream.of(this.getSources())
+			.map(GeneDrugToDrugSource::getDrugSource)
 			.collect(toMap(
 				DrugSource::getSource,
 				ds -> ds.getSourceInformation().getShortName(),
@@ -327,16 +341,17 @@ public class GeneDrugGroup {
 			));
 	}
 	
-	public DrugSource[] getCuratedSources() {
+	public GeneDrugToDrugSource[] getCuratedSources() {
 		return this.geneDrugs.stream()
 			.map(GeneDrug::getCuratedDrugSources)
 			.flatMap(List::stream)
 			.distinct()
-		.toArray(DrugSource[]::new);
+		.toArray(GeneDrugToDrugSource[]::new);
 	}
 	
 	public String[] getCuratedSourceNames() {
 		return Stream.of(this.getCuratedSources())
+			.map(GeneDrugToDrugSource::getDrugSource)
 			.map(DrugSource::getSource)
 			.distinct()
 			.sorted()

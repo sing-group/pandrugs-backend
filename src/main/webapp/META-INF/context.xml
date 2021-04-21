@@ -50,7 +50,7 @@
 		username="pandrugsdb"
 		password="pandrugsdb"
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/pandrugsdb?allowMultiQueries=true"
+		url="jdbc:mysql://localhost:3306/pandrugsdb?allowMultiQueries=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"
 	 />
    
 	<Realm className="org.apache.catalina.realm.LockOutRealm">

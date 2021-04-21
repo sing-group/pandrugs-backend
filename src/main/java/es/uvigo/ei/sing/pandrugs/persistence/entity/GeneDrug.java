@@ -26,10 +26,13 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -41,8 +44,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -69,9 +70,6 @@ public class GeneDrug implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "resistance", length = 12)
 	private ResistanceType resistance;
-
-	@Column(name = "alteration", length = 255, columnDefinition = "VARCHAR(255)")
-	private String alteration;
 	
 	@Column(name = "score")
 	private double score;
@@ -94,35 +92,8 @@ public class GeneDrug implements Serializable {
 	)
 	private Gene gene;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-		name = "gene_drug_to_drug_source",
-		joinColumns = {
-			@JoinColumn(
-				name = "gene_symbol", referencedColumnName = "gene_symbol",
-				insertable = false, updatable = false, nullable = false
-			),
-			@JoinColumn(
-				name = "drug_id", referencedColumnName = "drug_id",
-				insertable = false, updatable = false, nullable = false
-			),
-			@JoinColumn(
-				name = "target", referencedColumnName = "target",
-				insertable = false, updatable = false, nullable = false
-			)
-		},
-		inverseJoinColumns = {
-			@JoinColumn(
-				name = "source", referencedColumnName = "source",
-				insertable = false, updatable = false, nullable = false
-			),
-			@JoinColumn(
-				name = "source_drug_name", referencedColumnName = "source_drug_name",
-				insertable = false, updatable = false, nullable = false
-			)
-		}
-	)
-	private Set<DrugSource> drugSources;
+	@OneToMany(mappedBy = "geneDrug", fetch = FetchType.LAZY)
+	private Set<GeneDrugToDrugSource> drugSources;
 
 	GeneDrug() {
 	}
@@ -131,11 +102,9 @@ public class GeneDrug implements Serializable {
 		Gene gene,
 		Drug drug,
 		boolean isTarget,
-		String alteration,
 		ResistanceType resistance,
 		double score,
-		List<Gene> inverseGene,
-		Set<DrugSource> drugSources
+		List<Gene> inverseGene
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
 		this.gene = gene;
@@ -143,12 +112,37 @@ public class GeneDrug implements Serializable {
 		this.drug = drug;
 		this.target = isTarget;
 		this.resistance = resistance;
-		this.alteration = alteration;
 		this.score = score;
 		this.indirectGenes = inverseGene.stream()
 			.map(gs -> new IndirectGene(this, gs))
 		.collect(toList());
-		this.drugSources = drugSources;
+		this.drugSources = drug.getDrugSources().stream()
+			.map(ds -> new GeneDrugToDrugSource(this, ds, null))
+		.collect(toSet());
+	}
+	
+	GeneDrug(
+		Gene gene,
+		Drug drug,
+		boolean isTarget,
+		ResistanceType resistance,
+		double score,
+		List<Gene> inverseGene,
+		Map<String, String> alterationsBySource
+	) {
+		this.geneSymbol = gene.getGeneSymbol();
+		this.gene = gene;
+		this.drugId = drug.getId();
+		this.drug = drug;
+		this.target = isTarget;
+		this.resistance = resistance;
+		this.score = score;
+		this.indirectGenes = inverseGene.stream()
+			.map(gs -> new IndirectGene(this, gs))
+		.collect(toList());
+		this.drugSources = drug.getDrugSources().stream()
+			.map(ds -> new GeneDrugToDrugSource(this, ds, alterationsBySource.get(ds.getSource())))
+		.collect(toSet());
 	}
 	
 	public int getDrugId() {
@@ -206,32 +200,30 @@ public class GeneDrug implements Serializable {
 	public boolean isResistance() {
 		return this.resistance == null || this.resistance == ResistanceType.RESISTANCE;
 	}
-
-	public String getAlteration() {
-		return alteration;
-	}
 	
-	public Set<DrugSource> getDrugSources() {
+	public Set<GeneDrugToDrugSource> getDrugSources() {
 		return unmodifiableSet(drugSources);
 	}
 	
 	public List<String> getDrugSourceNames() {
 		return this.drugSources.stream()
+			.map(GeneDrugToDrugSource::getDrugSource)
 			.map(DrugSource::getSource)
 			.distinct()
 			.sorted()
 		.collect(toList());
 	}
 	
-	public List<DrugSource> getCuratedDrugSources() {
+	public List<GeneDrugToDrugSource> getCuratedDrugSources() {
 		return this.drugSources.stream()
-			.filter(DrugSource::isCurated)
+			.filter(GeneDrugToDrugSource::isCurated)
 		.collect(toList());
 	}
 	
 	public List<String> getCuratedDrugSourceNames() {
 		return this.drugSources.stream()
-			.filter(DrugSource::isCurated)
+			.filter(GeneDrugToDrugSource::isCurated)
+			.map(GeneDrugToDrugSource::getDrugSource)
 			.map(DrugSource::getSource)
 			.distinct()
 		.collect(toList());
@@ -239,7 +231,7 @@ public class GeneDrug implements Serializable {
 	
 	public int countCuratedDrugSources() {
 		return (int) this.drugSources.stream()
-			.filter(DrugSource::isCurated)
+			.filter(GeneDrugToDrugSource::isCurated)
 		.count();
 	}
 
@@ -280,17 +272,7 @@ public class GeneDrug implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alteration == null) ? 0 : alteration.hashCode());
-		result = prime * result + drugId;
-		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
-		result = prime * result + ((resistance == null) ? 0 : resistance.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(score);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + (target ? 1231 : 1237);
-		return result;
+		return Objects.hash(drugId, geneSymbol, resistance, score, target);
 	}
 
 	@Override
@@ -302,25 +284,8 @@ public class GeneDrug implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		GeneDrug other = (GeneDrug) obj;
-		if (alteration == null) {
-			if (other.alteration != null)
-				return false;
-		} else if (!alteration.equals(other.alteration))
-			return false;
-		if (drugId != other.drugId)
-			return false;
-		if (geneSymbol == null) {
-			if (other.geneSymbol != null)
-				return false;
-		} else if (!geneSymbol.equals(other.geneSymbol))
-			return false;
-		if (resistance != other.resistance)
-			return false;
-		if (Double.doubleToLongBits(score) != Double.doubleToLongBits(other.score))
-			return false;
-		if (target != other.target)
-			return false;
-		return true;
+		return drugId == other.drugId && Objects.equals(geneSymbol, other.geneSymbol) && resistance == other.resistance
+			&& Double.doubleToLongBits(score) == Double.doubleToLongBits(other.score) && target == other.target;
 	}
 
 	@Override

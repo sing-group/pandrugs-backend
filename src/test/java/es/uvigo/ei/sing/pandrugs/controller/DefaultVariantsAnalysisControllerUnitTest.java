@@ -24,6 +24,7 @@
 package es.uvigo.ei.sing.pandrugs.controller;
 
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.RoleType.ADMIN;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputationDataset.computationIds;
 import static es.uvigo.ei.sing.pandrugs.util.EmptyInputStream.emptyInputStream;
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.anyObject;
@@ -190,7 +191,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		details.getStatus().setTaskName("a task");
 		VariantsScoreUserComputation aComputation = new VariantsScoreUserComputation("1", null, details);
 
-		String anId = "1";
+		String anId = computationIds()[0];
 
 		expect(variantsScoreUserComputationDAO.get(anId)).andReturn(aComputation);
 
@@ -265,7 +266,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	@Test
 	public void testDeleteComputation() throws IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent(), anVCFFileContent());
-		String anyId = "1";
+		String anyId = computationIds()[0];
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 		this.variantsScoreUserComputationDAO.remove(aComputation);
@@ -279,7 +280,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 	@Test(expected=IllegalStateException.class)
 	public void testDeleteNonFinishedComputation() throws IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(anAffectedGenesFileContent(), anVCFFileContent());
-		String anyId = "1";
+		String anyId = computationIds()[0];
 
 		aComputation.getComputationDetails().getStatus().setOverallProgress(0.5);
 
@@ -345,7 +346,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 			IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation(geneRankingContents, "");
 
-		String anyId = "1";
+		String anyId = computationIds()[0];
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 
@@ -365,7 +366,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 			IOException {
 		VariantsScoreUserComputation aComputation = prepareFinishedComputation("", vcfContents);
 
-		String anyId = "1";
+		String anyId = computationIds()[0];
 
 		expect(this.variantsScoreUserComputationDAO.get(anyId)).andReturn(aComputation);
 
