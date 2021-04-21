@@ -39,6 +39,7 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
@@ -412,6 +413,6 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		outFile.deleteOnExit();
 
-		FileUtils.write(outFile, content);
+		FileUtils.write(outFile, content, Charset.forName("utf-8"));
 	}
 }

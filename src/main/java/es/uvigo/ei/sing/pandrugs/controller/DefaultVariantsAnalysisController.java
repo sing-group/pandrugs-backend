@@ -26,12 +26,12 @@ package es.uvigo.ei.sing.pandrugs.controller;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
-import static org.apache.commons.io.FileUtils.readLines;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -302,19 +303,20 @@ public class DefaultVariantsAnalysisController implements
 		try {
 			File affectedGenesFile = getAffectedGenesFile(computation);
 
-			Map<String, Double> geneRankingMap =
-					readLines(affectedGenesFile).stream()
-							.skip(1)
-							.filter(line -> line.length() > 0)
-							.map(line -> line.split("\t"))
-							.collect(toMap(
-									tokens -> tokens[0],
-									tokens -> Double.parseDouble(tokens[1]),
-									(d1, __) -> d1,
-									LinkedHashMap::new
-							));
+			try (Stream<String> lines = Files.lines(affectedGenesFile.toPath())) {
+				Map<String, Double> geneRankingMap = lines
+					.skip(1)
+					.filter(line -> line.length() > 0)
+					.map(line -> line.split("\t"))
+					.collect(toMap(
+							tokens -> tokens[0],
+							tokens -> Double.parseDouble(tokens[1]),
+							(d1, __) -> d1,
+							LinkedHashMap::new
+					));
 
-			return new GeneRanking(geneRankingMap);
+				return new GeneRanking(geneRankingMap);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -327,7 +329,7 @@ public class DefaultVariantsAnalysisController implements
 			try {
 				Map<String, Map<String, String>> affectedGenesInfo = new HashMap<>();
 				File affectedGenesFile = getAffectedGenesFile(computation);
-				List<String> lines = readLines(affectedGenesFile);
+				List<String> lines = Files.readAllLines(affectedGenesFile.toPath());
 				if (lines.size() > 0) {
 					String[] headers = lines.get(0).split("\t");
 
