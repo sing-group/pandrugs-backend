@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -303,7 +304,7 @@ public class DefaultVariantsAnalysisController implements
 		try {
 			File affectedGenesFile = getAffectedGenesFile(computation);
 
-			try (Stream<String> lines = Files.lines(affectedGenesFile.toPath())) {
+			try (Stream<String> lines = Files.lines(affectedGenesFile.toPath(), StandardCharsets.ISO_8859_1)) {
 				Map<String, Double> geneRankingMap = lines
 					.skip(1)
 					.filter(line -> line.length() > 0)
@@ -329,7 +330,7 @@ public class DefaultVariantsAnalysisController implements
 			try {
 				Map<String, Map<String, String>> affectedGenesInfo = new HashMap<>();
 				File affectedGenesFile = getAffectedGenesFile(computation);
-				List<String> lines = Files.readAllLines(affectedGenesFile.toPath());
+				List<String> lines = Files.readAllLines(affectedGenesFile.toPath(), StandardCharsets.ISO_8859_1);
 				if (lines.size() > 0) {
 					String[] headers = lines.get(0).split("\t");
 
