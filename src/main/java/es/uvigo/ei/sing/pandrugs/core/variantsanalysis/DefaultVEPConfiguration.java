@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import es.uvigo.ei.sing.pandrugs.util.ContextParameter;
 import es.uvigo.ei.sing.pandrugs.util.ContextParameterName;
-
 @Component
 public class DefaultVEPConfiguration implements VEPConfiguration {
 
@@ -67,15 +66,15 @@ public class DefaultVEPConfiguration implements VEPConfiguration {
 	public String createVEPCommand(Path inputVCF, Path outputFileName) {
 		String commandTemplate = requireNonNull(
 				vepCommandTemplate,
-				"The context init parameter "+VEP_COMMAND_TEMPLATE_PARAMETER+" was not found. Please" +
+				"The context init parameter " + VEP_COMMAND_TEMPLATE_PARAMETER + " was not found. Please" +
 						" configure it in your server configuration");
 
-		if (!inputVCF.isAbsolute()) {
-			throw new IllegalArgumentException("inputVCF must be an absolute path, given: "+inputVCF);
+						if (!inputVCF.isAbsolute()) {
+			throw new IllegalArgumentException("inputVCF must be an absolute path, given: " + inputVCF);
 		}
 
 		if (!outputFileName.isAbsolute()) {
-			throw new IllegalArgumentException("outputFileName must be an absolute path, given: "+inputVCF);
+			throw new IllegalArgumentException("outputFileName must be an absolute path, given: " + outputFileName);
 		}
 
 		return String.format(commandTemplate, inputVCF.toString(), outputFileName.toString());

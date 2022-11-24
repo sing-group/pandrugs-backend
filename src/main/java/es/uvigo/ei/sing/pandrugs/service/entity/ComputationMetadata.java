@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -44,6 +44,7 @@ public class ComputationMetadata {
 	private String taskName;
 	private boolean finished;
 	private boolean failed;
+	private boolean pharmcat;
 
 	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes,
 			Map<String, Map<String, String>> affectedGenesInfo) {
@@ -57,6 +58,7 @@ public class ComputationMetadata {
 		this.taskName = computation.getComputationDetails().getStatus().getTaskName();
 		this.finished = computation.getComputationDetails().getStatus().isFinished();
 		this.failed = computation.getComputationDetails().getStatus().hasErrors();
+		this.pharmcat = computation.getComputationDetails().getPharmCatComputationParameters().isPharmCat();
 	}
 
 	public String getName() {
@@ -89,5 +91,9 @@ public class ComputationMetadata {
 
 	public boolean isFailed() {
 		return failed;
+	}
+
+	public boolean isPharmcat() {
+		return pharmcat;
 	}
 }

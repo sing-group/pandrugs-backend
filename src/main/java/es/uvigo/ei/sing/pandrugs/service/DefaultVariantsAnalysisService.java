@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,10 @@ import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestExc
 import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createForbiddentException;
 import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createNotFoundException;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireStringSize;
+import static java.util.stream.Collectors.joining;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -38,6 +41,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -51,6 +55,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -62,10 +67,11 @@ import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
 import es.uvigo.ei.sing.pandrugs.service.security.SecurityContextUserAccessChecker;
 
+
 @Path("variantsanalysis")
 @Service
 @RolesAllowed({ "ADMIN", "USER", "GUEST" })
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultVariantsAnalysisService.class);
@@ -89,15 +95,64 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 	) throws ForbiddenException, NotAuthorizedException {
 		final String userLogin = login.getLogin();
 		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
-		
 		return checker.doIfPrivileged(
 			userLogin,
 			() -> {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
 				
-				final String computationId = controller.startVariantsScopeUserComputation(login, vcfFile,
-						computationName, resultsURLTemplate);
+					final String computationId = controller.startVariantsScopeUserComputation(login, vcfFile, false,
+							computationName, resultsURLTemplate);
 				
+				return Response.created(
+					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()
+				) .build();
+			},
+			() -> {
+				LOG.error(String.format(
+					"Illegal access to create a computation as user %s on behalf of user %s",
+					checker.getUserName(), userLogin
+				));
+
+				throw createForbiddentException("User %s is not you", userLogin);
+			}
+		);
+	}
+
+	@POST
+	@Path("/{login}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@RolesAllowed({ "ADMIN", "USER", "GUEST" })
+	@ReturnType(clazz = Integer.class)
+	@Override
+	public Response startVariantsScoreUserComputationMultipart(
+		@PathParam("login") UserLogin login,
+		@FormDataParam("vcfFile") File vcfFile,
+		@QueryParam("name") String computationName,
+		@FormDataParam("withPharmcat") Boolean withPharmcat,
+		@FormDataParam("tsvFile") File tsvFile,
+		@QueryParam("resultsurltemplate") String resultsURLTemplate,
+		@Context SecurityContext security,
+		@Context UriInfo currentUri
+	) throws ForbiddenException, NotAuthorizedException {
+		final String userLogin = login.getLogin();
+		final SecurityContextUserAccessChecker checker = new SecurityContextUserAccessChecker(security);
+		return checker.doIfPrivileged(
+			userLogin,
+			() -> {
+				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
+
+				InputStream vcfInputStream = new FileInputStream(vcfFile);
+				final String computationId;
+
+				if(tsvFile == null || tsvFile.length() == 0) {
+					computationId = controller.startVariantsScopeUserComputation(login, vcfInputStream, withPharmcat,
+						   computationName, resultsURLTemplate);
+				} else {
+					InputStream tsvInputStream = new FileInputStream(tsvFile);
+					computationId = controller.startVariantsScopeUserComputationWithPharmCat(login, vcfInputStream, tsvInputStream,
+						   computationName, resultsURLTemplate);
+				}
+
 				return Response.created(
 					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()
 				) .build();
@@ -252,5 +307,43 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 				throw createForbiddentException("User %s is not you", userLogin);
 			}
 		);
+	}
+
+	@GET
+	@Path("files/{login}/{computationId}/pharmcatreport")
+	@PermitAll
+	@ReturnType(clazz = OutputStream.class)
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_HTML })
+	@Override
+	public Response downloadPharmCatReport(
+		@QueryParam("type") String contentType,
+		@PathParam("login") UserLogin login,
+		@PathParam("computationId") String computationId
+	) {
+		final String userLogin = login.getLogin();
+
+		try {
+			controller.getUserOfComputation(computationId);
+		} catch (IllegalArgumentException e) {
+			throw createNotFoundException("Computation id %s not found", computationId);
+		}
+
+		if (!controller.getUserOfComputation(computationId).getLogin().equals(userLogin)) {
+			throw createForbiddentException("You do not have a computation with id %s", computationId);
+		}
+
+		if (!controller.getComputationStatus(computationId).isFinished()) {
+			throw createBadRequestException("The computation has not finished yet");
+		}
+
+		if (!controller.isValidPharmCatReportExtension(contentType)) {
+			throw new IllegalStateException("Invallid extension. Supported extensions: "
+					+ controller.listPharmCatReportExtensions().stream().collect(joining(", ")));
+		}
+
+		return Response.ok(controller.getPharmCatReport(computationId, contentType))
+				.header("Content-Disposition", "attachment; filename=\"" + computationId + "-pharmcat-report."+contentType+"\"" )
+				.header("Content-Type", contentType.equals("json") ? MediaType.APPLICATION_JSON : MediaType.TEXT_HTML)
+			.build();
 	}
 }

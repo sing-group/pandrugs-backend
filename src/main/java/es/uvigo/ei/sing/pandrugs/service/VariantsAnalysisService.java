@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 
 package es.uvigo.ei.sing.pandrugs.service;
 
+import java.io.File;
 import java.io.InputStream;
 
 import javax.ws.rs.ForbiddenException;
@@ -39,10 +40,43 @@ import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
  * status
  *
  * @author Daniel Glez-Peña
+ * @author Hugo López-Fernández
  */
 public interface VariantsAnalysisService {
 	/**
-	 * Submits a new variant score computation for an existing user.
+	 * Submits a new variant score computation for an existing user and allows specifying whether PharmCAT should be 
+	 * used or not.
+	 *
+	 * @param login login of the user.
+	 * @param vcfFile variants in VCF format to analyze.
+	 * @param computationName the name for the computation.
+	 * @param withPharmcat whether PharmCAT should be executed or not.
+	 * @param tsvFile an optional TSV file for PharmCAT (as "phenotyper outside call file").
+	 * @param resultsURLTemplate a URL where the results can be seen (normally in a front-end application). This will
+	 *                              be used to send an email to the user, when results are available. The template
+	 *                              should contain a "%s" which will be replaced by the computationID. It can be null.
+	 * @param security security context object. Should be provided by the container.
+	 * @param currentUri the current URI information
+	 * @return the computation id as an integer value
+	 * @throws ForbiddenException if the authenticated user does not have permissions to create the computation.
+	 * @throws NotAuthorizedException if provided login has not been correctly authenticated.
+	 */
+	public Response startVariantsScoreUserComputationMultipart(
+		UserLogin login,
+		File vcfFile,
+		String computationName,
+		Boolean withPharmcat,
+		File tsvFile,
+		String resultsURLTemplate,
+		SecurityContext security,
+		UriInfo currentUri
+	) throws ForbiddenException, NotAuthorizedException;
+
+	/**
+	 * Submits a new variant score computation for an existing user. This method is maintained for 
+	 * backwards-compatibility with the old API.
+	 * 
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputationMultipart
 	 *
 	 * @param login login of the user.
 	 * @param vcfFile variants in VCF format to analyze.
@@ -87,7 +121,7 @@ public interface VariantsAnalysisService {
 	/**
 	 * Obtains the variant score computation details for each variant
 	 *
-	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputationMultipart
 	 *
 	 * @param login login of the user.
 	 * @param computationId the computation id to query.
@@ -101,7 +135,7 @@ public interface VariantsAnalysisService {
 	/**
 	 * Deletes a computation.
 	 *
-	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputationMultipart
 	 *
 	 * @param login login of the user.
 	 * @param computationId the computation id to delete.
@@ -121,7 +155,7 @@ public interface VariantsAnalysisService {
 	/**
 	 * Obtains the current status of all submitted computations.
 	 *
-	 * @see VariantsAnalysisService#startVariantsScoreUserComputation
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputationMultipart
 	 *
 	 * @param login login of the user.
 	 * @param security security context object. Should be provided by the container.
@@ -134,4 +168,20 @@ public interface VariantsAnalysisService {
 		UserLogin login,
 		SecurityContext security
 	) throws ForbiddenException, NotAuthorizedException;
+
+	/**
+	 * Obtains the PharmCAT report for a given analysis.
+	 *
+	 * @see VariantsAnalysisService#startVariantsScoreUserComputationMultipart
+	 *
+	 * @param type the format of the report (html or json).
+	 * @param login login of the user.
+	 * @param computationId the computation id to query.
+	 * @return the variant score computation details of the computation.
+	 */
+	public Response downloadPharmCatReport(
+		String type,
+		UserLogin login,
+		String computationId
+	);
 }

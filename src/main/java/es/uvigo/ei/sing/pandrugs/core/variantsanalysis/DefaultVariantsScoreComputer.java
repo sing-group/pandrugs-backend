@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -25,8 +25,10 @@ package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static java.util.Collections.synchronizedList;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatRunner;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatResults;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationDetails;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
@@ -56,6 +62,9 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 	private VEPtoVariantsScoreCalculator variantsScoreCalculator;
 
 	@Inject
+	private PharmCatRunner pharmCatRunner;
+
+	@Inject
 	private ExecutorService executorService;
 
 	private ExecutorService notificationExecutorService = Executors.newSingleThreadExecutor();
@@ -71,43 +80,97 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 	}
 	
 	@Override
-	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters) {
-		return createAndStartWholeComputation(parameters);
+	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters,
+			PharmCatComputationParameters pharmCatComputationParameters) {
+		return createAndStartWholeComputation(parameters, pharmCatComputationParameters);
 	}
-	
-	private DefaultVariantsScoreComputation createAndStartWholeComputation(VariantsScoreComputationParameters parameters) {
-		final CompletableFuture<VariantsScoreComputationParameters> input =
-			new CompletableFuture<VariantsScoreComputationParameters>();
+
+	private DefaultVariantsScoreComputation createAndStartWholeComputation(
+			VariantsScoreComputationParameters parameters,
+			PharmCatComputationParameters pharmCatComputationParameters
+	) {
+
+		final CompletableFuture<Map<String, Object>> inputParameters = new CompletableFuture<>();
+		Map<String, Object> inputParametersMap = new HashMap<>();
+		inputParametersMap.put("variants", parameters);
+		inputParametersMap.put("pharmcat", pharmCatComputationParameters);
 
 		final DefaultVariantsScoreComputation computation = new DefaultVariantsScoreComputation();
 		final Notifications notifications = new Notifications();
 		
 		computation.getStatus().setStatus("Submitted", 0.0, 0.0);
-
-		// compute VEP
-		CompletableFuture<VariantsScoreComputationResults> tasks = input
+		CompletableFuture<VariantsScoreComputationResults> tasks = inputParameters
 			.thenApply(
 				(params) -> {
-					LOG.info("Starting computation. Path: " + parameters.getResultsBasePath());
+					VariantsScoreComputationParameters vscParams = (VariantsScoreComputationParameters) params.get("variants");
+					PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
+
+					Map<String, Object> results = new HashMap<>();
+
+					LOG.info("Starting computation. Path: " + vscParams.getResultsBasePath());
 					// use another thread to notify status, because if listeners try to call get()
 					// they will lock, because they are in the same thread as the computation.
-					notifications.submit(() -> computation.getStatus().setTaskName("Computing VEP"));
 					
-					return effectPredictor.predictEffect(params.getVcfFile(), params.getResultsBasePath());
+					if(pharmCatParams.isPharmCat()) {
+						notifications
+								.submit(() -> computation.getStatus().setStatus("Running PharmCAT", 0.0, 0.0));
+						LOG.info("Starting PharmCat computation. Path: " + parameters.getResultsBasePath());
+
+						if (pharmCatParams.hasPharmCatPhenotyperTsvFile()) {
+							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(vscParams.getVcfFile(),
+									pharmCatParams.getPharmCatPhenotyperTsvFile(),
+									vscParams.getResultsBasePath());
+							results.put("pharmcat", pharmCatResults);
+						} else {
+							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(vscParams.getVcfFile(),
+									vscParams.getResultsBasePath());
+							results.put("pharmcat", pharmCatResults);
+						}
+						
+						LOG.info("Completed PharmCat computation. Path: " + vscParams.getResultsBasePath());
+					}
+					
+					notifications
+							.submit(() -> computation.getStatus().setStatus("Computing VEP", 0.0,
+									pharmCatParams.isPharmCat() ? 0.33 : 0.0));
+					VariantsEffectPredictionResults vepResults = effectPredictor
+							.predictEffect(vscParams.getVcfFile(), vscParams.getResultsBasePath());
+
+					results.put("variants", vepResults);
+					results.put("params", params);
+					
+					return results;
 				}
 			)
 			.whenComplete(
-				(result, exception) -> {
+				(previousResults, exception) -> {
 					if (exception == null) {
 						LOG.info("Completed VEP computation. Path: " + parameters.getResultsBasePath());
 						
-						notifications.submit(() -> computation.getStatus().setStatus("Computing Variant Scores", 0.0, 0.5));
+						final Map<String, Object> params = (Map<String, Object>) previousResults.get("params");
+						PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
+
+						notifications.submit(() -> computation.getStatus().setStatus("Computing Variant Scores",
+							0.0, pharmCatParams.isPharmCat() ? 0.66 : 0.5));
 					} else {
 						LOG.error("Error in VEP computation. Path: " + parameters.getResultsBasePath());
 					}
 				}
 			)
-			.thenApply((vepResults) -> variantsScoreCalculator.calculateVariantsScore(parameters, vepResults))
+			.thenApply(
+				(previousResults) -> {
+					final Map<String, Object> params = (Map<String, Object>) previousResults.get("params");
+					PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
+					VariantsEffectPredictionResults vepResults = (VariantsEffectPredictionResults) previousResults.get("variants");
+					PharmCatResults pharmCatResults = (PharmCatResults) previousResults.get("pharmcat");
+
+					VariantsScoreComputationResults results = variantsScoreCalculator.calculateVariantsScore(parameters, vepResults);
+					if (pharmCatParams.isPharmCat()) {
+						results.setPharmCatResults(pharmCatResults);
+					}
+					return results;
+				}
+			)
 			.whenComplete(
 				(result, exception) -> {
 					if (exception == null) {
@@ -128,18 +191,18 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 					}
 				}
 			);
-		
+
 		computation.wrapFuture(tasks);
 
 		LOG.info("Submitted computation. Path: " + parameters.getResultsBasePath());
 
 		this.executorService.execute(() -> {
-			input.complete(parameters);
+			inputParameters.complete(inputParametersMap);
 		});
-		
+
 		return computation;
 	}
-	
+
 	private class Notifications {
 		private final List<Future<?>> submittedNotifications;
 		
@@ -186,10 +249,9 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 	@Override
 	public VariantsScoreComputation resumeComputation(VariantsScoreComputationDetails computation) {
 		if (!computation.getStatus().isFinished()) {
-			return this.createAndStartWholeComputation(computation.getParameters());
+			return this.createAndStartWholeComputation(computation.getParameters(), computation.getPharmCatComputationParameters());
 		} else {
 			throw new IllegalArgumentException("The computation was finished");
 		}
 	}
-	
 }

@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -56,6 +56,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.DefaultVariantsScoreComputer.DefaultVariantsScoreComputation;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
@@ -164,7 +165,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 			VariantsScoreComputationResults.class
 		);
 
-		final VariantsScoreComputation computation = computer.createComputation(parameters);
+		final VariantsScoreComputation computation = computer.createComputation(parameters, new PharmCatComputationParameters());
 		
 		assertThat(results, is(computation.get()));
 
@@ -187,7 +188,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		parameters.setVcfFile(aVCF);
 		parameters.setResultsBasePath(aBasePath);
 
-		VariantsScoreComputation computation = computer.createComputation(parameters);
+		VariantsScoreComputation computation = computer.createComputation(parameters, new PharmCatComputationParameters());
 
 		// listen for status change
 		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
@@ -242,7 +243,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		parameters.setVcfFile(aVCF);
 		parameters.setResultsBasePath(aBasePath);
 
-		VariantsScoreComputation computation = computer.createComputation(parameters);
+		VariantsScoreComputation computation = computer.createComputation(parameters, new PharmCatComputationParameters());
 
 		// listen for status change
 		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
@@ -291,7 +292,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		parameters.setVcfFile(aVCF);
 		parameters.setResultsBasePath(aBasePath);
 
-		VariantsScoreComputation computation = computer.createComputation(parameters);
+		VariantsScoreComputation computation = computer.createComputation(parameters, new PharmCatComputationParameters());
 
 		// listen for status change
 		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);
@@ -346,7 +347,7 @@ public class DefaultVariantsScoreComputerUnitTest extends EasyMockSupport {
 		parameters.setVcfFile(aVCF);
 		parameters.setResultsBasePath(aBasePath);
 
-		VariantsScoreComputation computation = computer.createComputation(parameters);
+		VariantsScoreComputation computation = computer.createComputation(parameters, new PharmCatComputationParameters());
 
 		// listen for status change
 		final AtomicBoolean expectedStatusArrived = new AtomicBoolean(false);

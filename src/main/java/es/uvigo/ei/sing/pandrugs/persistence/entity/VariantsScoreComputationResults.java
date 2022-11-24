@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -46,12 +46,17 @@ public class VariantsScoreComputationResults {
 	@Transient
 	private Path affectedGenesPath;
 	
-
 	@Embedded
 	private VariantsEffectPredictionResults vepResults;
+
+	@Embedded
+	private PharmCatResults pharmCatResults;
 	
-	public VariantsScoreComputationResults(VariantsEffectPredictionResults vepResults, Path vscorePath, Path affectedGenesPath) {
+	public VariantsScoreComputationResults(VariantsEffectPredictionResults vepResults, Path vscorePath,
+			Path affectedGenesPath
+	) {
 		this.vepResults = vepResults;
+		this.pharmCatResults =  new PharmCatResults();
 
 		if (vscorePath != null) {
 			this.vscoreFileName = vscorePath.toString();
@@ -64,20 +69,25 @@ public class VariantsScoreComputationResults {
 		}
 	}
 	
-	protected VariantsScoreComputationResults() {
-		
-	}
+	protected VariantsScoreComputationResults() {}
 
 	public Path getVscorePath() {
 		return (vscoreFileName != null) ? Paths.get(vscoreFileName) : null;
 	}
 
 	public Path getAffectedGenesPath() {
-
 		return (affectedGenesFileName != null) ? Paths.get(affectedGenesFileName) : null;
 	}
 
 	public VariantsEffectPredictionResults getVepResults() {
 		return vepResults;
+	}
+
+	public PharmCatResults getPharmCatResults() {
+		return pharmCatResults;
+	}
+
+	public void setPharmCatResults(PharmCatResults pharmCatResults) {
+		this.pharmCatResults = pharmCatResults;
 	}
 }

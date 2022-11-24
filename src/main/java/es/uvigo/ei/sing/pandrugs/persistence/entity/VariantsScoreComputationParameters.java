@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -33,22 +33,22 @@ import javax.persistence.Transient;
 @Embeddable
 public class VariantsScoreComputationParameters {
 
-	@Column(name="parameter_vcf_file")
+	@Column(name = "parameter_vcf_file")
 	private String vcfFile;
 
-	@Column(name="parameter_number_of_input_variants")
+	@Column(name = "parameter_number_of_input_variants")
 	private Integer numberOfInputVariants;
-	
-	@Column(name="parameter_base_path")
+
+	@Column(name = "parameter_base_path")
 	private String basePath;
 
-	@Column(name="results_url_template")
+	@Column(name = "results_url_template")
 	private String resultsURLTemplate;
 
-	@Column(name="parameter_consequence_filter_active")
+	@Column(name = "parameter_consequence_filter_active")
 	private boolean consequenceFilterActive = true;
 
-	@Column(name="parameter_gene_frequency_threshold")
+	@Column(name = "parameter_gene_frequency_threshold")
 	private double geneFrequencyThreshold = 0.0d;
 
 	@Transient

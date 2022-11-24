@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -69,9 +69,8 @@ public class DefaultVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCa
 
 	@Override
 	public VariantsScoreComputationResults calculateVariantsScore (
-			VariantsScoreComputationParameters parameters, VariantsEffectPredictionResults vep) {
-
-
+			VariantsScoreComputationParameters parameters, VariantsEffectPredictionResults vep
+	) {
 		Path affectedGenesPath = Paths.get(AFFECTED_GENES_FILE_NAME);
 		Path affectedGenesFilePath = parameters.getResultsBasePath().resolve(affectedGenesPath);
 		File affectedGenesFile = configuration.getUserDataBaseDirectory().toPath().resolve(affectedGenesFilePath).toFile();

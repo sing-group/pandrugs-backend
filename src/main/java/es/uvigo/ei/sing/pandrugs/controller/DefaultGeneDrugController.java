@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -36,6 +36,9 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +49,14 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
@@ -157,17 +163,33 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			variantsAnalysisController.getGeneRankingForComputation(computationId).asMap()
 		);
 
+		final Map<String, PharmCatAnnotation> pharmCatAnnotations = new HashMap<>();
+		if (this.variantsAnalysisController.getComputationStatus(computationId).isPharmcat()) {
+			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
+		}
+
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new HashSet<>(geneRank.keySet()),
-			new StaticGeneScoreCalculator(geneRank)
+			new StaticGeneScoreCalculator(geneRank),
+			pharmCatAnnotations
 		);
 	}
+
 
 	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
 		GeneDrugQueryParameters queryParameters,
 		Set<String> geneNames,
 		GeneScoreCalculator gScoreCalculator
+	) {
+		return searchForGeneDrugsWithGenes(queryParameters, geneNames, gScoreCalculator, Collections.emptyMap());
+	}
+
+	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
+		GeneDrugQueryParameters queryParameters,
+		Set<String> geneNames,
+		GeneScoreCalculator gScoreCalculator,
+		Map<String, PharmCatAnnotation> pharmCatAnnotations
 	) {
 		final String[] upperGeneNames = toUpperCase(geneNames);
 		
@@ -175,7 +197,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			this.dao.searchByGene(queryParameters, upperGeneNames),
 			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
-			new ByGroupDrugScoreCalculator()
+			new ByGroupDrugScoreCalculator(),
+			pharmCatAnnotations
 		);
 	}
 
@@ -183,6 +206,15 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		GeneDrugQueryParameters queryParameters,
 		Set<String> drugNames,
 		GeneScoreCalculator gScoreCalculator
+	) {
+		return searchForGeneDrugsWithDrugs(queryParameters, drugNames, gScoreCalculator, Collections.emptyMap());
+	}
+
+	private List<GeneDrugGroup> searchForGeneDrugsWithDrugs(
+		GeneDrugQueryParameters queryParameters,
+		Set<String> drugNames,
+		GeneScoreCalculator gScoreCalculator,
+		Map<String, PharmCatAnnotation> pharmCatAnnotations
 	) {
 		final Function<Set<GeneDrug>, String[]> groupToGenes = group -> group.stream()
 			.map(GeneDrug::getGeneSymbol)
@@ -192,7 +224,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			this.dao.searchByDrug(queryParameters, toUpperCase(drugNames)),
 			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
-			new ByGeneDrugDrugScoreCalculator()
+			new ByGeneDrugDrugScoreCalculator(),
+			pharmCatAnnotations
 		);
 	}
 
@@ -200,7 +233,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		Collection<GeneDrug> geneDrugs,
 		Function<Set<GeneDrug>, String[]> geneDrugToGenes,
 		GeneScoreCalculator gScoreCalculator,
-		DrugScoreCalculator drugScoreCalculator
+		DrugScoreCalculator drugScoreCalculator,
+		Map<String, PharmCatAnnotation> pharmCatAnnotations
 	) {
 		if (geneDrugs.isEmpty()) {
 			return emptyList();
@@ -218,17 +252,29 @@ public class DefaultGeneDrugController implements GeneDrugController {
 					final Map<GeneDrug, Set<GeneDrugWarning>> gdgWarnings = warnings.entrySet().stream()
 						.filter(entry -> gdg.contains(entry.getKey()))
 					.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-					
+
 					return new GeneDrugGroup(
 						queryGenes,
 						gdg,
 						gdgWarnings,
 						gScoreCalculator,
-						drugScoreCalculator
+						drugScoreCalculator,
+						getPharmCatAnnotation(pharmCatAnnotations, gdg)
 					);
 				})
 			.collect(toList());
 		}
+	}
+
+	private static GermLineAnnotation getPharmCatAnnotation(Map<String, PharmCatAnnotation> pharmCatAnnotations, Set<GeneDrug> gdg) { 
+		List<GeneDrug> geneDrugsList = new ArrayList<>(gdg);
+		String showDrugName = geneDrugsList.get(0).getDrug().getShowName().toLowerCase();
+		GermLineAnnotation pharmCatAnnotation = GermLineAnnotation.NOT_AVAILABLE;
+		if(pharmCatAnnotations.containsKey(showDrugName)) {
+			pharmCatAnnotation = pharmCatAnnotations.get(showDrugName).getGermLineAnnotation();
+		}
+
+		return pharmCatAnnotation;
 	}
 	
 	private final static Map<String, Double> normalizeGeneRank(

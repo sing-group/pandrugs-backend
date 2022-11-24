@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -40,15 +40,28 @@ public class VariantsScoreComputationDetails {
 	@Embedded
 	private VariantsScoreComputationResults results = null;
 
+	@Embedded
+	private PharmCatComputationParameters pharmCatComputationParameters = new PharmCatComputationParameters();
+
 	public VariantsScoreComputationDetails() {	}
 
 	VariantsScoreComputationDetails(
 			VariantsScoreComputationParameters parameters,
 			VariantsScoreComputationStatus status,
-			VariantsScoreComputationResults results) {
+			VariantsScoreComputationResults results
+			) {
+		this(parameters, status, results, new PharmCatComputationParameters());
+	}
+
+	VariantsScoreComputationDetails(
+			VariantsScoreComputationParameters parameters,
+			VariantsScoreComputationStatus status,
+			VariantsScoreComputationResults results,
+			PharmCatComputationParameters pharmCatComputationParameters) {
 		this.parameters = parameters;
 		this.status = status;
 		this.results = results;
+		this.pharmCatComputationParameters = pharmCatComputationParameters;
 	}
 
 	public VariantsScoreComputationParameters getParameters() {
@@ -74,6 +87,12 @@ public class VariantsScoreComputationDetails {
 	public void setResults(VariantsScoreComputationResults results) {
 		this.results = results;
 	}
-	
-	
+
+	public PharmCatComputationParameters getPharmCatComputationParameters() {
+		return pharmCatComputationParameters;
+	}
+
+	public void setPharmCatComputationParameters(PharmCatComputationParameters pharmCatComputationParameters) {
+		this.pharmCatComputationParameters = pharmCatComputationParameters;
+	}
 }

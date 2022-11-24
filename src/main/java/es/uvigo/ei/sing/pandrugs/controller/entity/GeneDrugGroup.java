@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
@@ -69,6 +70,7 @@ public class GeneDrugGroup {
 	private final List<GeneDrug> geneDrugs;
 	private final GeneScoreCalculator geneScoreCalculator;
 	private final DrugScoreCalculator drugScoreCalculator;
+	private final GermLineAnnotation pharmCatGermLineAnnotation;
 	
 	private final Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings;
 
@@ -86,6 +88,17 @@ public class GeneDrugGroup {
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
+	) {
+		this(queryGenes, geneDrugs, geneDrugWarnings, geneScoreCalculator, drugScoreCalculator, GermLineAnnotation.NOT_AVAILABLE);
+	}
+
+	public GeneDrugGroup(
+		String[] queryGenes,
+		Collection<GeneDrug> geneDrugs,
+		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
+		GeneScoreCalculator geneScoreCalculator,
+		DrugScoreCalculator drugScoreCalculator,
+		GermLineAnnotation pharmCatGermLineAnnotation
 	) {
 		requireNonEmpty(queryGenes);
 		requireNonEmpty(geneDrugs);
@@ -138,6 +151,7 @@ public class GeneDrugGroup {
 		this.queryGenes = queryGenes;
 		this.geneDrugs = new ArrayList<>(geneDrugs);
 		this.drug = this.geneDrugs.get(0).getDrug();
+		this.pharmCatGermLineAnnotation = pharmCatGermLineAnnotation;
 	}
 	
 	public List<GeneDrug> getGeneDrugs() {
@@ -440,6 +454,10 @@ public class GeneDrugGroup {
 		.max().orElse(0d);
 		
 		return Math.max(maxDirect, maxIndirect);
+	}
+
+	public GermLineAnnotation getPharmCatGermLineAnnotation() {
+		return pharmCatGermLineAnnotation;
 	}
 	
 	private boolean isInQueryGenes(IndirectGene indirectGene) {

@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -23,9 +23,8 @@
 
 package es.uvigo.ei.sing.pandrugs.controller;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +39,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -58,9 +60,12 @@ import org.springframework.stereotype.Controller;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputer;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonReportParser;
 import es.uvigo.ei.sing.pandrugs.mail.Mailer;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
@@ -81,9 +86,11 @@ public class DefaultVariantsAnalysisController implements
 		VariantsAnalysisController, ApplicationListener<ContextRefreshedEvent> {
 
 	public static final String INPUT_VCF_NAME = "input.vcf";
+	public static final String INPUT_PHARMCAT_PHENOTYPER_OUTSIDE_CALL_NAME = "input_pharmcat_phenotyper_outside_call_file.tsv";
+
+	private static final List<String> PHARMCAT_REPORT_EXTENSIONS = asList("html", "json");
 
 	private Logger LOG = LoggerFactory.getLogger(DefaultVariantsAnalysisController.class);
-
 
 	@Inject
 	private VariantsScoreUserComputationDAO variantsScoreUserComputationDAO;
@@ -101,13 +108,14 @@ public class DefaultVariantsAnalysisController implements
 	@Inject
 	private FileSystemConfiguration fileSystemConfiguration;
 
-
-	@Override
-	public String startVariantsScopeUserComputation(
-			UserLogin userLogin,
-			InputStream vcfFileInputStream,
-			String computationName, String resultsURLTemplate)
-			throws IOException {
+	private String startVariantsScopeUserComputation(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		Boolean withPharmCat,
+		Optional<InputStream> tsvFileInputStream,
+		String computationName,
+		String resultsURLTemplate
+	) throws IOException {
 
 		User user = userDAO.get(userLogin.getLogin());
 		File dataDir = createComputationDataDirectory(user);
@@ -124,18 +132,61 @@ public class DefaultVariantsAnalysisController implements
 		}
 		parameters.setResultsURLTemplate(resultsURLTemplate);
 
-		VariantsScoreUserComputation computation = this.startVariantsScoreComputation(user, computationName,
-				parameters);
+		final PharmCatComputationParameters pharmCatComputationParameters = new PharmCatComputationParameters();
+		pharmCatComputationParameters.setPharmCat(withPharmCat);
+		if (tsvFileInputStream.isPresent()) {
+			final File tsvFile = new File(dataDir + File.separator + INPUT_PHARMCAT_PHENOTYPER_OUTSIDE_CALL_NAME);
+			FileUtils.copyInputStreamToFile(tsvFileInputStream.get(), tsvFile);
+			pharmCatComputationParameters
+					.setPharmCatPhenotyperTsvFile(Paths.get(INPUT_PHARMCAT_PHENOTYPER_OUTSIDE_CALL_NAME));
+		}
+
+		VariantsScoreUserComputation computation = 
+			this.startVariantsScoreComputation(user, computationName, parameters, pharmCatComputationParameters);
+
 		return computation.getId();
 	}
 
 	@Override
+	public String startVariantsScopeUserComputationWithPharmCat(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		InputStream tsvFileInputStream,
+		String computationName,
+		String resultsURLTemplate
+	) throws IOException {
+		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, true, Optional.of(tsvFileInputStream), computationName, resultsURLTemplate);
+	}
+
+	@Override
+	public String startVariantsScopeUserComputationWithPharmCat(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		InputStream tsvFileInputStream,
+		String computationName
+	) throws IOException {
+		return this.startVariantsScopeUserComputationWithPharmCat(userLogin, vcfFileInputStream, tsvFileInputStream, computationName, null);
+	}
+
+	@Override
 	public String startVariantsScopeUserComputation(
-			UserLogin userLogin,
-			InputStream vcfFileInputStream,
-			String computationName)
-			throws IOException {
-		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, computationName, null);
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		Boolean withPharmCat,
+		String computationName,
+		String resultsURLTemplate
+	) throws IOException {
+		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, withPharmCat, Optional.empty(), computationName, resultsURLTemplate);
+	}
+
+	@Override
+	public String startVariantsScopeUserComputation(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		Boolean withPharmCat,
+		String computationName
+	) throws IOException {
+		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, withPharmCat, computationName, null);
 	}
 
 	@Override
@@ -148,7 +199,6 @@ public class DefaultVariantsAnalysisController implements
 				getAffectedGenes(computation),
 				getAffectedGenesInfo(computation));
 	}
-
 
 	@Override
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin) {
@@ -258,7 +308,7 @@ public class DefaultVariantsAnalysisController implements
 	@Override
 	public void deleteComputation(String computationId) {
 		VariantsScoreUserComputation variantsScoreUserComputation = variantsScoreUserComputationDAO.get(computationId);
-		requireNonNull(variantsScoreUserComputation, "computation with id =" + computationId);
+		Objects.requireNonNull(variantsScoreUserComputation, "computation with id =" + computationId);
 
 		if (!variantsScoreUserComputation.getComputationDetails().getStatus().isFinished()) {
 			throw new IllegalStateException("Only finished computations can be deleted");
@@ -267,7 +317,7 @@ public class DefaultVariantsAnalysisController implements
 		File computationDataDir = this.obtainComputationFile(variantsScoreUserComputation, Paths.get("."));
 		try {
 			LOG.info("Deleting dir: " + computationDataDir);
-			deleteDirectory(computationDataDir);
+			FileUtils.deleteDirectory(computationDataDir);
 		} catch (IOException e) {
 			LOG.warn("Could not delete computation directory: " + computationDataDir);
 		}
@@ -300,7 +350,6 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	private GeneRanking getGeneRanking(VariantsScoreUserComputation computation) {
-
 		try {
 			File affectedGenesFile = getAffectedGenesFile(computation);
 
@@ -309,7 +358,7 @@ public class DefaultVariantsAnalysisController implements
 					.skip(1)
 					.filter(line -> line.length() > 0)
 					.map(line -> line.split("\t"))
-					.collect(toMap(
+					.collect(Collectors.toMap(
 							tokens -> tokens[0],
 							tokens -> Double.parseDouble(tokens[1]),
 							(d1, __) -> d1,
@@ -376,6 +425,51 @@ public class DefaultVariantsAnalysisController implements
 				computation, computation.getComputationDetails().getResults().getVscorePath());
 	}
 
+	@Override
+	public List<String> listPharmCatReportExtensions() {
+		return PHARMCAT_REPORT_EXTENSIONS;
+	}
+
+	@Override
+	public boolean isValidPharmCatReportExtension(String extension) {
+		return PHARMCAT_REPORT_EXTENSIONS.stream().anyMatch(e -> e.equals(extension));
+	}
+
+	@Override
+	public File getPharmCatReport(String computationId, String extension) {
+		if (!isValidPharmCatReportExtension(extension)) {
+			throw new IllegalStateException("Invalid extension. Supported extensions: "
+					+ listPharmCatReportExtensions().stream().collect(joining(", ")));
+		}
+
+		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
+
+		if(!computation.getComputationDetails().getPharmCatComputationParameters().isPharmCat()) {
+			throw new IllegalStateException("Computation has not PharmCAT results associated");
+		}
+
+		if (!computation.getComputationDetails().getStatus().isFinished()) {
+			throw new IllegalStateException("Computation has not finished yet");
+		}
+
+		return this.obtainComputationFile(computation,
+				Paths.get(computation.getComputationDetails().getResults().getPharmCatResults().getFilePath().toString()
+						+ "." + extension));
+	}
+
+	@Override
+	public Map<String, PharmCatAnnotation> getPharmCatAnnotations(String computationId) {
+		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
+
+		File pharmCatReport = this.getPharmCatReport(computationId, "json");
+
+		try {
+			return PharmCatJsonReportParser.getPharmCatFilteredAnnotations(pharmCatReport);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	};
+
 	private File createComputationDataDirectory(User user) {
 		File computationDir = new File(fileSystemConfiguration.getUserDataBaseDirectory() +
 				File.separator + user.getLogin() +
@@ -385,8 +479,9 @@ public class DefaultVariantsAnalysisController implements
 		return computationDir;
 	}
 
-	private VariantsScoreUserComputation
-	startVariantsScoreComputation(User user, String computationName, VariantsScoreComputationParameters parameters) {
+	private VariantsScoreUserComputation startVariantsScoreComputation(User user, String computationName,
+			VariantsScoreComputationParameters parameters,
+			PharmCatComputationParameters pharmCatComputationParameters) {
 
 		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(parameters
 				.getResultsBasePath()).toFile();
@@ -396,7 +491,7 @@ public class DefaultVariantsAnalysisController implements
 		}
 
 		final VariantsScoreComputation computation =
-				variantsScoreComputer.createComputation(parameters);
+				variantsScoreComputer.createComputation(parameters, pharmCatComputationParameters);
 
 
 		VariantsScoreUserComputation userComputation = new VariantsScoreUserComputation(UUID.randomUUID().toString());
@@ -404,6 +499,7 @@ public class DefaultVariantsAnalysisController implements
 		userComputation.setName(computationName);
 		userComputation.getComputationDetails().setStatus(computation.getStatus());
 		userComputation.getComputationDetails().setParameters(parameters);
+		userComputation.getComputationDetails().setPharmCatComputationParameters(pharmCatComputationParameters);
 		variantsScoreUserComputationDAO.storeComputation(userComputation);
 
 		addChangeListener(userComputation, computation);
@@ -421,9 +517,9 @@ public class DefaultVariantsAnalysisController implements
 		});
 	}
 
-
 	public void processStatus(VariantsScoreUserComputation userComputation, VariantsScoreComputation computation,
-							  VariantsScoreComputationStatus status) {
+		VariantsScoreComputationStatus status
+	) {
 
 		userComputation.getComputationDetails().setStatus(status);
 		if (computation.getStatus().isFinished()) {

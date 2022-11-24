@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -133,7 +133,7 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 		final User aUser = UserDataset.users()[0];
 
 		final String id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
-				openComputationFileStream(A_VCF_RESOURCE_PATH), UUID.randomUUID().toString());
+				openComputationFileStream(A_VCF_RESOURCE_PATH), false, UUID.randomUUID().toString());
 
 		waitWhileOrFail(() ->!controller.getComputationStatus(id).isFinished(), 10000);
 	}

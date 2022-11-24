@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -65,6 +65,7 @@ import es.uvigo.ei.sing.pandrugs.mail.Mailer;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.UserDataset;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsEffectPredictionResults;
@@ -132,15 +133,13 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		final VariantsScoreComputation expectedComputation = mockControl.createMock(VariantsScoreComputation.class);
 		final VariantsScoreComputationStatus aStatus = new VariantsScoreComputationStatus();
 		
-		expect(computer.createComputation(capture(capturedParameters))).andReturn(expectedComputation);
+		expect(computer.createComputation(capture(capturedParameters), new PharmCatComputationParameters())).andReturn(expectedComputation);
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
 
 		super.replayAll();
 
-		controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), new ByteArrayInputStream(anVCFFileContent().getBytes()), UUID
-						.randomUUID()
-						.toString());
+		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
+				new ByteArrayInputStream(anVCFFileContent().getBytes()), false, UUID.randomUUID().toString());
 
 		assertEquals(aUser, capturedArgument.getValue().getUser());
 		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
@@ -168,7 +167,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		//expect(parameters.getVcfFile()).andReturn(aVCF);
 		//replay(parameters);
 		
-		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
+		expect(computer.createComputation(anyObject(), anyObject())).andReturn(expectedComputation);
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
 
@@ -179,7 +178,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		//controller.startVariantsScoreComputation(aUser, parameters);
 		controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
+				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString());
 
 		aStatus.setOverallProgress(1.0f);
 		assertEquals(expectedResults, capturedVariantsScoreUserComputation.getValue().getComputationDetails().getResults());
@@ -226,7 +225,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		expect(expectedComputation.get()).andReturn(expectedResults).anyTimes();
 		expect(expectedComputation.getStatus()).andReturn(aStatus).anyTimes();
-		expect(computer.createComputation(anyObject())).andReturn(expectedComputation);
+		expect(computer.createComputation(anyObject(), anyObject())).andReturn(expectedComputation);
 
 		Capture<VariantsScoreUserComputation> capturedVariantsScoreUserComputationForMail = newCapture();
 		mailer.sendComputationFinished(capture(capturedVariantsScoreUserComputationForMail));
@@ -235,7 +234,7 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		super.replayAll();
 		//controller.startVariantsScoreComputation(aUser, parameters);
 		String id = controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), emptyInputStream(), UUID.randomUUID().toString());
+				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString());
 
 		// provoke finish of computation, listeners will be called and computation
 		// and the results should be setted in usercomputation.details

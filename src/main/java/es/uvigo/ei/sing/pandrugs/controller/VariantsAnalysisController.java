@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -26,8 +26,10 @@ package es.uvigo.ei.sing.pandrugs.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
@@ -37,26 +39,47 @@ public interface VariantsAnalysisController {
 
 	public UserInfo getUserOfComputation(String computationId);
 
-	public GeneRanking getGeneRankingForComputation(String computationId);
-
-	public File getVariantsScoreFile(String computationId);
-
-	public String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFile,
-		String computationName
-	) throws IOException;
-
-	public String startVariantsScopeUserComputation(
-		UserLogin login,
-		InputStream vcfFile,
-		String computationName,
-		String resultsURLTemplate
-	) throws IOException;
-
 	public ComputationMetadata getComputationStatus(String computationId);
 
 	public Map<String, ComputationMetadata> getComputationsForUser(UserLogin userLogin);
 
-	void deleteComputation(String computationId);
+	public void deleteComputation(String computationId);
+
+	public GeneRanking getGeneRankingForComputation(String computationId);
+
+	public File getVariantsScoreFile(String computationId);
+
+	public File getPharmCatReport(String computationId, String extension);
+
+	public List<String> listPharmCatReportExtensions();
+
+	public boolean isValidPharmCatReportExtension(String extension);
+
+	public Map<String, PharmCatAnnotation> getPharmCatAnnotations(String computationId);
+
+	public String startVariantsScopeUserComputation(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		Boolean PharmCat,
+		String computationName) throws IOException;
+
+	public String startVariantsScopeUserComputation(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		Boolean PharmCat,
+		String computationName,
+		String resultsURLTemplate) throws IOException;
+
+	public String startVariantsScopeUserComputationWithPharmCat(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		InputStream tsvFileInputStream,
+		String computationName) throws IOException;
+
+	public String startVariantsScopeUserComputationWithPharmCat(
+		UserLogin userLogin,
+		InputStream vcfFileInputStream,
+		InputStream tsvFileInputStream,
+		String computationName,
+		String resultsURLTemplate) throws IOException;
 }

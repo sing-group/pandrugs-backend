@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -67,7 +67,8 @@ public class DefaultVariantsEffectPredictor implements VariantsEffectPredictor {
 
 		File inputFile = configuration.getUserDataBaseDirectory().toPath().resolve(
 				userPath.resolve(vcfFile)).toFile();
-		try {
+
+				try {
 			String command = vepConfiguration.createVEPCommand(inputFile.toPath(), outFile.toPath());
 
 			LOG.info("Starting VEP computation over "+inputFile+" with command: "+command);

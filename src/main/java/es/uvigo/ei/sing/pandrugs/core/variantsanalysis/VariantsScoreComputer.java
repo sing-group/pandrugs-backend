@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -23,11 +23,13 @@
 
 package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationDetails;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
 
 public interface VariantsScoreComputer {
-	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters);
-	
+	public VariantsScoreComputation createComputation(VariantsScoreComputationParameters parameters,
+			PharmCatComputationParameters pharmCatComputationParameters);
+
 	public VariantsScoreComputation resumeComputation(VariantsScoreComputationDetails computation);
 }

@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
@@ -85,6 +86,7 @@ public class GeneDrugGroupInfo {
 	private int[] pubchemId;
 	private double dScore;
 	private double gScore;
+	private GermLineAnnotation pharmCatGermLineAnnotation;
 
 	@XmlElementWrapper(name = "geneDrugInfos")
 	@XmlElement(name = "geneDrugInfo")
@@ -124,6 +126,7 @@ public class GeneDrugGroupInfo {
 		sort(this.pubchemId);
 		this.dScore = gdg.getDScore();
 		this.gScore = gdg.getGScore();
+		this.pharmCatGermLineAnnotation = gdg.getPharmCatGermLineAnnotation();
 		
 		switch (this.status) {
 		case APPROVED:

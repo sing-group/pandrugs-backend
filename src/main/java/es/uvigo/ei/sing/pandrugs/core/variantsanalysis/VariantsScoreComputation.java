@@ -2,7 +2,7 @@
  * #%L
  * PanDrugs Backend
  * %%
- * Copyright (C) 2015 - 2021 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
+ * Copyright (C) 2015 - 2022 Fátima Al-Shahrour, Elena Piñeiro, Daniel Glez-Peña
  * and Miguel Reboiro-Jato
  * %%
  * This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,6 @@ import java.util.concurrent.Future;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationResults;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
 
-public interface VariantsScoreComputation extends
-		Future<VariantsScoreComputationResults> {
-
+public interface VariantsScoreComputation extends Future<VariantsScoreComputationResults> {
 	VariantsScoreComputationStatus getStatus();
-	
-		
 }
