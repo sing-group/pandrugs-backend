@@ -7,6 +7,8 @@
 *.iml
 /login.properties
 pandrugsdb.log
+pandrugs.log
 bak
 /db
 /target/
+.vscode
