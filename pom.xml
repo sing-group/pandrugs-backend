@@ -498,6 +498,11 @@ and Miguel Reboiro-Jato</license.copyrightOwners>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<version>${license-maven-plugin.version}</version>
+				<configuration>
+				<excludes>
+					<exclude>**/pharmcat.report.json</exclude>
+				</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>first</id>
