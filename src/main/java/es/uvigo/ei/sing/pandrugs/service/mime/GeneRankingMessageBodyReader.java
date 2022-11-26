@@ -35,37 +35,21 @@ import java.util.Map;
 import javax.ws.rs.ext.Provider;
 
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
+import es.uvigo.ei.sing.pandrugs.util.RnkFileParser;
 
 @Provider
 public class GeneRankingMessageBodyReader extends MultipartMessageBodyReader<GeneRanking> {
 	private Map<String, Double> ranking;
 
 	@Override
-	protected void init() {}
+	protected void init() {
+	}
 
 	@Override
 	protected void add(String name, byte[] bs) {
 		if (name.equalsIgnoreCase("generank")) {
-			try (final BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bs)))) {
-				String line;
-				
-				this.ranking = new HashMap<>();
-				while ((line = br.readLine()) != null) {
-					line = line.trim();
-					if (line.isEmpty()) continue;
-					
-					final String[] tokens = line.split("\t");
-					
-					if (tokens.length != 2) {
-						throw new RuntimeException("Illegal format in line: " + line);
-					} else {
-						final String[] geneNames = tokens[0].split("[ /]+");
-						
-						for (String gene : geneNames) {
-							ranking.put(gene.trim(), parseDouble(tokens[1]));
-						}
-					}
-				}
+			try (final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(bs))) {
+				this.ranking = RnkFileParser.loadInputStreamReader(isr);
 			} catch (IOException ioe) {
 				throw new RuntimeException(ioe);
 			}
@@ -76,5 +60,4 @@ public class GeneRankingMessageBodyReader extends MultipartMessageBodyReader<Gen
 	protected GeneRanking build() {
 		return new GeneRanking(this.ranking);
 	}
-
 }
