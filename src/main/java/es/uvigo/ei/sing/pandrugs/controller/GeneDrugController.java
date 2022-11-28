@@ -27,9 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 public interface GeneDrugController {
@@ -53,6 +55,10 @@ public interface GeneDrugController {
 
 	public abstract List<GeneDrugGroup> searchByCnv(
 		GeneDrugQueryParameters queryParameters, CnvData cnvData
+	);
+
+	public abstract List<GeneDrugGroup> searchByCnvWithExpression(
+		GeneDrugQueryParameters queryParameters, CnvData cnvData, GeneExpression geneExpression
 	);
 
 	public abstract List<GeneDrugGroup> searchFromComputationId(

@@ -39,22 +39,22 @@ import es.uvigo.ei.sing.pandrugs.service.DefaultRegistrationService;
 import es.uvigo.ei.sing.pandrugs.service.DefaultSessionService;
 import es.uvigo.ei.sing.pandrugs.service.DefaultUserService;
 import es.uvigo.ei.sing.pandrugs.service.DefaultVariantsAnalysisService;
-import es.uvigo.ei.sing.pandrugs.service.mime.GeneRankingMessageBodyReader;
 import es.uvigo.ei.sing.pandrugs.service.mime.CnvDataMessageBodyReader;
+import es.uvigo.ei.sing.pandrugs.service.mime.CombinedAnalysisInputDataMessageBodyReader;
+import es.uvigo.ei.sing.pandrugs.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("api")
 public class PanDrugsApplication extends ResourceConfig {
 	public PanDrugsApplication() {
 		super(
-			DefaultRegistrationService.class,
-			DefaultGeneDrugService.class,
-			DefaultSessionService.class,
-			DefaultGeneService.class,
-			DefaultCancerService.class,
-			DefaultUserService.class,
-			DefaultVariantsAnalysisService.class
-		);
-		
+				DefaultRegistrationService.class,
+				DefaultGeneDrugService.class,
+				DefaultSessionService.class,
+				DefaultGeneService.class,
+				DefaultCancerService.class,
+				DefaultUserService.class,
+				DefaultVariantsAnalysisService.class);
+
 		register(RequestContextFilter.class);
 		register(JacksonFeature.class);
 		register(MultiPartFeature.class);
@@ -63,5 +63,6 @@ public class PanDrugsApplication extends ResourceConfig {
 		register(UnexpectedExceptionMapper.class);
 		register(GeneRankingMessageBodyReader.class);
 		register(CnvDataMessageBodyReader.class);
+		register(CombinedAnalysisInputDataMessageBodyReader.class);
 	}
 }

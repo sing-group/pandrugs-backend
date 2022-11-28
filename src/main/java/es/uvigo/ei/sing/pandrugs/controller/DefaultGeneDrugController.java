@@ -57,6 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
@@ -70,6 +71,7 @@ import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.genescore.GeneScoreCalculator;
@@ -181,6 +183,39 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	}
 
 	@Override
+	public List<GeneDrugGroup> searchByCnvWithExpression(
+		GeneDrugQueryParameters queryParameters, CnvData cnvData, GeneExpression geneExpression
+	) {
+		requireNonNull(queryParameters);
+		requireNonNull(cnvData);
+		requireNonNull(geneExpression);
+
+		CalculatedGeneAnnotations calculatedGeneAnnotations = new CalculatedGeneAnnotations();
+
+		Map<String, String> cnvMap = cnvData.getDataMap();
+		calculatedGeneAnnotations.addAnnotation(
+			CalculatedGeneAnnotationType.CNV, 
+			requireNonEmpty(cnvMap)
+		);
+		Map<String, String> expressionMap = geneExpression.getAnnotationsAsStrings();
+		calculatedGeneAnnotations.addAnnotation(
+			CalculatedGeneAnnotationType.EXPRESSION, 
+			requireNonEmpty(expressionMap)
+		);
+
+		Set<String> queryGenes = new HashSet<>();
+		queryGenes.addAll(cnvMap.keySet());
+		queryGenes.addAll(expressionMap.keySet());
+		
+		return searchForGeneDrugsWithGenes(
+			queryParameters,
+			queryGenes,
+			new DefaultGeneScoreCalculator(),
+			calculatedGeneAnnotations
+		);
+	}
+
+	@Override
 	public List<GeneDrugGroup> searchFromComputationId(
 			GeneDrugQueryParameters queryParameters, String computationId
 	) {
@@ -282,12 +317,14 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			.values();
 			
 			final Map<GeneDrug, Set<GeneDrugWarning>> warnings = this.drugWarningDao.findForGeneDrugs(geneDrugs);
+			calculatedGeneAnnotations.getAnnotations().get(CalculatedGeneAnnotationType.EXPRESSION).forEach((K,V) -> {
+				LoggerFactory.getLogger(getClass()).info("\t" + K + "\t" + V);
+			});
 				
 			return groups.stream()
 				.map(gdg -> {
 					final String[] queryGenes = geneDrugToGenes.apply(gdg);
 					final CalculatedGeneAnnotations annotations = calculatedGeneAnnotations.filterByGenes(asList(queryGenes));
-					
 					final Map<GeneDrug, Set<GeneDrugWarning>> gdgWarnings = warnings.entrySet().stream()
 						.filter(entry -> gdg.contains(entry.getKey()))
 					.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));

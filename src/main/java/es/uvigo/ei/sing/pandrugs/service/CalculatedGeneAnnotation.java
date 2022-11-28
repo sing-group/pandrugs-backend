@@ -26,11 +26,15 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.LoggerFactory;
+
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
+import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 
 @XmlRootElement(name = "calculatedGeneAnnotation", namespace = "https://www.pandrugs.org")
 public class CalculatedGeneAnnotation {
     private Map<String, String> cnv;
+    private Map<String, String> expression;
 
     public CalculatedGeneAnnotation() {
     }
@@ -43,11 +47,23 @@ public class CalculatedGeneAnnotation {
         this.cnv = cnv;
     }
 
+    public Map<String, String> getExpression() {
+        return expression;
+    }
+
+    public void setExpression(Map<String, String> expression) {
+        this.expression = expression;
+    }
+
     public static CalculatedGeneAnnotation from(CalculatedGeneAnnotations annotations) {
         CalculatedGeneAnnotation toret = new CalculatedGeneAnnotation();
 
-        if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotations.CalculatedGeneAnnotationType.CNV)) {
-            toret.setCnv(annotations.getAnnotations().get(CalculatedGeneAnnotations.CalculatedGeneAnnotationType.CNV));
+        if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.CNV)) {
+            toret.setCnv(annotations.getAnnotations().get(CalculatedGeneAnnotationType.CNV));
+        }
+
+        if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.EXPRESSION)) {
+            toret.setExpression(annotations.getAnnotations().get(CalculatedGeneAnnotationType.EXPRESSION));
         }
 
         return toret;

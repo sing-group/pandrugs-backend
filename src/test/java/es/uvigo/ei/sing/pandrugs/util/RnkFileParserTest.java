@@ -51,6 +51,8 @@ public class RnkFileParserTest {
         TEST_DATA.put("PAX7", 8.60721699036809);
         TEST_DATA.put("BARX2", 8.59920873291726);
         TEST_DATA.put("MMP10", 8.43216989174878);
+        TEST_DATA.put("SLC35A3", 0.0016);
+        TEST_DATA.put("ADAMTS17", 1.9);
     }
 
     private String rnkFilePath = "test.rnk";

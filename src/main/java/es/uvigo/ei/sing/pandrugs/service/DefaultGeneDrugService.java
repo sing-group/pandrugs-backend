@@ -52,11 +52,14 @@ import com.qmino.miredot.annotations.ReturnType;
 
 import es.uvigo.ei.sing.pandrugs.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
+import es.uvigo.ei.sing.pandrugs.service.entity.CombinedAnalysisInputData;
 import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GenePresence;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -178,6 +181,43 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
 			LOG.warn("Error listing gene-drugs from CNV", e);
+			throw createBadRequestException(e);
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("combined")
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
+	@Override
+	public Response listCombinedCnvAndExpression(
+		CombinedAnalysisInputData combinedAnalysisInputData,
+		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
+	) throws BadRequestException {
+		try {
+			requireNonNull(combinedAnalysisInputData.getCnvData(), "cnv can't be null");
+			CnvData cnvData = combinedAnalysisInputData.getCnvData();
+			requireNonEmpty(cnvData.getDataMap().keySet(), "At least one gene must be provided");
+
+			requireNonNull(combinedAnalysisInputData.getGeneExpressionData(), "expression data can't be null");
+			GeneExpressionData geneExpressionData = combinedAnalysisInputData.getGeneExpressionData();
+			requireNonEmpty(geneExpressionData.getGeneExpression().keySet(), "At least one gene must be provided");
+
+			final List<GeneDrugGroup> geneDrugs = controller.searchByCnvWithExpression(
+				new GeneDrugQueryParameters(
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+				),
+				cnvData, new GeneExpression(geneExpressionData.getGeneExpression())
+			);
+
+			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
+		} catch (IllegalArgumentException | NullPointerException e) {
+			LOG.warn("Error listing gene-drugs from combined analysis (CNV and expression data)", e);
 			throw createBadRequestException(e);
 		}
 	}

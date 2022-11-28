@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class CalculatedGeneAnnotations {
     public static enum CalculatedGeneAnnotationType {
-        CNV
+        CNV, EXPRESSION
     };
 
     private Map<CalculatedGeneAnnotationType, Map<String, String>> annotations;

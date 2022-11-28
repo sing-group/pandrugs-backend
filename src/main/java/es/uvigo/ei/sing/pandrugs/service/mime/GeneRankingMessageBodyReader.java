@@ -23,13 +23,9 @@
 
 package es.uvigo.ei.sing.pandrugs.service.mime;
 
-import static java.lang.Double.parseDouble;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.ext.Provider;

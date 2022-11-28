@@ -169,6 +169,7 @@ and Miguel Reboiro-Jato</license.copyrightOwners>
 		<commons-lang.version>2.6</commons-lang.version>
 		<jackson-databind.version>2.9.10.8</jackson-databind.version>
 		<json.version>20220924</json.version>
+		<commons-math-3.version>3.6.1</commons-math-3.version>
 
 		<!-- Testing dependencies -->
 		<junit.version>4.12</junit.version>
@@ -363,6 +364,11 @@ and Miguel Reboiro-Jato</license.copyrightOwners>
     		<groupId>org.json</groupId>
     		<artifactId>json</artifactId>
 			<version>${json.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.commons</groupId>
+    		<artifactId>commons-math3</artifactId>
+    		<version>${commons-math-3.version}</version>
 		</dependency>
 
 		<!-- Testing -->

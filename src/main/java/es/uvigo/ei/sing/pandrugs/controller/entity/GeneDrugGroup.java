@@ -154,7 +154,6 @@ public class GeneDrugGroup {
 		this.geneDrugs = new ArrayList<>(geneDrugs);
 		this.drug = this.geneDrugs.get(0).getDrug();
 		this.pharmCatGermLineAnnotation = pharmCatGermLineAnnotation;
-		// TODO: check all calculated gene annotations are for the query genes
 		this.calculatedGeneAnnotations = calculatedGeneAnnotations;
 	}
 	
