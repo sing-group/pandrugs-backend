@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
+import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
@@ -66,6 +69,7 @@ import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
+import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.genescore.GeneScoreCalculator;
@@ -118,7 +122,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			stream(geneNames).collect(toSet()),
-			new DefaultGeneScoreCalculator()
+			new DefaultGeneScoreCalculator(),
+			new CalculatedGeneAnnotations()
 		);
 	}
 
@@ -149,7 +154,29 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new HashSet<>(geneRank.keySet()),
-			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank))
+			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank)),
+			new CalculatedGeneAnnotations()
+		);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchByCnv(
+		GeneDrugQueryParameters queryParameters,
+		CnvData cnvData
+	) {
+		requireNonNull(queryParameters);
+		requireNonNull(cnvData);
+
+		final Map<String, String> cnvMap = requireNonEmpty(cnvData.getDataMap());
+
+		CalculatedGeneAnnotations calculatedGeneAnnotations = new CalculatedGeneAnnotations();
+		calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.CNV, cnvMap);
+		
+		return searchForGeneDrugsWithGenes(
+			queryParameters,
+			new HashSet<>(cnvMap.keySet()),
+			new DefaultGeneScoreCalculator(),
+			calculatedGeneAnnotations
 		);
 	}
 
@@ -172,24 +199,32 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			queryParameters,
 			new HashSet<>(geneRank.keySet()),
 			new StaticGeneScoreCalculator(geneRank),
-			pharmCatAnnotations
+			pharmCatAnnotations,
+			new CalculatedGeneAnnotations()
 		);
-	}
-
-
-	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
-		GeneDrugQueryParameters queryParameters,
-		Set<String> geneNames,
-		GeneScoreCalculator gScoreCalculator
-	) {
-		return searchForGeneDrugsWithGenes(queryParameters, geneNames, gScoreCalculator, Collections.emptyMap());
 	}
 
 	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
 		GeneDrugQueryParameters queryParameters,
 		Set<String> geneNames,
 		GeneScoreCalculator gScoreCalculator,
-		Map<String, PharmCatAnnotation> pharmCatAnnotations
+		CalculatedGeneAnnotations calculatedGeneAnnotations
+	) {
+		return searchForGeneDrugsWithGenes(
+			queryParameters, 
+			geneNames, 
+			gScoreCalculator, 
+			Collections.emptyMap(),
+			calculatedGeneAnnotations
+		);
+	}
+
+	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
+		GeneDrugQueryParameters queryParameters,
+		Set<String> geneNames,
+		GeneScoreCalculator gScoreCalculator,
+		Map<String, PharmCatAnnotation> pharmCatAnnotations,
+		CalculatedGeneAnnotations calculatedGeneAnnotations
 	) {
 		final String[] upperGeneNames = toUpperCase(geneNames);
 		
@@ -198,7 +233,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGroupDrugScoreCalculator(),
-			pharmCatAnnotations
+			pharmCatAnnotations,
+			calculatedGeneAnnotations
 		);
 	}
 
@@ -225,7 +261,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGeneDrugDrugScoreCalculator(),
-			pharmCatAnnotations
+			pharmCatAnnotations,
+			new CalculatedGeneAnnotations()
 		);
 	}
 
@@ -234,7 +271,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		Function<Set<GeneDrug>, String[]> geneDrugToGenes,
 		GeneScoreCalculator gScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator,
-		Map<String, PharmCatAnnotation> pharmCatAnnotations
+		Map<String, PharmCatAnnotation> pharmCatAnnotations,
+		CalculatedGeneAnnotations calculatedGeneAnnotations
 	) {
 		if (geneDrugs.isEmpty()) {
 			return emptyList();
@@ -248,6 +286,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			return groups.stream()
 				.map(gdg -> {
 					final String[] queryGenes = geneDrugToGenes.apply(gdg);
+					final CalculatedGeneAnnotations annotations = calculatedGeneAnnotations.filterByGenes(asList(queryGenes));
 					
 					final Map<GeneDrug, Set<GeneDrugWarning>> gdgWarnings = warnings.entrySet().stream()
 						.filter(entry -> gdg.contains(entry.getKey()))
@@ -259,7 +298,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 						gdgWarnings,
 						gScoreCalculator,
 						drugScoreCalculator,
-						getPharmCatAnnotation(pharmCatAnnotations, gdg)
+						getPharmCatAnnotation(pharmCatAnnotations, gdg),
+						annotations
 					);
 				})
 			.collect(toList());

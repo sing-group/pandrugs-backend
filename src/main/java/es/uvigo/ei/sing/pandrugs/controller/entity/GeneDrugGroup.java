@@ -71,6 +71,7 @@ public class GeneDrugGroup {
 	private final GeneScoreCalculator geneScoreCalculator;
 	private final DrugScoreCalculator drugScoreCalculator;
 	private final GermLineAnnotation pharmCatGermLineAnnotation;
+	private final CalculatedGeneAnnotations calculatedGeneAnnotations;
 	
 	private final Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings;
 
@@ -89,7 +90,7 @@ public class GeneDrugGroup {
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
-		this(queryGenes, geneDrugs, geneDrugWarnings, geneScoreCalculator, drugScoreCalculator, GermLineAnnotation.NOT_AVAILABLE);
+		this(queryGenes, geneDrugs, geneDrugWarnings, geneScoreCalculator, drugScoreCalculator, GermLineAnnotation.NOT_AVAILABLE, new CalculatedGeneAnnotations());
 	}
 
 	public GeneDrugGroup(
@@ -98,7 +99,8 @@ public class GeneDrugGroup {
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator,
-		GermLineAnnotation pharmCatGermLineAnnotation
+		GermLineAnnotation pharmCatGermLineAnnotation,
+		CalculatedGeneAnnotations calculatedGeneAnnotations
 	) {
 		requireNonEmpty(queryGenes);
 		requireNonEmpty(geneDrugs);
@@ -152,6 +154,8 @@ public class GeneDrugGroup {
 		this.geneDrugs = new ArrayList<>(geneDrugs);
 		this.drug = this.geneDrugs.get(0).getDrug();
 		this.pharmCatGermLineAnnotation = pharmCatGermLineAnnotation;
+		// TODO: check all calculated gene annotations are for the query genes
+		this.calculatedGeneAnnotations = calculatedGeneAnnotations;
 	}
 	
 	public List<GeneDrug> getGeneDrugs() {
@@ -458,6 +462,10 @@ public class GeneDrugGroup {
 
 	public GermLineAnnotation getPharmCatGermLineAnnotation() {
 		return pharmCatGermLineAnnotation;
+	}
+
+	public CalculatedGeneAnnotations getCalculatedGeneAnnotations() {
+		return calculatedGeneAnnotations;
 	}
 	
 	private boolean isInQueryGenes(IndirectGene indirectGene) {

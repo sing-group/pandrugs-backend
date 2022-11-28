@@ -29,6 +29,8 @@ import static java.util.Arrays.sort;
 import static java.util.Arrays.stream;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.stream.Stream;
 
@@ -38,12 +40,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
+import es.uvigo.ei.sing.pandrugs.service.CalculatedGeneAnnotation;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 import es.uvigo.ei.sing.pandrugs.util.StringJoiner;
 
@@ -86,7 +90,9 @@ public class GeneDrugGroupInfo {
 	private int[] pubchemId;
 	private double dScore;
 	private double gScore;
+
 	private GermLineAnnotation pharmCatGermLineAnnotation;
+	private CalculatedGeneAnnotation calculatedGeneAnnotations;
 
 	@XmlElementWrapper(name = "geneDrugInfos")
 	@XmlElement(name = "geneDrugInfo")
@@ -127,6 +133,7 @@ public class GeneDrugGroupInfo {
 		this.dScore = gdg.getDScore();
 		this.gScore = gdg.getGScore();
 		this.pharmCatGermLineAnnotation = gdg.getPharmCatGermLineAnnotation();
+		this.calculatedGeneAnnotations = CalculatedGeneAnnotation.from(gdg.getCalculatedGeneAnnotations());
 		
 		switch (this.status) {
 		case APPROVED:

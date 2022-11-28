@@ -54,6 +54,7 @@ import es.uvigo.ei.sing.pandrugs.controller.GeneDrugController;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
+import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugs.service.entity.GenePresence;
@@ -145,6 +146,38 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
 			LOG.warn("Error listing gene-drugs from rank", e);
+			throw createBadRequestException(e);
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("cnv")
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
+	@Override
+	public Response listCnv(
+		CnvData cnvData,
+		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
+	) throws BadRequestException {
+		try {
+			requireNonNull(cnvData, "cnv can't be null");
+			requireNonEmpty(cnvData.getDataMap().keySet(), "At least one gene must be provided");
+			
+			final List<GeneDrugGroup> geneDrugs = controller.searchByCnv(
+				new GeneDrugQueryParameters(
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+				),
+				cnvData
+			);
+
+			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
+		} catch (IllegalArgumentException | NullPointerException e) {
+			LOG.warn("Error listing gene-drugs from CNV", e);
 			throw createBadRequestException(e);
 		}
 	}
