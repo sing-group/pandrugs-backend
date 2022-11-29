@@ -342,7 +342,6 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 		}
 
 		return Response.ok(controller.getPharmCatReport(computationId, contentType))
-				.header("Content-Disposition", "attachment; filename=\"" + computationId + "-pharmcat-report."+contentType+"\"" )
 				.header("Content-Type", contentType.equals("json") ? MediaType.APPLICATION_JSON : MediaType.TEXT_HTML)
 			.build();
 	}
