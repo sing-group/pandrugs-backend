@@ -25,11 +25,12 @@ package es.uvigo.ei.sing.pandrugs.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
+import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
@@ -57,29 +58,14 @@ public interface VariantsAnalysisController {
 
 	public Map<String, PharmCatAnnotation> getPharmCatAnnotations(String computationId);
 
-	public String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		Boolean PharmCat,
-		String computationName) throws IOException;
+	public String startVariantsScopeUserComputation(VariantsAnalysisComputationConfiguration configuration)
+		throws IOException;
 
-	public String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		Boolean PharmCat,
-		String computationName,
-		String resultsURLTemplate) throws IOException;
+	public File getCombinedAnalysisCnvFile(String computationId);
 
-	public String startVariantsScopeUserComputationWithPharmCat(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		InputStream tsvFileInputStream,
-		String computationName) throws IOException;
+	public CnvData getCnvAnnotations(String computationId);
 
-	public String startVariantsScopeUserComputationWithPharmCat(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		InputStream tsvFileInputStream,
-		String computationName,
-		String resultsURLTemplate) throws IOException;
+	public File getCombinedAnalysisExpressionFile(String computationId);
+
+	public GeneExpression getExpressionData(String computationId);
 }

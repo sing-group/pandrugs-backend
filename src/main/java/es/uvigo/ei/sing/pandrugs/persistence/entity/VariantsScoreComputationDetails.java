@@ -23,12 +23,13 @@
 
 package es.uvigo.ei.sing.pandrugs.persistence.entity;
 
+import java.util.Optional;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 
 @Embeddable
 public class VariantsScoreComputationDetails {
-
 	@Embedded
 	private VariantsScoreComputationParameters parameters = 
 		new VariantsScoreComputationParameters();
@@ -43,25 +44,31 @@ public class VariantsScoreComputationDetails {
 	@Embedded
 	private PharmCatComputationParameters pharmCatComputationParameters = new PharmCatComputationParameters();
 
+	@Embedded
+	private CombinedQueryParameters combinedQueryParameters = new CombinedQueryParameters();
+
 	public VariantsScoreComputationDetails() {	}
 
 	VariantsScoreComputationDetails(
-			VariantsScoreComputationParameters parameters,
-			VariantsScoreComputationStatus status,
-			VariantsScoreComputationResults results
-			) {
-		this(parameters, status, results, new PharmCatComputationParameters());
+		VariantsScoreComputationParameters parameters,
+		VariantsScoreComputationStatus status,
+		VariantsScoreComputationResults results
+	) {
+		this(parameters, status, results, new PharmCatComputationParameters(), new CombinedQueryParameters());
 	}
 
 	VariantsScoreComputationDetails(
-			VariantsScoreComputationParameters parameters,
-			VariantsScoreComputationStatus status,
-			VariantsScoreComputationResults results,
-			PharmCatComputationParameters pharmCatComputationParameters) {
+		VariantsScoreComputationParameters parameters,
+		VariantsScoreComputationStatus status,
+		VariantsScoreComputationResults results,
+		PharmCatComputationParameters pharmCatComputationParameters,
+		CombinedQueryParameters combinedQueryParameters
+	) {
 		this.parameters = parameters;
 		this.status = status;
 		this.results = results;
 		this.pharmCatComputationParameters = pharmCatComputationParameters;
+		this.combinedQueryParameters = combinedQueryParameters;
 	}
 
 	public VariantsScoreComputationParameters getParameters() {
@@ -94,5 +101,13 @@ public class VariantsScoreComputationDetails {
 
 	public void setPharmCatComputationParameters(PharmCatComputationParameters pharmCatComputationParameters) {
 		this.pharmCatComputationParameters = pharmCatComputationParameters;
+	}
+
+	public Optional<CombinedQueryParameters> getCombinedQueryParameters() {
+		return Optional.ofNullable(combinedQueryParameters);
+	}
+
+	public void setCombinedQueryParameters(CombinedQueryParameters combinedQueryParameters) {
+		this.combinedQueryParameters = combinedQueryParameters;
 	}
 }

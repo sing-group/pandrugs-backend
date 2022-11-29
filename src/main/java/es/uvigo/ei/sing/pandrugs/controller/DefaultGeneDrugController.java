@@ -36,8 +36,9 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.ArrayList;
+ import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,19 +47,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
+import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
-import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionAnnotation;
+import es.uvigo.ei.sing.pandrugs.controller.entity.SnvAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
@@ -71,7 +74,7 @@ import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGeneDrugDrugScoreCalculator
 import es.uvigo.ei.sing.pandrugs.service.drugscore.ByGroupDrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.drugscore.DrugScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
-import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
+import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.genescore.DefaultGeneScoreCalculator;
 import es.uvigo.ei.sing.pandrugs.service.genescore.GeneScoreCalculator;
@@ -205,7 +208,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 		Set<String> queryGenes = new HashSet<>();
 		queryGenes.addAll(cnvMap.keySet());
-		queryGenes.addAll(expressionMap.keySet());
+		queryGenes.addAll(this.getExpressionGenesForQuery(geneExpression.getAnnotations()));
 		
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
@@ -213,6 +216,16 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			new DefaultGeneScoreCalculator(),
 			calculatedGeneAnnotations
 		);
+	}
+
+	/*
+	 * TODO: this method should be updated in the future to retrieve only oncogenes. This will be a new
+	 * annotation in the genes table.
+	 */
+	private Set<String> getExpressionGenesForQuery(Map<String, GeneExpressionAnnotation> expressionMap) {
+		return expressionMap.entrySet().stream()
+			.filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
+			.map(e -> e.getKey()).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -224,18 +237,52 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		final Map<String, Double> geneRank = requireNonEmpty(
 			variantsAnalysisController.getGeneRankingForComputation(computationId).asMap()
 		);
+		
+		Set<String> queryGenes = new HashSet<>();
+		queryGenes.addAll(geneRank.keySet());
+
+		Map<String, String> snvMap = geneRank.keySet().stream()
+			.collect(Collectors.toMap(g -> g, g -> SnvAnnotation.ALTERED.toString()));
+
+		ComputationMetadata metadata = this.variantsAnalysisController.getComputationStatus(computationId);
 
 		final Map<String, PharmCatAnnotation> pharmCatAnnotations = new HashMap<>();
-		if (this.variantsAnalysisController.getComputationStatus(computationId).isPharmcat()) {
+		if (metadata.isPharmcat()) {
 			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
 		}
 
+		CalculatedGeneAnnotations calculatedGeneAnnotations = new CalculatedGeneAnnotations();
+		if(metadata.isCnvTsvFile()) {
+			Map<String, String> cnvMap = this.variantsAnalysisController.getCnvAnnotations(computationId).getDataMap();
+
+			calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.CNV, cnvMap);
+			
+			queryGenes.addAll(cnvMap.keySet());
+			cnvMap.keySet().forEach(g -> {
+				snvMap.putIfAbsent(g, SnvAnnotation.NOT_ALTERED.toString());
+			});
+		}
+		
+		if(metadata.isExpressionDataFile()) {
+			GeneExpression expressionData = this.variantsAnalysisController.getExpressionData(computationId);
+			Map<String, String> expressionMap = expressionData.getAnnotationsAsStrings();
+			
+			calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.EXPRESSION, expressionMap);
+			
+			queryGenes.addAll(this.getExpressionGenesForQuery(expressionData.getAnnotations()));
+			expressionMap.keySet().forEach(g -> {
+				snvMap.putIfAbsent(g, SnvAnnotation.NOT_ALTERED.toString());
+			});
+		}
+
+		calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.SNV, snvMap);
+
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			new HashSet<>(geneRank.keySet()),
+			queryGenes,
 			new StaticGeneScoreCalculator(geneRank),
 			pharmCatAnnotations,
-			new CalculatedGeneAnnotations()
+			calculatedGeneAnnotations
 		);
 	}
 
@@ -317,9 +364,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			.values();
 			
 			final Map<GeneDrug, Set<GeneDrugWarning>> warnings = this.drugWarningDao.findForGeneDrugs(geneDrugs);
-			calculatedGeneAnnotations.getAnnotations().get(CalculatedGeneAnnotationType.EXPRESSION).forEach((K,V) -> {
-				LoggerFactory.getLogger(getClass()).info("\t" + K + "\t" + V);
-			});
 				
 			return groups.stream()
 				.map(gdg -> {

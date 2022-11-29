@@ -132,8 +132,11 @@ public class DefaultVariantsAnalysisControllerIntegrationTest {
 	public void testStartAndWaitForVariantsScoreComputation() throws InterruptedException, URISyntaxException, IOException {
 		final User aUser = UserDataset.users()[0];
 
-		final String id = controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
-				openComputationFileStream(A_VCF_RESOURCE_PATH), false, UUID.randomUUID().toString());
+		final String id = controller.startVariantsScopeUserComputation(
+			new VariantsAnalysisComputationConfiguration(
+				new UserLogin(aUser.getLogin()), openComputationFileStream(A_VCF_RESOURCE_PATH), false, UUID.randomUUID().toString()
+			)
+		);
 
 		waitWhileOrFail(() ->!controller.getComputationStatus(id).isFinished(), 10000);
 	}

@@ -85,9 +85,13 @@ public class VariantsScoreUserComputation {
 		this.user = user;
 	}
 
-	public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 
-	public void setName(String name) { this.name = name; }
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public VariantsScoreComputationDetails getComputationDetails() {
 		return computationDetails;

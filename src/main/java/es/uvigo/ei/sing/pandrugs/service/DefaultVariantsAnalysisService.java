@@ -39,9 +39,9 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -62,6 +62,7 @@ import org.springframework.stereotype.Service;
 
 import com.qmino.miredot.annotations.ReturnType;
 
+import es.uvigo.ei.sing.pandrugs.controller.VariantsAnalysisComputationConfiguration;
 import es.uvigo.ei.sing.pandrugs.controller.VariantsAnalysisController;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
@@ -100,8 +101,10 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			() -> {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
 				
-					final String computationId = controller.startVariantsScopeUserComputation(login, vcfFile, false,
-							computationName, resultsURLTemplate);
+					VariantsAnalysisComputationConfiguration configuration = new VariantsAnalysisComputationConfiguration(
+						login, vcfFile, false, computationName, resultsURLTemplate);
+
+					final String computationId = controller.startVariantsScopeUserComputation(configuration);
 				
 				return Response.created(
 					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()
@@ -128,8 +131,10 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 		@PathParam("login") UserLogin login,
 		@FormDataParam("vcfFile") File vcfFile,
 		@QueryParam("name") String computationName,
-		@FormDataParam("withPharmcat") Boolean withPharmcat,
+		@FormDataParam("withPharmcat") @DefaultValue("false") Boolean withPharmcat,
 		@FormDataParam("tsvFile") File tsvFile,
+		@FormDataParam("cnvTsvFile") File cnvTsvFile,
+		@FormDataParam("expressionDataRnkFile") File expressionDataRnkFile,
 		@QueryParam("resultsurltemplate") String resultsURLTemplate,
 		@Context SecurityContext security,
 		@Context UriInfo currentUri
@@ -141,17 +146,22 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 			() -> {
 				requireStringSize(computationName, 1, Integer.MAX_VALUE, "name must not be empty");
 
-				InputStream vcfInputStream = new FileInputStream(vcfFile);
+				VariantsAnalysisComputationConfiguration configuration = new VariantsAnalysisComputationConfiguration(
+					login, new FileInputStream(vcfFile), withPharmcat, computationName, resultsURLTemplate);
+
 				final String computationId;
 
-				if(tsvFile == null || tsvFile.length() == 0) {
-					computationId = controller.startVariantsScopeUserComputation(login, vcfInputStream, withPharmcat,
-						   computationName, resultsURLTemplate);
-				} else {
-					InputStream tsvInputStream = new FileInputStream(tsvFile);
-					computationId = controller.startVariantsScopeUserComputationWithPharmCat(login, vcfInputStream, tsvInputStream,
-						   computationName, resultsURLTemplate);
+				if (tsvFile != null && tsvFile.length() > 0) {
+					configuration.setTsvFileInputStream(new FileInputStream(tsvFile));
 				}
+				if (cnvTsvFile != null && cnvTsvFile.length() > 0) {
+					configuration.setCnvTsvFileInputStream(new FileInputStream(cnvTsvFile));
+				}
+				if (expressionDataRnkFile != null && expressionDataRnkFile.length() > 0) {
+					configuration.setExpressionDataRnkFileInputStream(new FileInputStream(expressionDataRnkFile));
+				}
+
+				computationId = controller.startVariantsScopeUserComputation(configuration);
 
 				return Response.created(
 					currentUri.getAbsolutePathBuilder().path("/" + computationId).build()

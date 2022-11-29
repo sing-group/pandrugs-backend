@@ -27,6 +27,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -57,6 +58,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Controller;
 
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.VariantsScoreComputer;
@@ -65,15 +67,19 @@ import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonRepo
 import es.uvigo.ei.sing.pandrugs.mail.Mailer;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.UserDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.VariantsScoreUserComputationDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.CombinedQueryParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.User;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationParameters;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreComputationStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.VariantsScoreUserComputation;
+import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserLogin;
+import es.uvigo.ei.sing.pandrugs.util.MapFileParser;
+import es.uvigo.ei.sing.pandrugs.util.RnkFileParser;
 import es.uvigo.ei.sing.vcfparser.vcf.DefaultVCFMetaDataBuilder;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFMetaData;
 import es.uvigo.ei.sing.vcfparser.vcf.VCFParseException;
@@ -87,6 +93,8 @@ public class DefaultVariantsAnalysisController implements
 
 	public static final String INPUT_VCF_NAME = "input.vcf";
 	public static final String INPUT_PHARMCAT_PHENOTYPER_OUTSIDE_CALL_NAME = "input_pharmcat_phenotyper_outside_call_file.tsv";
+	public static final String INPUT_COMBINED_ANALYSIS_CNV_TSV_NAME = "combined_analysis_cnv.tsv";
+	public static final String INPUT_COMBINED_ANALYSIS_EXPRESSION_DATA_NAME = "combined_analysis_expression.rnk";
 
 	private static final List<String> PHARMCAT_REPORT_EXTENSIONS = asList("html", "json");
 
@@ -107,15 +115,18 @@ public class DefaultVariantsAnalysisController implements
 
 	@Inject
 	private FileSystemConfiguration fileSystemConfiguration;
-
-	private String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		Boolean withPharmCat,
-		Optional<InputStream> tsvFileInputStream,
-		String computationName,
-		String resultsURLTemplate
-	) throws IOException {
+	
+	@Override
+	public String startVariantsScopeUserComputation(VariantsAnalysisComputationConfiguration configuration)
+	throws IOException {
+		String computationName = configuration.getComputationName();
+		UserLogin userLogin = configuration.getUserLogin();
+		InputStream vcfFileInputStream = configuration.getVcfFileInputStream();
+		String resultsURLTemplate = configuration.getResultsURLTemplate();
+		boolean withPharmCat = configuration.isPharmCat();
+		Optional<InputStream> tsvFileInputStream = configuration.getTsvFileInputStream();
+		Optional<InputStream> cnvTsvFileInputStream = configuration.getCnvTsvFileInputStream();
+		Optional<InputStream> expressionDataRnkFileInputStream = configuration.getExpressionDataRnkFileInputStream();
 
 		User user = userDAO.get(userLogin.getLogin());
 		File dataDir = createComputationDataDirectory(user);
@@ -141,53 +152,27 @@ public class DefaultVariantsAnalysisController implements
 					.setPharmCatPhenotyperTsvFile(Paths.get(INPUT_PHARMCAT_PHENOTYPER_OUTSIDE_CALL_NAME));
 		}
 
-		VariantsScoreUserComputation computation = 
-			this.startVariantsScoreComputation(user, computationName, parameters, pharmCatComputationParameters);
+		final CombinedQueryParameters combinedQueryParameters = new CombinedQueryParameters();
+		if (cnvTsvFileInputStream.isPresent()) {
+			final File cnvTsvFile = new File(dataDir + File.separator + INPUT_COMBINED_ANALYSIS_CNV_TSV_NAME);
+			FileUtils.copyInputStreamToFile(cnvTsvFileInputStream.get(), cnvTsvFile);
+			combinedQueryParameters
+					.setCnvTsvFile(Paths.get(INPUT_COMBINED_ANALYSIS_CNV_TSV_NAME));
+		}
+		if (expressionDataRnkFileInputStream.isPresent()) {
+			final File expressionDataRnkFile = new File(
+					dataDir + File.separator + INPUT_COMBINED_ANALYSIS_EXPRESSION_DATA_NAME);
+			FileUtils.copyInputStreamToFile(expressionDataRnkFileInputStream.get(), expressionDataRnkFile);
+			combinedQueryParameters
+					.setExpressionDataFile(Paths.get(INPUT_COMBINED_ANALYSIS_EXPRESSION_DATA_NAME));
+		}
+
+		VariantsScoreUserComputation computation = this.startVariantsScoreComputation(user, computationName, parameters,
+			pharmCatComputationParameters, combinedQueryParameters);
 
 		return computation.getId();
 	}
 
-	@Override
-	public String startVariantsScopeUserComputationWithPharmCat(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		InputStream tsvFileInputStream,
-		String computationName,
-		String resultsURLTemplate
-	) throws IOException {
-		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, true, Optional.of(tsvFileInputStream), computationName, resultsURLTemplate);
-	}
-
-	@Override
-	public String startVariantsScopeUserComputationWithPharmCat(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		InputStream tsvFileInputStream,
-		String computationName
-	) throws IOException {
-		return this.startVariantsScopeUserComputationWithPharmCat(userLogin, vcfFileInputStream, tsvFileInputStream, computationName, null);
-	}
-
-	@Override
-	public String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		Boolean withPharmCat,
-		String computationName,
-		String resultsURLTemplate
-	) throws IOException {
-		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, withPharmCat, Optional.empty(), computationName, resultsURLTemplate);
-	}
-
-	@Override
-	public String startVariantsScopeUserComputation(
-		UserLogin userLogin,
-		InputStream vcfFileInputStream,
-		Boolean withPharmCat,
-		String computationName
-	) throws IOException {
-		return this.startVariantsScopeUserComputation(userLogin, vcfFileInputStream, withPharmCat, computationName, null);
-	}
 
 	@Override
 	public ComputationMetadata getComputationStatus(String computationId) {
@@ -205,11 +190,11 @@ public class DefaultVariantsAnalysisController implements
 		User user = userDAO.get(userLogin.getLogin());
 
 		Map<String, ComputationMetadata> computations = new HashMap<>();
-
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
-				computations.put(computation.getId(), new ComputationMetadata(computation, getAffectedGenes
-						(computation),
-						getAffectedGenesInfo(computation)));
+			computations.put(
+				computation.getId(), 
+				new ComputationMetadata(computation, getAffectedGenes(computation), getAffectedGenesInfo(computation))
+			);
 		}
 
 		return computations;
@@ -218,10 +203,8 @@ public class DefaultVariantsAnalysisController implements
 	private Set<String> getAffectedGenes(VariantsScoreUserComputation computation) {
 		if (computation.getComputationDetails().getStatus().isFinished() &&
 				!computation.getComputationDetails().getStatus().hasErrors()
-				) {
-
+		) {
 			return this.getGeneRanking(computation).asMap().keySet();
-
 		} else {
 			return null;
 		}
@@ -436,6 +419,67 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	@Override
+	public File getCombinedAnalysisCnvFile(String computationId) {
+		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
+
+		if (!computation.getComputationDetails().getStatus().isFinished()) {
+			throw new IllegalStateException("Computation has not finished yet");
+		}
+
+		if(!computation.getComputationDetails().getCombinedQueryParameters().isPresent()) {
+			throw new IllegalStateException("The specified computation does not have combined analysis files");
+		}
+
+		return this.obtainComputationFile(
+			computation, 
+			computation.getComputationDetails().getCombinedQueryParameters().get().getCnvTsvFile()
+		);
+	}
+
+	@Override
+	public CnvData getCnvAnnotations(String computationId) {
+		try {
+			return new CnvData(
+				MapFileParser.loadFile(
+					this.getCombinedAnalysisCnvFile(computationId)
+				)
+			);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public File getCombinedAnalysisExpressionFile(String computationId) {
+		VariantsScoreUserComputation computation = this.variantsScoreUserComputationDAO.get(computationId);
+
+		if (!computation.getComputationDetails().getStatus().isFinished()) {
+			throw new IllegalStateException("Computation has not finished yet");
+		}
+
+		if(!computation.getComputationDetails().getCombinedQueryParameters().isPresent()) {
+			throw new IllegalStateException("The specified computation does not have combined analysis files");
+		}
+
+		return this.obtainComputationFile(
+			computation, 
+			computation.getComputationDetails().getCombinedQueryParameters().get().getExpressionDataFile()
+		);
+	}
+
+	@Override
+	public GeneExpression getExpressionData(String computationId) {
+		try {
+			return new GeneExpression(
+				RnkFileParser.loadFile(
+					this.getCombinedAnalysisExpressionFile(computationId)
+				)
+			);
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public File getPharmCatReport(String computationId, String extension) {
 		if (!isValidPharmCatReportExtension(extension)) {
 			throw new IllegalStateException("Invalid extension. Supported extensions: "
@@ -452,9 +496,10 @@ public class DefaultVariantsAnalysisController implements
 			throw new IllegalStateException("Computation has not finished yet");
 		}
 
-		return this.obtainComputationFile(computation,
-				Paths.get(computation.getComputationDetails().getResults().getPharmCatResults().getFilePath().toString()
-						+ "." + extension));
+		return this.obtainComputationFile(
+			computation,
+			Paths.get(computation.getComputationDetails().getResults().getPharmCatResults().getFilePath().toString() + "." + extension)
+		);
 	}
 
 	@Override
@@ -480,9 +525,10 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	private VariantsScoreUserComputation startVariantsScoreComputation(User user, String computationName,
-			VariantsScoreComputationParameters parameters,
-			PharmCatComputationParameters pharmCatComputationParameters) {
-
+		VariantsScoreComputationParameters parameters,
+		PharmCatComputationParameters pharmCatComputationParameters,
+		CombinedQueryParameters combinedQueryParameters
+	) {
 		File userDir = fileSystemConfiguration.getUserDataBaseDirectory().toPath().resolve(parameters
 				.getResultsBasePath()).toFile();
 
@@ -500,6 +546,7 @@ public class DefaultVariantsAnalysisController implements
 		userComputation.getComputationDetails().setStatus(computation.getStatus());
 		userComputation.getComputationDetails().setParameters(parameters);
 		userComputation.getComputationDetails().setPharmCatComputationParameters(pharmCatComputationParameters);
+		userComputation.getComputationDetails().setCombinedQueryParameters(combinedQueryParameters);
 		variantsScoreUserComputationDAO.storeComputation(userComputation);
 
 		addChangeListener(userComputation, computation);

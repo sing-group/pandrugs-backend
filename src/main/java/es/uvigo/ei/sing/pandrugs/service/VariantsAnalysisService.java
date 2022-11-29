@@ -52,6 +52,8 @@ public interface VariantsAnalysisService {
 	 * @param computationName the name for the computation.
 	 * @param withPharmcat whether PharmCAT should be executed or not.
 	 * @param tsvFile an optional TSV file for PharmCAT (as "phenotyper outside call file").
+	 * @param cnvTsvFile an optional TSV file with CNVs for a combined analysis.
+	 * @param expressionDataRnkFile an optional RNK file with expression data for a combined analysis.
 	 * @param resultsURLTemplate a URL where the results can be seen (normally in a front-end application). This will
 	 *                              be used to send an email to the user, when results are available. The template
 	 *                              should contain a "%s" which will be replaced by the computationID. It can be null.
@@ -67,6 +69,8 @@ public interface VariantsAnalysisService {
 		String computationName,
 		Boolean withPharmcat,
 		File tsvFile,
+		File cnvTsvFile,
+		File expressionDataRnkFile,
 		String resultsURLTemplate,
 		SecurityContext security,
 		UriInfo currentUri

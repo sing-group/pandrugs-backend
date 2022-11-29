@@ -33,8 +33,10 @@ import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.Cal
 
 @XmlRootElement(name = "calculatedGeneAnnotation", namespace = "https://www.pandrugs.org")
 public class CalculatedGeneAnnotation {
+
     private Map<String, String> cnv;
     private Map<String, String> expression;
+    private Map<String, String> snv;
 
     public CalculatedGeneAnnotation() {
     }
@@ -55,6 +57,14 @@ public class CalculatedGeneAnnotation {
         this.expression = expression;
     }
 
+    public Map<String, String> getSnv() {
+        return snv;
+    }
+
+    public void setSnv(Map<String, String> snv) {
+        this.snv = snv;
+    }
+
     public static CalculatedGeneAnnotation from(CalculatedGeneAnnotations annotations) {
         CalculatedGeneAnnotation toret = new CalculatedGeneAnnotation();
 
@@ -64,6 +74,10 @@ public class CalculatedGeneAnnotation {
 
         if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.EXPRESSION)) {
             toret.setExpression(annotations.getAnnotations().get(CalculatedGeneAnnotationType.EXPRESSION));
+        }
+
+        if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.SNV)) {
+            toret.setSnv(annotations.getAnnotations().get(CalculatedGeneAnnotationType.SNV));
         }
 
         return toret;

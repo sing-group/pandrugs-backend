@@ -29,34 +29,38 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class PharmCatComputationParameters {
+public class CombinedQueryParameters {
 
-    @Column(name = "parameter_pharmcat")
-    private boolean pharmCat = false;
+    @Column(name = "combined_analysis_cnv_file")
+    private String cnvTsvFile;
 
-    @Column(name = "parameter_pharmcat_phenotyper_file")
-    private String pharmCatPhenotyperTsvFile;
+    @Column(name = "combined_analysis_expression_data_file")
+    private String expressionDataFile;
 
-    public PharmCatComputationParameters() {
+    public CombinedQueryParameters() {
     }
 
-    public boolean isPharmCat() {
-        return pharmCat;
+    public Path getCnvTsvFile() {
+        return Paths.get(this.cnvTsvFile);
     }
 
-    public void setPharmCat(boolean pharmCat) {
-        this.pharmCat = pharmCat;
+    public boolean hasCnvTsvFile() {
+        return this.cnvTsvFile != null;
     }
 
-    public Path getPharmCatPhenotyperTsvFile() {
-        return Paths.get(this.pharmCatPhenotyperTsvFile);
+    public void setCnvTsvFile(Path cnvTsvFile) {
+        this.cnvTsvFile = cnvTsvFile.toString();
     }
 
-    public boolean hasPharmCatPhenotyperTsvFile() {
-        return this.pharmCatPhenotyperTsvFile != null;
+    public Path getExpressionDataFile() {
+        return Paths.get(this.expressionDataFile);
     }
 
-    public void setPharmCatPhenotyperTsvFile(Path pharmCatPhenotyperTsvFile) {
-        this.pharmCatPhenotyperTsvFile = pharmCatPhenotyperTsvFile.toString();
+    public boolean hasExpressionDataFile() {
+        return this.expressionDataFile != null;
+    }
+
+    public void setExpressionDataFile(Path expressionDataFile) {
+        this.expressionDataFile = expressionDataFile.toString();
     }
 }

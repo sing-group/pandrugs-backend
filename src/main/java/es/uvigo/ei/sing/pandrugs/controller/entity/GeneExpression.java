@@ -76,9 +76,7 @@ public class GeneExpression extends GeneExpressionData {
     }
 
     public Map<String, String> getAnnotationsAsStrings() {
-        Map<String, GeneExpressionAnnotation> annotations = this.getAnnotations();
-
-        return annotations.keySet().stream()
-            .collect(Collectors.toMap(k -> k, k -> annotations.get(k).toString()));
+        return this.getAnnotations().entrySet().stream()
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toString()));
     }
 }

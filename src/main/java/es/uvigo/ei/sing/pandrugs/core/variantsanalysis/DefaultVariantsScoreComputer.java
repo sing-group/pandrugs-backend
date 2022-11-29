@@ -117,9 +117,11 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 						LOG.info("Starting PharmCat computation. Path: " + parameters.getResultsBasePath());
 
 						if (pharmCatParams.hasPharmCatPhenotyperTsvFile()) {
-							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(vscParams.getVcfFile(),
-									pharmCatParams.getPharmCatPhenotyperTsvFile(),
-									vscParams.getResultsBasePath());
+							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(
+								vscParams.getVcfFile(),
+								pharmCatParams.getPharmCatPhenotyperTsvFile(),
+								vscParams.getResultsBasePath()
+							);
 							results.put("pharmcat", pharmCatResults);
 						} else {
 							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(vscParams.getVcfFile(),
@@ -147,6 +149,7 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 					if (exception == null) {
 						LOG.info("Completed VEP computation. Path: " + parameters.getResultsBasePath());
 						
+						@SuppressWarnings("unchecked")
 						final Map<String, Object> params = (Map<String, Object>) previousResults.get("params");
 						PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
 
@@ -159,6 +162,7 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 			)
 			.thenApply(
 				(previousResults) -> {
+					@SuppressWarnings("unchecked")
 					final Map<String, Object> params = (Map<String, Object>) previousResults.get("params");
 					PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
 					VariantsEffectPredictionResults vepResults = (VariantsEffectPredictionResults) previousResults.get("variants");

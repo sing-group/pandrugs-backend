@@ -138,8 +138,10 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		controller.startVariantsScopeUserComputation(new UserLogin(aUser.getLogin()),
-				new ByteArrayInputStream(anVCFFileContent().getBytes()), false, UUID.randomUUID().toString());
+		controller.startVariantsScopeUserComputation(
+			new VariantsAnalysisComputationConfiguration(
+				new UserLogin(aUser.getLogin()), new ByteArrayInputStream(anVCFFileContent().getBytes()), false, UUID.randomUUID().toString()
+		));
 
 		assertEquals(aUser, capturedArgument.getValue().getUser());
 		assertEquals(capturedParameters.getValue(), capturedArgument.getValue().getComputationDetails().getParameters());
@@ -176,9 +178,10 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 
 		super.replayAll();
 
-		//controller.startVariantsScoreComputation(aUser, parameters);
 		controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString());
+			new VariantsAnalysisComputationConfiguration(
+				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString()
+		));
 
 		aStatus.setOverallProgress(1.0f);
 		assertEquals(expectedResults, capturedVariantsScoreUserComputation.getValue().getComputationDetails().getResults());
@@ -232,9 +235,10 @@ public class DefaultVariantsAnalysisControllerUnitTest extends EasyMockSupport {
 		expectLastCall();
 
 		super.replayAll();
-		//controller.startVariantsScoreComputation(aUser, parameters);
 		String id = controller.startVariantsScopeUserComputation(
-				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString());
+			new VariantsAnalysisComputationConfiguration(
+				new UserLogin(aUser.getLogin()), emptyInputStream(), false, UUID.randomUUID().toString()
+		));
 
 		// provoke finish of computation, listeners will be called and computation
 		// and the results should be setted in usercomputation.details
