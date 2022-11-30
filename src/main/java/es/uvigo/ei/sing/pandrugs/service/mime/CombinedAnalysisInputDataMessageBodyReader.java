@@ -26,8 +26,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.slf4j.LoggerFactory;
-
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.CombinedAnalysisInputData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;

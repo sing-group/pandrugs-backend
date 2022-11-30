@@ -60,7 +60,7 @@ public class VariantsAnalysisComputationConfiguration {
         this.vcfFileInputStream = requireNonNull(vcfFileInputStream);
         this.pharmCat = pharmCat;
         this.computationName = requireNonNull(computationName);
-        this.resultsURLTemplate = requireNonNull(resultsURLTemplate);
+        this.resultsURLTemplate = resultsURLTemplate;
     }
 
     public UserLogin getUserLogin() {
