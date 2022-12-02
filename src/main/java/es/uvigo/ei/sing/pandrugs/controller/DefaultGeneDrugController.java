@@ -36,9 +36,8 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
- import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,6 +63,7 @@ import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionAnnotation;
 import es.uvigo.ei.sing.pandrugs.controller.entity.SnvAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
+import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonReportParser;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
@@ -390,9 +390,10 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	private static GermLineAnnotation getPharmCatAnnotation(Map<String, PharmCatAnnotation> pharmCatAnnotations, Set<GeneDrug> gdg) { 
 		List<GeneDrug> geneDrugsList = new ArrayList<>(gdg);
 		String showDrugName = geneDrugsList.get(0).getDrug().getShowName().toLowerCase();
+		String pharmCatDrugName = PharmCatJsonReportParser.toPharmCatDrugName(showDrugName);
 		GermLineAnnotation pharmCatAnnotation = GermLineAnnotation.NOT_AVAILABLE;
-		if(pharmCatAnnotations.containsKey(showDrugName)) {
-			pharmCatAnnotation = pharmCatAnnotations.get(showDrugName).getGermLineAnnotation();
+		if(pharmCatAnnotations.containsKey(pharmCatDrugName)) {
+			pharmCatAnnotation = pharmCatAnnotations.get(pharmCatDrugName).getGermLineAnnotation();
 		}
 
 		return pharmCatAnnotation;

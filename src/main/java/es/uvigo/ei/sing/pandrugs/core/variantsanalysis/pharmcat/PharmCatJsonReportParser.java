@@ -38,11 +38,22 @@ import org.json.*;
 
 public class PharmCatJsonReportParser {
 
+    private static final Map<String, String> PANDRUGS_TO_PHARMCAT_DRUG_NAMES;
+
+    static {
+        PANDRUGS_TO_PHARMCAT_DRUG_NAMES = new HashMap<>();
+        PANDRUGS_TO_PHARMCAT_DRUG_NAMES.put("SULFAMETHAZINE".toLowerCase(), "SULFADIMIDINE".toLowerCase());
+        PANDRUGS_TO_PHARMCAT_DRUG_NAMES.put("SULFAMETHOXAZOLE & TRIMETHOPRIM".toLowerCase(),
+                "SULFAMETHOXAZOLE / TRIMETHOPRIM".toLowerCase());
+        PANDRUGS_TO_PHARMCAT_DRUG_NAMES.put("ASCORBIC ACID".toLowerCase(), "VITAMIN C".toLowerCase());
+    }
+
     public static final String IMPLICATION_NOT_VALID_START_STRING = "The guideline does not provide a description of the impact of";
 
     private static void processDrugs(JSONObject drugs, Map<String, List<ReportAnnotation>> drugAnnotations) {
         for (String drugName : drugs.keySet()) {
             JSONObject drugObject = drugs.getJSONObject(drugName);
+
             String source = drugObject.getString("source");
 
             JSONArray drugGuidelines = drugObject.getJSONArray("guidelines");
@@ -128,5 +139,9 @@ public class PharmCatJsonReportParser {
         }
 
         return processReportAnnotations(reportAnnotations);
+    }
+
+    public static String toPharmCatDrugName(String panDrugsDrugName) {
+        return PANDRUGS_TO_PHARMCAT_DRUG_NAMES.getOrDefault(panDrugsDrugName, panDrugsDrugName);
     }
 }
