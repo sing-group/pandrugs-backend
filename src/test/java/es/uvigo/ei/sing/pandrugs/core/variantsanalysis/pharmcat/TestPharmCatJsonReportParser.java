@@ -33,26 +33,30 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestPharmCatJsonReportParser {
 
-    private String reportJsonPath = "pharmcat.report.json";
+    private static String reportJsonPath = "pharmcat.report.json";
+    private static Path reportJson;
 
-    private Path reportJson;
+    private static String emptyReportJsonPath = "pharmcat.report.empty.json";
+    private static Path emptyReportJson;
 
-    @Before
-    public void testSetup() throws IOException {
+    @BeforeClass
+    public static void testSetup() throws IOException {
         reportJson = createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), reportJsonPath, "");
-        copyInputStreamToFile(getClass().getResourceAsStream(reportJsonPath), reportJson.toFile());
+        copyInputStreamToFile(TestPharmCatJsonReportParser.class.getResourceAsStream(reportJsonPath), reportJson.toFile());
+        emptyReportJson = createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), emptyReportJsonPath, "");
+        copyInputStreamToFile(TestPharmCatJsonReportParser.class.getResourceAsStream(emptyReportJsonPath), emptyReportJson.toFile());
     }
 
     @Test
     public void testParseReport() throws IOException {
         Map<String, PharmCatAnnotation> annotations = PharmCatJsonReportParser
-                .getPharmCatFilteredAnnotations(this.reportJson.toFile());
+                .getPharmCatFilteredAnnotations(TestPharmCatJsonReportParser.reportJson.toFile());
 
         assertEquals(44, annotations.size());
 
@@ -77,9 +81,18 @@ public class TestPharmCatJsonReportParser {
                 "Ivacaftor is not recommended");
         assertEquals(ivacaftorAnnotation.getReportAnnotation().get().getPopulation(), "general");
     }
+    
+    @Test
+    public void testParseEmptyReport() throws IOException {
+        Map<String, PharmCatAnnotation> annotations = PharmCatJsonReportParser
+                .getPharmCatFilteredAnnotations(TestPharmCatJsonReportParser.emptyReportJson.toFile());
+        
+        assertEquals(0, annotations.size());
+    }
 
-    @After
-    public void removeUserDir() throws IOException {
-        this.reportJson.toFile().delete();
+    @AfterClass
+    public static void removeUserDir() throws IOException {
+        reportJson.toFile().delete();
+        emptyReportJson.toFile().delete();
     }
 }

@@ -36,6 +36,8 @@ import java.util.Map.Entry;
 
 import org.json.*;
 
+import com.mysql.cj.xdevapi.JsonArray;
+
 public class PharmCatJsonReportParser {
 
     private static final Map<String, String> PANDRUGS_TO_PHARMCAT_DRUG_NAMES;
@@ -67,10 +69,19 @@ public class PharmCatJsonReportParser {
                             JSONObject annotation = guidelineAnnotations.getJSONObject(j);
 
                             if (annotation.isNull("classification")) {
-                                if (!drugAnnotations.containsKey(drugName)) {
-                                    drugAnnotations.put(drugName, new ArrayList<>());
+                                /*
+                                 * Special case to handle warfarin, which is always present in the JSON report, even when
+                                 * it has no variants associated
+                                 */
+                                JSONArray highlightedVariants = annotation.getJSONArray("highlightedVariants");
+                                if (highlightedVariants != null && highlightedVariants.length() > 0
+                                        && !highlightedVariants.get(0).toString().contains("Unknown")
+                                ) {
+                                    if (!drugAnnotations.containsKey(drugName)) {
+                                        drugAnnotations.put(drugName, new ArrayList<>());
+                                    }
+                                    drugAnnotations.get(drugName).add(new WarningReportAnnotation(source));
                                 }
-                                drugAnnotations.get(drugName).add(new WarningReportAnnotation(source));
                                 break;
                             }
 
