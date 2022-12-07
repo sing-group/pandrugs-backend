@@ -56,10 +56,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
+import es.uvigo.ei.sing.pandrugs.controller.entity.CombinedAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionAnnotation;
+import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionCoherence;
 import es.uvigo.ei.sing.pandrugs.controller.entity.SnvAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
@@ -193,39 +195,14 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		requireNonNull(cnvData);
 		requireNonNull(geneExpression);
 
-		CalculatedGeneAnnotations calculatedGeneAnnotations = new CalculatedGeneAnnotations();
-
-		Map<String, String> cnvMap = cnvData.getDataMap();
-		calculatedGeneAnnotations.addAnnotation(
-			CalculatedGeneAnnotationType.CNV, 
-			requireNonEmpty(cnvMap)
-		);
-		Map<String, String> expressionMap = geneExpression.getAnnotationsAsStrings();
-		calculatedGeneAnnotations.addAnnotation(
-			CalculatedGeneAnnotationType.EXPRESSION, 
-			requireNonEmpty(expressionMap)
-		);
-
-		Set<String> queryGenes = new HashSet<>();
-		queryGenes.addAll(cnvMap.keySet());
-		queryGenes.addAll(this.getExpressionGenesForQuery(geneExpression.getAnnotations()));
+		CombinedAnalysisQueryData combinedAnalysisQueryData = new CombinedAnalysisQueryData(cnvData, geneExpression);
 		
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			queryGenes,
+			combinedAnalysisQueryData.getQueryGenes(),
 			new DefaultGeneScoreCalculator(),
-			calculatedGeneAnnotations
+			combinedAnalysisQueryData.getCalculatedGeneAnnotations()
 		);
-	}
-
-	/*
-	 * TODO: this method should be updated in the future to retrieve only oncogenes. This will be a new
-	 * annotation in the genes table.
-	 */
-	private Set<String> getExpressionGenesForQuery(Map<String, GeneExpressionAnnotation> expressionMap) {
-		return expressionMap.entrySet().stream()
-			.filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
-			.map(e -> e.getKey()).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -238,12 +215,6 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			variantsAnalysisController.getGeneRankingForComputation(computationId).asMap()
 		);
 		
-		Set<String> queryGenes = new HashSet<>();
-		queryGenes.addAll(geneRank.keySet());
-
-		Map<String, String> snvMap = geneRank.keySet().stream()
-			.collect(Collectors.toMap(g -> g, g -> SnvAnnotation.ALTERED.toString()));
-
 		ComputationMetadata metadata = this.variantsAnalysisController.getComputationStatus(computationId);
 
 		final Map<String, PharmCatAnnotation> pharmCatAnnotations = new HashMap<>();
@@ -251,38 +222,25 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
 		}
 
-		CalculatedGeneAnnotations calculatedGeneAnnotations = new CalculatedGeneAnnotations();
-		if(metadata.isCnvTsvFile()) {
-			Map<String, String> cnvMap = this.variantsAnalysisController.getCnvAnnotations(computationId).getDataMap();
-
-			calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.CNV, cnvMap);
-			
-			queryGenes.addAll(cnvMap.keySet());
-			cnvMap.keySet().forEach(g -> {
-				snvMap.putIfAbsent(g, SnvAnnotation.NOT_ALTERED.toString());
-			});
-		}
-		
-		if(metadata.isExpressionDataFile()) {
-			GeneExpression expressionData = this.variantsAnalysisController.getExpressionData(computationId);
-			Map<String, String> expressionMap = expressionData.getAnnotationsAsStrings();
-			
-			calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.EXPRESSION, expressionMap);
-			
-			queryGenes.addAll(this.getExpressionGenesForQuery(expressionData.getAnnotations()));
-			expressionMap.keySet().forEach(g -> {
-				snvMap.putIfAbsent(g, SnvAnnotation.NOT_ALTERED.toString());
-			});
+		CnvData cnvData = null;
+		if (metadata.isCnvTsvFile()) {
+			cnvData = this.variantsAnalysisController.getCnvAnnotations(computationId);
 		}
 
-		calculatedGeneAnnotations.addAnnotation(CalculatedGeneAnnotationType.SNV, snvMap);
+		GeneExpression expressionData = null;
+		if (metadata.isExpressionDataFile()) {
+			expressionData = this.variantsAnalysisController.getExpressionData(computationId);
+		}
+
+		CombinedAnalysisQueryData combinedAnalysisQueryData = 
+		new CombinedAnalysisQueryData(cnvData, expressionData, geneRank);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			queryGenes,
+			combinedAnalysisQueryData.getQueryGenes(),
 			new StaticGeneScoreCalculator(geneRank),
 			pharmCatAnnotations,
-			calculatedGeneAnnotations
+			combinedAnalysisQueryData.getCalculatedGeneAnnotations()
 		);
 	}
 

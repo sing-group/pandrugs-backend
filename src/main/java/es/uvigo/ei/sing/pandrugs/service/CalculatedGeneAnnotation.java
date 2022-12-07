@@ -26,8 +26,6 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.slf4j.LoggerFactory;
-
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 
@@ -37,6 +35,7 @@ public class CalculatedGeneAnnotation {
     private Map<String, String> cnv;
     private Map<String, String> expression;
     private Map<String, String> snv;
+    private Map<String, String> coherence;
 
     public CalculatedGeneAnnotation() {
     }
@@ -65,6 +64,14 @@ public class CalculatedGeneAnnotation {
         this.snv = snv;
     }
 
+    public void setCoherence(Map<String, String> coherence) {
+        this.coherence = coherence;
+    }
+
+    public Map<String, String> getCoherence() {
+        return coherence;
+    }
+
     public static CalculatedGeneAnnotation from(CalculatedGeneAnnotations annotations) {
         CalculatedGeneAnnotation toret = new CalculatedGeneAnnotation();
 
@@ -78,6 +85,10 @@ public class CalculatedGeneAnnotation {
 
         if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.SNV)) {
             toret.setSnv(annotations.getAnnotations().get(CalculatedGeneAnnotationType.SNV));
+        }
+
+        if (annotations.getAnnotations().containsKey(CalculatedGeneAnnotationType.COHERENCE)) {
+            toret.setCoherence(annotations.getAnnotations().get(CalculatedGeneAnnotationType.COHERENCE));
         }
 
         return toret;

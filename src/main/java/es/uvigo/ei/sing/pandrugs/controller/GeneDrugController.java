@@ -31,7 +31,6 @@ import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
-import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 public interface GeneDrugController {

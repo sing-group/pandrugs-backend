@@ -23,5 +23,18 @@
 package es.uvigo.ei.sing.pandrugs.controller.entity;
 
 public enum GeneExpressionAnnotation {
-    UNDEREXPRESSED, OVEREXPRESSED, HIGHLY_OVEREXPRESSED
+    UNDEREXPRESSED("underexpressed"), 
+    OVEREXPRESSED("overexpressed"), 
+    HIGHLY_OVEREXPRESSED("highly overexpressed"),
+    NOT_EXPRESSED("not expressed");
+
+    private String description;
+
+    GeneExpressionAnnotation(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

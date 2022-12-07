@@ -22,10 +22,6 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import static es.uvigo.ei.sing.pandrugs.util.ConversionUtils.toLinkedHashMap;
-import static java.util.stream.Collectors.toList;
-
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;

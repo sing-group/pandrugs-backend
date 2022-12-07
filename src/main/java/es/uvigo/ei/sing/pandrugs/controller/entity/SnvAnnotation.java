@@ -23,5 +23,10 @@
 package es.uvigo.ei.sing.pandrugs.controller.entity;
 
 public enum SnvAnnotation {
-    ALTERED, NOT_ALTERED
+    ALTERED, NOT_ALTERED;
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase().replaceAll("_", " ");
+    }
 }
