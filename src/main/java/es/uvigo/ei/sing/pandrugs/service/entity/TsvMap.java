@@ -25,7 +25,17 @@ package es.uvigo.ei.sing.pandrugs.service.entity;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "tsvMap", namespace = "https://www.pandrugs.org")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TsvMap<T, U> {
+    @NotNull
+	@XmlElement(name = "dataMap")
     protected Map<T, U> dataMap;
 
     public TsvMap(Map<T, U> dataMap) {

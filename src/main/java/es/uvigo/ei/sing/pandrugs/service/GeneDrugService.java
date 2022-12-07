@@ -235,7 +235,8 @@ public interface GeneDrugService {
 	 * performed using the gene symbols present in both files (i.e. their 
 	 * union is performed).
 	 * 
-	 * @param CombinedAnalysisInputData TODO
+	 * @param CombinedAnalysisInputData a set of gene-alteration 
+	 * (AMP/DEL) pairs and a RNK file with gene expression data.
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
 	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. <br>

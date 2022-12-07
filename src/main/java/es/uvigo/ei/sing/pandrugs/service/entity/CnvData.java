@@ -24,6 +24,12 @@ package es.uvigo.ei.sing.pandrugs.service.entity;
 
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "cnvData", namespace = "https://www.pandrugs.org")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CnvData extends TsvMap<String, String> {
 
     public CnvData(Map<String, String> dataMap) {

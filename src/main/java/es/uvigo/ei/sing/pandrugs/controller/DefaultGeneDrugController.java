@@ -207,7 +207,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 
 	@Override
 	public List<GeneDrugGroup> searchFromComputationId(
-			GeneDrugQueryParameters queryParameters, String computationId
+		GeneDrugQueryParameters queryParameters, String computationId
 	) {
 		requireNonNull(queryParameters);
 
@@ -233,7 +233,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		}
 
 		CombinedAnalysisQueryData combinedAnalysisQueryData = 
-		new CombinedAnalysisQueryData(cnvData, expressionData, geneRank);
+			new CombinedAnalysisQueryData(cnvData, expressionData, geneRank);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
