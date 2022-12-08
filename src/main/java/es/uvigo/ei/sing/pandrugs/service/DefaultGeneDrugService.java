@@ -71,7 +71,7 @@ import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 @Path("genedrug")
 @Service
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.MULTIPART_FORM_DATA })
 public class DefaultGeneDrugService implements GeneDrugService {
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultGeneDrugService.class);
 	
@@ -245,6 +245,61 @@ public class DefaultGeneDrugService implements GeneDrugService {
 				),
 				computationId
 			);
+
+			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
+		} catch (IllegalArgumentException | NullPointerException e) {
+			LOG.warn("Error listing gene-drugs from computation id", e);
+			throw createBadRequestException(e);
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("fromComputationId/combined")
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
+	@Override
+	public Response listFromComputationIdWithCombinedAnalysisFiles(
+		@QueryParam("computationId") String computationId,
+		CombinedAnalysisInputData combinedAnalysisInputData,
+		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@QueryParam("cancer") Set<String> cancerTypes,
+		@QueryParam("directTarget") boolean directTarget,
+		@QueryParam("biomarker") boolean biomarker,
+		@QueryParam("pathwayMember") boolean pathwayMember
+	) throws BadRequestException {
+		try {
+			requireNonNull(computationId, "A computation Id must be provided");
+
+			CnvData cnvData = null;
+			if (combinedAnalysisInputData.getCnvData() != null) {
+				cnvData = combinedAnalysisInputData.getCnvData();
+				requireNonEmpty(cnvData.getDataMap().keySet(), "At least one gene must be provided");
+			}
+
+			GeneExpressionData geneExpressionData = null;
+			if(combinedAnalysisInputData.getGeneExpressionData() != null) {
+				geneExpressionData = combinedAnalysisInputData.getGeneExpressionData();
+				requireNonEmpty(geneExpressionData.getGeneExpression().keySet(), "At least one gene must be provided");
+			}
+
+			if(cnvData ==  null && geneExpressionData == null) {
+				createBadRequestException("Both CNV and expression data can't be empty at the same time, at least one is required");
+			}
+
+			GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters(
+				cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember);
+
+			final List<GeneDrugGroup> geneDrugs;
+			if (cnvData == null && geneExpressionData != null) {
+				geneDrugs = controller.searchFromComputationIdWithExpression(queryParameters, computationId,
+					new GeneExpression(geneExpressionData.getGeneExpression()));
+			} else if (cnvData != null && geneExpressionData == null) {
+				geneDrugs = controller.searchFromComputationIdWithCnv(queryParameters, computationId, cnvData);
+			} else {
+				geneDrugs = controller.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId,
+					cnvData, new GeneExpression(geneExpressionData.getGeneExpression()));
+			}
 
 			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {

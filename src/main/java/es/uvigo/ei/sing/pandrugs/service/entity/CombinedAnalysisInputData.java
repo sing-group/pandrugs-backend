@@ -31,11 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "combinedAnalysisInputData", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CombinedAnalysisInputData {
-    @NotNull
     @XmlElement(name = "cnvData")
     private CnvData cnvData;
 
-    @NotNull
     @XmlElement(name = "geneExpressionData")
     private GeneExpressionData geneExpressionData;
 

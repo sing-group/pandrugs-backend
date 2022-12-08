@@ -35,9 +35,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -56,13 +54,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
-import es.uvigo.ei.sing.pandrugs.controller.entity.CombinedAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
+import es.uvigo.ei.sing.pandrugs.controller.entity.CombinedAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
-import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionAnnotation;
-import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpressionCoherence;
-import es.uvigo.ei.sing.pandrugs.controller.entity.SnvAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonReportParser;
@@ -209,6 +204,39 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	public List<GeneDrugGroup> searchFromComputationId(
 		GeneDrugQueryParameters queryParameters, String computationId
 	) {
+		ComputationMetadata metadata = this.variantsAnalysisController.getComputationStatus(computationId);
+
+		CnvData cnvData = null;
+		if (metadata.isCnvTsvFile()) {
+			cnvData = this.variantsAnalysisController.getCnvAnnotations(computationId);
+		}
+
+		GeneExpression expressionData = null;
+		if (metadata.isExpressionDataFile()) {
+			expressionData = this.variantsAnalysisController.getExpressionData(computationId);
+		}
+
+		return this.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId, cnvData, expressionData);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchFromComputationIdWithCnv(
+		GeneDrugQueryParameters queryParameters, String computationId, CnvData cnvData
+	) {
+		return this.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId, cnvData, null);
+	}
+
+	@Override
+	public List<GeneDrugGroup> searchFromComputationIdWithExpression(
+		GeneDrugQueryParameters queryParameters, String computationId, GeneExpression geneExpression
+	) {
+		return this.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId, null, geneExpression);
+	}
+	
+	@Override
+	public List<GeneDrugGroup> searchFromComputationIdWithCnvAndExpression(
+		GeneDrugQueryParameters queryParameters, String computationId, CnvData cnvData, GeneExpression geneExpression
+	) {
 		requireNonNull(queryParameters);
 
 		final Map<String, Double> geneRank = requireNonEmpty(
@@ -222,18 +250,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
 		}
 
-		CnvData cnvData = null;
-		if (metadata.isCnvTsvFile()) {
-			cnvData = this.variantsAnalysisController.getCnvAnnotations(computationId);
-		}
-
-		GeneExpression expressionData = null;
-		if (metadata.isExpressionDataFile()) {
-			expressionData = this.variantsAnalysisController.getExpressionData(computationId);
-		}
-
 		CombinedAnalysisQueryData combinedAnalysisQueryData = 
-			new CombinedAnalysisQueryData(cnvData, expressionData, geneRank);
+			new CombinedAnalysisQueryData(cnvData, geneExpression, geneRank);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,

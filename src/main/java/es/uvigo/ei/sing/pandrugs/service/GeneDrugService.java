@@ -136,6 +136,54 @@ public interface GeneDrugService {
 	) throws BadRequestException;
 
 	/**
+	 * Returns a list of genes-drug interactions with the affected genes
+	 * previously computed from a VCF.
+	 *
+	 * @param computationId a finished computation id where the affected genes
+	 *                      can be extracted.
+	 * @param combinedAnalysisInputData a set of gene-alteration 
+	 * (AMP/DEL) pairs and a RNK file with gene expression data.
+	 * @param cancerDrugStatus a list for filtering the drug status of the
+	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED. <br>
+	 * In addition, NONE value can be used for no cancer results but, when
+	 * used, it must be the unique value for this parameter. NONE status
+	 * can't be used, at the same time, for cancerDrugStatus and
+	 * nonCancerDrugStatus parameters.<br>
+	 * Default value is: CLINICAL and APPROVED.
+	 * @param nonCancerDrugStatus a list for filtering the drug status of the
+	 * non cancer genes. Multiple values allowed. Valid values are CLINICAL,
+	 * APPROVED, EXPERIMENTAL, WITHDRAWN and UNDEFINED.<br>
+	 * In addition, NONE value can be used for only cancer results but, when
+	 * used, it must be the unique value for this parameter. NONE status
+	 * can't be used, at the same time for, cancerDrugStatus and
+	 * nonCancerDrugStatus parameters.<br>
+	 * Default value is: CLINICAL, APPROVED and EXPERIMENTAL.
+	 * @param cancerTypes list of cancer types of interest. Results will be
+	 * filtered using this cancer types, including only drugs related to these
+	 * cancer types. If this parameter is not provided, then all cancer types
+	 * will be included.
+	 * @param directTarget whether gene-drugs where the gene is a direct gene
+	 * and the target of the drug should be returned.
+	 * @param biomarker whether gene-drugs where the gene is a direct gene
+	 * and a marker of the drug should be returned.
+	 * @param pathwayMember whether gene-drugs where the gene is an indirect
+	 * gene and the target of the drug should be returned.
+	 * @return a list of gene drugs that match the provided genes symbol.
+	 * @throws BadRequestException if not gene symbol is provided.
+	 */
+	public abstract Response listFromComputationIdWithCombinedAnalysisFiles(
+		String computationId,
+		CombinedAnalysisInputData combinedAnalysisInputData,
+		Set<String> cancerDrugStatus,
+		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
+		boolean directTarget,
+		boolean biomarker,
+		boolean pathwayMember
+	) throws BadRequestException;
+
+	/**
 	 * Returns a list of genes-drug interactions with the provided gene
 	 * symbol/s. This operation takes as input a ranked list of genes, that is
 	 * used to calculate the GScore of each gene. Instead of using the
@@ -235,7 +283,7 @@ public interface GeneDrugService {
 	 * performed using the gene symbols present in both files (i.e. their 
 	 * union is performed).
 	 * 
-	 * @param CombinedAnalysisInputData a set of gene-alteration 
+	 * @param combinedAnalysisInputData a set of gene-alteration 
 	 * (AMP/DEL) pairs and a RNK file with gene expression data.
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
@@ -267,7 +315,7 @@ public interface GeneDrugService {
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
 	public abstract Response listCombinedCnvAndExpression(
-		CombinedAnalysisInputData CombinedAnalysisInputData,
+		CombinedAnalysisInputData combinedAnalysisInputData,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		Set<String> cancerTypes,

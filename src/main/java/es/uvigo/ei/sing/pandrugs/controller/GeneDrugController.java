@@ -63,4 +63,16 @@ public interface GeneDrugController {
 	public abstract List<GeneDrugGroup> searchFromComputationId(
 		GeneDrugQueryParameters queryParameters, String computationId
 	);
+
+	public abstract List<GeneDrugGroup> searchFromComputationIdWithCnv(
+		GeneDrugQueryParameters queryParameters, String computationId, CnvData cnvData
+	);
+
+	public abstract List<GeneDrugGroup> searchFromComputationIdWithExpression(
+		GeneDrugQueryParameters queryParameters, String computationId, GeneExpression geneExpression
+	);
+
+	public abstract List<GeneDrugGroup> searchFromComputationIdWithCnvAndExpression(
+		GeneDrugQueryParameters queryParameters, String computationId, CnvData cnvData, GeneExpression geneExpression
+	);
 }
