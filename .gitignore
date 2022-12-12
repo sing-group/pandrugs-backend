@@ -7,7 +7,7 @@
 *.iml
 /login.properties
 pandrugsdb.log
-pandrugs.log
+pandrugs*.log
 bak
 /db
 /target/
