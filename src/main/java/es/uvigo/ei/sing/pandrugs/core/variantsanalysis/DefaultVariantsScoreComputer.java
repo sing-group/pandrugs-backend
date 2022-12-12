@@ -25,6 +25,8 @@ package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static java.util.Collections.synchronizedList;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +67,9 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 	private PharmCatRunner pharmCatRunner;
 
 	@Inject
+	private VcfPreprocessorRunner vcfPreprocessorRunner;
+
+	@Inject
 	private ExecutorService executorService;
 
 	private ExecutorService notificationExecutorService = Executors.newSingleThreadExecutor();
@@ -102,41 +107,69 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 		CompletableFuture<VariantsScoreComputationResults> tasks = inputParameters
 			.thenApply(
 				(params) -> {
+					Map<String, Object> results = new HashMap<>();
+
 					VariantsScoreComputationParameters vscParams = (VariantsScoreComputationParameters) params.get("variants");
 					PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
-
-					Map<String, Object> results = new HashMap<>();
 
 					LOG.info("Starting computation. Path: " + vscParams.getResultsBasePath());
 					// use another thread to notify status, because if listeners try to call get()
 					// they will lock, because they are in the same thread as the computation.
+
+					notifications.submit(() -> 
+						computation.getStatus().setStatus("VCF checking and preprocessing", 0.0, 0.0)
+					);
+					LOG.info("Starting VCF checking and preprocessing. Path: " + vscParams.getResultsBasePath());
+
+					vcfPreprocessorRunner.checkAndPreprocessVcf(
+						vscParams.getVcfFile(), pharmCatParams.isPharmCat(), vscParams.getResultsBasePath()
+					);
+					LOG.info("Completed VCF checking and preprocessing. Path: " + vscParams.getResultsBasePath());
 					
 					if(pharmCatParams.isPharmCat()) {
-						notifications
-								.submit(() -> computation.getStatus().setStatus("Running PharmCAT", 0.0, 0.0));
+						notifications.submit(() -> 
+							computation.getStatus().setStatus("Running PharmCAT", 0.0, 0.25)
+						);
 						LOG.info("Starting PharmCat computation. Path: " + parameters.getResultsBasePath());
+
+						/*
+						Path pharmCatVcfFile = new File(
+							vscParams.getVcfFile().toString().replace("input.vcf", "input.pharmcat.vcf")
+						).toPath();
+						*/
+
+						Path pharmCatVcfFile = vcfPreprocessorRunner.getPharmCatVcfFile(vscParams.getVcfFile());
 
 						if (pharmCatParams.hasPharmCatPhenotyperTsvFile()) {
 							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(
-								vscParams.getVcfFile(),
+								pharmCatVcfFile,
 								pharmCatParams.getPharmCatPhenotyperTsvFile(),
 								vscParams.getResultsBasePath()
 							);
 							results.put("pharmcat", pharmCatResults);
 						} else {
-							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(vscParams.getVcfFile(),
-									vscParams.getResultsBasePath());
+							PharmCatResults pharmCatResults = pharmCatRunner.pharmCat(
+								pharmCatVcfFile,
+								vscParams.getResultsBasePath()
+							);
 							results.put("pharmcat", pharmCatResults);
 						}
 						
 						LOG.info("Completed PharmCat computation. Path: " + vscParams.getResultsBasePath());
 					}
 					
-					notifications
-							.submit(() -> computation.getStatus().setStatus("Computing VEP", 0.0,
-									pharmCatParams.isPharmCat() ? 0.33 : 0.0));
-					VariantsEffectPredictionResults vepResults = effectPredictor
-							.predictEffect(vscParams.getVcfFile(), vscParams.getResultsBasePath());
+					notifications.submit(() -> 
+						computation.getStatus().setStatus("Computing VEP", 0.0, pharmCatParams.isPharmCat() ? 0.5 : 0.33)
+					);
+
+					/*
+					Path vepVcfFile = new File(
+							vscParams.getVcfFile().toString().replace("input.vcf", "input.vep.vcf")
+						).toPath();
+					*/
+					VariantsEffectPredictionResults vepResults = effectPredictor.predictEffect(
+						vcfPreprocessorRunner.getVepVcfFile(vscParams.getVcfFile()), vscParams.getResultsBasePath()
+					);
 
 					results.put("variants", vepResults);
 					results.put("params", params);
@@ -153,8 +186,9 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 						final Map<String, Object> params = (Map<String, Object>) previousResults.get("params");
 						PharmCatComputationParameters pharmCatParams = (PharmCatComputationParameters) params.get("pharmcat");
 
-						notifications.submit(() -> computation.getStatus().setStatus("Computing Variant Scores",
-							0.0, pharmCatParams.isPharmCat() ? 0.66 : 0.5));
+						notifications.submit(() -> 
+							computation.getStatus().setStatus("Computing Variant Scores", 0.0, pharmCatParams.isPharmCat() ? 0.75 : 0.66)
+						);
 					} else {
 						LOG.error("Error in VEP computation. Path: " + parameters.getResultsBasePath());
 					}
@@ -172,6 +206,7 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 					if (pharmCatParams.isPharmCat()) {
 						results.setPharmCatResults(pharmCatResults);
 					}
+
 					return results;
 				}
 			)
@@ -179,8 +214,10 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 				(result, exception) -> {
 					if (exception == null) {
 						LOG.info("Finished VSCORE computation. Path: " + parameters.getResultsBasePath());
-						
-						notifications.submit(() -> computation.getStatus().setStatus("Annotation Process Finished", 0.0, 1.0));
+
+						notifications.submit(() -> 
+							computation.getStatus().setStatus("Annotation Process Finished", 0.0, 1.0)
+						);
 					} else if (ExceptionUtils.getRootCause(exception) instanceof InterruptedException) {
 						LOG.warn("Interrupted computation in path " + parameters.getResultsBasePath());
 						
@@ -193,6 +230,8 @@ public class DefaultVariantsScoreComputer implements VariantsScoreComputer {
 						);
 						notifications.submit(() -> computation.getStatus().setStatus("Error", 0.0, 1.0));
 					}
+
+					vcfPreprocessorRunner.deleteVcfs(parameters.getResultsBasePath(), parameters.getVcfFile());
 				}
 			);
 

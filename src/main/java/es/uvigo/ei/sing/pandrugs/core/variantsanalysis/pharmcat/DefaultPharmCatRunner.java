@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.FileSystemConfiguration;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.PharmCatResults;
 
-
 @Component
 public class DefaultPharmCatRunner implements PharmCatRunner {
 	private final static Logger LOG = LoggerFactory.getLogger(DefaultPharmCatRunner.class);
