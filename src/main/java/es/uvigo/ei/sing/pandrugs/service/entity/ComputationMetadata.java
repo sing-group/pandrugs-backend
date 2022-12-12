@@ -45,11 +45,12 @@ public class ComputationMetadata {
 	private boolean finished;
 	private boolean failed;
 	private boolean pharmcat;
+	private Integer pharmcatResultsCount;
 	private boolean cnvTsvFile;
 	private boolean expressionDataFile;
 
 	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes,
-		Map<String, Map<String, String>> affectedGenesInfo
+		Map<String, Map<String, String>> affectedGenesInfo, Integer pharmcatResultsCount
 	) {
 		this.affectedGenes = affectedGenes;
 		this.affectedGenesInfo = affectedGenesInfo;
@@ -61,6 +62,7 @@ public class ComputationMetadata {
 		this.finished = computation.getComputationDetails().getStatus().isFinished();
 		this.failed = computation.getComputationDetails().getStatus().hasErrors();
 		this.pharmcat = computation.getComputationDetails().getPharmCatComputationParameters().isPharmCat();
+		this.pharmcatResultsCount = pharmcatResultsCount;
 		if(computation.getComputationDetails().getCombinedQueryParameters().isPresent()) {
 			this.cnvTsvFile = computation.getComputationDetails().getCombinedQueryParameters().get().hasCnvTsvFile();
 			this.expressionDataFile = computation.getComputationDetails().getCombinedQueryParameters().get().hasExpressionDataFile();
@@ -104,6 +106,10 @@ public class ComputationMetadata {
 
 	public boolean isPharmcat() {
 		return pharmcat;
+	}
+
+	public Integer getPharmcatResultsCount() {
+		return pharmcatResultsCount;
 	}
 
 	public boolean isCnvTsvFile() {

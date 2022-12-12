@@ -180,9 +180,12 @@ public class DefaultVariantsAnalysisController implements
 		if (computation == null) {
 			throw new IllegalArgumentException("computationId " + computationId + " not found.");
 		}
-		return new ComputationMetadata(computation,
-				getAffectedGenes(computation),
-				getAffectedGenesInfo(computation));
+		return new ComputationMetadata(
+			computation,
+			getAffectedGenes(computation),
+			getAffectedGenesInfo(computation),
+			getPharmCatResultsCount(computation)
+		);
 	}
 
 	@Override
@@ -193,21 +196,37 @@ public class DefaultVariantsAnalysisController implements
 		for (VariantsScoreUserComputation computation : variantsScoreUserComputationDAO.retrieveComputationsBy(user)) {
 			computations.put(
 				computation.getId(), 
-				new ComputationMetadata(computation, getAffectedGenes(computation), getAffectedGenesInfo(computation))
+				new ComputationMetadata(
+					computation, 
+					getAffectedGenes(computation), 
+					getAffectedGenesInfo(computation), 
+					getPharmCatResultsCount(computation)
+				)
 			);
 		}
 
 		return computations;
 	}
 
-	private Set<String> getAffectedGenes(VariantsScoreUserComputation computation) {
-		if (computation.getComputationDetails().getStatus().isFinished() &&
-				!computation.getComputationDetails().getStatus().hasErrors()
+	private boolean isSuccessfullyCompleted(VariantsScoreUserComputation computation) {
+		return computation.getComputationDetails().getStatus().isFinished()
+			&& !computation.getComputationDetails().getStatus().hasErrors();
+	}
+
+	private Integer getPharmCatResultsCount(VariantsScoreUserComputation computation) {
+		Integer pharmCatResultsCount = null;
+		if (this.isSuccessfullyCompleted(computation) &&
+			computation.getComputationDetails().getPharmCatComputationParameters().isPharmCat()
 		) {
-			return this.getGeneRanking(computation).asMap().keySet();
-		} else {
-			return null;
+			pharmCatResultsCount = this.getPharmCatAnnotations(computation.getId()).keySet().size();
 		}
+
+		return pharmCatResultsCount;
+	}
+
+	private Set<String> getAffectedGenes(VariantsScoreUserComputation computation) {
+		return this.isSuccessfullyCompleted(computation) ?
+			this.getGeneRanking(computation).asMap().keySet() : null;
 	}
 
 	private Integer countVariantsInInput(File variantsFile) throws IOException,
@@ -356,9 +375,7 @@ public class DefaultVariantsAnalysisController implements
 	}
 
 	private Map<String, Map<String, String>> getAffectedGenesInfo(VariantsScoreUserComputation computation) {
-		if (computation.getComputationDetails().getStatus().isFinished() &&
-				!computation.getComputationDetails().getStatus().hasErrors()
-				) {
+		if (this.isSuccessfullyCompleted(computation)) {
 			try {
 				Map<String, Map<String, String>> affectedGenesInfo = new HashMap<>();
 				File affectedGenesFile = getAffectedGenesFile(computation);
