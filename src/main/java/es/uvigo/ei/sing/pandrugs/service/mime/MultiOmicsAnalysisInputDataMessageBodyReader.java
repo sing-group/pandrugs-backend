@@ -38,6 +38,8 @@ public class MultiOmicsAnalysisInputDataMessageBodyReader extends MultipartMessa
 
     @Override
     protected void init() {
+        this.cnvData = null;
+        this.geneExpressionData = null;
     }
 
     @Override
