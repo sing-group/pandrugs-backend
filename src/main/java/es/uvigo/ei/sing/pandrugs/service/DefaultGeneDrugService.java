@@ -56,7 +56,7 @@ import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
-import es.uvigo.ei.sing.pandrugs.service.entity.CombinedAnalysisInputData;
+import es.uvigo.ei.sing.pandrugs.service.entity.MultiOmicsAnalysisInputData;
 import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
@@ -187,11 +187,11 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Path("combined")
+	@Path("multiomics")
 	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public Response listCombinedCnvAndExpression(
-		CombinedAnalysisInputData combinedAnalysisInputData,
+	public Response listMultiOmicsCnvAndExpression(
+		MultiOmicsAnalysisInputData multiOmicsAnalysisInputData,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("cancer") Set<String> cancerTypes,
@@ -200,12 +200,12 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("pathwayMember") boolean pathwayMember
 	) throws BadRequestException {
 		try {
-			requireNonNull(combinedAnalysisInputData.getCnvData(), "cnv can't be null");
-			CnvData cnvData = combinedAnalysisInputData.getCnvData();
+			requireNonNull(multiOmicsAnalysisInputData.getCnvData(), "cnv can't be null");
+			CnvData cnvData = multiOmicsAnalysisInputData.getCnvData();
 			requireNonEmpty(cnvData.getDataMap().keySet(), "At least one gene must be provided");
 
-			requireNonNull(combinedAnalysisInputData.getGeneExpressionData(), "expression data can't be null");
-			GeneExpressionData geneExpressionData = combinedAnalysisInputData.getGeneExpressionData();
+			requireNonNull(multiOmicsAnalysisInputData.getGeneExpressionData(), "expression data can't be null");
+			GeneExpressionData geneExpressionData = multiOmicsAnalysisInputData.getGeneExpressionData();
 			requireNonEmpty(geneExpressionData.getGeneExpression().keySet(), "At least one gene must be provided");
 
 			final List<GeneDrugGroup> geneDrugs = controller.searchByCnvWithExpression(
@@ -217,7 +217,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
-			LOG.warn("Error listing gene-drugs from combined analysis (CNV and expression data)", e);
+			LOG.warn("Error listing gene-drugs from multi-omics analysis (CNV and expression data)", e);
 			throw createBadRequestException(e);
 		}
 	}
@@ -255,12 +255,12 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Path("fromComputationId/combined")
+	@Path("fromComputationId/multiomics")
 	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public Response listFromComputationIdWithCombinedAnalysisFiles(
+	public Response listFromComputationIdWithMultiOmicsAnalysisFiles(
 		@QueryParam("computationId") String computationId,
-		CombinedAnalysisInputData combinedAnalysisInputData,
+		MultiOmicsAnalysisInputData multiOmicsAnalysisInputData,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
 		@QueryParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
 		@QueryParam("cancer") Set<String> cancerTypes,
@@ -272,14 +272,14 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			requireNonNull(computationId, "A computation Id must be provided");
 
 			CnvData cnvData = null;
-			if (combinedAnalysisInputData.getCnvData() != null) {
-				cnvData = combinedAnalysisInputData.getCnvData();
+			if (multiOmicsAnalysisInputData.getCnvData() != null) {
+				cnvData = multiOmicsAnalysisInputData.getCnvData();
 				requireNonEmpty(cnvData.getDataMap().keySet(), "At least one gene must be provided");
 			}
 
 			GeneExpressionData geneExpressionData = null;
-			if(combinedAnalysisInputData.getGeneExpressionData() != null) {
-				geneExpressionData = combinedAnalysisInputData.getGeneExpressionData();
+			if(multiOmicsAnalysisInputData.getGeneExpressionData() != null) {
+				geneExpressionData = multiOmicsAnalysisInputData.getGeneExpressionData();
 				requireNonEmpty(geneExpressionData.getGeneExpression().keySet(), "At least one gene must be provided");
 			}
 
@@ -303,7 +303,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 			return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 		} catch (IllegalArgumentException | NullPointerException e) {
-			LOG.warn("Error listing gene-drugs from computation id", e);
+			LOG.warn("Error listing gene-drugs from computation id with multi-omics analysis files", e);
 			throw createBadRequestException(e);
 		}
 	}

@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
-import es.uvigo.ei.sing.pandrugs.service.entity.CombinedAnalysisInputData;
+import es.uvigo.ei.sing.pandrugs.service.entity.MultiOmicsAnalysisInputData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneExpressionData;
 import es.uvigo.ei.sing.pandrugs.util.MapFileParser;
 import es.uvigo.ei.sing.pandrugs.util.RnkFileParser;
 
-public class CombinedAnalysisInputDataMessageBodyReader extends MultipartMessageBodyReader<CombinedAnalysisInputData> {
+public class MultiOmicsAnalysisInputDataMessageBodyReader extends MultipartMessageBodyReader<MultiOmicsAnalysisInputData> {
     private CnvData cnvData;
     private GeneExpressionData geneExpressionData;
 
@@ -59,7 +59,7 @@ public class CombinedAnalysisInputDataMessageBodyReader extends MultipartMessage
     }
 
     @Override
-    protected CombinedAnalysisInputData build() {
-        return new CombinedAnalysisInputData(this.cnvData, this.geneExpressionData);
+    protected MultiOmicsAnalysisInputData build() {
+        return new MultiOmicsAnalysisInputData(this.cnvData, this.geneExpressionData);
     }
 }

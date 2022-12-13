@@ -35,10 +35,7 @@ public class VariantsAnalysisComputationConfiguration {
     private boolean pharmCat;
     private String computationName;
     private String resultsURLTemplate;
-
-    private InputStream tsvFileInputStream;
-    private InputStream cnvTsvFileInputStream;
-    private InputStream expressionDataRnkFileInputStream;
+    private InputStream tsvPhenotyperOutsideCallFileInputStream;
 
     public VariantsAnalysisComputationConfiguration(
         UserLogin userLogin,
@@ -83,26 +80,11 @@ public class VariantsAnalysisComputationConfiguration {
         return resultsURLTemplate;
     }
 
-    public Optional<InputStream> getTsvFileInputStream() {
-        return Optional.ofNullable(tsvFileInputStream);
+    public Optional<InputStream> getTsvPhenotyperOutsideCallFileInputStream() {
+        return Optional.ofNullable(tsvPhenotyperOutsideCallFileInputStream);
     }
 
-    public void setTsvFileInputStream(InputStream tsvFileInputStream) {
-        this.tsvFileInputStream = tsvFileInputStream;
-    }
-
-    public Optional<InputStream> getCnvTsvFileInputStream() {
-        return Optional.ofNullable(cnvTsvFileInputStream);
-    }
-
-    public void setCnvTsvFileInputStream(InputStream cnvTsvFileInputStream) {
-        this.cnvTsvFileInputStream = cnvTsvFileInputStream;
-    }
-
-    public Optional<InputStream> getExpressionDataRnkFileInputStream() {
-        return Optional.ofNullable(expressionDataRnkFileInputStream);
-    }
-    public void setExpressionDataRnkFileInputStream(InputStream expressionDataRnkFileInputStream) {
-        this.expressionDataRnkFileInputStream = expressionDataRnkFileInputStream;
+    public void setTsvPhenotyperOutsideCallFileInputStream(InputStream tsvFileInputStream) {
+        this.tsvPhenotyperOutsideCallFileInputStream = tsvFileInputStream;
     }
 }

@@ -46,8 +46,6 @@ public class ComputationMetadata {
 	private boolean failed;
 	private boolean pharmcat;
 	private Integer pharmcatResultsCount;
-	private boolean cnvTsvFile;
-	private boolean expressionDataFile;
 
 	public ComputationMetadata(VariantsScoreUserComputation computation, Set<String> affectedGenes,
 		Map<String, Map<String, String>> affectedGenesInfo, Integer pharmcatResultsCount
@@ -63,13 +61,6 @@ public class ComputationMetadata {
 		this.failed = computation.getComputationDetails().getStatus().hasErrors();
 		this.pharmcat = computation.getComputationDetails().getPharmCatComputationParameters().isPharmCat();
 		this.pharmcatResultsCount = pharmcatResultsCount;
-		if(computation.getComputationDetails().getCombinedQueryParameters().isPresent()) {
-			this.cnvTsvFile = computation.getComputationDetails().getCombinedQueryParameters().get().hasCnvTsvFile();
-			this.expressionDataFile = computation.getComputationDetails().getCombinedQueryParameters().get().hasExpressionDataFile();
-		} else {
-			this.cnvTsvFile = false;
-			this.expressionDataFile = false;
-		}
 	}
 
 	public String getName() {
@@ -80,9 +71,13 @@ public class ComputationMetadata {
 		return affectedGenes;
 	}
 
-	public Map<String, Map<String, String>> getAffectedGenesInfo() { return affectedGenesInfo; }
+	public Map<String, Map<String, String>> getAffectedGenesInfo() {
+		return affectedGenesInfo;
+	}
 
-	public Integer getVariantsInInput() { return variantsInInput; }
+	public Integer getVariantsInInput() {
+		return variantsInInput;
+	}
 
 	public double getOverallProgress() {
 		return overallProgress;
@@ -110,13 +105,5 @@ public class ComputationMetadata {
 
 	public Integer getPharmcatResultsCount() {
 		return pharmcatResultsCount;
-	}
-
-	public boolean isCnvTsvFile() {
-		return cnvTsvFile;
-	}
-
-	public boolean isExpressionDataFile() {
-		return expressionDataFile;
 	}
 }

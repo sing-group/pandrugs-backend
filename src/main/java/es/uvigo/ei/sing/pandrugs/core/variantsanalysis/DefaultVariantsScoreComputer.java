@@ -25,7 +25,6 @@ package es.uvigo.ei.sing.pandrugs.core.variantsanalysis;
 
 import static java.util.Collections.synchronizedList;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;

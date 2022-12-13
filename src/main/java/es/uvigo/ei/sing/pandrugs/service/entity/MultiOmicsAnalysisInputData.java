@@ -22,22 +22,21 @@
  */
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "combinedAnalysisInputData", namespace = "https://www.pandrugs.org")
+@XmlRootElement(name = "multiOmicsAnalysisInputData", namespace = "https://www.pandrugs.org")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CombinedAnalysisInputData {
+public class MultiOmicsAnalysisInputData {
     @XmlElement(name = "cnvData")
     private CnvData cnvData;
 
     @XmlElement(name = "geneExpressionData")
     private GeneExpressionData geneExpressionData;
 
-    public CombinedAnalysisInputData(CnvData cnvData, GeneExpressionData geneExpressionData) {
+    public MultiOmicsAnalysisInputData(CnvData cnvData, GeneExpressionData geneExpressionData) {
         this.cnvData = cnvData;
         this.geneExpressionData = geneExpressionData;
     }

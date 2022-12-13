@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
-import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 import es.uvigo.ei.sing.pandrugs.service.entity.ComputationMetadata;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 import es.uvigo.ei.sing.pandrugs.service.entity.UserInfo;
@@ -60,12 +58,4 @@ public interface VariantsAnalysisController {
 
 	public String startVariantsScopeUserComputation(VariantsAnalysisComputationConfiguration configuration)
 		throws IOException;
-
-	public File getCombinedAnalysisCnvFile(String computationId);
-
-	public CnvData getCnvAnnotations(String computationId);
-
-	public File getCombinedAnalysisExpressionFile(String computationId);
-
-	public GeneExpression getExpressionData(String computationId);
 }

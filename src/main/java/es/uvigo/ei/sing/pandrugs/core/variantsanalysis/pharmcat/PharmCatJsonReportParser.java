@@ -36,8 +36,6 @@ import java.util.Map.Entry;
 
 import org.json.*;
 
-import com.mysql.cj.xdevapi.JsonArray;
-
 public class PharmCatJsonReportParser {
 
     private static final Map<String, String> PANDRUGS_TO_PHARMCAT_DRUG_NAMES;

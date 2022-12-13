@@ -40,7 +40,7 @@ import es.uvigo.ei.sing.pandrugs.service.DefaultSessionService;
 import es.uvigo.ei.sing.pandrugs.service.DefaultUserService;
 import es.uvigo.ei.sing.pandrugs.service.DefaultVariantsAnalysisService;
 import es.uvigo.ei.sing.pandrugs.service.mime.CnvDataMessageBodyReader;
-import es.uvigo.ei.sing.pandrugs.service.mime.CombinedAnalysisInputDataMessageBodyReader;
+import es.uvigo.ei.sing.pandrugs.service.mime.MultiOmicsAnalysisInputDataMessageBodyReader;
 import es.uvigo.ei.sing.pandrugs.service.mime.GeneRankingMessageBodyReader;
 
 @ApplicationPath("api")
@@ -63,6 +63,6 @@ public class PanDrugsApplication extends ResourceConfig {
 		register(UnexpectedExceptionMapper.class);
 		register(GeneRankingMessageBodyReader.class);
 		register(CnvDataMessageBodyReader.class);
-		register(CombinedAnalysisInputDataMessageBodyReader.class);
+		register(MultiOmicsAnalysisInputDataMessageBodyReader.class);
 	}
 }

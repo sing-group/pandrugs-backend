@@ -55,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
-import es.uvigo.ei.sing.pandrugs.controller.entity.CombinedAnalysisQueryData;
+import es.uvigo.ei.sing.pandrugs.controller.entity.MultiOmicsAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
@@ -190,13 +190,13 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		requireNonNull(cnvData);
 		requireNonNull(geneExpression);
 
-		CombinedAnalysisQueryData combinedAnalysisQueryData = new CombinedAnalysisQueryData(cnvData, geneExpression);
-		
+		MultiOmicsAnalysisQueryData multiOmicsQueryData = new MultiOmicsAnalysisQueryData(cnvData, geneExpression);
+
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			combinedAnalysisQueryData.getQueryGenes(),
+			multiOmicsQueryData.getQueryGenes(),
 			new DefaultGeneScoreCalculator(),
-			combinedAnalysisQueryData.getCalculatedGeneAnnotations()
+			multiOmicsQueryData.getCalculatedGeneAnnotations()
 		);
 	}
 
@@ -204,19 +204,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	public List<GeneDrugGroup> searchFromComputationId(
 		GeneDrugQueryParameters queryParameters, String computationId
 	) {
-		ComputationMetadata metadata = this.variantsAnalysisController.getComputationStatus(computationId);
-
-		CnvData cnvData = null;
-		if (metadata.isCnvTsvFile()) {
-			cnvData = this.variantsAnalysisController.getCnvAnnotations(computationId);
-		}
-
-		GeneExpression expressionData = null;
-		if (metadata.isExpressionDataFile()) {
-			expressionData = this.variantsAnalysisController.getExpressionData(computationId);
-		}
-
-		return this.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId, cnvData, expressionData);
+		return this.searchFromComputationIdWithCnvAndExpression(queryParameters, computationId, null, null);
 	}
 
 	@Override
@@ -250,15 +238,14 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
 		}
 
-		CombinedAnalysisQueryData combinedAnalysisQueryData = 
-			new CombinedAnalysisQueryData(cnvData, geneExpression, geneRank);
+		MultiOmicsAnalysisQueryData multiOmicsQueryData = new MultiOmicsAnalysisQueryData(cnvData, geneExpression, geneRank);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
-			combinedAnalysisQueryData.getQueryGenes(),
+			multiOmicsQueryData.getQueryGenes(),
 			new StaticGeneScoreCalculator(geneRank),
 			pharmCatAnnotations,
-			combinedAnalysisQueryData.getCalculatedGeneAnnotations()
+			multiOmicsQueryData.getCalculatedGeneAnnotations()
 		);
 	}
 

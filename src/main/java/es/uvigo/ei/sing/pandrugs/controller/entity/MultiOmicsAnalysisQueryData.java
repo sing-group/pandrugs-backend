@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 
-public class CombinedAnalysisQueryData {
+public class MultiOmicsAnalysisQueryData {
 
     public static final String DEFAULT_NOT_CNV_LABEL = "DIPLOID";
 
@@ -45,11 +45,11 @@ public class CombinedAnalysisQueryData {
     private CalculatedGeneAnnotations calculatedGeneAnnotations;
     private Set<String> queryGenes;
 
-    public CombinedAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression) {
+    public MultiOmicsAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression) {
         this(cnvData, geneExpression, null);
     }
 
-    public CombinedAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression, Map<String, Double> vcfGeneRank) {
+    public MultiOmicsAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression, Map<String, Double> vcfGeneRank) {
         this.cnvData = cnvData;
         this.geneExpression = geneExpression;
         this.initializeSnvAnnotations(vcfGeneRank);

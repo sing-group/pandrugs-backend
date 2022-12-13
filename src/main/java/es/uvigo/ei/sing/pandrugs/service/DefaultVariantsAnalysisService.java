@@ -132,9 +132,7 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 		@FormDataParam("vcfFile") File vcfFile,
 		@QueryParam("name") String computationName,
 		@FormDataParam("withPharmcat") @DefaultValue("false") Boolean withPharmcat,
-		@FormDataParam("tsvFile") File tsvFile,
-		@FormDataParam("cnvTsvFile") File cnvTsvFile,
-		@FormDataParam("expressionDataRnkFile") File expressionDataRnkFile,
+		@FormDataParam("tsvFile") File tsvPhenotyperOutsideCallFile,
 		@QueryParam("resultsurltemplate") String resultsURLTemplate,
 		@Context SecurityContext security,
 		@Context UriInfo currentUri
@@ -151,14 +149,8 @@ public class DefaultVariantsAnalysisService implements VariantsAnalysisService {
 
 				final String computationId;
 
-				if (tsvFile != null && tsvFile.length() > 0) {
-					configuration.setTsvFileInputStream(new FileInputStream(tsvFile));
-				}
-				if (cnvTsvFile != null && cnvTsvFile.length() > 0) {
-					configuration.setCnvTsvFileInputStream(new FileInputStream(cnvTsvFile));
-				}
-				if (expressionDataRnkFile != null && expressionDataRnkFile.length() > 0) {
-					configuration.setExpressionDataRnkFileInputStream(new FileInputStream(expressionDataRnkFile));
+				if (tsvPhenotyperOutsideCallFile != null && tsvPhenotyperOutsideCallFile.length() > 0) {
+					configuration.setTsvPhenotyperOutsideCallFileInputStream(new FileInputStream(tsvPhenotyperOutsideCallFile));
 				}
 
 				computationId = controller.startVariantsScopeUserComputation(configuration);

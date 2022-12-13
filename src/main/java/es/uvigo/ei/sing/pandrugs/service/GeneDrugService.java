@@ -29,7 +29,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
-import es.uvigo.ei.sing.pandrugs.service.entity.CombinedAnalysisInputData;
+import es.uvigo.ei.sing.pandrugs.service.entity.MultiOmicsAnalysisInputData;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 /**
@@ -141,7 +141,7 @@ public interface GeneDrugService {
 	 *
 	 * @param computationId a finished computation id where the affected genes
 	 *                      can be extracted.
-	 * @param combinedAnalysisInputData a set of gene-alteration 
+	 * @param multiOmicsAnalysisInputData a set of gene-alteration 
 	 * (AMP/DEL) pairs and a RNK file with gene expression data.
 	 * @param cancerDrugStatus a list for filtering the drug status of the
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
@@ -172,9 +172,9 @@ public interface GeneDrugService {
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
-	public abstract Response listFromComputationIdWithCombinedAnalysisFiles(
+	public abstract Response listFromComputationIdWithMultiOmicsAnalysisFiles(
 		String computationId,
-		CombinedAnalysisInputData combinedAnalysisInputData,
+		MultiOmicsAnalysisInputData multiOmicsAnalysisInputData,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		Set<String> cancerTypes,
@@ -283,7 +283,7 @@ public interface GeneDrugService {
 	 * performed using the gene symbols present in both files (i.e. their 
 	 * union is performed).
 	 * 
-	 * @param combinedAnalysisInputData a set of gene-alteration 
+	 * @param multiOmicsAnalysisInputData a set of gene-alteration 
 	 * (AMP/DEL) pairs and a RNK file with gene expression data.
 	 * @param cancerDrugStatus a list for filtering the drug status of the 
 	 * cancer genes. Multiple values allowed. Valid values are CLINICAL,
@@ -314,8 +314,8 @@ public interface GeneDrugService {
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
-	public abstract Response listCombinedCnvAndExpression(
-		CombinedAnalysisInputData combinedAnalysisInputData,
+	public abstract Response listMultiOmicsCnvAndExpression(
+		MultiOmicsAnalysisInputData multiOmicsAnalysisInputData,
 		Set<String> cancerDrugStatus,
 		Set<String> nonCancerDrugStatus,
 		Set<String> cancerTypes,
