@@ -84,7 +84,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@Consumes(MediaType.WILDCARD)
 	@ReturnType(clazz = GeneDrugGroupInfos.class)
 	@Override
-	public Response list(
+	public Response listByGeneOrDrugByGet(
 		@QueryParam("gene") Set<String> genes,
 		@QueryParam("drug") Set<String> drugs,
 		@QueryParam("cancerDrugStatus") Set<String> cancerDrugStatus,
@@ -93,6 +93,40 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
 		@QueryParam("pathwayMember") boolean pathwayMember
+	) throws BadRequestException {
+		return this.listByGeneOrDrug(
+			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+		);
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@ReturnType(clazz = GeneDrugGroupInfos.class)
+	@Override
+	public Response listByGeneOrDrugByPost(
+		@FormParam("gene") Set<String> genes,
+		@FormParam("drug") Set<String> drugs,
+		@FormParam("cancerDrugStatus") Set<String> cancerDrugStatus,
+		@FormParam("nonCancerDrugStatus") Set<String> nonCancerDrugStatus,
+		@FormParam("cancer") Set<String> cancerTypes,
+		@FormParam("directTarget") boolean directTarget,
+		@FormParam("biomarker") boolean biomarker,
+		@FormParam("pathwayMember") boolean pathwayMember
+	) throws BadRequestException {
+		return this.listByGeneOrDrug(
+			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+		);
+	}
+	
+	private Response listByGeneOrDrug(
+		Set<String> genes,
+		Set<String> drugs,
+		Set<String> cancerDrugStatus,
+		Set<String> nonCancerDrugStatus,
+		Set<String> cancerTypes,
+		boolean directTarget,
+		boolean biomarker,
+		boolean pathwayMember
 	) throws BadRequestException {
 		try {
 			if (!isEmpty(genes) && !isEmpty(drugs)) {
@@ -106,7 +140,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					),
 					genes.stream().toArray(String[]::new)
 				);
-				
+
 				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 			} else {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByDrugs(
@@ -115,7 +149,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 					),
 					drugs.stream().toArray(String[]::new)
 				);
-				
+
 				return Response.ok(new GeneDrugGroupInfos(geneDrugs)).build();
 			}
 		} catch (IllegalArgumentException | NullPointerException e) {

@@ -98,83 +98,163 @@ public class DefaultGeneDrugServiceUnitTest {
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithNullGenes() {
+	public void testListWithNullGenesByGet() {
 		replay(controller);
 	
-		service.list(null, null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(null, null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyGenes() {
+	public void testListWithEmptyGenesByGet() {
 		replay(controller);
 		
-		service.list(emptySet(), null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(emptySet(), null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyDrugs() {
+	public void testListWithEmptyDrugsByGet() {
 		replay(controller);
 		
-		service.list(null, emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(null, emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyGenesAndDrugs() {
+	public void testListWithEmptyGenesAndDrugsByGet() {
 		replay(controller);
 		
-		service.list(emptySet(), emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(emptySet(), emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithGenesAndDrugs() {
+	public void testListWithGenesAndDrugsByGet() {
 		replay(controller);
 		
-		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithNullGenesByPost() {
+		replay(controller);
+	
+		service.listByGeneOrDrugByPost(null, null, null, null, null, true, true, true);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesByPost() {
+		replay(controller);
+		
+		service.listByGeneOrDrugByPost(emptySet(), null, null, null, null, true, true, true);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyDrugsByPost() {
+		replay(controller);
+		
+		service.listByGeneOrDrugByPost(null, emptySet(), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesAndDrugsByPost() {
+		replay(controller);
+		
+		service.listByGeneOrDrugByPost(emptySet(), emptySet(), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithGenesAndDrugsByPost() {
+		replay(controller);
+		
+		service.listByGeneOrDrugByPost(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
 	}
 	
 	@Test
-	public void testListByGenesNoResult() {
-		testListByGene(absentGeneSymbol(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
+	public void testListByGenesNoResultByGet() {
+		testListByGeneByGet(absentGeneSymbol(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
 	}
 	
 	@Test
-	public void testListByGenesSingleGeneDirect() {
-		testListByGene(singleGeneSymbolDirect(), singleGeneGroupDirect(), singleGeneGroupInfosDirect());
+	public void testListByGenesSingleGeneDirectByGet() {
+		testListByGeneByGet(singleGeneSymbolDirect(), singleGeneGroupDirect(), singleGeneGroupInfosDirect());
 	}
 	
 	@Test
-	public void testListByGenesMultipleGeneDirect() {
-		testListByGene(multipleGeneSymbolsDirect(), multipleGeneGroupDirect(), multipleGeneGroupInfosDirect());
+	public void testListByGenesMultipleGeneDirectByGet() {
+		testListByGeneByGet(multipleGeneSymbolsDirect(), multipleGeneGroupDirect(), multipleGeneGroupInfosDirect());
 	}
 	
 	@Test
-	public void testListByGenesSingleGeneIndirect() {
-		testListByGene(singleGeneSymbolIndirect(), singleGeneGroupIndirect(), singleGeneGroupInfosIndirect());
+	public void testListByGenesSingleGeneIndirectByGet() {
+		testListByGeneByGet(singleGeneSymbolIndirect(), singleGeneGroupIndirect(), singleGeneGroupInfosIndirect());
 	}
 	
 	@Test
-	public void testListByGenesMultipleGeneIndirect() {
-		testListByGene(multipleGeneSymbolsIndirect(), multipleGeneGroupIndirect(), multipleGeneGroupInfosIndirect());
+	public void testListByGenesMultipleGeneIndirectByGet() {
+		testListByGeneByGet(multipleGeneSymbolsIndirect(), multipleGeneGroupIndirect(), multipleGeneGroupInfosIndirect());
 	}
 	
 	@Test
-	public void testListByGenesMultipleGeneMixed() {
-		testListByGene(multipleGeneSymbolsMixed(), multipleGeneGroupMixed(), multipleGeneGroupInfosMixed());
+	public void testListByGenesMultipleGeneMixedByGet() {
+		testListByGeneByGet(multipleGeneSymbolsMixed(), multipleGeneGroupMixed(), multipleGeneGroupInfosMixed());
 	}
 	
 	@Test
-	public void testListByDrugsNoResult() {
-		testSearchByDrug(absentDrugName(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
+	public void testListByDrugsNoResultByGet() {
+		testSearchByDrugByGet(absentDrugName(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
 	}
 	
 	@Test
-	public void testSearchByDrugSingle() {
-		testSearchByDrug(singleDrugName(), singleDrugGeneDrugGroups(), singleDrugGeneDrugGroupsInfos());
+	public void testSearchByDrugSingleByGet() {
+		testSearchByDrugByGet(singleDrugName(), singleDrugGeneDrugGroups(), singleDrugGeneDrugGroupsInfos());
 	}
 	
 	@Test
-	public void testSearchByDrugMultiple() {
-		testSearchByDrug(multipleDrugNames(), multipleDrugGeneDrugGroups(), multipleDrugGeneDrugGroupsMixed());
+	public void testSearchByDrugMultipleByGet() {
+		testSearchByDrugByGet(multipleDrugNames(), multipleDrugGeneDrugGroups(), multipleDrugGeneDrugGroupsMixed());
+	}
+	
+	@Test
+	public void testListByGenesNoResultByPost() {
+		testListByGeneByPost(absentGeneSymbol(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
+	}
+	
+	@Test
+	public void testListByGenesSingleGeneDirectByPost() {
+		testListByGeneByPost(singleGeneSymbolDirect(), singleGeneGroupDirect(), singleGeneGroupInfosDirect());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneDirectByPost() {
+		testListByGeneByPost(multipleGeneSymbolsDirect(), multipleGeneGroupDirect(), multipleGeneGroupInfosDirect());
+	}
+	
+	@Test
+	public void testListByGenesSingleGeneIndirectByPost() {
+		testListByGeneByPost(singleGeneSymbolIndirect(), singleGeneGroupIndirect(), singleGeneGroupInfosIndirect());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneIndirectByPost() {
+		testListByGeneByPost(multipleGeneSymbolsIndirect(), multipleGeneGroupIndirect(), multipleGeneGroupInfosIndirect());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneMixedByPost() {
+		testListByGeneByPost(multipleGeneSymbolsMixed(), multipleGeneGroupMixed(), multipleGeneGroupInfosMixed());
+	}
+	
+	@Test
+	public void testListByDrugsNoResultByPost() {
+		testSearchByDrugByPost(absentDrugName(), new GeneDrugGroup[0], emptyGeneDrugGroupInfo());
+	}
+	
+	@Test
+	public void testSearchByDrugSingleByPost() {
+		testSearchByDrugByPost(singleDrugName(), singleDrugGeneDrugGroups(), singleDrugGeneDrugGroupsInfos());
+	}
+	
+	@Test
+	public void testSearchByDrugMultipleByPost() {
+		testSearchByDrugByPost(multipleDrugNames(), multipleDrugGeneDrugGroups(), multipleDrugGeneDrugGroupsMixed());
 	}
 	
 	@Test(expected = BadRequestException.class)
@@ -221,28 +301,54 @@ public class DefaultGeneDrugServiceUnitTest {
 		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneGroupMixed(), multipleGeneGroupInfosMixed());
 	}
 	
-	private void testListByGene(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
-		testListByGene(new String[] { query }, controllerResult, expectedResult);
+	private void testListByGeneByGet(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		testListByGeneByGet(new String[] { query }, controllerResult, expectedResult);
 	}
 
-	private void testListByGene(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+	private void testListByGeneByGet(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
 			controller -> expectWithUnorderedVarargs(controller, "searchByGenes", query, GeneDrugQueryParameters.class)
 				.andReturn(asList(controllerResult)),
-			service -> service.list(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(stream(query).collect(toSet()), null, null, null, null, true, true, true),
 			expectedResult
 		);
 	}
 
-	private void testSearchByDrug(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
-		testSearchByDrug(new String[] { query }, controllerResult, expectedResult);
+	private void testSearchByDrugByGet(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		testSearchByDrugByGet(new String[] { query }, controllerResult, expectedResult);
 	}
 	
-	private void testSearchByDrug(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+	private void testSearchByDrugByGet(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
 			controller -> expectWithUnorderedVarargs(controller, "searchByDrugs", query, GeneDrugQueryParameters.class)
 				.andReturn(asList(controllerResult)),
-			service -> service.list(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			expectedResult
+		);
+	}
+	
+	private void testListByGeneByPost(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		testListByGeneByPost(new String[] { query }, controllerResult, expectedResult);
+	}
+
+	private void testListByGeneByPost(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		checkListResults(
+			controller -> expectWithUnorderedVarargs(controller, "searchByGenes", query, GeneDrugQueryParameters.class)
+				.andReturn(asList(controllerResult)),
+			service -> service.listByGeneOrDrugByPost(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			expectedResult
+		);
+	}
+
+	private void testSearchByDrugByPost(final String query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		testSearchByDrugByPost(new String[] { query }, controllerResult, expectedResult);
+	}
+	
+	private void testSearchByDrugByPost(final String[] query, final GeneDrugGroup[] controllerResult, final GeneDrugGroupInfos expectedResult) {
+		checkListResults(
+			controller -> expectWithUnorderedVarargs(controller, "searchByDrugs", query, GeneDrugQueryParameters.class)
+				.andReturn(asList(controllerResult)),
+			service -> service.listByGeneOrDrugByPost(null, stream(query).collect(toSet()), null, null, null, true, true, true),
 			expectedResult
 		);
 	}

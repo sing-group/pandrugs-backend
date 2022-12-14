@@ -197,28 +197,53 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithNullGenes() {
-		service.list(null, null, null, null, null, true, true, true);
+	public void testListWithNullGenesByGet() {
+		service.listByGeneOrDrugByGet(null, null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyGenes() {
-		service.list(emptySet(), null, null, null, null, true, true, true);
+	public void testListWithEmptyGenesByGet() {
+		service.listByGeneOrDrugByGet(emptySet(), null, null, null, null, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyDrugs() {
-		service.list(null, emptySet(), null, null, null, true, true, true);
+	public void testListWithEmptyDrugsByGet() {
+		service.listByGeneOrDrugByGet(null, emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithEmptyGenesAndDrugs() {
-		service.list(emptySet(), emptySet(), null, null, null, true, true, true);
+	public void testListWithEmptyGenesAndDrugsByGet() {
+		service.listByGeneOrDrugByGet(emptySet(), emptySet(), null, null, null, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
-	public void testListWithGenesAndDrugs() {
-		service.list(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
+	public void testListWithGenesAndDrugsByGet() {
+		service.listByGeneOrDrugByGet(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithNullGenesByPost() {
+		service.listByGeneOrDrugByPost(null, null, null, null, null, true, true, true);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesByPost() {
+		service.listByGeneOrDrugByPost(emptySet(), null, null, null, null, true, true, true);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyDrugsByPost() {
+		service.listByGeneOrDrugByPost(null, emptySet(), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithEmptyGenesAndDrugsByPost() {
+		service.listByGeneOrDrugByPost(emptySet(), emptySet(), null, null, null, true, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testListWithGenesAndDrugsByPost() {
+		service.listByGeneOrDrugByPost(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
 	}
 	
 	@Test
@@ -336,7 +361,11 @@ public class DefaultGeneDrugServiceIntegrationTest {
 
 	private void testListByGene(final String[] query, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
-			service -> service.list(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			expectedResult
+		);
+		checkListResults(
+			service -> service.listByGeneOrDrugByPost(stream(query).collect(toSet()), null, null, null, null, true, true, true),
 			expectedResult
 		);
 	}
@@ -347,7 +376,11 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	
 	private void testSearchByDrug(final String[] query, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
-			service -> service.list(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			expectedResult
+		);
+		checkListResults(
+			service -> service.listByGeneOrDrugByPost(null, stream(query).collect(toSet()), null, null, null, true, true, true),
 			expectedResult
 		);
 	}
