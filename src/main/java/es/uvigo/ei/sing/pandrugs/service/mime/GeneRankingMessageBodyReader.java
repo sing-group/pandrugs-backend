@@ -39,6 +39,7 @@ public class GeneRankingMessageBodyReader extends MultipartMessageBodyReader<Gen
 
 	@Override
 	protected void init() {
+		this.ranking = null; //remove from a previous execution
 	}
 
 	@Override

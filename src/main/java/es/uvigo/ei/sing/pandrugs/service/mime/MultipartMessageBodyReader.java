@@ -90,26 +90,26 @@ public abstract class MultipartMessageBodyReader<T> implements MessageBodyReader
 	}
 
 	@Override
-	public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+	public synchronized T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 		MultivaluedMap<String, String> httpHeaders, InputStream entityStream
 	) throws IOException, WebApplicationException {
-		synchronized(this) {
-			try {
-				this.init();
-				
-				final MimeMultipart mimemultipart = createMimeMultipart(httpHeaders, entityStream);
-				for (int i = 0; i < mimemultipart.getCount(); i++) {
-					final BodyPart p = mimemultipart.getBodyPart(i);
-					final String name = getName(p);
 
-					this.add(name, toByteArray(p.getInputStream()));
-				}
+		try {
+			this.init();
 
-				return this.build();
-			} catch (MessagingException e) {
-				throw new RuntimeException(e);
+			final MimeMultipart mimemultipart = createMimeMultipart(httpHeaders, entityStream);
+			for (int i = 0; i < mimemultipart.getCount(); i++) {
+				final BodyPart p = mimemultipart.getBodyPart(i);
+				final String name = getName(p);
+
+				this.add(name, toByteArray(p.getInputStream()));
 			}
+
+			return this.build();
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
 		}
+
 	}
 
 	protected abstract void init();

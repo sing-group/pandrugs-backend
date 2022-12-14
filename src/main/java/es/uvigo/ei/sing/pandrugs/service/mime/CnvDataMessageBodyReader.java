@@ -35,6 +35,7 @@ public class CnvDataMessageBodyReader extends MultipartMessageBodyReader<CnvData
 
     @Override
     protected void init() {
+        this.dataMap = null;
     }
 
     @Override
