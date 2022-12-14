@@ -25,9 +25,12 @@ package es.uvigo.ei.sing.pandrugs.service;
 
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalToGeneDrugGroupInfos;
+import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGenePresence.equalToGenePresence;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.emptyGeneDrugGroupInfo;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.geneSymbolsWithPresence;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsMixed;
@@ -38,6 +41,7 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multi
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.presentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.rankingFor;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroupsInfos;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugName;
@@ -45,6 +49,7 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singl
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -55,6 +60,8 @@ import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -79,6 +86,7 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugs.service.entity.GenePresence;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -296,6 +304,30 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testListRankedMultipleGeneMixed() {
 		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneGroupInfosMixed());
+	}
+	
+	@Test
+	public void testCheckPresenceByGet() {
+		this.testCheckPresence(this.service::checkPresenceByGet);
+	}
+	
+	@Test
+	public void testCheckPresenceByPost() {
+		this.testCheckPresence(this.service::checkPresenceByPost);
+	}
+	
+	private void testCheckPresence(Function<Set<String>, Response> checkPresence) {
+		final Set<String> geneQuery = new HashSet<>();
+		
+		geneQuery.addAll(asList(absentGeneSymbols()));
+		geneQuery.addAll(asList(presentGeneSymbols()));
+		
+		final Response response = checkPresence.apply(geneQuery);
+		
+		final GenePresence expectedPresence = new GenePresence(geneSymbolsWithPresence());
+		final GenePresence actualPresence = (GenePresence) response.getEntity();
+		
+		assertThat(actualPresence, is(equalToGenePresence(expectedPresence)));
 	}
 	
 	private void testListByGene(final String query, final GeneDrugGroupInfos expectedResult) {

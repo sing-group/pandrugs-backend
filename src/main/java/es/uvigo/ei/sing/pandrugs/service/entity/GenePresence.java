@@ -23,6 +23,7 @@
 
 package es.uvigo.ei.sing.pandrugs.service.entity;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -45,7 +46,6 @@ public class GenePresence {
 		final Predicate<Entry<String, Boolean>> presencePredicate = Map.Entry::getValue;
 		final Predicate<Entry<String, Boolean>> absencePredicate = presencePredicate.negate();
 		
-		
 		this.presentGenes = genePresence.entrySet().stream()
 			.filter(presencePredicate)
 			.map(Map.Entry::getKey)
@@ -63,5 +63,31 @@ public class GenePresence {
 	
 	public String[] getAbsentGenes() {
 		return absentGenes;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(absentGenes);
+		result = prime * result + Arrays.hashCode(presentGenes);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GenePresence other = (GenePresence) obj;
+		return Arrays.equals(absentGenes, other.absentGenes) && Arrays.equals(presentGenes, other.presentGenes);
+	}
+
+	@Override
+	public String toString() {
+		return "GenePresence [presentGenes=" + Arrays.toString(presentGenes) + ", absentGenes=" + Arrays.toString(absentGenes) + "]";
 	}
 }

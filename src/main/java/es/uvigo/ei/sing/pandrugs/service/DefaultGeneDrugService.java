@@ -27,6 +27,7 @@ import static es.uvigo.ei.sing.pandrugs.service.ServiceUtils.createBadRequestExc
 import static es.uvigo.ei.sing.pandrugs.util.Checks.isEmpty;
 import static es.uvigo.ei.sing.pandrugs.util.Checks.requireNonEmpty;
 import static java.util.Objects.requireNonNull;
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -350,7 +352,20 @@ public class DefaultGeneDrugService implements GeneDrugService {
 	@Path("/gene/presence")
 	@ReturnType(clazz = GenePresence.class)
 	@Override
-	public Response checkPresence(@QueryParam("gene") Set<String> geneSymbols) {
+	public Response checkPresenceByGet(@QueryParam("gene") Set<String> geneSymbols) {
+		return this.checkPresence(geneSymbols);
+	}
+
+	@POST
+	@Path("/gene/presence")
+	@ReturnType(clazz = GenePresence.class)
+	@Consumes(APPLICATION_FORM_URLENCODED)
+	@Override
+	public Response checkPresenceByPost(@FormParam("gene") Set<String> geneSymbols) {
+		return this.checkPresence(geneSymbols);
+	}
+
+	private Response checkPresence(Set<String> geneSymbols) {
 		try {
 			requireNonEmpty(geneSymbols, "At least one gene must be provided");
 			

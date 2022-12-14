@@ -362,9 +362,26 @@ public interface GeneDrugService {
 	 * The response returned includes a list of present genes and a list of
 	 * absent genes.
 	 * 
+	 * This method only supports GET requests.
+	 * 
 	 * @param geneSymbols the gene symbols of the genes which presence will be
 	 * checked.
 	 * @return a list of present genes and a list of absent genes.
 	 */
-	public abstract Response checkPresence(Set<String> geneSymbols);
+	public abstract Response checkPresenceByGet(Set<String> geneSymbols);
+	
+	/**
+	 * Checks if a list of gene symbols are present or absent in the gene drug
+	 * information stored in the application.
+	 * 
+	 * The response returned includes a list of present genes and a list of
+	 * absent genes.
+	 * 
+	 * This method only supports POST requests.
+	 * 
+	 * @param geneSymbols the gene symbols of the genes which presence will be
+	 * checked.
+	 * @return a list of present genes and a list of absent genes.
+	 */
+	public abstract Response checkPresenceByPost(Set<String> geneSymbols);
 }

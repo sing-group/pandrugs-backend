@@ -33,6 +33,7 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,9 @@ public final class GeneDrugDataset {
 	private static final String DRUG_NAME_12 = "DRUG 12";
 	private static final String DRUG_NAME_21 = "DRUG 21";
 	private static final String DRUG_NAME_22 = "DRUG 22";
-	private static final String ABSENT_GENE_SYMBOL = "ABSENT GENE";
+	private static final String ABSENT_GENE_SYMBOL_1 = "ABSENT GENE 1";
+	private static final String ABSENT_GENE_SYMBOL_2 = "ABSENT GENE 2";
+	private static final String ABSENT_GENE_SYMBOL_3 = "ABSENT GENE 3";
 	private static final String INDIRECT_GENE_SYMBOL_1 = "IG1";
 	private static final String INDIRECT_GENE_SYMBOL_2 = "IG2";
 	private static final String DIRECT_GENE_SYMBOL_1 = "DIRECT GENE 1";
@@ -466,7 +469,38 @@ public final class GeneDrugDataset {
 	}
 	
 	public static String absentGeneSymbol() {
-		return ABSENT_GENE_SYMBOL;
+		return ABSENT_GENE_SYMBOL_1;
+	}
+	
+	public static String[] absentGeneSymbols() {
+		return new String[] {
+			ABSENT_GENE_SYMBOL_1,
+			ABSENT_GENE_SYMBOL_2,
+			ABSENT_GENE_SYMBOL_3,
+			INDIRECT_GENE_SYMBOL_2
+		};
+	}
+	
+	public static String[] presentGeneSymbols() {
+		return new String[] {
+			DIRECT_GENE_SYMBOL_1,
+			WITH_INDIRECT_GENE_SYMBOL_1,
+			WITH_INDIRECT_GENE_SYMBOL_2
+		};
+	}
+	
+	public static Map<String, Boolean> geneSymbolsWithPresence() {
+		final Map<String, Boolean> genePresence = new HashMap<>();
+		
+		for (String geneSymbol : absentGeneSymbols()) {
+			genePresence.put(geneSymbol, false);
+		}
+		
+		for (String geneSymbol : presentGeneSymbols()) {
+			genePresence.put(geneSymbol, true);
+		}
+		
+		return genePresence;
 	}
 	
 	public static String singleGeneSymbolDirect() {
