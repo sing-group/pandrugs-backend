@@ -53,7 +53,7 @@ public class GeneDrugWarning implements Serializable {
 	@Column(name = "affected_gene", length = 100, columnDefinition = "VARCHAR(100)", nullable = false)
 	private String affectedGene;
 
-	@Column(name = "standard_drug_name", length = 2000, columnDefinition = "VARCHAR(2000)", nullable = false)
+	@Column(name = "standard_drug_name", length = 500, columnDefinition = "VARCHAR(500)", nullable = false)
 	private String standardDrugName;
 	
 	@Column(name = "warning", length = 1000, columnDefinition = "VARCHAR(1000)", nullable = false)

@@ -61,7 +61,7 @@ public class GeneDrugToDrugSource implements Serializable {
 	@Column(name = "source_drug_name", length = 200, columnDefinition = "VARCHAR(200)")
 	private String sourceDrugName;
 
-	@Column(name = "alteration", length = 1000, columnDefinition = "VARCHAR(1000)", nullable = true)
+	@Column(name = "alteration", length = 1200, columnDefinition = "VARCHAR(1200)", nullable = true)
 	private String alteration;
 
 	@ManyToOne(fetch = FetchType.LAZY)

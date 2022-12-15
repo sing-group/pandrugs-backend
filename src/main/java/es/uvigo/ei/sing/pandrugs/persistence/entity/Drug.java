@@ -61,10 +61,10 @@ public class Drug implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@Column(name = "standard_name", length = 2000, columnDefinition = "VARCHAR(2000)", unique = true, nullable = false)
+	@Column(name = "standard_name", length = 500, columnDefinition = "VARCHAR(500)", unique = true, nullable = false)
 	private String standardName;
 	
-	@Column(name = "show_name", length = 2000, columnDefinition = "VARCHAR(2000)", unique = true, nullable = false)
+	@Column(name = "show_name", length = 500, columnDefinition = "VARCHAR(500)", unique = true, nullable = false)
 	private String showName;
 	
 	@Column(name = "status", nullable = false, length = 16)
