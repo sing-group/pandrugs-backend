@@ -62,18 +62,6 @@ public class MultiOmicsAnalysisQueryData {
 
         this.snvData = vcfGeneRank.keySet().stream()
             .collect(Collectors.toMap(g -> g, g -> SnvAnnotation.ALTERED.toString()));
-
-        if (this.cnvData != null) {
-            this.cnvData.getDataMap().keySet().forEach(g -> {
-                this.snvData.putIfAbsent(g, DEFAULT_NOT_ALTERED_LABEL);
-            });
-        }
-
-        if (this.geneExpression != null) {
-            this.geneExpression.getAnnotations().keySet().forEach(g -> {
-                this.snvData.putIfAbsent(g, DEFAULT_NOT_ALTERED_LABEL);
-            });
-        }
     }
 
     public CalculatedGeneAnnotations getCalculatedGeneAnnotations() {
