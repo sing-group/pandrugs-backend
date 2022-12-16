@@ -73,7 +73,7 @@
 	</bean>
 	
 	<bean id="configuration" class="es.uvigo.ei.sing.pandrugs.Configuration" scope="singleton">
-        <property name="emailFrom" value="noreply@pandrugs.es"/>
+        <property name="emailFrom" value="noreply@pandrugs.sing-group.org"/>
 	    <property name="serverURL" value="http://localhost:8080/pandrugs-backend" />
     </bean>
 
