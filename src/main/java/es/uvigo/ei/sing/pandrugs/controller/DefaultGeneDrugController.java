@@ -243,7 +243,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			multiOmicsQueryData.getQueryGenes(),
-			new StaticGeneScoreCalculator(geneRank),
+			new StaticGeneScoreCalculator(geneRank, true),
 			pharmCatAnnotations,
 			multiOmicsQueryData.getCalculatedGeneAnnotations()
 		);

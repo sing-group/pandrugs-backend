@@ -32,14 +32,24 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 
 public class StaticGeneScoreCalculator implements GeneScoreCalculator {
 	private final Map<String, Double> geneScore;
+	private boolean useDefaultGeneScoreCalculator;
+	private DefaultGeneScoreCalculator defaultCalculator = new DefaultGeneScoreCalculator();
 	
 	public StaticGeneScoreCalculator(Map<String, Double> geneScore) {
+		this(geneScore, false);
+	}
+
+	public StaticGeneScoreCalculator(Map<String, Double> geneScore, boolean useDefaultGeneScoreCalculator) {
 		this.geneScore = geneScore;
+		this.useDefaultGeneScoreCalculator = useDefaultGeneScoreCalculator;
 	}
 
 	@Override
 	public double calculateDirectScore(GeneDrug geneDrug) {
-		return this.geneScore.getOrDefault(geneDrug.getGeneSymbol(), 0d);
+		return this.geneScore.getOrDefault(
+			geneDrug.getGeneSymbol(), 
+			useDefaultGeneScoreCalculator ? defaultCalculator.calculateDirectScore(geneDrug): 0d
+		);
 	}
 
 	@Override
@@ -47,12 +57,20 @@ public class StaticGeneScoreCalculator implements GeneScoreCalculator {
 		return geneDrug.getIndirectGeneSymbols().stream()
 			.collect(toMap(
 				Function.identity(),
-				gene -> geneScore.getOrDefault(gene, 0d)
+				gene -> geneScore.getOrDefault(
+					gene, 
+					this.useDefaultGeneScoreCalculator ?
+						this.defaultCalculator.calculateIndirectScores(geneDrug).getOrDefault(gene, 0d) :
+						0d
+					)
 			));
 	}
 	
 	@Override
 	public double calculateIndirectScore(GeneDrug geneDrug, String indirectGene) {
-		return geneScore.getOrDefault(indirectGene, 0d);
+		return geneScore.getOrDefault(
+			indirectGene, 
+			this.useDefaultGeneScoreCalculator ? defaultCalculator.calculateIndirectScore(geneDrug, indirectGene): 0d
+		);
 	}
 }
