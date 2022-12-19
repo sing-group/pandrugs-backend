@@ -68,12 +68,18 @@ public class GeneExpressionCoherence {
             coherence.append(" ").append(driverText);
         }
         coherence.append(" is ");
-        if (annotations.size() > 1) {
+        if (annotations.size() == 1) {
+            coherence.append(annotationsString);
+        } else if (annotations.size() == 2) {
             coherence.append(annotationsString.substring(0, annotationsString.lastIndexOf(",")));
-            coherence.append(" and ");
+            coherence.append(" and it is ");
             coherence.append(annotationsString.substring(annotationsString.lastIndexOf(",") + 2));
         } else {
-            coherence.append(annotationsString);
+            coherence.append(annotationsString.substring(0, annotationsString.indexOf(",")));
+            coherence.append(" and it is ");
+            coherence.append(annotationsString.substring(annotationsString.indexOf(",") + 2, annotationsString.lastIndexOf(",")));
+            coherence.append(" and ");
+            coherence.append(annotationsString.substring(annotationsString.lastIndexOf(",") + 2));
         }
 
         return coherence.toString();
