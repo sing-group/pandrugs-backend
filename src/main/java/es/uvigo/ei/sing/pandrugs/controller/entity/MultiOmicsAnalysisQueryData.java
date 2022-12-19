@@ -36,7 +36,7 @@ public class MultiOmicsAnalysisQueryData {
     public static final String DEFAULT_NOT_CNV_LABEL = "DIPLOID";
 
     private static final String DEFAULT_NOT_EXPRESSION_LABEL = GeneExpressionAnnotation.NOT_EXPRESSED.toString();
-    private static final String DEFAULT_NOT_ALTERED_LABEL = SnvAnnotation.NOT_ALTERED.toString();
+    private static final String DEFAULT_NOT_MUTATED_LABEL = SnvAnnotation.NOT_MUTATED.toString();
     
     private CnvData cnvData;
     private GeneExpression geneExpression;
@@ -61,7 +61,7 @@ public class MultiOmicsAnalysisQueryData {
         }
 
         this.snvData = vcfGeneRank.keySet().stream()
-            .collect(Collectors.toMap(g -> g, g -> SnvAnnotation.ALTERED.toString()));
+            .collect(Collectors.toMap(g -> g, g -> SnvAnnotation.MUTATED.toString()));
     }
 
     public CalculatedGeneAnnotations getCalculatedGeneAnnotations() {
@@ -98,7 +98,7 @@ public class MultiOmicsAnalysisQueryData {
                 
                 String snv = "";
                 if (this.snvData != null) {
-                    snv = this.snvData.getOrDefault(g, DEFAULT_NOT_ALTERED_LABEL);
+                    snv = this.snvData.getOrDefault(g, DEFAULT_NOT_MUTATED_LABEL);
                 }
 
                 String cnv = "";

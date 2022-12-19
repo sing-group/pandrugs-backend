@@ -44,133 +44,133 @@ public class GeneExpressionCoherenceTest {
                          * VCF + CNV
                          */
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "AMP", ""),
-                                "GenA (oncogene) is altered and amplified"
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "AMP", ""),
+                                "GenA (oncogene) is mutated and amplified"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DEL", ""),
-                                "GenA (oncogene) is altered and deleted"
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DEL", ""),
+                                "GenA (oncogene) is mutated and deleted"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         ""),
-                                "GenA (oncogene) is altered and diploid"
+                                "GenA (oncogene) is mutated and diploid"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         ""),
-                                "GenA (oncogene) is not altered and amplified"
+                                "GenA (oncogene) is not mutated and amplified"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         ""),
-                                "GenA (oncogene) is not altered and deleted"
+                                "GenA (oncogene) is not mutated and deleted"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "AMP", ""),
-                                "GenA (tumor suppressor gene) is altered and amplified"
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "AMP", ""),
+                                "GenA (tumor suppressor gene) is mutated and amplified"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DEL", ""),
-                                "GenA (tumor suppressor gene) is altered and deleted"
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DEL", ""),
+                                "GenA (tumor suppressor gene) is mutated and deleted"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         ""),
-                                "GenA (tumor suppressor gene) is altered and diploid"
+                                "GenA (tumor suppressor gene) is mutated and diploid"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         ""),
-                                "GenA (tumor suppressor gene) is not altered and amplified"
+                                "GenA (tumor suppressor gene) is not mutated and amplified"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         ""),
-                                "GenA (tumor suppressor gene) is not altered and deleted"
+                                "GenA (tumor suppressor gene) is not mutated and deleted"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "AMP", ""),
-                                "GenA is altered and amplified"
+                                "GenA is mutated and amplified"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DEL", ""),
-                                "GenA is altered and deleted"
+                                "GenA is mutated and deleted"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DIPLOID", ""),
-                                "GenA is altered and diploid"
+                                "GenA is mutated and diploid"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "AMP", ""),
-                                "GenA is not altered and amplified"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "AMP", ""),
+                                "GenA is not mutated and amplified"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "DEL", ""),
-                                "GenA is not altered and deleted"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "DEL", ""),
+                                "GenA is not mutated and deleted"
                         },
                         /*
                          * VCF + Expression
                          */
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is altered and highly overexpressed"
+                                "GenA (oncogene) is mutated and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is altered and overexpressed"
+                                "GenA (oncogene) is mutated and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is altered and underexpressed"
+                                "GenA (oncogene) is mutated and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is altered and not expressed"
+                                "GenA (oncogene) is mutated and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered and highly overexpressed"
+                                "GenA (oncogene) is not mutated and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered and overexpressed"
+                                "GenA (tumor suppressor gene) is mutated and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered and underexpressed"
+                                "GenA (tumor suppressor gene) is mutated and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered and not expressed"
+                                "GenA (tumor suppressor gene) is mutated and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "", "OVEREXPRESSED"),
-                                "GenA is altered and overexpressed"
+                                "GenA is mutated and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "", "UNDEREXPRESSED"),
-                                "GenA is altered and underexpressed"
+                                "GenA is mutated and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "", "NOT_EXPRESSED"),
-                                "GenA is altered and not expressed"
+                                "GenA is mutated and not expressed"
                         },
                         /*
                          * CNV + Expression
@@ -263,259 +263,259 @@ public class GeneExpressionCoherenceTest {
                          * VCF + CNV + Expression
                          */
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, amplified and highly overexpressed"
+                                "GenA (oncogene) is mutated, amplified and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, amplified and overexpressed"
+                                "GenA (oncogene) is mutated, amplified and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is altered, amplified and underexpressed"
+                                "GenA (oncogene) is mutated, amplified and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is altered, amplified and not expressed"
+                                "GenA (oncogene) is mutated, amplified and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, deleted and highly overexpressed"
+                                "GenA (oncogene) is mutated, deleted and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, deleted and overexpressed"
+                                "GenA (oncogene) is mutated, deleted and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is altered, deleted and underexpressed"
+                                "GenA (oncogene) is mutated, deleted and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is altered, deleted and not expressed"
+                                "GenA (oncogene) is mutated, deleted and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, diploid and highly overexpressed"
+                                "GenA (oncogene) is mutated, diploid and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is altered, diploid and overexpressed"
+                                "GenA (oncogene) is mutated, diploid and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is altered, diploid and underexpressed"
+                                "GenA (oncogene) is mutated, diploid and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is altered, diploid and not expressed"
+                                "GenA (oncogene) is mutated, diploid and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered, amplified and highly overexpressed"
+                                "GenA (oncogene) is not mutated, amplified and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered, amplified and overexpressed"
+                                "GenA (oncogene) is not mutated, amplified and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is not altered, amplified and underexpressed"
+                                "GenA (oncogene) is not mutated, amplified and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is not altered, amplified and not expressed"
+                                "GenA (oncogene) is not mutated, amplified and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered, deleted and highly overexpressed"
+                                "GenA (oncogene) is not mutated, deleted and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered, deleted and overexpressed"
+                                "GenA (oncogene) is not mutated, deleted and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "UNDEREXPRESSED"),
-                                "GenA (oncogene) is not altered, deleted and underexpressed"
+                                "GenA (oncogene) is not mutated, deleted and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "NOT_EXPRESSED"),
-                                "GenA (oncogene) is not altered, deleted and not expressed"
+                                "GenA (oncogene) is not mutated, deleted and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "ONC", SnvAnnotation.NOT_MUTATED.toString(),
                                         "DIPLOID", "HIGHLY_OVEREXPRESSED"),
-                                "GenA (oncogene) is not altered, diploid and highly overexpressed"
+                                "GenA (oncogene) is not mutated, diploid and highly overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, amplified and overexpressed"
+                                "GenA (tumor suppressor gene) is mutated, amplified and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, amplified and underexpressed"
+                                "GenA (tumor suppressor gene) is mutated, amplified and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "AMP",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, amplified and not expressed"
+                                "GenA (tumor suppressor gene) is mutated, amplified and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, deleted and overexpressed"
+                                "GenA (tumor suppressor gene) is mutated, deleted and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, deleted and underexpressed"
+                                "GenA (tumor suppressor gene) is mutated, deleted and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DEL",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, deleted and not expressed"
+                                "GenA (tumor suppressor gene) is mutated, deleted and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, diploid and overexpressed"
+                                "GenA (tumor suppressor gene) is mutated, diploid and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, diploid and underexpressed"
+                                "GenA (tumor suppressor gene) is mutated, diploid and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.ALTERED.toString(), "DIPLOID",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.MUTATED.toString(), "DIPLOID",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is altered, diploid and not expressed"
+                                "GenA (tumor suppressor gene) is mutated, diploid and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, amplified and overexpressed"
+                                "GenA (tumor suppressor gene) is not mutated, amplified and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, amplified and underexpressed"
+                                "GenA (tumor suppressor gene) is not mutated, amplified and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "AMP",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "AMP",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, amplified and not expressed"
+                                "GenA (tumor suppressor gene) is not mutated, amplified and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "OVEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, deleted and overexpressed"
+                                "GenA (tumor suppressor gene) is not mutated, deleted and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "UNDEREXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, deleted and underexpressed"
+                                "GenA (tumor suppressor gene) is not mutated, deleted and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_ALTERED.toString(), "DEL",
+                                new GeneExpressionCoherence("GenA", "TSG", SnvAnnotation.NOT_MUTATED.toString(), "DEL",
                                         "NOT_EXPRESSED"),
-                                "GenA (tumor suppressor gene) is not altered, deleted and not expressed"
+                                "GenA (tumor suppressor gene) is not mutated, deleted and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "AMP", "OVEREXPRESSED"),
-                                "GenA is altered, amplified and overexpressed"
+                                "GenA is mutated, amplified and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "AMP", "UNDEREXPRESSED"),
-                                "GenA is altered, amplified and underexpressed"
+                                "GenA is mutated, amplified and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "AMP", "NOT_EXPRESSED"),
-                                "GenA is altered, amplified and not expressed"
+                                "GenA is mutated, amplified and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DEL", "OVEREXPRESSED"),
-                                "GenA is altered, deleted and overexpressed"
+                                "GenA is mutated, deleted and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DEL", "UNDEREXPRESSED"),
-                                "GenA is altered, deleted and underexpressed"
+                                "GenA is mutated, deleted and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DEL", "NOT_EXPRESSED"),
-                                "GenA is altered, deleted and not expressed"
+                                "GenA is mutated, deleted and not expressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DIPLOID", "OVEREXPRESSED"),
-                                "GenA is altered, diploid and overexpressed"
+                                "GenA is mutated, diploid and overexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DIPLOID", "UNDEREXPRESSED"),
-                                "GenA is altered, diploid and underexpressed"
+                                "GenA is mutated, diploid and underexpressed"
                         },
                         {
-                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.ALTERED.toString(),
+                                new GeneExpressionCoherence("GenA", "UNCLASSIFIED", SnvAnnotation.MUTATED.toString(),
                                         "DIPLOID", "NOT_EXPRESSED"),
-                                "GenA is altered, diploid and not expressed"
+                                "GenA is mutated, diploid and not expressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "AMP", "OVEREXPRESSED"),
-                                "GenA is not altered, amplified and overexpressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "AMP", "OVEREXPRESSED"),
+                                "GenA is not mutated, amplified and overexpressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "AMP", "UNDEREXPRESSED"),
-                                "GenA is not altered, amplified and underexpressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "AMP", "UNDEREXPRESSED"),
+                                "GenA is not mutated, amplified and underexpressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "AMP", "NOT_EXPRESSED"),
-                                "GenA is not altered, amplified and not expressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "AMP", "NOT_EXPRESSED"),
+                                "GenA is not mutated, amplified and not expressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "DEL", "OVEREXPRESSED"),
-                                "GenA is not altered, deleted and overexpressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "DEL", "OVEREXPRESSED"),
+                                "GenA is not mutated, deleted and overexpressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "DEL", "UNDEREXPRESSED"),
-                                "GenA is not altered, deleted and underexpressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "DEL", "UNDEREXPRESSED"),
+                                "GenA is not mutated, deleted and underexpressed"
                         },
                         {
                                 new GeneExpressionCoherence("GenA", "UNCLASSIFIED",
-                                        SnvAnnotation.NOT_ALTERED.toString(), "DEL", "NOT_EXPRESSED"),
-                                "GenA is not altered, deleted and not expressed"
+                                        SnvAnnotation.NOT_MUTATED.toString(), "DEL", "NOT_EXPRESSED"),
+                                "GenA is not mutated, deleted and not expressed"
                         }
                 });
     }

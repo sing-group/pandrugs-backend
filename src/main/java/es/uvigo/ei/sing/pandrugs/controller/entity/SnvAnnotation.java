@@ -23,7 +23,7 @@
 package es.uvigo.ei.sing.pandrugs.controller.entity;
 
 public enum SnvAnnotation {
-    ALTERED, NOT_ALTERED;
+    MUTATED, NOT_MUTATED;
 
     @Override
     public String toString() {
