@@ -181,7 +181,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Test
 	public void testSearchByGeneNoResult() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneDrugQueryParameters(), absentGeneSymbol()
+			new GeneDrugQueryParameters(), new String[]{ absentGeneSymbol() }
 		);
 		
 		assertThat(result, is(empty()));
@@ -190,7 +190,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Test
 	public void testSearchByGeneSingleGeneDirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneDrugQueryParameters(), singleGeneSymbolDirect()
+			new GeneDrugQueryParameters(), new String[]{ singleGeneSymbolDirect() }
 		);
 
 		assertThat(result, containsInAnyOrder(singleGeneDrugDirect()));
@@ -208,7 +208,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 	@Test
 	public void testSearchByGeneSingleGeneIndirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneDrugQueryParameters(), singleGeneSymbolIndirect()
+			new GeneDrugQueryParameters(), new String[]{ singleGeneSymbolIndirect() }
 		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneIndirect()));

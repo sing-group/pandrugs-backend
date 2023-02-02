@@ -124,6 +124,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			stream(geneNames).collect(toSet()),
+			Collections.emptySet(),
 			new DefaultGeneScoreCalculator(),
 			new CalculatedGeneAnnotations()
 		);
@@ -156,6 +157,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new HashSet<>(geneRank.keySet()),
+			Collections.emptySet(),
 			new StaticGeneScoreCalculator(normalizeGeneRank(geneRank)),
 			new CalculatedGeneAnnotations()
 		);
@@ -177,6 +179,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			new HashSet<>(cnvMap.keySet()),
+			Collections.emptySet(),
 			new DefaultGeneScoreCalculator(),
 			calculatedGeneAnnotations
 		);
@@ -195,6 +198,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			multiOmicsQueryData.getQueryGenes(),
+			multiOmicsQueryData.getGeneNamesExcludedAsIndirect(),
 			new DefaultGeneScoreCalculator(),
 			multiOmicsQueryData.getCalculatedGeneAnnotations()
 		);
@@ -243,6 +247,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			multiOmicsQueryData.getQueryGenes(),
+			multiOmicsQueryData.getGeneNamesExcludedAsIndirect(),
 			new StaticGeneScoreCalculator(geneRank, true),
 			pharmCatAnnotations,
 			multiOmicsQueryData.getCalculatedGeneAnnotations()
@@ -252,12 +257,14 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
 		GeneDrugQueryParameters queryParameters,
 		Set<String> geneNames,
+		Set<String> geneNamesExcludedAsIndirect,
 		GeneScoreCalculator gScoreCalculator,
 		CalculatedGeneAnnotations calculatedGeneAnnotations
 	) {
 		return searchForGeneDrugsWithGenes(
 			queryParameters, 
-			geneNames, 
+			geneNames,
+			geneNamesExcludedAsIndirect,
 			gScoreCalculator, 
 			Collections.emptyMap(),
 			calculatedGeneAnnotations
@@ -267,6 +274,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	private List<GeneDrugGroup> searchForGeneDrugsWithGenes(
 		GeneDrugQueryParameters queryParameters,
 		Set<String> geneNames,
+		Set<String> geneNamesExcludedAsIndirect,
 		GeneScoreCalculator gScoreCalculator,
 		Map<String, PharmCatAnnotation> pharmCatAnnotations,
 		CalculatedGeneAnnotations calculatedGeneAnnotations
@@ -274,8 +282,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		final String[] upperGeneNames = toUpperCase(geneNames);
 		
 		return searchForGeneDrugs(
-			this.dao.searchByGene(queryParameters, upperGeneNames),
-			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters).toArray(String[]::new),
+			this.dao.searchByGene(queryParameters, upperGeneNames, geneNamesExcludedAsIndirect.stream().toArray(String[]::new)),
+			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters, geneNamesExcludedAsIndirect).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGroupDrugScoreCalculator(),
 			pharmCatAnnotations,
@@ -389,30 +397,62 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		Collection<GeneDrug> geneDrugs,
 		GeneDrugQueryParameters queryParameters
 	) {
-		final Predicate<String> relationFilter = createRelationFilter(geneDrugs, queryParameters);
+		return filterGenesInGeneDrugs(geneNames, geneDrugs, queryParameters, null);
+	}
+	
+	private final static Stream<String> filterGenesInGeneDrugs(
+		String[] geneNames,
+		Collection<GeneDrug> geneDrugs,
+		GeneDrugQueryParameters queryParameters,
+		Set<String> geneNamesExcludedAsIndirect
+	) {
+		Predicate<String> relationFilter = createRelationFilter(geneDrugs, queryParameters, geneNamesExcludedAsIndirect);
 		
 		return stream(geneNames).filter(relationFilter);
 	}
 
 	private static Predicate<String> createRelationFilter(
 		Collection<GeneDrug> geneDrugs,
-		GeneDrugQueryParameters queryParameters
+		GeneDrugQueryParameters queryParameters,
+		Set<String> geneNamesExcludedAsIndirect
 	) {
 		final Function<GeneDrug, List<String>> getGenes;
 		
 		final boolean isDirect = queryParameters.areDirectIncluded();
 		final boolean isIndirect = queryParameters.areIndirectIncluded();
+		final boolean hasExcludedIndirect = geneNamesExcludedAsIndirect != null && !geneNamesExcludedAsIndirect.isEmpty();
 		
 		if (isDirect != isIndirect) {
 			if (isDirect) {
 				getGenes = gd -> asList(gd.getGeneSymbol());
 			} else {
-				getGenes = GeneDrug::getIndirectGeneSymbols;
+				if (hasExcludedIndirect) {
+					getGenes = gd -> {
+						final List<String> genes = gd.getIndirectGeneSymbols();
+						genes.removeAll(geneNamesExcludedAsIndirect);
+						
+						return genes;
+					};
+				} else {
+					getGenes = GeneDrug::getIndirectGeneSymbols;
+				}
 			}
 		} else {
-			getGenes = gd -> gd.isTarget() ?
-				gd.getDirectAndIndirectGeneSymbols() :
-				asList(gd.getGeneSymbol());
+			getGenes = gd -> {
+				if (gd.isTarget()) {
+					if (hasExcludedIndirect) {
+						final List<String> genes = gd.getIndirectGeneSymbols();
+						genes.removeAll(geneNamesExcludedAsIndirect);
+						genes.add(gd.getGeneSymbol());
+						
+						return genes;
+					} else {
+						return gd.getDirectAndIndirectGeneSymbols();
+					}
+				} else {
+					return asList(gd.getGeneSymbol());
+				}
+			};
 		}
 		
 		final Set<String> geneDrugNames = geneDrugs.stream()

@@ -34,11 +34,14 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -195,13 +198,25 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 	}
 	
 	@Override
-	public List<GeneDrug> searchByGene(GeneDrugQueryParameters queryParameters, String ... geneNames) {
+	public List<GeneDrug> searchByGene(GeneDrugQueryParameters queryParameters, String[] geneNames) {
+		return this.searchByGene(queryParameters, geneNames, new String[] {});
+	}
+
+	@Override
+	public List<GeneDrug> searchByGene(
+		GeneDrugQueryParameters queryParameters,
+		String[] geneNames,
+		String[] geneNamesExcludedAsIndirect
+	) {
 		requireNonNull(queryParameters, "Query parameters can't be null");
 		requireNonEmpty(geneNames, "At least one gene name must be provided");
 
 		final List<GeneDrug> geneDrugs = searchWithQueryParameters(
 			queryParameters,
-			(root, join, query) -> createDirectIndirectPredicate(root, join, query, queryParameters, toUpperCase(geneNames))
+			(root, join, query) -> createDirectIndirectPredicate(
+					root, join, query, queryParameters,
+					toUpperCase(geneNames), toUpperCase(geneNamesExcludedAsIndirect)
+				)
 		);
 		
 		return filterGeneDrugs(asList(geneNames), geneDrugs, queryParameters);
@@ -370,7 +385,8 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		Join<GeneDrug, Drug> join,
 		CriteriaQuery<GeneDrug> query,
 		GeneDrugQueryParameters queryParameters,
-		String ... geneNames
+		String[] geneNames,
+		String[] geneNamesExcludedAsIndirect
 	) {
 		final CriteriaBuilder cb = dh.cb();
 		
@@ -381,7 +397,10 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		final Function<Expression<String>, Predicate> isInGenes = geneNames.length == 1 ?
 			e -> dh.cb().equal(e, geneNames[0]) :
 			e -> e.in((Object[]) geneNames);
-			
+
+		final Function<Expression<String>, Predicate> notInExcludedList = geneNamesExcludedAsIndirect.length == 1 ?
+			e -> dh.cb().not(dh.cb().equal(e, geneNamesExcludedAsIndirect[0])) :
+			e -> dh.cb().not(e.in((Object[]) geneNamesExcludedAsIndirect));
 		
 		if (queryParameters.areDirectIncluded()) {
 			predicates.add(isInGenes.apply(geneSymbolField));
@@ -393,18 +412,22 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 			final Root<IndirectGene> rootIndirectGene =
 				subqueryIndirectGenes.from(IndirectGene.class);
 			
+			List<Predicate> wherePredicates = new ArrayList<>();
+			if (geneNamesExcludedAsIndirect.length > 0) {
+				wherePredicates.add(notInExcludedList.apply(rootIndirectGene.get("indirectGeneSymbol")));
+			}
+			wherePredicates.add(isInGenes.apply(rootIndirectGene.get("indirectGeneSymbol")));
+			wherePredicates.add(cb.equal(rootIndirectGene.get("directGeneSymbol"), root.get("geneSymbol")));
+			wherePredicates.add(cb.equal(rootIndirectGene.get("drugId"), root.get("drugId")));
+			wherePredicates.add(cb.equal(rootIndirectGene.get("target"), root.get("target")));
+
 			predicates.add(
 				cb.and(
 					cb.notEqual(root.get("resistance"), ResistanceType.RESISTANCE),
 					cb.notEqual(root.get("target"), false),
 					cb.exists(
 						subqueryIndirectGenes.select(rootIndirectGene.get("indirectGeneSymbol"))
-						.where(cb.and(
-							isInGenes.apply(rootIndirectGene.get("indirectGeneSymbol")),
-							cb.equal(rootIndirectGene.get("directGeneSymbol"), root.get("geneSymbol")),
-							cb.equal(rootIndirectGene.get("drugId"), root.get("drugId")),
-							cb.equal(rootIndirectGene.get("target"), root.get("target"))
-						))
+						.where(cb.and(wherePredicates.toArray(new Predicate[wherePredicates.size()])))
 					)
 				)
 			);

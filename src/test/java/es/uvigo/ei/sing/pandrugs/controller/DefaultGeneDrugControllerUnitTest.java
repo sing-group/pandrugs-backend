@@ -465,7 +465,7 @@ public class DefaultGeneDrugControllerUnitTest {
 		String geneName,
 		List<GeneDrug> response
 	) {
-		expect(dao.searchByGene(queryParameters, geneName.toUpperCase()))
+		expect(dao.searchByGene(queryParameters, new String[]{ geneName.toUpperCase() }))
 			.andReturn(response);
 	
 		replayAll();

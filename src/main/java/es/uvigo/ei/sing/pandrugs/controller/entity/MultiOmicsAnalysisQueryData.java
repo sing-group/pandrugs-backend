@@ -22,6 +22,9 @@
  */
 package es.uvigo.ei.sing.pandrugs.controller.entity;
 
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,6 +47,7 @@ public class MultiOmicsAnalysisQueryData {
 
     private CalculatedGeneAnnotations calculatedGeneAnnotations;
     private Set<String> queryGenes;
+    private Set<String> queryGenesFromExpression;
 
     public MultiOmicsAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression) {
         this(cnvData, geneExpression, null);
@@ -91,8 +95,7 @@ public class MultiOmicsAnalysisQueryData {
 
             this.getQueryGenes().forEach(g -> {
                 /*
-                 * TODO: the gene driver annotation must ben retrieved from the DB when
-                 * available.
+                 * #TODO: the gene driver annotation must ben retrieved from the DB when available.
                  */
                 String driverAnnotation = "UNCLASSIFIED";
                 
@@ -138,20 +141,49 @@ public class MultiOmicsAnalysisQueryData {
             }
 
             if (this.geneExpression != null) {
-                queryGenes.addAll(this.getExpressionGenesForQuery(this.geneExpression.getAnnotations()));
+                queryGenes.addAll(this.getExpressionGenes());
             }
         }
 
         return this.queryGenes;
     }
 
+	private Set<String> getExpressionGenes() {
+        if (this.geneExpression == null) {
+            throw new IllegalStateException("Expression data is required for obtaining the expression query genes");
+        }
+        return this.getExpressionGenes(this.geneExpression.getAnnotations());
+    }
+    
     /*
-	 * TODO: this method should be updated in the future to retrieve only oncogenes. This will be a new
-	 * annotation in the genes table.
-	 */
-	private Set<String> getExpressionGenesForQuery(Map<String, GeneExpressionAnnotation> expressionMap) {
-		return expressionMap.entrySet().stream()
-			.filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
-			.map(e -> e.getKey()).collect(Collectors.toSet());
+     * #TODO: this method should be updated in the future to retrieve only oncogenes. This will be a new
+     * annotation in the genes table.
+     */
+	private Set<String> getExpressionGenes(Map<String, GeneExpressionAnnotation> expressionMap) {
+        if (this.queryGenesFromExpression == null) {
+            this.queryGenesFromExpression = expressionMap.entrySet().stream()
+                .filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
+                .map(e -> e.getKey()).collect(toSet());
+        }
+
+        return this.queryGenesFromExpression;
 	}
+
+    public Set<String> getGeneNamesExcludedAsIndirect() {
+        if (this.geneExpression == null) {
+            return emptySet();
+        }
+
+        Set<String> toret = new HashSet<>();
+        toret.addAll(this.getExpressionGenes());
+        if (this.snvData != null) {
+            toret.removeAll(this.snvData.keySet());
+        }
+
+        if (this.cnvData != null) {
+            toret.removeAll(this.cnvData.getDataMap().keySet());
+        }
+
+        return toret;
+    }
 }

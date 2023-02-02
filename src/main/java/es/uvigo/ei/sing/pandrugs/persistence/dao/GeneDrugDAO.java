@@ -32,7 +32,11 @@ import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 
 public interface GeneDrugDAO {
 	public abstract List<GeneDrug> searchByGene(
-		GeneDrugQueryParameters queryParameters, String ... geneNames
+		GeneDrugQueryParameters queryParameters, String[] geneNames
+	);
+
+	public abstract List<GeneDrug> searchByGene(
+		GeneDrugQueryParameters queryParameters, String[] geneNames, String[] geneNamesExcludedAsIndirect
 	);
 
 	public abstract List<GeneDrug> searchByDrug(
