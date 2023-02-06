@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DriverGene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 
@@ -41,6 +42,8 @@ import es.uvigo.ei.sing.pandrugs.util.Compare;
 public class GeneInfo implements Comparable<GeneInfo> {
 	@XmlElement(name = "geneSymbol")
 	private String geneSymbol;
+	
+	private DriverGene driverGene;
 	
 	@XmlElementWrapper(name = "entrezIds")
 	@XmlElement(name = "entrezId")
@@ -51,12 +54,14 @@ public class GeneInfo implements Comparable<GeneInfo> {
 	public GeneInfo(Gene gene) {
 		this(
 			gene.getGeneSymbol(),
+			gene.getDriverGene(),
 			gene.getEntrezIds().stream().mapToInt(Integer::intValue).toArray()
 		);
 	}
 	
-	public GeneInfo(String geneSymbol, int[] entrezIds) {
+	public GeneInfo(String geneSymbol, DriverGene driverGene, int[] entrezIds) {
 		this.geneSymbol = geneSymbol;
+		this.driverGene = driverGene;
 		this.entrezIds = entrezIds;
 		
 		sort(this.entrezIds);
@@ -64,6 +69,10 @@ public class GeneInfo implements Comparable<GeneInfo> {
 	
 	public String getGeneSymbol() {
 		return geneSymbol;
+	}
+	
+	public DriverGene getDriverGene() {
+		return driverGene;
 	}
 	
 	public int[] getEntrezIds() {
@@ -74,6 +83,7 @@ public class GeneInfo implements Comparable<GeneInfo> {
 	public int compareTo(GeneInfo o) {
 		return Compare.objects(this, o)
 			.by(GeneInfo::getGeneSymbol)
+			.thenBy(GeneInfo::getDriverGene)
 			.thenByIntArray(GeneInfo::getEntrezIds)
 		.andGet();
 	}
@@ -82,6 +92,7 @@ public class GeneInfo implements Comparable<GeneInfo> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((driverGene == null) ? 0 : driverGene.hashCode());
 		result = prime * result + Arrays.hashCode(entrezIds);
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		return result;
@@ -96,6 +107,8 @@ public class GeneInfo implements Comparable<GeneInfo> {
 		if (getClass() != obj.getClass())
 			return false;
 		GeneInfo other = (GeneInfo) obj;
+		if (driverGene != other.driverGene)
+			return false;
 		if (!Arrays.equals(entrezIds, other.entrezIds))
 			return false;
 		if (geneSymbol == null) {
@@ -108,6 +121,6 @@ public class GeneInfo implements Comparable<GeneInfo> {
 
 	@Override
 	public String toString() {
-		return "GeneInfo [geneSymbol=" + geneSymbol + ", entrezIds=" + Arrays.toString(entrezIds) + "]";
+		return "GeneInfo [geneSymbol=" + geneSymbol + ", driverGene=" + driverGene + ", entrezIds=" + Arrays.toString(entrezIds) + "]";
 	}
 }

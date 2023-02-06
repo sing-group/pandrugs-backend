@@ -71,6 +71,10 @@ public class Gene implements Serializable {
 	@Column(name = "driver_level", nullable = true)
 	private DriverLevel driverLevel;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "driver_gene", nullable = true, length = 12)
+	private DriverGene driverGene;
+
 	@Column(name = "gene_essentiality_score", nullable = true, precision = 10)
 	private Double geneEssentialityScore;
 
@@ -106,7 +110,7 @@ public class Gene implements Serializable {
 	Gene() {}
 
 	Gene(String geneSymbol) {
-		this(geneSymbol, null, false, null, null, false, null, OncodriveRole.NONE);
+		this(geneSymbol, null, false, null, null, null, false, null, OncodriveRole.NONE);
 	}
 
 	Gene(
@@ -114,16 +118,17 @@ public class Gene implements Serializable {
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
 		DriverLevel driverLevel,
+		DriverGene driverGene,
 		Double geneEssentialityScore,
 		boolean ccle,
-		Double oncoscapeScore,
-		OncodriveRole oncodriveRole
+		Double oncoscapeScore, OncodriveRole oncodriveRole
 	) {
 		this(
 			geneSymbol,
 			tumorPortalMutationLevel,
 			cgc,
 			driverLevel,
+			driverGene,
 			geneEssentialityScore,
 			ccle,
 			oncoscapeScore,
@@ -132,8 +137,7 @@ public class Gene implements Serializable {
 			emptySet(),
 			emptySet(),
 			emptySet(),
-			emptySet(),
-			emptySet()
+			emptySet(), emptySet()
 		);
 	}
 
@@ -142,6 +146,7 @@ public class Gene implements Serializable {
 		TumorPortalMutationLevel tumorPortalMutationLevel,
 		boolean cgc,
 		DriverLevel driverLevel,
+		DriverGene driverGene,
 		Double geneEssentialityScore,
 		boolean ccle,
 		Double oncoscapeScore,
@@ -149,13 +154,13 @@ public class Gene implements Serializable {
 		Set<Integer> entrezIds,
 		Set<String> cancerDomains,
 		Set<GeneDrug> geneDrugs,
-		Set<Protein> proteins,
-		Set<Gene> interactingGene, Set<Pathway> pathways
+		Set<Protein> proteins, Set<Gene> interactingGene, Set<Pathway> pathways
 	) {
 		this.geneSymbol = requireNonNull(geneSymbol);
 		this.tumorPortalMutationLevel = tumorPortalMutationLevel;
 		this.cgc = cgc;
 		this.driverLevel = driverLevel;
+		this.driverGene = driverGene;
 		this.geneEssentialityScore = geneEssentialityScore;
 		this.ccle = ccle;
 		this.oncodriveRole = requireNonNull(oncodriveRole);
@@ -183,6 +188,10 @@ public class Gene implements Serializable {
 
 	public DriverLevel getDriverLevel() {
 		return driverLevel;
+	}
+	
+	public DriverGene getDriverGene() {
+		return driverGene;
 	}
 
 	public boolean isCcle() {
@@ -264,6 +273,7 @@ public class Gene implements Serializable {
 		result = prime * result + (ccle ? 1231 : 1237);
 		result = prime * result + (cgc ? 1231 : 1237);
 		result = prime * result + ((driverLevel == null) ? 0 : driverLevel.hashCode());
+		result = prime * result + ((driverGene == null) ? 0 : driverGene.hashCode());
 		result = prime * result + ((geneEssentialityScore == null) ? 0 : geneEssentialityScore.hashCode());
 		result = prime * result + ((geneSymbol == null) ? 0 : geneSymbol.hashCode());
 		result = prime * result + ((oncoscapeScore == null) ? 0 : oncoscapeScore.hashCode());
@@ -286,6 +296,8 @@ public class Gene implements Serializable {
 		if (cgc != other.cgc)
 			return false;
 		if (driverLevel != other.driverLevel)
+			return false;
+		if (driverGene != other.driverGene)
 			return false;
 		if (geneEssentialityScore == null) {
 			if (other.geneEssentialityScore != null)
@@ -315,6 +327,7 @@ public class Gene implements Serializable {
 			.append(" [TPML: ").append(this.tumorPortalMutationLevel)
 			.append(", CGC: ").append(this.cgc)
 			.append(", DL: ").append(this.driverLevel)
+			.append(", DG: ").append(this.driverGene)
 			.append(", GES: ").append(this.geneEssentialityScore)
 			.append(", CCLE: ").append(this.ccle)
 			.append(", OS: ").append(this.oncoscapeScore)

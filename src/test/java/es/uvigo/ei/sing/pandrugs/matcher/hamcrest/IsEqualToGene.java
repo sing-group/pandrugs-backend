@@ -45,6 +45,7 @@ public class IsEqualToGene extends IsEqualToEntity<Gene> {
 				&& checkAttribute("tumorPortalMutationLevel", Gene::getTumorPortalMutationLevel, actual)
 				&& checkAttribute("cgc", Gene::isCgc, actual)
 				&& checkAttribute("driverLevel", Gene::getDriverLevel, actual)
+				&& checkAttribute("driverGene", Gene::getDriverGene, actual)
 				&& checkAttribute("geneEssentialitiyScore", Gene::getGeneEssentialityScore, actual)
 				&& checkAttribute("ccle", Gene::isCcle, actual)
 				&& checkAttribute("oncodriveRole", Gene::getOncodriveRole, actual)
