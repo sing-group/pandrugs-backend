@@ -27,37 +27,44 @@ import static java.util.Arrays.stream;
 
 public enum CancerType {
 	ADRENAL_GLAND(true),
+	BILE_DUCT(true),
 	BLADDER(true),
 	BLOOD(true),
+	BLOOD_AND_LYMPH_VESSELS(true),
 	BONE(true),
 	BONE_MARROW(true),
 	BRAIN(true),
 	BREAST(true),
-	CANCER(false), // Added
-	CERVIX(true),
-	CLINICAL_CANCER(false), // Added
+	CANCER(false),
+	CLINICAL_CANCER(false),
 	COLON(true),
 	ESOPHAGUS(true),
+	EYE(true),
 	FALLOPIAN_TUBE(true),
+	FATTY_TISSUE(true),
 	HEAD_AND_NECK(true),
 	INTESTINE(true),
 	KIDNEY(true),
 	LIVER(true),
 	LUNG(true),
-	NECK(true),
-	NERVOUS_SYSTEM(true),
+	MESOTHELIUM(true),
+	NEUROENDOCRINE_SYSTEM(true),
 	OVARY(true),
 	PANCREAS(true),
+	PENIS(true),
 	PERITONEUM(true),
 	PROSTATE(true),
 	RECTUM(true),
-	RETINA(true),
 	SKIN(true),
+	SMOOTH_MUSCLE(true),
 	SOFT_TISSUE(true),
+	SPINAL_CORD(true),
 	STOMACH(true),
+	SUPRARENAL_GLAND(true),
 	TESTIS(true),
 	THYROID(true),
-	UTERUS(true);
+	UTERUS(true),
+	VULVA(true);
 	
 	private boolean canBeQueried;
 	
