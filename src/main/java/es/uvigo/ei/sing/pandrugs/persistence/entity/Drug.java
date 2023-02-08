@@ -90,7 +90,7 @@ public class Drug implements Serializable {
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "cancer", joinColumns = @JoinColumn(name = "drug_id"))
-	@Column(name = "name", length = 15, nullable = false)
+	@Column(name = "name", length = 23, nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Set<CancerType> cancers;
 

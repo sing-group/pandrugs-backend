@@ -58,7 +58,7 @@ public class GeneDrugToDrugSource implements Serializable {
 	private String source;
 
 	@Id
-	@Column(name = "source_drug_name", length = 200, columnDefinition = "VARCHAR(200)")
+	@Column(name = "source_drug_name", length = 200, columnDefinition = "VARCHAR(500)")
 	private String sourceDrugName;
 
 	@Column(name = "alteration", length = 1200, columnDefinition = "VARCHAR(1200)", nullable = true)
