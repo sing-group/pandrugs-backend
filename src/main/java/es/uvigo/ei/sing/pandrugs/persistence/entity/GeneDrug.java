@@ -81,6 +81,9 @@ public class GeneDrug implements Serializable {
 	@OneToMany(mappedBy = "geneDrug", fetch = FetchType.LAZY)
 	private List<IndirectGene> indirectGenes;
 	
+	@OneToMany(mappedBy = "geneDrug", fetch = FetchType.LAZY)
+	private List<GeneDependency> geneDependencies;
+	
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
@@ -104,7 +107,8 @@ public class GeneDrug implements Serializable {
 		boolean isTarget,
 		ResistanceType resistance,
 		double score,
-		List<Gene> inverseGene
+		List<Gene> inverseGene,
+		Map<Gene, String> geneDependencies
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
 		this.gene = gene;
@@ -115,6 +119,9 @@ public class GeneDrug implements Serializable {
 		this.score = score;
 		this.indirectGenes = inverseGene.stream()
 			.map(gs -> new IndirectGene(this, gs))
+		.collect(toList());
+		this.geneDependencies = geneDependencies.entrySet().stream()
+			.map(entry -> new GeneDependency(this, entry.getKey(), entry.getValue()))
 		.collect(toList());
 		this.drugSources = drug.getDrugSources().stream()
 			.map(ds -> new GeneDrugToDrugSource(this, ds, null))
@@ -128,6 +135,7 @@ public class GeneDrug implements Serializable {
 		ResistanceType resistance,
 		double score,
 		List<Gene> inverseGene,
+		Map<Gene, String> geneDependencies,
 		Map<String, String> alterationsBySource
 	) {
 		this.geneSymbol = gene.getGeneSymbol();
@@ -139,6 +147,9 @@ public class GeneDrug implements Serializable {
 		this.score = score;
 		this.indirectGenes = inverseGene.stream()
 			.map(gs -> new IndirectGene(this, gs))
+		.collect(toList());
+		this.geneDependencies = geneDependencies.entrySet().stream()
+			.map(entry -> new GeneDependency(this, entry.getKey(), entry.getValue()))
 		.collect(toList());
 		this.drugSources = drug.getDrugSources().stream()
 			.map(ds -> new GeneDrugToDrugSource(this, ds, alterationsBySource.get(ds.getSource())))
@@ -267,6 +278,20 @@ public class GeneDrug implements Serializable {
 	public List<String> getIndirectGeneSymbols() {
 		return this.indirectGenes.stream()
 			.map(IndirectGene::getGeneSymbol)
+		.collect(toList());
+	}
+	
+	public boolean hasGeneDependencies() {
+		return !this.geneDependencies.isEmpty();
+	}
+	
+	public List<GeneDependency> getGeneDependencies() {
+		return unmodifiableList(this.geneDependencies);
+	}
+	
+	public List<String> getGeneDependenciesGeneSymbols() {
+		return this.geneDependencies.stream()
+			.map(GeneDependency::getGeneSymbol)
 		.collect(toList());
 	}
 	

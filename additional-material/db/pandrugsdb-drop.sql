@@ -1,4 +1,5 @@
 DROP TABLE `indirect_gene`;
+DROP TABLE `gene_dependency`;
 DROP TABLE `protein_protein`;
 DROP TABLE `protein_gene`;
 DROP TABLE `protein_interpro_domain`;

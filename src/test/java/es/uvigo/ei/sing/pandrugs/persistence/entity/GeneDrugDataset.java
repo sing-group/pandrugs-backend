@@ -228,7 +228,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.5,
-				emptyList()
+				emptyList(),
+				emptyMap()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -236,7 +237,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.5,
-				emptyList()
+				emptyList(),
+				emptyMap()
 			)
 		};
 	}
@@ -248,7 +250,8 @@ public final class GeneDrugDataset {
 			true,
 			ResistanceType.SENSITIVITY,
 			0.1,
-			emptyList()
+			emptyList(),
+			emptyMap()
 		);
 	}
 	
@@ -264,7 +267,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.2,
-				emptyList()
+				emptyList(),
+				emptyMap()
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
@@ -272,7 +276,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.3,
-				emptyList()
+				emptyList(),
+				emptyMap()
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
@@ -280,7 +285,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.4,
-				emptyList()
+				emptyList(),
+				emptyMap()
 			)
 		};
 	}
@@ -292,7 +298,8 @@ public final class GeneDrugDataset {
 			true,
 			ResistanceType.SENSITIVITY,
 			0.1,
-			asList(new Gene(singleGeneSymbolIndirect()))
+			asList(new Gene(singleGeneSymbolIndirect())),
+			emptyMap()
 		);
 	}
 	
@@ -308,7 +315,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.2,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				emptyMap()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -316,7 +324,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.3,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				emptyMap()
 			),
 			new GeneDrug(
 				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
@@ -324,7 +333,8 @@ public final class GeneDrugDataset {
 				true,
 				ResistanceType.SENSITIVITY,
 				0.4,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2))
+				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				emptyMap()
 			)
 		};
 	}

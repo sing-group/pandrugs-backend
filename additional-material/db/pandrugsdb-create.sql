@@ -129,6 +129,7 @@ CREATE TABLE `gene` (
   `ccle` bit(1) NOT NULL,
   `cgc` bit(1) NOT NULL,
   `driver_level` varchar(255) DEFAULT NULL,
+  `driver_gene` varchar(12) DEFAULT NULL,
   `gene_essentiality_score` double DEFAULT NULL,
   `oncodrive_role` varchar(255) NOT NULL,
   `tumor_portal_mutation_level` varchar(255) DEFAULT NULL,
@@ -164,7 +165,7 @@ CREATE TABLE `family` (
 
 CREATE TABLE `drug_source` (
   `source` varchar(50) NOT NULL,
-  `source_drug_name` varchar(200) NOT NULL,
+  `source_drug_name` varchar(500) NOT NULL,
   `drug_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`source`,`source_drug_name`),
   KEY `FKsng7ceirufben6qlmkf0t9e45` (`drug_id`),
@@ -205,7 +206,7 @@ CREATE TABLE `gene_drug_to_drug_source` (
   `gene_symbol` varchar(50) NOT NULL,
   `target` bit(1) NOT NULL,
   `source` varchar(50) NOT NULL,
-  `source_drug_name` varchar(200) NOT NULL,
+  `source_drug_name` varchar(500) NOT NULL,
   `alteration` varchar(1200) DEFAULT NULL,
   PRIMARY KEY (`drug_id`,`gene_symbol`,`target`,`source`,`source_drug_name`),
   KEY `FKgyahdonhj68y94l7r7extwyq0` (`source`,`source_drug_name`),
@@ -222,7 +223,7 @@ CREATE TABLE `pathology` (
 
 CREATE TABLE `cancer` (
   `drug_id` int(11) NOT NULL,
-  `name` varchar(15) NOT NULL,
+  `name` varchar(23) NOT NULL,
   KEY `FKej3htfkav1xki02yi7dolon21` (`drug_id`),
   CONSTRAINT `FKej3htfkav1xki02yi7dolon21` FOREIGN KEY (`drug_id`) REFERENCES `drug` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -325,3 +326,17 @@ CREATE TABLE `indirect_gene` (
   CONSTRAINT `FK10f779sjhiiyp187stpq2syky` FOREIGN KEY (`indirect_gene_symbol`) REFERENCES `gene` (`gene_symbol`),
   CONSTRAINT `FK9ju2v9tvvi2dqa6aisce6cwb9` FOREIGN KEY (`drug_id`, `direct_gene_symbol`, `target`) REFERENCES `gene_drug` (`drug_id`, `gene_symbol`, `target`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `gene_dependency` (
+  `target` bit(1) NOT NULL,
+  `gene_dependency_symbol` varchar(50) NOT NULL,
+  `drug_id` int NOT NULL,
+  `direct_gene_symbol` varchar(50) NOT NULL,
+  `alteration` varchar(3) NOT NULL,
+  PRIMARY KEY (`target`,`gene_dependency_symbol`,`drug_id`,`direct_gene_symbol`,`alteration`),
+  KEY `FK4botv8qfevdnhh457k9jx4afp` (`drug_id`,`direct_gene_symbol`,`target`),
+  KEY `FKivkd2eo6kks15johe4algsfae` (`gene_dependency_symbol`),
+  CONSTRAINT `FK4botv8qfevdnhh457k9jx4afp` FOREIGN KEY (`drug_id`, `direct_gene_symbol`, `target`) REFERENCES `gene_drug` (`drug_id`, `gene_symbol`, `target`),
+  CONSTRAINT `FKivkd2eo6kks15johe4algsfae` FOREIGN KEY (`gene_dependency_symbol`) REFERENCES `gene` (`gene_symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

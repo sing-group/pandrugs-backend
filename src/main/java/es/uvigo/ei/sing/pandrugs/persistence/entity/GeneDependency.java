@@ -37,14 +37,14 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-@Entity(name = "indirect_gene")
-@IdClass(IndirectGeneId.class)
-public class IndirectGene implements Serializable {
+@Entity(name = "gene_dependency")
+@IdClass(GeneDependency.class)
+public class GeneDependency implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "indirect_gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
-	private String indirectGeneSymbol;
+	@Column(name = "gene_dependency_symbol", length = 50, columnDefinition = "VARCHAR(50)")
+	private String geneDependencySymbol;
 	
 	@Id
 	@Column(name = "direct_gene_symbol", length = 50, columnDefinition = "VARCHAR(50)")
@@ -57,6 +57,9 @@ public class IndirectGene implements Serializable {
 	@Id
 	@Column(name = "target")
 	private boolean target;
+	
+	@Column(name = "alteration", length = 3, columnDefinition = "VARCHAR(3)", nullable = false)
+	private String alteration;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({
@@ -78,30 +81,30 @@ public class IndirectGene implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(
-		name = "indirect_gene_symbol",
+		name = "gene_dependency_symbol",
 		referencedColumnName = "gene_symbol",
 		columnDefinition = "VARCHAR(50)",
-		insertable = false, updatable = false,
-		nullable = true
+		insertable = false, updatable = false
 	)
 	private Gene gene;
 	
-	IndirectGene() {
+	GeneDependency() {
 	}
 	
-	public IndirectGene(GeneDrug geneDrug, Gene gene) {
-		this.indirectGeneSymbol = gene.getGeneSymbol();
+	public GeneDependency(GeneDrug geneDrug, Gene gene, String alteration) {
+		this.geneDependencySymbol = gene.getGeneSymbol();
 		
 		this.directGeneSymbol = geneDrug.getGeneSymbol();
 		this.drugId = geneDrug.getDrug().getId();
 		this.target = geneDrug.isTarget();
+		this.alteration = alteration;
 		
 		this.geneDrug = geneDrug;
 		this.gene = gene;
 	}
 
 	public String getGeneSymbol() {
-		return indirectGeneSymbol;
+		return geneDependencySymbol;
 	}
 
 	public String getDirectGeneSymbol() {
@@ -114,6 +117,10 @@ public class IndirectGene implements Serializable {
 	
 	public boolean isTarget() {
 		return target;
+	}
+	
+	public String getAlteration() {
+		return alteration;
 	}
 
 	public GeneDrug getGeneDrug() {
@@ -130,7 +137,7 @@ public class IndirectGene implements Serializable {
 		int result = 1;
 		result = prime * result + ((directGeneSymbol == null) ? 0 : directGeneSymbol.hashCode());
 		result = prime * result + drugId;
-		result = prime * result + ((indirectGeneSymbol == null) ? 0 : indirectGeneSymbol.hashCode());
+		result = prime * result + ((geneDependencySymbol == null) ? 0 : geneDependencySymbol.hashCode());
 		result = prime * result + (target ? 1231 : 1237);
 		return result;
 	}
@@ -143,7 +150,7 @@ public class IndirectGene implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		IndirectGene other = (IndirectGene) obj;
+		GeneDependency other = (GeneDependency) obj;
 		if (directGeneSymbol == null) {
 			if (other.directGeneSymbol != null)
 				return false;
@@ -151,10 +158,10 @@ public class IndirectGene implements Serializable {
 			return false;
 		if (drugId != other.drugId)
 			return false;
-		if (indirectGeneSymbol == null) {
-			if (other.indirectGeneSymbol != null)
+		if (geneDependencySymbol == null) {
+			if (other.geneDependencySymbol != null)
 				return false;
-		} else if (!indirectGeneSymbol.equals(other.indirectGeneSymbol))
+		} else if (!geneDependencySymbol.equals(other.geneDependencySymbol))
 			return false;
 		if (target != other.target)
 			return false;
