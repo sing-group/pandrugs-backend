@@ -44,7 +44,7 @@ public class DrugSource implements Serializable {
 	private String source;
 	
 	@Id
-	@Column(name = "source_drug_name", length = 500, columnDefinition = "VARCHAR(200)")
+	@Column(name = "source_drug_name", length = 500, columnDefinition = "VARCHAR(500)")
 	private String sourceDrugName;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
