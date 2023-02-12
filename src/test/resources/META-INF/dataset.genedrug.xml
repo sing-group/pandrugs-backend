@@ -27,6 +27,7 @@
 	<source_info source="Source 2" short_name="S2" url_template="http://source2.org" curated="false"/>
 	<source_info source="Source 3" short_name="S3" url_template="http://source3.org" curated="false"/>
 	<source_info source="Source 4" short_name="S4" url_template="http://source4.org" curated="false"/>
+	<source_info source="Source 5" short_name="S5" url_template="http://source5.org" curated="false"/>
 	
 	<gene gene_symbol="DIRECT GENE 1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="DIRECT GENE 2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
@@ -42,6 +43,8 @@
 	<gene gene_symbol="GD3" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="GENE WITH PM AND GD 2" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	<gene gene_symbol="GENE WITH PM AND GD 3" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
+	<gene gene_symbol="GENE WITH PM AND GD 4" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
+	<gene gene_symbol="GD AND PM 1" cgc="false" gene_essentiality_score="0" ccle="false" oncodrive_role="NONE"/>
 	
 	<drug id="0" standard_name="DRUG 1" show_name="Show Drug 1" status="CLINICAL_TRIALS"/>
 	<drug id="1" standard_name="DRUG 2" show_name="Show Drug 2" status="APPROVED"/>
@@ -57,6 +60,7 @@
 	<drug id="40" standard_name="DRUG 40" show_name="Show Drug 40" status="CLINICAL_TRIALS"/>
 	<drug id="41" standard_name="DRUG 41" show_name="Show Drug 41" status="APPROVED"/>
 	<drug id="42" standard_name="DRUG 42" show_name="Show Drug 42" status="EXPERIMENTAL"/>
+	<drug id="50" standard_name="DRUG 50" show_name="Show Drug 50" status="EXPERIMENTAL"/>
 	
 	<drug_source source="Source 1" source_drug_name="Source Drug 1" drug_id="0"/>
 	<drug_source source="Source 1" source_drug_name="Source Drug 2" drug_id="1"/>
@@ -72,6 +76,7 @@
 	<drug_source source="Source 4" source_drug_name="Source Drug 40" drug_id="40"/>
 	<drug_source source="Source 4" source_drug_name="Source Drug 41" drug_id="41"/>
 	<drug_source source="Source 4" source_drug_name="Source Drug 42" drug_id="42"/>
+	<drug_source source="Source 5" source_drug_name="Source Drug 50" drug_id="50"/>
 	
 	<gene_drug drug_id="0" gene_symbol="DIRECT GENE 1" target="1" resistance="SENSITIVITY" score="0.1"/>
 	<gene_drug drug_id="0" gene_symbol="DIRECT GENE 2" target="1" resistance="SENSITIVITY" score="0.2"/>
@@ -94,6 +99,7 @@
 	<gene_drug drug_id="41" gene_symbol="GENE WITH PM AND GD 2" target="1" resistance="SENSITIVITY" score="0.2" />
 	<gene_drug drug_id="42" gene_symbol="GENE WITH PM AND GD 2" target="1" resistance="SENSITIVITY" score="0.3" />
 	<gene_drug drug_id="42" gene_symbol="GENE WITH PM AND GD 3" target="1" resistance="SENSITIVITY" score="0.4" />
+	<gene_drug drug_id="50" gene_symbol="GENE WITH PM AND GD 4" target="1" resistance="SENSITIVITY" score="0.5" />
 	
 	<gene_drug_to_drug_source drug_id="0" gene_symbol="DIRECT GENE 1" target="1" source="Source 1" source_drug_name="Source Drug 1"/>
 	<gene_drug_to_drug_source drug_id="0" gene_symbol="DIRECT GENE 2" target="1" source="Source 1" source_drug_name="Source Drug 1"/>
@@ -116,6 +122,8 @@
 	<gene_drug_to_drug_source drug_id="42" gene_symbol="GENE WITH PM AND GD 2" target="1" source="Source 4" source_drug_name="Source Drug 42"/>
 	<gene_drug_to_drug_source drug_id="42" gene_symbol="GENE WITH PM AND GD 3" target="1" source="Source 4" source_drug_name="Source Drug 42"/>
 	
+	<gene_drug_to_drug_source drug_id="50" gene_symbol="GENE WITH PM AND GD 4" target="1" source="Source 5" source_drug_name="Source Drug 50"/>
+	
 	<indirect_gene drug_id="10" direct_gene_symbol="GENE WITH INDIRECT 1" target="1" indirect_gene_symbol="PM1"/>
 	<indirect_gene drug_id="10" direct_gene_symbol="GENE WITH INDIRECT 2" target="1" indirect_gene_symbol="PM2"/>
 	<indirect_gene drug_id="11" direct_gene_symbol="GENE WITH INDIRECT 2" target="1" indirect_gene_symbol="PM2"/>
@@ -135,4 +143,7 @@
 	<gene_dependency drug_id="41" direct_gene_symbol="GENE WITH PM AND GD 2" target="1" gene_dependency_symbol="GD2" alteration="GoF" />
 	<gene_dependency drug_id="42" direct_gene_symbol="GENE WITH PM AND GD 2" target="1" gene_dependency_symbol="GD2" alteration="LoF" />
 	<gene_dependency drug_id="42" direct_gene_symbol="GENE WITH PM AND GD 3" target="1" gene_dependency_symbol="GD3" alteration="GoF" />
+	
+	<indirect_gene drug_id="50" direct_gene_symbol="GENE WITH PM AND GD 4" target="1" indirect_gene_symbol="GD AND PM 1" />
+	<gene_dependency drug_id="50" direct_gene_symbol="GENE WITH PM AND GD 4" target="1" gene_dependency_symbol="GD AND PM 1" alteration="GoF" />
 </dataset>

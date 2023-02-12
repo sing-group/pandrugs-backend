@@ -24,7 +24,7 @@
 package es.uvigo.ei.sing.pandrugs.controller;
 
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToDrug.containsDrugs;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentDrugName;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.*;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.inactiveDrugNames;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listDrugs;
@@ -83,7 +83,6 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -335,6 +334,24 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	}
 	
 	@Test
+	public void testSearchByGenesMultipleOnlyPathwayMember() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(), multipleGeneSymbolsOnlyPathwayMember()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupOnlyPathwayMember()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleOnlyPathwayMember() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsOnlyPathwayMember())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupOnlyPathwayMember()));
+	}
+	
+	@Test
 	public void testSearchByGenesMultiplePathwayMember() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(), multipleGeneSymbolsPathwayMember()
@@ -368,6 +385,24 @@ public class DefaultGeneDrugControllerIntegrationTest {
 		);
 		
 		assertThat(result, containsInAnyOrder(singleGeneDrugGroupGeneDependency()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleOnlyGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(), multipleGeneSymbolsOnlyGeneDependency()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupOnlyGeneDependency()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleOnlyGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsOnlyGeneDependency())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupOnlyGeneDependency()));
 	}
 	
 	@Test

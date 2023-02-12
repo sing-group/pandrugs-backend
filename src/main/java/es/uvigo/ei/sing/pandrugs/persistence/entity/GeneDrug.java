@@ -294,10 +294,10 @@ public class GeneDrug implements Serializable {
 	}
 	
 	public List<String> getIndirectGeneSymbols() {
-		final List<String> genes = new ArrayList<>(getPathwayMemberGeneSymbols());
-		genes.addAll(this.getGeneDependenciesGeneSymbols());
-		
-		return genes;
+		return this.getIndirectGenes().stream()
+			.map(Gene::getGeneSymbol)
+			.distinct()
+		.collect(toList());
 	}
 	
 	public boolean hasPathwayMembers() {

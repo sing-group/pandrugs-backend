@@ -213,9 +213,9 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 		final List<GeneDrug> geneDrugs = searchWithQueryParameters(
 			queryParameters,
 			(root, join, query) -> createDirectIndirectPredicate(
-					root, join, query, queryParameters,
-					toUpperCase(geneNames), toUpperCase(geneNamesExcludedAsIndirect)
-				)
+				root, join, query, queryParameters,
+				toUpperCase(geneNames), toUpperCase(geneNamesExcludedAsIndirect)
+			)
 		);
 		
 		return filterGeneDrugs(asList(geneNames), geneDrugs, queryParameters);
@@ -430,7 +430,6 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 					)
 				)
 			);
-
 		}
 		
 		if (queryParameters.isGeneDependency()) {

@@ -26,7 +26,6 @@ package es.uvigo.ei.sing.pandrugs.service;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalToGeneDrugGroupInfos;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGenePresence.equalToGenePresence;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.*;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbols;
@@ -41,11 +40,17 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multi
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosGeneDependency;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosMixedOnlyDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosMixedOnlyIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosOnlyGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosOnlyPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsGeneDependency;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsOnlyGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsOnlyPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.presentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.rankingFor;
@@ -64,11 +69,11 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -93,8 +98,11 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.InteractionType;
 import es.uvigo.ei.sing.pandrugs.service.entity.DrugNames;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfo;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugGroupInfos;
+import es.uvigo.ei.sing.pandrugs.service.entity.GeneDrugInfo;
 import es.uvigo.ei.sing.pandrugs.service.entity.GenePresence;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -296,8 +304,22 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
+	public void testListByGenesMultipleOnlyPathwayMember() {
+		testListByGene(multipleGeneSymbolsOnlyPathwayMember(), multipleGeneDrugGroupInfosOnlyPathwayMember());
+	}
+	
+	@Test
 	public void testListByGenesMultiplePathwayMember() {
 		testListByGene(multipleGeneSymbolsPathwayMember(), multipleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListByGenesMultiplePathwayMemberInQuery() {
+		testListByGene(
+			multipleGeneSymbolsPathwayMember(),
+			multipleGeneDrugGroupInfosPathwayMember(true, false),
+			false, false, true, false
+		);
 	}
 	
 	@Test
@@ -306,8 +328,22 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
+	public void testListByGenesMultipleOnlyGeneDependency() {
+		testListByGene(multipleGeneSymbolsOnlyGeneDependency(), multipleGeneDrugGroupInfosOnlyGeneDependency());
+	}
+	
+	@Test
 	public void testListByGenesMultipleGeneDependency() {
 		testListByGene(multipleGeneSymbolsGeneDependency(), multipleGeneDrugGroupInfosGeneDependency());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneDependencyInQuery() {
+		testListByGene(
+			multipleGeneSymbolsGeneDependency(),
+			multipleGeneDrugGroupInfosGeneDependency(false, true),
+			false, false, false, true
+		);
 	}
 	
 	@Test
@@ -361,8 +397,22 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
+	public void testListRankedMultipleOnlyPathwayMember() {
+		testListRanked(rankingFor(multipleGeneSymbolsOnlyPathwayMember()), multipleGeneDrugGroupInfosOnlyPathwayMember());
+	}
+	
+	@Test
 	public void testListRankedMultiplePathwayMember() {
 		testListRanked(rankingFor(multipleGeneSymbolsPathwayMember()), multipleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListRankedMultiplePathwayMemberInQuery() {
+		testListRanked(
+			rankingFor(multipleGeneSymbolsPathwayMember()),
+			multipleGeneDrugGroupInfosPathwayMember(true, false),
+			false, false, true, false
+		);
 	}
 	
 	@Test
@@ -371,8 +421,22 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
-	public void testListRankedMultipleGeneIndirect() {
+	public void testListRankedMultipleOnlyGeneDependency() {
+		testListRanked(rankingFor(multipleGeneSymbolsOnlyGeneDependency()), multipleGeneDrugGroupInfosOnlyGeneDependency());
+	}
+	
+	@Test
+	public void testListRankedMultipleGeneDependency() {
 		testListRanked(rankingFor(multipleGeneSymbolsGeneDependency()), multipleGeneDrugGroupInfosGeneDependency());
+	}
+	
+	@Test
+	public void testListRankedMultipleGeneDependencyInQuery() {
+		testListRanked(
+			rankingFor(multipleGeneSymbolsGeneDependency()),
+			multipleGeneDrugGroupInfosGeneDependency(false, true),
+			false, false, false, true
+		);
 	}
 	
 	@Test
@@ -467,13 +531,21 @@ public class DefaultGeneDrugServiceIntegrationTest {
 			service -> service.listByGeneOrDrugByGet(
 				stream(query).collect(toSet()), null, null, null, null, directTarget, biomarker, pathwayMember, geneDependency
 			),
-			expectedResult
+			expectedResult,
+			directTarget,
+			biomarker,
+			pathwayMember,
+			geneDependency
 		);
 		checkListResults(
 			service -> service.listByGeneOrDrugByPost(
 				stream(query).collect(toSet()), null, null, null, null, directTarget, biomarker, pathwayMember, geneDependency
 			),
-			expectedResult
+			expectedResult,
+			directTarget,
+			biomarker,
+			pathwayMember,
+			geneDependency
 		);
 	}
 
@@ -498,7 +570,7 @@ public class DefaultGeneDrugServiceIntegrationTest {
 
 	private void testListRanked(
 		final GeneRanking ranking,
-		final GeneDrugGroupInfos expectedResult, 
+		final GeneDrugGroupInfos expectedResult,
 		final boolean directTarget,
 		final boolean biomarker,
 		final boolean pathwayMember,
@@ -506,7 +578,11 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	) {
 		checkListResults(
 			service -> service.listRanked(ranking, null, null, null, directTarget, biomarker, pathwayMember, geneDependency),
-			expectedResult
+			expectedResult,
+			directTarget,
+			biomarker,
+			pathwayMember,
+			geneDependency
 		);
 	}
 
@@ -514,9 +590,45 @@ public class DefaultGeneDrugServiceIntegrationTest {
 		final Function<GeneDrugService, Response> list,
 		final GeneDrugGroupInfos expectedResult
 	) {
+		checkListResults(list, expectedResult, true, true, true, true);
+	}
+
+	private void checkListResults(
+		final Function<GeneDrugService, Response> list,
+		final GeneDrugGroupInfos expectedResult,
+		final boolean directTarget,
+		final boolean biomarker,
+		final boolean pathwayMember,
+		final boolean geneDependency
+	) {
 		final Response response = list.apply(this.service);
+		final GeneDrugGroupInfos gdgInfos = (GeneDrugGroupInfos) response.getEntity();
 		
 		assertThat(response, hasOkStatus());
-		assertThat((GeneDrugGroupInfos) response.getEntity(), is(equalToGeneDrugGroupInfos(expectedResult)));
+		assertThat(gdgInfos, is(equalToGeneDrugGroupInfos(expectedResult)));
+		
+		if (!directTarget) {
+			checkInteractionTypeNotPresent(InteractionType.DIRECT_TARGET, gdgInfos);
+		}
+		
+		if (!biomarker) {
+			checkInteractionTypeNotPresent(InteractionType.BIOMARKER, gdgInfos);
+		}
+		
+		if (!pathwayMember) {
+			checkInteractionTypeNotPresent(InteractionType.PATHWAY_MEMBER, gdgInfos);
+		}
+		
+		if (!geneDependency) {
+			checkInteractionTypeNotPresent(InteractionType.GENE_DEPENDENCY, gdgInfos);
+		}
+	}
+	
+	private void checkInteractionTypeNotPresent(InteractionType interactionType, GeneDrugGroupInfos gdgInfos) {
+		for (GeneDrugGroupInfo gdgInfo : gdgInfos.getGeneDrugs()) {
+			for (GeneDrugInfo gdInfo : gdgInfo.getGeneDrugs()) {
+				assertThat(gdInfo.getInteractionType(), is(not(interactionType)));
+			}
+		}
 	}
 }

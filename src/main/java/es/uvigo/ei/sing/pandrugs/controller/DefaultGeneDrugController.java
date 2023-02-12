@@ -281,13 +281,13 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	) {
 		final String[] upperGeneNames = toUpperCase(geneNames);
 		
-		return searchForGeneDrugs(
+		return groupGeneDrugs(
+			queryParameters,
 			this.dao.searchByGene(queryParameters, upperGeneNames, geneNamesExcludedAsIndirect.stream().toArray(String[]::new)),
 			gdg -> filterGenesInGeneDrugs(upperGeneNames, gdg, queryParameters, geneNamesExcludedAsIndirect).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGroupDrugScoreCalculator(),
-			pharmCatAnnotations,
-			calculatedGeneAnnotations
+			pharmCatAnnotations, calculatedGeneAnnotations
 		);
 	}
 
@@ -309,23 +309,23 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			.map(GeneDrug::getGeneSymbol)
 		.toArray(String[]::new);
 		
-		return searchForGeneDrugs(
+		return groupGeneDrugs(
+			queryParameters,
 			this.dao.searchByDrug(queryParameters, toUpperCase(drugNames)),
 			gdg -> filterGenesInGeneDrugs(groupToGenes.apply(gdg), gdg, queryParameters).toArray(String[]::new),
 			gScoreCalculator,
 			new ByGeneDrugDrugScoreCalculator(),
-			pharmCatAnnotations,
-			new CalculatedGeneAnnotations()
+			pharmCatAnnotations, new CalculatedGeneAnnotations()
 		);
 	}
 
-	private List<GeneDrugGroup> searchForGeneDrugs(
+	private List<GeneDrugGroup> groupGeneDrugs(
+		GeneDrugQueryParameters queryParameters,
 		Collection<GeneDrug> geneDrugs,
 		Function<Set<GeneDrug>, String[]> geneDrugToGenes,
 		GeneScoreCalculator gScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator,
-		Map<String, PharmCatAnnotation> pharmCatAnnotations,
-		CalculatedGeneAnnotations calculatedGeneAnnotations
+		Map<String, PharmCatAnnotation> pharmCatAnnotations, CalculatedGeneAnnotations calculatedGeneAnnotations
 	) {
 		if (geneDrugs.isEmpty()) {
 			return emptyList();
@@ -347,6 +347,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 					return new GeneDrugGroup(
 						queryGenes,
 						gdg,
+						queryParameters.isPathwayMember(),
+						queryParameters.isGeneDependency(),
 						gdgWarnings,
 						gScoreCalculator,
 						drugScoreCalculator,

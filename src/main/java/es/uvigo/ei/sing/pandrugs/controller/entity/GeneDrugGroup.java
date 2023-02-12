@@ -70,6 +70,8 @@ public class GeneDrugGroup {
 	private final String[] queryGenes;
 	private final Drug drug;
 	private final List<GeneDrug> geneDrugs;
+	private final boolean includePathwayMembers;
+	private final boolean includeGeneDependencies;
 	private final GeneScoreCalculator geneScoreCalculator;
 	private final DrugScoreCalculator drugScoreCalculator;
 	private final GermLineAnnotation pharmCatGermLineAnnotation;
@@ -80,24 +82,40 @@ public class GeneDrugGroup {
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
+		boolean includePathwayMembers,
+		boolean includeGeneDependencies,
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings
 	) {
-		this(queryGenes, geneDrugs, geneDrugWarnings, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
+		this(queryGenes, geneDrugs, includePathwayMembers, includeGeneDependencies, geneDrugWarnings, new DefaultGeneScoreCalculator(), new ByGroupDrugScoreCalculator());
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
+		boolean includePathwayMembers,
+		boolean includeGeneDependencies,
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator
 	) {
-		this(queryGenes, geneDrugs, geneDrugWarnings, geneScoreCalculator, drugScoreCalculator, GermLineAnnotation.NOT_AVAILABLE, new CalculatedGeneAnnotations());
+		this(
+			queryGenes,
+			geneDrugs,
+			includePathwayMembers,
+			includeGeneDependencies,
+			geneDrugWarnings,
+			geneScoreCalculator,
+			drugScoreCalculator,
+			GermLineAnnotation.NOT_AVAILABLE,
+			new CalculatedGeneAnnotations()
+		);
 	}
 
 	public GeneDrugGroup(
 		String[] queryGenes,
 		Collection<GeneDrug> geneDrugs,
+		boolean includePathwayMembers,
+		boolean includeGeneDependencies,
 		Map<GeneDrug, Set<GeneDrugWarning>> geneDrugWarnings,
 		GeneScoreCalculator geneScoreCalculator,
 		DrugScoreCalculator drugScoreCalculator,
@@ -106,6 +124,9 @@ public class GeneDrugGroup {
 	) {
 		requireNonEmpty(queryGenes);
 		requireNonEmpty(geneDrugs);
+		
+		this.includePathwayMembers = includePathwayMembers;
+		this.includeGeneDependencies = includeGeneDependencies;
 		
 		this.geneScoreCalculator = requireNonNull(geneScoreCalculator);
 		this.drugScoreCalculator = requireNonNull(drugScoreCalculator);
@@ -302,7 +323,7 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		if (geneDrug.isTarget()) {
+		if (geneDrug.isTarget() && this.includePathwayMembers) {
 			final List<String> pmGeneSymbols = geneDrug.getPathwayMemberGeneSymbols();
 			
 			return stream(this.getPathwayMemberGeneSymbols())
@@ -316,10 +337,10 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		if (geneDrug.isTarget()) {
+		if (geneDrug.isTarget() && this.includeGeneDependencies) {
 			final List<String> gdGeneSymbols = geneDrug.getGeneDependenciesGeneSymbols();
 			
-			return stream(this.getPathwayMemberGeneSymbols())
+			return stream(this.getGeneDependencyGeneSymbols())
 				.anyMatch(gdGeneSymbols::contains);
 		} else {
 			return false;
