@@ -55,9 +55,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
-import es.uvigo.ei.sing.pandrugs.controller.entity.MultiOmicsAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneExpression;
+import es.uvigo.ei.sing.pandrugs.controller.entity.MultiOmicsAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonReportParser;
@@ -416,50 +416,35 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		GeneDrugQueryParameters queryParameters,
 		Set<String> geneNamesExcludedAsIndirect
 	) {
-		final Function<GeneDrug, List<String>> getGenes;
+		final Predicate<String> isNotExcludedAsIndirect = geneSymbol ->
+			geneNamesExcludedAsIndirect == null || !geneNamesExcludedAsIndirect.contains(geneSymbol);
 		
-		final boolean isDirect = queryParameters.areDirectIncluded();
-		final boolean isIndirect = queryParameters.areIndirectIncluded();
-		final boolean hasExcludedIndirect = geneNamesExcludedAsIndirect != null && !geneNamesExcludedAsIndirect.isEmpty();
+		final Set<String> geneSymbols = new HashSet<>();
 		
-		if (isDirect != isIndirect) {
-			if (isDirect) {
-				getGenes = gd -> asList(gd.getGeneSymbol());
-			} else {
-				if (hasExcludedIndirect) {
-					getGenes = gd -> {
-						final List<String> genes = gd.getIndirectGeneSymbols();
-						genes.removeAll(geneNamesExcludedAsIndirect);
-						
-						return genes;
-					};
-				} else {
-					getGenes = GeneDrug::getIndirectGeneSymbols;
-				}
-			}
-		} else {
-			getGenes = gd -> {
-				if (gd.isTarget()) {
-					if (hasExcludedIndirect) {
-						final List<String> genes = gd.getIndirectGeneSymbols();
-						genes.removeAll(geneNamesExcludedAsIndirect);
-						genes.add(gd.getGeneSymbol());
-						
-						return genes;
-					} else {
-						return gd.getDirectAndIndirectGeneSymbols();
-					}
-				} else {
-					return asList(gd.getGeneSymbol());
-				}
-			};
+		if (queryParameters.areDirectIncluded()) {
+			geneDrugs.stream()
+				.map(GeneDrug::getGeneSymbol)
+			.forEach(geneSymbols::add);
 		}
 		
-		final Set<String> geneDrugNames = geneDrugs.stream()
-			.map(getGenes)
-			.flatMap(List::stream)
-		.collect(toSet());
+		if (queryParameters.isPathwayMember()) {
+			geneDrugs.stream()
+				.filter(GeneDrug::isTarget)
+				.map(GeneDrug::getPathwayMemberGeneSymbols)
+				.flatMap(List::stream)
+				.filter(isNotExcludedAsIndirect)
+			.forEach(geneSymbols::add);
+		}
 		
-		return geneDrugNames::contains;
+		if (queryParameters.isGeneDependency()) {
+			geneDrugs.stream()
+				.filter(GeneDrug::isTarget)
+				.map(GeneDrug::getGeneDependenciesGeneSymbols)
+				.flatMap(List::stream)
+				.filter(isNotExcludedAsIndirect)
+			.forEach(geneSymbols::add);
+		}
+		
+		return geneSymbols::contains;
 	}
 }

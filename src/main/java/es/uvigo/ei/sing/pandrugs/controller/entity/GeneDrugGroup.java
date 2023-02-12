@@ -31,6 +31,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDependency;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugToDrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugWarning;
@@ -116,12 +118,11 @@ public class GeneDrugGroup {
 		
 		final Predicate<String> isInGenes =
 			gd -> Stream.of(queryGenes).anyMatch(gd::equals);
-		final Predicate<GeneDrug> hasInIndirectGenes = 
-			gd -> Stream.of(queryGenes).anyMatch(tg -> gd.getIndirectGeneSymbols().contains(tg));
+		final Predicate<GeneDrug> hasInIndirect = 
+			gd -> Stream.of(queryGenes).anyMatch(gd::hasIndirectGene);
 		
 		final boolean checkGenes = geneDrugs.stream()
-			.allMatch(gd -> isInGenes.test(gd.getGeneSymbol())
-				|| hasInIndirectGenes.test(gd));
+			.allMatch(gd -> isInGenes.test(gd.getGeneSymbol()) || hasInIndirect.test(gd));
 		if (!checkGenes)
 			throw new IllegalArgumentException("Invalid geneDrugs for queryGenes");
 			
@@ -161,32 +162,52 @@ public class GeneDrugGroup {
 		return unmodifiableList(geneDrugs);
 	}
 	
-	public Set<GeneDrugWarning> getWarning(GeneDrug geneDrug, boolean forceIndirect) {
-		if (this.hasWarning(geneDrug, forceIndirect)) {
+	public List<GeneDrug> getGeneDrugsDirect() {
+		return geneDrugs.stream()
+			.filter(this::isDirect)
+		.collect(toList());
+	}
+	
+	public List<GeneDrug> getGeneDrugsPathwayMember() {
+		return geneDrugs.stream()
+			.filter(this::isPathwayMember)
+		.collect(toList());
+	}
+	
+	public List<GeneDrug> getGeneDrugsGeneDepencency() {
+		return geneDrugs.stream()
+			.filter(this::isGeneDependency)
+		.collect(toList());
+	}
+	
+	public Set<GeneDrugWarning> getWarning(GeneDrug geneDrug, boolean asPathwayMember, boolean asGeneDependency) {
+		if (this.hasWarning(geneDrug, asPathwayMember, asGeneDependency)) {
 			return this.geneDrugWarnings.get(geneDrug).stream()
-				.filter(warning -> this.isWarningApplicableTo(warning, geneDrug, forceIndirect))
+				.filter(warning -> this.isWarningApplicableTo(warning, geneDrug, asPathwayMember, asGeneDependency))
 			.collect(toSet());
 		} else {
 			return null;
 		}
 	}
 	
-	public boolean hasWarning(GeneDrug geneDrug, boolean forceIndirect) {
+	public boolean hasWarning(GeneDrug geneDrug, boolean asPathwayMember, boolean asGeneDependency) {
 		if (this.geneDrugWarnings.containsKey(geneDrug)) {
 			final Set<GeneDrugWarning> warnings = this.geneDrugWarnings.get(geneDrug);
 			
 			return warnings.stream()
-				.anyMatch(warning -> this.isWarningApplicableTo(warning, geneDrug, forceIndirect));
+				.anyMatch(warning -> this.isWarningApplicableTo(warning, geneDrug, asPathwayMember, asGeneDependency));
 		} else {
 			return false;
 		}
 	}
 	
-	private boolean isWarningApplicableTo(GeneDrugWarning warning, GeneDrug geneDrug, boolean forceIndirect) {
+	private boolean isWarningApplicableTo(GeneDrugWarning warning, GeneDrug geneDrug, boolean asPathwayMember, boolean asGeneDependency) {
 		final InteractionType interactionType = warning.getInteractionType();
 		
-		return ((this.isDirect(geneDrug) && !forceIndirect) && interactionType != InteractionType.PATHWAY_MEMBER)
-			|| ((this.isIndirect(geneDrug) || forceIndirect) && interactionType == InteractionType.PATHWAY_MEMBER && this.isInQueryGenes(warning.getIndirectGene()));
+		return asPathwayMember && interactionType == InteractionType.PATHWAY_MEMBER && this.isInQueryGenes(warning.getIndirectGene())
+			|| asGeneDependency && interactionType == InteractionType.GENE_DEPENDENCY && this.isInQueryGenes(warning.getIndirectGene())
+			|| this.isDirect(geneDrug) && geneDrug.isTarget() && interactionType == InteractionType.DIRECT_TARGET
+			|| this.isDirect(geneDrug) && !geneDrug.isTarget() && interactionType == InteractionType.BIOMARKER;
 	}
 	
 	public String[] getQueryGeneSymbols() {
@@ -201,7 +222,7 @@ public class GeneDrugGroup {
 	
 	private Gene getGeneFromGeneDrugs(final String geneSymbol) {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getDirectAndIndirectGenes)
+			.map(GeneDrug::getAllGenes)
 			.flatMap(List::stream)
 			.filter(gd -> gd.getGeneSymbol().equals(geneSymbol))	
 			.findAny()
@@ -218,8 +239,25 @@ public class GeneDrugGroup {
 	}
 
 	public String[] getIndirectGeneSymbols() {
+		return concat(stream(getPathwayMemberGeneSymbols()), stream(getGeneDependencyGeneSymbols()))
+			.distinct()
+			.sorted()
+		.toArray(String[]::new);
+	}
+
+	public String[] getPathwayMemberGeneSymbols() {
 		return this.geneDrugs.stream()
-			.map(GeneDrug::getIndirectGeneSymbols)
+			.map(GeneDrug::getPathwayMemberGeneSymbols)
+			.flatMap(List::stream)
+			.filter(this::isInQueryGenes)
+			.distinct()
+			.sorted()
+		.toArray(String[]::new);
+	}
+
+	public String[] getGeneDependencyGeneSymbols() {
+		return this.geneDrugs.stream()
+			.map(GeneDrug::getGeneDependenciesGeneSymbols)
 			.flatMap(List::stream)
 			.filter(this::isInQueryGenes)
 			.distinct()
@@ -227,8 +265,14 @@ public class GeneDrugGroup {
 		.toArray(String[]::new);
 	}
 	
-	public Gene[] getIndirectGenes() {
-		return stream(getIndirectGeneSymbols())
+	public Gene[] getPathwayMemberGenes() {
+		return stream(getPathwayMemberGeneSymbols())
+			.map(this::getGeneFromGeneDrugs)
+		.toArray(Gene[]::new);
+	}
+	
+	public Gene[] getGeneDependencyGenes() {
+		return stream(getGeneDependencyGeneSymbols())
 			.map(this::getGeneFromGeneDrugs)
 		.toArray(Gene[]::new);
 	}
@@ -244,14 +288,54 @@ public class GeneDrugGroup {
 		if (!this.geneDrugs.contains(geneDrug))
 			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		final List<String> gdIndirect = geneDrug.getIndirectGeneSymbols();
+		if (geneDrug.isTarget()) {
+			final List<String> indirectGeneSymbols = geneDrug.getIndirectGeneSymbols();
+			
+			return stream(this.getIndirectGeneSymbols())
+				.anyMatch(indirectGeneSymbols::contains);
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isPathwayMember(GeneDrug geneDrug) {
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
 		
-		return stream(this.getIndirectGeneSymbols())
-			.anyMatch(gdIndirect::contains);
+		if (geneDrug.isTarget()) {
+			final List<String> pmGeneSymbols = geneDrug.getPathwayMemberGeneSymbols();
+			
+			return stream(this.getPathwayMemberGeneSymbols())
+				.anyMatch(pmGeneSymbols::contains);
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isGeneDependency(GeneDrug geneDrug) {
+		if (!this.geneDrugs.contains(geneDrug))
+			throw new IllegalArgumentException("geneDrug doesn't belongs to this group");
+		
+		if (geneDrug.isTarget()) {
+			final List<String> gdGeneSymbols = geneDrug.getGeneDependenciesGeneSymbols();
+			
+			return stream(this.getPathwayMemberGeneSymbols())
+				.anyMatch(gdGeneSymbols::contains);
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isDirectAndIndirect(GeneDrug geneDrug) {
 		return this.isDirect(geneDrug) && this.isIndirect(geneDrug);
+	}
+	
+	public boolean isDirectAndPathwayMember(GeneDrug geneDrug) {
+		return this.isDirect(geneDrug) && this.isPathwayMember(geneDrug);
+	}
+	
+	public boolean isDirectAndGeneDependency(GeneDrug geneDrug) {
+		return this.isDirect(geneDrug) && this.isGeneDependency(geneDrug);
 	}
 
 	public int countQueryGenes() {
@@ -390,21 +474,42 @@ public class GeneDrugGroup {
 		return false;
 	}
 	
-	public Gene[] getQueryGenesForGeneDrug(GeneDrug geneDrug, boolean forceIndirect) {
-		return !forceIndirect && this.isDirect(geneDrug) ?
-			new Gene[] { geneDrug.getGene() } :
-			geneDrug.getIndirectGenes().stream()
+	public Gene[] getQueryGenesForGeneDrug(GeneDrug geneDrug, boolean forcePathwayMember, boolean forceGeneDependency) {
+		if (forcePathwayMember && forceGeneDependency) {
+			throw new IllegalArgumentException("pathway member or gene dependency can't be forced at the same time");
+		} else if (!forcePathwayMember && !forceGeneDependency) {
+			if (this.isDirect(geneDrug)) {
+				return new Gene[] { geneDrug.getGene() };
+			} else {
+				throw new IllegalStateException("pathway member or gene dependency must be forced in indirect gene-drugs");
+			}
+		} else if (forcePathwayMember) {
+			return geneDrug.getPathwayMemberGenes().stream()
 				.filter(this::isInQueryGenes)
 				.map(IndirectGene::getGene)
 			.toArray(Gene[]::new);
+		} else { // forceGeneDependency
+			return geneDrug.getGeneDependencies().stream()
+				.filter(this::isInQueryGenes)
+				.map(GeneDependency::getGene)
+			.toArray(Gene[]::new);
+		}
 	}
 	
 	public String[] getQueryGeneSymbolsForGeneDrug(GeneDrug geneDrug, boolean forceIndirect) {
 		return !forceIndirect && this.isDirect(geneDrug) ?
 			new String[] { geneDrug.getGeneSymbol() } :
-			geneDrug.getIndirectGeneSymbols().stream()
+			geneDrug.getPathwayMemberGeneSymbols().stream()
 				.filter(this::isInQueryGenes)
 			.toArray(String[]::new);
+	}
+	
+	public Gene getPathwayMemberGene(GeneDrug geneDrug, boolean force) {
+		return force || this.isPathwayMember(geneDrug) ? geneDrug.getGene() : null;
+	}
+	
+	public Gene getGeneDependencyGene(GeneDrug geneDrug, boolean force) {
+		return force || this.isGeneDependency(geneDrug) ? geneDrug.getGene() : null;
 	}
 	
 	public Gene getIndirectGene(GeneDrug geneDrug, boolean forceIndirect) {
@@ -469,6 +574,10 @@ public class GeneDrugGroup {
 	
 	private boolean isInQueryGenes(IndirectGene indirectGene) {
 		return isInQueryGenes(indirectGene.getGeneSymbol());
+	}
+	
+	private boolean isInQueryGenes(GeneDependency geneDependency) {
+		return isInQueryGenes(geneDependency.getGeneSymbol());
 	}
 	
 	private boolean isInQueryGenes(String geneSymbol) {

@@ -78,6 +78,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -89,7 +91,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -132,6 +135,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -143,7 +148,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -178,6 +184,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -188,7 +196,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -225,6 +234,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -236,7 +247,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -274,6 +286,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -284,7 +298,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -319,6 +334,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -329,7 +346,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 
 	/**
@@ -367,6 +385,8 @@ public interface GeneDrugService {
 	 * and a marker of the drug should be returned.
 	 * @param pathwayMember whether gene-drugs where the gene is an indirect
 	 * gene and the target of the drug should be returned.
+	 * @param geneDependency whether gene-drugs where the gene is an gene
+	 * dependency and the target of the drug should be returned.
 	 * @return a list of gene drugs that match the provided genes symbol.
 	 * @throws BadRequestException if not gene symbol is provided.
 	 */
@@ -377,7 +397,8 @@ public interface GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException;
 	
 	/**
@@ -423,6 +444,7 @@ public interface GeneDrugService {
 	 * @param geneSymbols the gene symbols of the genes which presence will be
 	 * checked.
 	 * @return a list of present genes and a list of absent genes.
+	 * @throws BadRequestException if not gene symbols are provided.
 	 */
 	public abstract Response checkPresenceByGet(Set<String> geneSymbols);
 	
@@ -438,6 +460,7 @@ public interface GeneDrugService {
 	 * @param geneSymbols the gene symbols of the genes which presence will be
 	 * checked.
 	 * @return a list of present genes and a list of absent genes.
+	 * @throws BadRequestException if not gene symbols are provided.
 	 */
 	public abstract Response checkPresenceByPost(Set<String> geneSymbols);
 }

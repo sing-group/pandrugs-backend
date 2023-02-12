@@ -26,23 +26,32 @@ package es.uvigo.ei.sing.pandrugs.controller;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToDrug.containsDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbol;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.inactiveDrugNames;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroups;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugNames;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupIndirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupMixedOnlyDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupMixedOnlyGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupMixedOnlyIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupMixedOnlyPathwayMember;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupPathwayMember;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupsByDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsGeneDependency;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.rankingFor;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroups;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugName;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupByDrug;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolPathwayMember;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
@@ -74,6 +83,7 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset;
 import es.uvigo.ei.sing.pandrugs.query.GeneDrugQueryParameters;
 import es.uvigo.ei.sing.pandrugs.service.entity.GeneRanking;
 
@@ -159,21 +169,21 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	}
 	
 	@Test
-	public void testlistDrugsEmptyFilter() {
+	public void testListDrugsEmptyFilter() {
 		final Drug[] drugs = this.controller.listDrugs("", 10);
 		
 		assertThat(asList(drugs), containsDrugs(listDrugs("", 10)));
 	}
 	
 	@Test
-	public void testlistDrugsNegativeMaxResults() {
+	public void testListDrugsNegativeMaxResults() {
 		final Drug[] drugs = this.controller.listDrugs("D", -1);
 		
 		assertThat(asList(drugs), containsDrugs(listDrugs("D", -1)));
 	}
 	
 	@Test(expected = NullPointerException.class)
-	public void testlistDrugsNullFilter() {
+	public void testListDrugsNullFilter() {
 		this.controller.listDrugs(null, 10);
 	}
 	
@@ -201,13 +211,21 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	}
 	
 	@Test
+	public void testSearchByDrugInactive() {
+		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
+		final String[] drugNames = inactiveDrugNames();
+		
+		assertThat(this.controller.searchByDrugs(queryParameters, drugNames), is(empty()));
+	}
+	
+	@Test
 	public void testSearchByDrugSingle() {
 		final GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters();
 		final String drugNames = singleDrugName();
 		
 		final List<GeneDrugGroup> groups = this.controller.searchByDrugs(queryParameters, drugNames);
 		
-		assertThat(groups, containsInAnyOrder(singleDrugGeneDrugGroups()));
+		assertThat(groups, containsInAnyOrder(singleGeneDrugGroupByDrug()));
 	}
 	
 	@Test
@@ -217,7 +235,7 @@ public class DefaultGeneDrugControllerIntegrationTest {
 		
 		final List<GeneDrugGroup> groups = this.controller.searchByDrugs(queryParameters, drugNames);
 		
-		assertThat(groups, containsInAnyOrder(multipleDrugGeneDrugGroups()));
+		assertThat(groups, containsInAnyOrder(multipleGeneDrugGroupsByDrugs()));
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -263,111 +281,249 @@ public class DefaultGeneDrugControllerIntegrationTest {
 	}
 	
 	@Test
-	public void testSearchByGenesSingleGeneDirect() {
+	public void testSearchByGenesSingleDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(), singleGeneSymbolDirect());
 		
-		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupDirect()));
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneDirect() {
+	public void testRankedSearchSingleDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByRanking(
 			new GeneDrugQueryParameters(), rankingFor(singleGeneSymbolDirect())
 		);
 		
-		assertThat(result, containsInAnyOrder(singleGeneGroupDirect()));
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupDirect()));
 	}
 	
 	@Test
-	public void testSearchByGenesMultipleGeneDirect() {
+	public void testSearchByGenesMultipleDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(), 
 			multipleGeneSymbolsDirect()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyDirect()));
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneDirect() {
+	public void testRankedSearchMultipleDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByRanking(
 			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsDirect())
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyDirect()));
 	}
 	
 	@Test
-	public void testSearchByGenesSingleGeneIndirect() {
+	public void testSearchByGenesSinglePathwayMember() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
-			new GeneDrugQueryParameters(),  singleGeneSymbolIndirect()
+			new GeneDrugQueryParameters(),  singleGeneSymbolPathwayMember()
 		);
 		
-		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupPathwayMember()));
 	}
 	
 	@Test
-	public void testRankedSearchSingleGeneIndirect() {
+	public void testRankedSearchSinglePathwayMember() {
 		final List<GeneDrugGroup> result = this.controller.searchByRanking(
-			new GeneDrugQueryParameters(), rankingFor(singleGeneSymbolIndirect())
+			new GeneDrugQueryParameters(), rankingFor(singleGeneSymbolPathwayMember())
 		);
 		
-		assertThat(result, containsInAnyOrder(singleGeneGroupIndirect()));
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupPathwayMember()));
 	}
 	
 	@Test
-	public void testSearchByGenesMultipleGeneIndirect() {
+	public void testSearchByGenesMultiplePathwayMember() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(), multipleGeneSymbolsPathwayMember()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupPathwayMember()));
+	}
+	
+	@Test
+	public void testRankedSearchMultiplePathwayMember() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsPathwayMember())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupPathwayMember()));
+	}
+	
+	@Test
+	public void testSearchByGenesSingleGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(),  singleGeneSymbolGeneDependency()
+		);
+		
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupGeneDependency()));
+	}
+	
+	@Test
+	public void testRankedSearchSingleGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), rankingFor(singleGeneSymbolGeneDependency())
+		);
+		
+		assertThat(result, containsInAnyOrder(singleGeneDrugGroupGeneDependency()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(), multipleGeneSymbolsGeneDependency()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupGeneDependency()));
+	}
+	
+	@Test
+	public void testRankedSearchMultipleGeneDependency() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsGeneDependency())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupGeneDependency()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleIndirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(), multipleGeneSymbolsIndirect()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyIndirect()));
 	}
 	
 	@Test
-	public void testRankedSearchMultipleGeneIndirect() {
+	public void testRankedSearchMultipleIndirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByRanking(
 			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsIndirect())
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyIndirect()));
 	}
 	
 	@Test
-	public void testSearchByGenesMultipleGeneMixed() {
+	public void testSearchByGenesMultipleMixed() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(), 
 			multipleGeneSymbolsMixed()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixed()));
 	}
 	
 	@Test
-	public void testSearchByGenesMultipleGeneMixedOnlyDirect() {
+	public void testRankedSearchMultipleMixed() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(), 
+			rankingFor(multipleGeneSymbolsMixed())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixed()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleMixedOnlyDirect() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
 				true,
+				true,
+				false,
+				false
+			), 
+			multipleGeneSymbolsMixed()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyDirect()));
+	}
+	
+	@Test
+	public void testRankedSearchByGenesMultipleMixedOnlyDirect() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(
+				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
+				true,
+				true,
+				false,
+				false
+			), 
+			rankingFor(multipleGeneSymbolsMixed())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyDirect()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleMixedOnlyIndirect() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(
+				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
+				false,
+				false,
+				true,
+				true
+			), 
+			multipleGeneSymbolsMixed()
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyIndirect()));
+	}
+	
+	@Test
+	public void testRankedSearchByGenesMultipleMixedOnlyIndirect() {
+		final List<GeneDrugGroup> result = this.controller.searchByRanking(
+			new GeneDrugQueryParameters(
+				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
+				false,
+				false,
+				true,
+				true
+			), 
+			rankingFor(multipleGeneSymbolsMixed())
+		);
+		
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyIndirect()));
+	}
+	
+	@Test
+	public void testSearchByGenesMultipleMixedOnlyPathwayMember() {
+		final List<GeneDrugGroup> result = this.controller.searchByGenes(
+			new GeneDrugQueryParameters(
+				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
+				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
+				false,
+				false,
 				true,
 				false
 			), 
 			multipleGeneSymbolsMixed()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupDirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyPathwayMember()));
 	}
 	
 	@Test
-	public void testSearchByGenesMultipleGeneMixedOnlyIndirect() {
+	public void testSearchByGenesMultipleMixedOnlyGeneDependency() {
 		final List<GeneDrugGroup> result = this.controller.searchByGenes(
 			new GeneDrugQueryParameters(
 				GeneDrugQueryParameters.DEFAULT_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_NON_CANCER_DRUG_STATUS,
 				GeneDrugQueryParameters.DEFAULT_CANCER_TYPES,
+				false,
 				false,
 				false,
 				true
@@ -375,15 +531,6 @@ public class DefaultGeneDrugControllerIntegrationTest {
 			multipleGeneSymbolsMixed()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupIndirect()));
-	}
-	
-	@Test
-	public void testRankedSearchMultipleGeneMixed() {
-		final List<GeneDrugGroup> result = this.controller.searchByRanking(
-			new GeneDrugQueryParameters(), rankingFor(multipleGeneSymbolsMixed())
-		);
-		
-		assertThat(result, containsInAnyOrder(multipleGeneGroupMixed()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugGroupMixedOnlyGeneDependency()));
 	}
 }

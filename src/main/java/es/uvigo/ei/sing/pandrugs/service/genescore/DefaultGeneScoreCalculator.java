@@ -26,11 +26,11 @@ package es.uvigo.ei.sing.pandrugs.service.genescore;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
 
 public class DefaultGeneScoreCalculator implements GeneScoreCalculator {
 	@Override
@@ -42,10 +42,10 @@ public class DefaultGeneScoreCalculator implements GeneScoreCalculator {
 
 	@Override
 	public Map<String, Double> calculateIndirectScores(GeneDrug geneDrug) {
-		return geneDrug.getIndirectGenes().stream()
+		return geneDrug.getIndirectGenesByGeneSymbol().entrySet().stream()
 			.collect(toMap(
-				IndirectGene::getGeneSymbol,
-				indirect -> Optional.ofNullable(indirect.getGene())
+				Entry::getKey,
+				entry -> entry.getValue()
 					.map(Gene::getGScore)
 				.orElse(0d)
 			));

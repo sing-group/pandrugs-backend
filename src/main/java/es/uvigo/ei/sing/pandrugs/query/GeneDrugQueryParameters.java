@@ -44,6 +44,7 @@ public class GeneDrugQueryParameters {
 	public static final boolean DEFAULT_BIOMARKER = true;
 	public static final boolean DEFAULT_PATHWAY_MEMBER = true;
 	public static final boolean DEFAULT_DIRECT_TARGET = true;
+	public static final boolean DEFAULT_GENE_DEPENDENCY = true;
 
 	private final DrugStatus[] cancerDrugStatus;
 	private final DrugStatus[] nonCancerDrugStatus;
@@ -51,6 +52,7 @@ public class GeneDrugQueryParameters {
 	private final boolean biomarker;
 	private final boolean pathwayMember;
 	private final boolean directTarget;
+	private final boolean geneDependency;
 	
 	public GeneDrugQueryParameters() {
 		this(
@@ -59,7 +61,8 @@ public class GeneDrugQueryParameters {
 			DEFAULT_CANCER_TYPES,
 			DEFAULT_DIRECT_TARGET,
 			DEFAULT_BIOMARKER,
-			DEFAULT_PATHWAY_MEMBER
+			DEFAULT_PATHWAY_MEMBER,
+			DEFAULT_GENE_DEPENDENCY
 		);
 	}
 	
@@ -69,7 +72,8 @@ public class GeneDrugQueryParameters {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) {
 		this(
 			parseDrugStatus(
@@ -89,7 +93,8 @@ public class GeneDrugQueryParameters {
 			),
 			directTarget,
 			biomarker,
-			pathwayMember
+			pathwayMember,
+			geneDependency
 		);
 	}
 	
@@ -99,7 +104,8 @@ public class GeneDrugQueryParameters {
 		CancerType[] cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) {
 		this.cancerDrugStatus = Optional.ofNullable(cancerDrugStatus)
 			.orElse(DEFAULT_CANCER_DRUG_STATUS);
@@ -110,6 +116,7 @@ public class GeneDrugQueryParameters {
 		this.biomarker = biomarker;
 		this.pathwayMember = pathwayMember;
 		this.directTarget = directTarget;
+		this.geneDependency = geneDependency;
 		
 		if (!this.areCancerDrugStatusIncluded() && 
 			!this.areNonCancerDrugStatusIncluded()
@@ -165,6 +172,10 @@ public class GeneDrugQueryParameters {
 
 	public boolean isDirectTarget() {
 		return directTarget;
+	}
+	
+	public boolean isGeneDependency() {
+		return geneDependency;
 	}
 
 	private final static CancerType[] parseCancerTypes(
@@ -238,11 +249,11 @@ public class GeneDrugQueryParameters {
 	}
 
 	public boolean areIndirectIncluded() {
-		return this.pathwayMember;
+		return this.pathwayMember || this.geneDependency;
 	}
 
 	public boolean areTargetIncluded() {
-		return this.pathwayMember || this.directTarget;
+		return this.directTarget || this.pathwayMember || this.geneDependency;
 	}
 
 	public boolean areMarkerIncluded() {

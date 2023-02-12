@@ -26,29 +26,37 @@ package es.uvigo.ei.sing.pandrugs.service;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.HasHttpStatus.hasOkStatus;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGeneDrugGroupInfos.equalToGeneDrugGroupInfos;
 import static es.uvigo.ei.sing.pandrugs.matcher.hamcrest.IsEqualToGenePresence.equalToGenePresence;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.*;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentDrugName;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbol;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.absentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.emptyGeneDrugGroupInfo;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.geneSymbolsWithPresence;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.inactiveDrugNames;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listGeneSymbols;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugGeneDrugGroupsInfosMixed;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugNames;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosIndirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneGroupInfosMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugGroupInfosPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsGeneDependency;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.presentGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.rankingFor;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugGeneDrugGroupsInfos;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugName;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupInfosDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneGroupInfosIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupInfosDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupInfosGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugGroupInfosPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolGeneDependency;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolPathwayMember;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
@@ -60,6 +68,7 @@ import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -198,87 +207,62 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithNullGenesByGet() {
-		service.listByGeneOrDrugByGet(null, null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(null, null, null, null, null, true, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenesByGet() {
-		service.listByGeneOrDrugByGet(emptySet(), null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(emptySet(), null, null, null, null, true, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyDrugsByGet() {
-		service.listByGeneOrDrugByGet(null, emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(null, emptySet(), null, null, null, true, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenesAndDrugsByGet() {
-		service.listByGeneOrDrugByGet(emptySet(), emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(emptySet(), emptySet(), null, null, null, true, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithGenesAndDrugsByGet() {
-		service.listByGeneOrDrugByGet(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
+		service.listByGeneOrDrugByGet(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithNullGenesByPost() {
-		service.listByGeneOrDrugByPost(null, null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByPost(null, null, null, null, null, true, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenesByPost() {
-		service.listByGeneOrDrugByPost(emptySet(), null, null, null, null, true, true, true);
+		service.listByGeneOrDrugByPost(emptySet(), null, null, null, null, true, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyDrugsByPost() {
-		service.listByGeneOrDrugByPost(null, emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByPost(null, emptySet(), null, null, null, true, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithEmptyGenesAndDrugsByPost() {
-		service.listByGeneOrDrugByPost(emptySet(), emptySet(), null, null, null, true, true, true);
+		service.listByGeneOrDrugByPost(emptySet(), emptySet(), null, null, null, true, true, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListWithGenesAndDrugsByPost() {
-		service.listByGeneOrDrugByPost(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true);
-	}
-	
-	@Test
-	public void testListByGenesNoResult() {
-		testListByGene(absentGeneSymbol(), emptyGeneDrugGroupInfo());
-	}
-	
-	@Test
-	public void testListByGenesSingleGeneDirect() {
-		testListByGene(singleGeneSymbolDirect(), singleGeneGroupInfosDirect());
-	}
-	
-	@Test
-	public void testListByGenesMultipleGeneDirect() {
-		testListByGene(multipleGeneSymbolsDirect(), multipleGeneGroupInfosDirect());
-	}
-	
-	@Test
-	public void testListByGenesSingleGeneIndirect() {
-		testListByGene(singleGeneSymbolIndirect(), singleGeneGroupInfosIndirect());
-	}
-	
-	@Test
-	public void testListByGenesMultipleGeneIndirect() {
-		testListByGene(multipleGeneSymbolsIndirect(), multipleGeneGroupInfosIndirect());
-	}
-	
-	@Test
-	public void testListByGenesMultipleGeneMixed() {
-		testListByGene(multipleGeneSymbolsMixed(), multipleGeneGroupInfosMixed());
+		service.listByGeneOrDrugByPost(singleton(singleGeneSymbolDirect()), singleton(singleDrugName()), null, null, null, true, true, true, true);
 	}
 	
 	@Test
 	public void testListByDrugsNoResult() {
 		testSearchByDrug(absentDrugName(), emptyGeneDrugGroupInfo());
+	}
+	
+	@Test
+	public void testListByDrugsInactive() {
+		testSearchByDrug(inactiveDrugNames(), emptyGeneDrugGroupInfo());
 	}
 	
 	@Test
@@ -288,17 +272,72 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	
 	@Test
 	public void testSearchByDrugMultiple() {
-		testSearchByDrug(multipleDrugNames(), multipleDrugGeneDrugGroupsMixed());
+		testSearchByDrug(multipleDrugNames(), multipleDrugGeneDrugGroupsInfosMixed());
+	}
+	
+	@Test
+	public void testListByGenesNoResult() {
+		testListByGene(absentGeneSymbol(), emptyGeneDrugGroupInfo());
+	}
+	
+	@Test
+	public void testListByGenesSingleGeneDirect() {
+		testListByGene(singleGeneSymbolDirect(), singleGeneDrugGroupInfosDirect());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneDirect() {
+		testListByGene(multipleGeneSymbolsDirect(), multipleGeneDrugGroupInfosDirect());
+	}
+	
+	@Test
+	public void testListByGenesSinglePathwayMember() {
+		testListByGene(singleGeneSymbolPathwayMember(), singleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListByGenesMultiplePathwayMember() {
+		testListByGene(multipleGeneSymbolsPathwayMember(), multipleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListByGenesSingleGeneDependency() {
+		testListByGene(singleGeneSymbolGeneDependency(), singleGeneDrugGroupInfosGeneDependency());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneDependency() {
+		testListByGene(multipleGeneSymbolsGeneDependency(), multipleGeneDrugGroupInfosGeneDependency());
+	}
+	
+	@Test
+	public void testListByGenesMultipleIndirect() {
+		testListByGene(multipleGeneSymbolsIndirect(), multipleGeneDrugGroupInfosIndirect());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneMixed() {
+		testListByGene(multipleGeneSymbolsMixed(), multipleGeneDrugGroupInfosMixed());
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneMixedOnlyDirect() {
+		testListByGene(multipleGeneSymbolsMixed(), multipleGeneDrugGroupInfosMixedOnlyDirect(), true, true, false, false);
+	}
+	
+	@Test
+	public void testListByGenesMultipleGeneMixedOnlyIndirect() {
+		testListByGene(multipleGeneSymbolsMixed(), multipleGeneDrugGroupInfosMixedOnlyIndirect(), false, false, true, true);
 	}
 	
 	@Test(expected = BadRequestException.class)
 	public void testListRankedWithNullGenes() {
-		service.listRanked(null, null, null, null, true, true, true);
+		service.listRanked(null, null, null, null, true, true, true, true);
 	}
 
 	@Test(expected = BadRequestException.class)
 	public void testListRankedWithEmptyGenes() {
-		service.listRanked(new GeneRanking(emptyMap()), null, null, null, true, true, true);
+		service.listRanked(new GeneRanking(emptyMap()), null, null, null, true, true, true, true);
 	}
 	
 	@Test
@@ -307,28 +346,73 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 	
 	@Test
-	public void testListRankedSingleGeneDirect() {
-		testListRanked(rankingFor(singleGeneSymbolDirect()), singleGeneGroupInfosDirect());
+	public void testListRankedSingleDirect() {
+		testListRanked(rankingFor(singleGeneSymbolDirect()), singleGeneDrugGroupInfosDirect());
 	}
 	
 	@Test
-	public void testListRankedMultipleGeneDirect() {
-		testListRanked(rankingFor(multipleGeneSymbolsDirect()), multipleGeneGroupInfosDirect());
+	public void testListRankedMultipleDirect() {
+		testListRanked(rankingFor(multipleGeneSymbolsDirect()), multipleGeneDrugGroupInfosDirect());
 	}
 	
 	@Test
-	public void testListRankedSingleGeneIndirect() {
-		testListRanked(rankingFor(singleGeneSymbolIndirect()), singleGeneGroupInfosIndirect());
+	public void testListRankedSinglePathwayMember() {
+		testListRanked(rankingFor(singleGeneSymbolPathwayMember()), singleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListRankedMultiplePathwayMember() {
+		testListRanked(rankingFor(multipleGeneSymbolsPathwayMember()), multipleGeneDrugGroupInfosPathwayMember());
+	}
+	
+	@Test
+	public void testListRankedSingleGeneDependency() {
+		testListRanked(rankingFor(singleGeneSymbolGeneDependency()), singleGeneDrugGroupInfosGeneDependency());
 	}
 	
 	@Test
 	public void testListRankedMultipleGeneIndirect() {
-		testListRanked(rankingFor(multipleGeneSymbolsIndirect()), multipleGeneGroupInfosIndirect());
+		testListRanked(rankingFor(multipleGeneSymbolsGeneDependency()), multipleGeneDrugGroupInfosGeneDependency());
+	}
+	
+	@Test
+	public void testListRankedMultipleOnlyIndirect() {
+		testListRanked(rankingFor(multipleGeneSymbolsIndirect()), multipleGeneDrugGroupInfosIndirect());
 	}
 	
 	@Test
 	public void testListRankedMultipleGeneMixed() {
-		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneGroupInfosMixed());
+		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneDrugGroupInfosMixed());
+	}
+	
+	@Test
+	public void testListRankedMultipleGeneMixedOnlyDirect() {
+		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneDrugGroupInfosMixedOnlyDirect(), true, true, false, false);
+	}
+	
+	@Test
+	public void testListRankedMultipleGeneMixedOnlyIndirect() {
+		testListRanked(rankingFor(multipleGeneSymbolsMixed()), multipleGeneDrugGroupInfosMixedOnlyIndirect(), false, false, true, true);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testCheckPresenceByGetNull() {
+		this.testCheckPresenceNull(this.service::checkPresenceByGet);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testCheckPresenceByPostNull() {
+		this.testCheckPresenceNull(this.service::checkPresenceByPost);
+	}
+	
+	@Test(expected = BadRequestException.class)
+	public void testCheckPresenceByGetEmpty() {
+		this.testCheckPresenceEmpty(this.service::checkPresenceByGet);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void testCheckPresenceByPostEmpty() {
+		this.testCheckPresenceEmpty(this.service::checkPresenceByPost);
 	}
 	
 	@Test
@@ -339,6 +423,14 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	@Test
 	public void testCheckPresenceByPost() {
 		this.testCheckPresence(this.service::checkPresenceByPost);
+	}
+	
+	private void testCheckPresenceEmpty(Function<Set<String>, Response> checkPresence) {
+		checkPresence.apply(emptySet());
+	}
+	
+	private void testCheckPresenceNull(Function<Set<String>, Response> checkPresence) {
+		checkPresence.apply(null);
 	}
 	
 	private void testCheckPresence(Function<Set<String>, Response> checkPresence) {
@@ -360,12 +452,27 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	}
 
 	private void testListByGene(final String[] query, final GeneDrugGroupInfos expectedResult) {
+		testListByGene(query, expectedResult, true, true, true, true);
+	}
+
+	private void testListByGene(
+		final String[] query,
+		final GeneDrugGroupInfos expectedResult, 
+		final boolean directTarget,
+		final boolean biomarker,
+		final boolean pathwayMember,
+		final boolean geneDependency
+	) {
 		checkListResults(
-			service -> service.listByGeneOrDrugByGet(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(
+				stream(query).collect(toSet()), null, null, null, null, directTarget, biomarker, pathwayMember, geneDependency
+			),
 			expectedResult
 		);
 		checkListResults(
-			service -> service.listByGeneOrDrugByPost(stream(query).collect(toSet()), null, null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByPost(
+				stream(query).collect(toSet()), null, null, null, null, directTarget, biomarker, pathwayMember, geneDependency
+			),
 			expectedResult
 		);
 	}
@@ -376,18 +483,29 @@ public class DefaultGeneDrugServiceIntegrationTest {
 	
 	private void testSearchByDrug(final String[] query, final GeneDrugGroupInfos expectedResult) {
 		checkListResults(
-			service -> service.listByGeneOrDrugByGet(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByGet(null, stream(query).collect(toSet()), null, null, null, true, true, true, true),
 			expectedResult
 		);
 		checkListResults(
-			service -> service.listByGeneOrDrugByPost(null, stream(query).collect(toSet()), null, null, null, true, true, true),
+			service -> service.listByGeneOrDrugByPost(null, stream(query).collect(toSet()), null, null, null, true, true, true, true),
 			expectedResult
 		);
 	}
-
+	
 	private void testListRanked(final GeneRanking ranking, final GeneDrugGroupInfos expectedResult) {
+		testListRanked(ranking, expectedResult, true, true, true, true);
+	}
+
+	private void testListRanked(
+		final GeneRanking ranking,
+		final GeneDrugGroupInfos expectedResult, 
+		final boolean directTarget,
+		final boolean biomarker,
+		final boolean pathwayMember,
+		final boolean geneDependency
+	) {
 		checkListResults(
-			service -> service.listRanked(ranking, null, null, null, true, true, true),
+			service -> service.listRanked(ranking, null, null, null, directTarget, biomarker, pathwayMember, geneDependency),
 			expectedResult
 		);
 	}

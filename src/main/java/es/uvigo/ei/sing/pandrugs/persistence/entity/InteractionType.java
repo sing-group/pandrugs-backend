@@ -26,5 +26,6 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 public enum InteractionType {
 	DIRECT_TARGET,
 	BIOMARKER,
-	PATHWAY_MEMBER;
+	PATHWAY_MEMBER,
+	GENE_DEPENDENCY;
 }

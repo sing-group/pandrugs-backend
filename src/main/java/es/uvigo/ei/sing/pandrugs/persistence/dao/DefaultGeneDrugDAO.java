@@ -36,12 +36,10 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -67,6 +65,7 @@ import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugSource;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDependency;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugId;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.IndirectGene;
@@ -238,7 +237,7 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 			filter = filter.or(gd -> gd.isTarget() && isDirect.test(gd));
 		}
 		
-		if (queryParameters.isPathwayMember()) {
+		if (queryParameters.isPathwayMember() || queryParameters.isGeneDependency()) {
 			filter = filter.or(gd -> gd.isTarget() && !isDirect.test(gd));
 		}
 		
@@ -406,7 +405,7 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 			predicates.add(isInGenes.apply(geneSymbolField));
 		}
 		
-		if (queryParameters.areIndirectIncluded()) {
+		if (queryParameters.isPathwayMember()) {
 			final Subquery<IndirectGene> subqueryIndirectGenes =
 				query.subquery(IndirectGene.class);
 			final Root<IndirectGene> rootIndirectGene =
@@ -427,6 +426,34 @@ public class DefaultGeneDrugDAO implements GeneDrugDAO {
 					cb.notEqual(root.get("target"), false),
 					cb.exists(
 						subqueryIndirectGenes.select(rootIndirectGene.get("indirectGeneSymbol"))
+						.where(cb.and(wherePredicates.toArray(new Predicate[wherePredicates.size()])))
+					)
+				)
+			);
+
+		}
+		
+		if (queryParameters.isGeneDependency()) {
+			final Subquery<GeneDependency> subqueryGeneDependency =
+				query.subquery(GeneDependency.class);
+			final Root<GeneDependency> rootGeneDependency =
+				subqueryGeneDependency.from(GeneDependency.class);
+			
+			List<Predicate> wherePredicates = new ArrayList<>();
+			if (geneNamesExcludedAsIndirect.length > 0) {
+				wherePredicates.add(notInExcludedList.apply(rootGeneDependency.get("geneDependencySymbol")));
+			}
+			wherePredicates.add(isInGenes.apply(rootGeneDependency.get("geneDependencySymbol")));
+			wherePredicates.add(cb.equal(rootGeneDependency.get("directGeneSymbol"), root.get("geneSymbol")));
+			wherePredicates.add(cb.equal(rootGeneDependency.get("drugId"), root.get("drugId")));
+			wherePredicates.add(cb.equal(rootGeneDependency.get("target"), root.get("target")));
+
+			predicates.add(
+				cb.and(
+					cb.notEqual(root.get("resistance"), ResistanceType.RESISTANCE),
+					cb.notEqual(root.get("target"), false),
+					cb.exists(
+						subqueryGeneDependency.select(rootGeneDependency.get("geneDependencySymbol"))
 						.where(cb.and(wherePredicates.toArray(new Predicate[wherePredicates.size()])))
 					)
 				)

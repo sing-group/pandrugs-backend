@@ -28,10 +28,14 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,24 +58,40 @@ public final class GeneDrugDataset {
 	private static final String DRUG_NAME_10 = "DRUG 10";
 	private static final String DRUG_NAME_11 = "DRUG 11";
 	private static final String DRUG_NAME_12 = "DRUG 12";
+	private static final String DRUG_NAME_20 = "DRUG 20";
 	private static final String DRUG_NAME_21 = "DRUG 21";
-	private static final String DRUG_NAME_22 = "DRUG 22";
+	private static final String DRUG_NAME_30 = "DRUG 30";
+	private static final String DRUG_NAME_31 = "DRUG 31";
+	private static final String DRUG_NAME_32 = "DRUG 32";
+	private static final String DRUG_NAME_40 = "DRUG 40";
+	private static final String DRUG_NAME_41 = "DRUG 41";
+	private static final String DRUG_NAME_42 = "DRUG 42";
 	private static final String ABSENT_GENE_SYMBOL_1 = "ABSENT GENE 1";
 	private static final String ABSENT_GENE_SYMBOL_2 = "ABSENT GENE 2";
 	private static final String ABSENT_GENE_SYMBOL_3 = "ABSENT GENE 3";
-	private static final String INDIRECT_GENE_SYMBOL_1 = "IG1";
-	private static final String INDIRECT_GENE_SYMBOL_2 = "IG2";
+	private static final String PATHWAY_MEMBER_GENE_SYMBOL_1 = "PM1";
+	private static final String PATHWAY_MEMBER_GENE_SYMBOL_2 = "PM2";
+	private static final String PATHWAY_MEMBER_GENE_SYMBOL_3 = "PM3";
+	private static final String GENE_DEPENDENCY_GENE_SYMBOL_1 = "GD1";
+	private static final String GENE_DEPENDENCY_GENE_SYMBOL_2 = "GD2";
+	private static final String GENE_DEPENDENCY_GENE_SYMBOL_3 = "GD3";
 	private static final String DIRECT_GENE_SYMBOL_1 = "DIRECT GENE 1";
 	private static final String DIRECT_GENE_SYMBOL_2 = "DIRECT GENE 2";
-	private static final String WITH_INDIRECT_GENE_SYMBOL_1 = "GENE WITH INDIRECT 1";
-	private static final String WITH_INDIRECT_GENE_SYMBOL_2 = "GENE WITH INDIRECT 2";
+	private static final String WITH_PATHWAY_MEMBER_SYMBOL_1 = "GENE WITH INDIRECT 1";
+	private static final String WITH_PATHWAY_MEMBER_SYMBOL_2 = "GENE WITH INDIRECT 2";
+	private static final String WITH_GENE_DEPENDENCY_GENE_SYMBOL_1 = "GENE WITH GENE DEPENDENCY 1";
+	private static final String WITH_GENE_DEPENDENCY_GENE_SYMBOL_2 = "GENE WITH GENE DEPENDENCY 2";
+	private static final String WITH_PM_AND_GD_GENE_SYMBOL_2 = "GENE WITH PM AND GD 2";
+	private static final String WITH_PM_AND_GD_GENE_SYMBOL_3 = "GENE WITH PM AND GD 3";
 
 	private GeneDrugDataset() {}
 	
 	public static Map<String, SourceInformation> sourceInfos() {
 		return Stream.of(
 			new SourceInformation("Source 1", "S1", "http://source1.org", false),
-			new SourceInformation("Source 2", "S2", "http://source2.org", false)
+			new SourceInformation("Source 2", "S2", "http://source2.org", false),
+			new SourceInformation("Source 3", "S3", "http://source3.org", false),
+			new SourceInformation("Source 4", "S4", "http://source4.org", false)
 		).collect(toMap(
 			SourceInformation::getSource,
 			Function.identity()
@@ -82,44 +102,60 @@ public final class GeneDrugDataset {
 		return Stream.of(
 			new Gene(singleGeneSymbolDirect(), null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
 			new Gene(DIRECT_GENE_SYMBOL_2, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
-			new Gene(WITH_INDIRECT_GENE_SYMBOL_1, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
-			new Gene(WITH_INDIRECT_GENE_SYMBOL_2, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE)
+			new Gene(WITH_PATHWAY_MEMBER_SYMBOL_1, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
+			new Gene(WITH_PATHWAY_MEMBER_SYMBOL_2, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
+			new Gene(WITH_GENE_DEPENDENCY_GENE_SYMBOL_1, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
+			new Gene(WITH_GENE_DEPENDENCY_GENE_SYMBOL_2, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
+			new Gene(WITH_PM_AND_GD_GENE_SYMBOL_2, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE),
+			new Gene(WITH_PM_AND_GD_GENE_SYMBOL_3, null, false, null, null, 0d, false, 0d, OncodriveRole.NONE)
 		).collect(toMap(
 			Gene::getGeneSymbol,
-			Function.identity()
+			identity()
 		));
 	}
 	
 	public static Drug[] drugs() {
 		@SuppressWarnings("unchecked")
-		final Set<DrugSource>[] sources = new Set[8];
-		for (int i = 0; i < sources.length; i++) {
-			sources[i] = new HashSet<>();
+		final Set<DrugSource>[] sourcesOfDrugs = new Set[14];
+		for (int i = 0; i < sourcesOfDrugs.length; i++) {
+			sourcesOfDrugs[i] = new HashSet<>();
 		}
 		
 		final Drug[] drugs = new Drug[] {
-			new Drug(0, DRUG_NAME_1, "Show Drug 1", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sources[0]),
-			new Drug(1, DRUG_NAME_2, "Show Drug 2", DrugStatus.APPROVED, null, null, null, null, null, null, sources[1]),
-			new Drug(2, DRUG_NAME_3, "Show Drug 3", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sources[2]),
-			new Drug(10, DRUG_NAME_10, "Show Drug 10", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sources[3]),
-			new Drug(11, DRUG_NAME_11, "Show Drug 11", DrugStatus.APPROVED, null, null, null, null, null, null, sources[4]),
-			new Drug(12, DRUG_NAME_12, "Show Drug 12", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sources[5]),
-			new Drug(21, DRUG_NAME_21, "Show Drug 21", DrugStatus.WITHDRAWN, null, null, null, null, null, null, sources[6]),
-			new Drug(22, DRUG_NAME_22, "Show Drug 22", DrugStatus.UNDEFINED, null, null, null, null, null, null, sources[7])
+			new Drug(0, DRUG_NAME_1, "Show Drug 1", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sourcesOfDrugs[0]),
+			new Drug(1, DRUG_NAME_2, "Show Drug 2", DrugStatus.APPROVED, null, null, null, null, null, null, sourcesOfDrugs[1]),
+			new Drug(2, DRUG_NAME_3, "Show Drug 3", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sourcesOfDrugs[2]),
+			new Drug(10, DRUG_NAME_10, "Show Drug 10", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sourcesOfDrugs[3]),
+			new Drug(11, DRUG_NAME_11, "Show Drug 11", DrugStatus.APPROVED, null, null, null, null, null, null, sourcesOfDrugs[4]),
+			new Drug(12, DRUG_NAME_12, "Show Drug 12", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sourcesOfDrugs[5]),
+			new Drug(20, DRUG_NAME_20, "Show Drug 20", DrugStatus.WITHDRAWN, null, null, null, null, null, null, sourcesOfDrugs[6]),
+			new Drug(21, DRUG_NAME_21, "Show Drug 21", DrugStatus.UNDEFINED, null, null, null, null, null, null, sourcesOfDrugs[7]),
+			new Drug(30, DRUG_NAME_30, "Show Drug 30", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sourcesOfDrugs[8]),
+			new Drug(31, DRUG_NAME_31, "Show Drug 31", DrugStatus.APPROVED, null, null, null, null, null, null, sourcesOfDrugs[9]),
+			new Drug(32, DRUG_NAME_32, "Show Drug 32", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sourcesOfDrugs[10]),
+			new Drug(40, DRUG_NAME_40, "Show Drug 40", DrugStatus.CLINICAL_TRIALS, null, null, null, null, null, null, sourcesOfDrugs[11]),
+			new Drug(41, DRUG_NAME_41, "Show Drug 41", DrugStatus.APPROVED, null, null, null, null, null, null, sourcesOfDrugs[12]),
+			new Drug(42, DRUG_NAME_42, "Show Drug 42", DrugStatus.EXPERIMENTAL, null, null, null, null, null, null, sourcesOfDrugs[13])
 		};
 		
 		final DrugSource[] drugSources = drugSources(drugs);
 		
-		sources[0].add(drugSources[0]);
-		sources[1].add(drugSources[1]);
-		sources[2].add(drugSources[2]);
-		sources[3].add(drugSources[3]);
-		sources[4].add(drugSources[4]);
-		sources[5].add(drugSources[5]);
-		sources[6].add(drugSources[0]);
-		sources[7].add(drugSources[1]);
+		for (int i = 0; i < sourcesOfDrugs.length; i++) {
+			sourcesOfDrugs[i].add(drugSources[i]);
+		}
 		
 		return drugs;
+	}
+	
+	public static Drug drug(String standardName) {
+		return findDrug(standardName, drugs());
+	}
+	
+	private static Drug findDrug(String standardName, Drug[] drugs) {
+		return stream(drugs)
+			.filter(drug -> drug.getStandardName().equals(standardName))
+			.findFirst()
+		.orElseThrow(() -> new IllegalArgumentException("Unknown drug with standard name: " + standardName));
 	}
 	
 	public static GeneDrug[] geneDrugs() {
@@ -134,13 +170,6 @@ public final class GeneDrugDataset {
 			stream(geneDrugsWithActiveDrugStatus())
 		)
 			.sorted(comparator)
-		.toArray(GeneDrug[]::new);
-	}
-	
-	public static GeneDrug[] geneDrugsWithActiveDrugStatus() {
-		return concat(
-			stream(multipleGeneDirect()),
-			stream(multipleGeneIndirect()))
 		.toArray(GeneDrug[]::new);
 	}
 	
@@ -182,39 +211,64 @@ public final class GeneDrugDataset {
 		.toArray(Drug[]::new);
 	}
 	
-	public static DrugSource[] drugSources() {
-		return drugSources(drugs());
-	}
-	
 	private static DrugSource[] drugSources(Drug[] drugs) {
 		final Map<String, SourceInformation> sourceInfos = sourceInfos();
 		
 		return new DrugSource[] {
-			new DrugSource("Source 1", "Source Drug 1", drugs[0],
+			new DrugSource("Source 1", "Source Drug 1", findDrug(DRUG_NAME_1, drugs),
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource("Source 1", "Source Drug 2", drugs[1],
+			new DrugSource("Source 1", "Source Drug 2", findDrug(DRUG_NAME_2, drugs),
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource("Source 2", "Source Drug 3", drugs[2],
+			new DrugSource("Source 2", "Source Drug 3", findDrug(DRUG_NAME_3, drugs),
 				sourceInfos.get("Source 2")
 			),
-			new DrugSource("Source 1", "Source Drug 10", drugs[3],
+			new DrugSource("Source 1", "Source Drug 10", findDrug(DRUG_NAME_10, drugs),
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource("Source 1", "Source Drug 11", drugs[4],
+			new DrugSource("Source 1", "Source Drug 11", findDrug(DRUG_NAME_11, drugs),
 				sourceInfos.get("Source 1")
 			),
-			new DrugSource("Source 2", "Source Drug 12", drugs[5],
+			new DrugSource("Source 2", "Source Drug 12", findDrug(DRUG_NAME_12, drugs),
 				sourceInfos.get("Source 2")
 			),
-			new DrugSource("Source 2", "Source Drug 20", drugs[6],
+			new DrugSource("Source 2", "Source Drug 20", findDrug(DRUG_NAME_20, drugs),
 				sourceInfos.get("Source 2")
 			),
-			new DrugSource("Source 2", "Source Drug 21", drugs[7],
+			new DrugSource("Source 2", "Source Drug 21", findDrug(DRUG_NAME_21, drugs),
 				sourceInfos.get("Source 2")
+			),
+			new DrugSource("Source 3", "Source Drug 30", findDrug(DRUG_NAME_30, drugs),
+				sourceInfos.get("Source 3")
+			),
+			new DrugSource("Source 3", "Source Drug 31", findDrug(DRUG_NAME_31, drugs),
+				sourceInfos.get("Source 3")
+			),
+			new DrugSource("Source 3", "Source Drug 32", findDrug(DRUG_NAME_32, drugs),
+				sourceInfos.get("Source 3")
+			),
+			new DrugSource("Source 4", "Source Drug 40", findDrug(DRUG_NAME_40, drugs),
+				sourceInfos.get("Source 4")
+			),
+			new DrugSource("Source 4", "Source Drug 41", findDrug(DRUG_NAME_41, drugs),
+				sourceInfos.get("Source 4")
+			),
+			new DrugSource("Source 4", "Source Drug 42", findDrug(DRUG_NAME_42, drugs),
+				sourceInfos.get("Source 4")
 			)
 		};
+	}
+	
+	public static GeneDrug[] geneDrugsWithActiveDrugStatus() {
+		return Stream.of(
+			multipleGeneDrugDirect(),
+			multipleGeneDrugOnlyPathwayMember(),
+			multipleGeneDrugOnlyGeneDependency(),
+			multipleGeneDrugWithBothIndirect()
+		)
+			.flatMap(Stream::of)
+		.toArray(GeneDrug[]::new);
 	}
 	
 	public static GeneDrug[] geneDrugsWithInactiveDrugs() {
@@ -224,7 +278,7 @@ public final class GeneDrugDataset {
 		return new GeneDrug[] {
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
-				drugs[6],
+				findDrug(DRUG_NAME_20, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.5,
@@ -232,8 +286,8 @@ public final class GeneDrugDataset {
 				emptyMap()
 			),
 			new GeneDrug(
-				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
-				drugs[7],
+				genes.get(WITH_PATHWAY_MEMBER_SYMBOL_2),
+				findDrug(DRUG_NAME_21, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.5,
@@ -246,7 +300,7 @@ public final class GeneDrugDataset {
 	public static GeneDrug singleGeneDrugDirect() {
 		return new GeneDrug(
 			genes().get(singleGeneSymbolDirect()),
-			drugs()[0],
+			drug(DRUG_NAME_1),
 			true,
 			ResistanceType.SENSITIVITY,
 			0.1,
@@ -255,7 +309,7 @@ public final class GeneDrugDataset {
 		);
 	}
 	
-	public static GeneDrug[] multipleGeneDirect() {
+	public static GeneDrug[] multipleGeneDrugDirect() {
 		final Map<String, Gene> genes = genes();
 		final Drug[] drugs = drugs();
 		
@@ -263,7 +317,7 @@ public final class GeneDrugDataset {
 			singleGeneDrugDirect(),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
-				drugs[0],
+				findDrug(DRUG_NAME_1, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.2,
@@ -272,7 +326,7 @@ public final class GeneDrugDataset {
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
-				drugs[1],
+				findDrug(DRUG_NAME_2, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.3,
@@ -281,7 +335,7 @@ public final class GeneDrugDataset {
 			),
 			new GeneDrug(
 				genes.get(DIRECT_GENE_SYMBOL_2),
-				drugs[2],
+				findDrug(DRUG_NAME_3, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.4,
@@ -291,61 +345,173 @@ public final class GeneDrugDataset {
 		};
 	}
 	
-	public static GeneDrug singleGeneIndirect() {
+	public static GeneDrug singleGeneDrugPathwayMember() {
 		return new GeneDrug(
-			genes().get(WITH_INDIRECT_GENE_SYMBOL_1),
-			drugs()[3],
+			genes().get(WITH_PATHWAY_MEMBER_SYMBOL_1),
+			drug(DRUG_NAME_10),
 			true,
 			ResistanceType.SENSITIVITY,
 			0.1,
-			asList(new Gene(singleGeneSymbolIndirect())),
+			asList(new Gene(singleGeneSymbolPathwayMember())),
 			emptyMap()
 		);
 	}
 	
-	public static GeneDrug[] multipleGeneIndirect() {
+	private static GeneDrug[] multipleGeneDrugOnlyPathwayMember() {
 		final Map<String, Gene> genes = genes();
 		final Drug[] drugs = drugs();
 		
 		return new GeneDrug[] {
-			singleGeneIndirect(),
+			singleGeneDrugPathwayMember(),
 			new GeneDrug(
-				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
-				drugs[3],
+				genes.get(WITH_PATHWAY_MEMBER_SYMBOL_2),
+				findDrug(DRUG_NAME_10, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.2,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
 				emptyMap()
 			),
 			new GeneDrug(
-				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
-				drugs[4],
+				genes.get(WITH_PATHWAY_MEMBER_SYMBOL_2),
+				findDrug(DRUG_NAME_11, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.3,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
 				emptyMap()
 			),
 			new GeneDrug(
-				genes.get(WITH_INDIRECT_GENE_SYMBOL_2),
-				drugs[5],
+				genes.get(WITH_PATHWAY_MEMBER_SYMBOL_2),
+				findDrug(DRUG_NAME_12, drugs),
 				true,
 				ResistanceType.SENSITIVITY,
 				0.4,
-				asList(new Gene(INDIRECT_GENE_SYMBOL_2)),
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
 				emptyMap()
 			)
 		};
 	}
 	
-	public static GeneDrug[] multipleGeneMixed() {
-		return Stream.of(multipleGeneDirect(), multipleGeneIndirect())
+	public static GeneDrug[] multipleGeneDrugPathwayMember() {
+		return Stream.concat(stream(multipleGeneDrugOnlyPathwayMember()), stream(multipleGeneDrugWithBothIndirect()))
+			.toArray(GeneDrug[]::new);
+	}
+	
+	public static GeneDrug singleGeneDrugGeneDependency() {
+		return new GeneDrug(
+			genes().get(WITH_GENE_DEPENDENCY_GENE_SYMBOL_1),
+			drug(DRUG_NAME_30),
+			true,
+			ResistanceType.SENSITIVITY,
+			0.1,
+			emptyList(),
+			singletonMap(new Gene(singleGeneSymbolGeneDependency()), "GoF")
+		);
+	}
+	
+	private static GeneDrug[] multipleGeneDrugOnlyGeneDependency() {
+		final Map<String, Gene> genes = genes();
+		final Drug[] drugs = drugs();
+		
+		return new GeneDrug[] {
+			singleGeneDrugGeneDependency(),
+			new GeneDrug(
+				genes.get(WITH_GENE_DEPENDENCY_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_30, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.2,
+				emptyList(),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "LoF")
+			),
+			new GeneDrug(
+				genes.get(WITH_GENE_DEPENDENCY_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_31, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.3,
+				emptyList(),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "GoF")
+			),
+			new GeneDrug(
+				genes.get(WITH_GENE_DEPENDENCY_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_32, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.4,
+				emptyList(),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "LoF")
+			)
+		};
+	}
+	
+	public static GeneDrug[] multipleGeneDrugGeneDependency() {
+		return Stream.concat(stream(multipleGeneDrugOnlyGeneDependency()), stream(multipleGeneDrugWithBothIndirect()))
+			.toArray(GeneDrug[]::new);
+	}
+	
+	public static GeneDrug singleGeneDrugWithBothIndirect() {
+		return new GeneDrug(
+			genes().get(WITH_PM_AND_GD_GENE_SYMBOL_3),
+			drug(DRUG_NAME_42),
+			true,
+			ResistanceType.SENSITIVITY,
+			0.4,
+			asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_3)),
+			singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_3), "GoF")
+		);
+	}
+	
+	public static GeneDrug[] multipleGeneDrugWithBothIndirect() {
+		final Map<String, Gene> genes = genes();
+		final Drug[] drugs = drugs();
+		
+		return new GeneDrug[] {
+			singleGeneDrugWithBothIndirect(),
+			new GeneDrug(
+				genes.get(WITH_PM_AND_GD_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_40, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.1,
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "LoF")
+			),
+			new GeneDrug(
+				genes.get(WITH_PM_AND_GD_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_41, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.2,
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "GoF")
+			),
+			new GeneDrug(
+				genes.get(WITH_PM_AND_GD_GENE_SYMBOL_2),
+				findDrug(DRUG_NAME_42, drugs),
+				true,
+				ResistanceType.SENSITIVITY,
+				0.3,
+				asList(new Gene(PATHWAY_MEMBER_GENE_SYMBOL_2)),
+				singletonMap(new Gene(GENE_DEPENDENCY_GENE_SYMBOL_2), "LoF")
+			)
+		};
+	}
+	
+	public static GeneDrug[] multipleGeneDrugMixed() {
+		return Stream.of(
+			multipleGeneDrugDirect(),
+			multipleGeneDrugOnlyPathwayMember(),
+			multipleGeneDrugOnlyGeneDependency(),
+			multipleGeneDrugWithBothIndirect()
+		)
 			.flatMap(Stream::of)
+			.distinct()
 		.toArray(GeneDrug[]::new);
 	}
 	
-	public static GeneDrugGroup[] singleGeneGroupDirect() {
+	public static GeneDrugGroup[] singleGeneDrugGroupDirect() {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { singleGeneSymbolDirect() },
@@ -355,127 +521,432 @@ public final class GeneDrugDataset {
 		};
 	}
 	
-	public static GeneDrugGroup[] multipleGeneGroupDirect() {
-		final GeneDrug[] multipleGeneDirect = multipleGeneDirect();
+	public static GeneDrugGroup[] multipleGeneDrugGroupMixedOnlyDirect() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugDirect();
 		
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { singleGeneSymbolDirect(), DIRECT_GENE_SYMBOL_2 },
 				asList(
-					multipleGeneDirect[0],
-					multipleGeneDirect[1]
+					geneDrugs[0],
+					geneDrugs[1]
 				),
 				emptyMap()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneDirect[2]),
+				asList(geneDrugs[2]),
 				emptyMap()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneDirect[3]),
+				asList(geneDrugs[3]),
 				emptyMap()
 			)
 		};
 	}
 	
-	public static GeneDrugGroup[] singleGeneGroupIndirect() {
+	public static GeneDrugGroup[] singleGeneDrugGroupPathwayMember() {
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
-				new String[] { INDIRECT_GENE_SYMBOL_1 },
-				asList(singleGeneIndirect()),
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_1 },
+				asList(singleGeneDrugPathwayMember()),
 				emptyMap()
 			)
 		};
 	}
 	
-	public static GeneDrugGroup[] multipleGeneGroupIndirect() {
-		final GeneDrug[] multipleGeneIndirect = multipleGeneIndirect();
+	public static GeneDrugGroup[] multipleGeneDrugGroupPathwayMember() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugPathwayMember();
 		
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
-				new String[] { singleGeneSymbolIndirect(), INDIRECT_GENE_SYMBOL_2 },
+				new String[] { singleGeneSymbolPathwayMember(), PATHWAY_MEMBER_GENE_SYMBOL_2 },
 				asList(
-					multipleGeneIndirect[0],
-					multipleGeneIndirect[1]
+					geneDrugs[0],
+					geneDrugs[1]
 				),
 				emptyMap()
 			),
 			new GeneDrugGroup(
-				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneIndirect[2]),
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[2]),
 				emptyMap()
 			),
 			new GeneDrugGroup(
-				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneIndirect[3]),
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[3]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					PATHWAY_MEMBER_GENE_SYMBOL_2,
+					PATHWAY_MEMBER_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[4],
+					geneDrugs[7]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[5]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[6]),
 				emptyMap()
 			)
 		};
 	}
 	
-	public static GeneDrugGroup[] multipleGeneGroupMixed() {
-		final GeneDrug[] multipleGeneMixed = multipleGeneMixed();
+	public static GeneDrugGroup[] singleGeneDrugGroupGeneDependency() {
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_1 },
+				asList(singleGeneDrugGeneDependency()),
+				emptyMap()
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneDrugGroupGeneDependency() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugGeneDependency();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolGeneDependency(), GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[0],
+					geneDrugs[1]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[2]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[3]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					GENE_DEPENDENCY_GENE_SYMBOL_2,
+					GENE_DEPENDENCY_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[4],
+					geneDrugs[7]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[5]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[6]),
+				emptyMap()
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneDrugGroupMixedOnlyPathwayMember() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugMixed();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolPathwayMember(), PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[4],
+					geneDrugs[5]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[6]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[7]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					PATHWAY_MEMBER_GENE_SYMBOL_2,
+					PATHWAY_MEMBER_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[12],
+					geneDrugs[15]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[13]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[14]),
+				emptyMap()
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneDrugGroupMixedOnlyGeneDependency() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugMixed();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolGeneDependency(), GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[8],
+					geneDrugs[9]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[10]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[11]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					GENE_DEPENDENCY_GENE_SYMBOL_2,
+					GENE_DEPENDENCY_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[12],
+					geneDrugs[15]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[13]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[14]),
+				emptyMap()
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneDrugGroupMixedOnlyIndirect() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugMixed();
+		
+		return new GeneDrugGroup[] {
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolPathwayMember(), PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[4],
+					geneDrugs[5]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[6]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[7]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolGeneDependency(), GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[8],
+					geneDrugs[9]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[10]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[11]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					GENE_DEPENDENCY_GENE_SYMBOL_2,
+					GENE_DEPENDENCY_GENE_SYMBOL_3,
+					PATHWAY_MEMBER_GENE_SYMBOL_2,
+					PATHWAY_MEMBER_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[12],
+					geneDrugs[15]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2, PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[13]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2, PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[14]),
+				emptyMap()
+			)
+		};
+	}
+	
+	public static GeneDrugGroup[] multipleGeneDrugGroupMixed() {
+		final GeneDrug[] geneDrugs = multipleGeneDrugMixed();
 		
 		return new GeneDrugGroup[] {
 			new GeneDrugGroup(
 				new String[] { singleGeneSymbolDirect(), DIRECT_GENE_SYMBOL_2 },
 				asList(
-					multipleGeneMixed[0],
-					multipleGeneMixed[1]
+					geneDrugs[0],
+					geneDrugs[1]
 				),
 				emptyMap()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[2]),
+				asList(geneDrugs[2]),
 				emptyMap()
 			),
 			new GeneDrugGroup(
 				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[3]),
+				asList(geneDrugs[3]),
 				emptyMap()
 			),
+			
 			new GeneDrugGroup(
-				new String[] { singleGeneSymbolIndirect(), INDIRECT_GENE_SYMBOL_2 },
+				new String[] { singleGeneSymbolPathwayMember(), PATHWAY_MEMBER_GENE_SYMBOL_2 },
 				asList(
-					multipleGeneMixed[4],
-					multipleGeneMixed[5]
+					geneDrugs[4],
+					geneDrugs[5]
 				),
 				emptyMap()
 			),
 			new GeneDrugGroup(
-				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[6]),
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[6]),
 				emptyMap()
 			),
 			new GeneDrugGroup(
-				new String[] { INDIRECT_GENE_SYMBOL_2 },
-				asList(multipleGeneMixed[7]),
+				new String[] { PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[7]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] { singleGeneSymbolGeneDependency(), GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(
+					geneDrugs[8],
+					geneDrugs[9]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[10]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2 },
+				asList(geneDrugs[11]),
+				emptyMap()
+			),
+			
+			new GeneDrugGroup(
+				new String[] {
+					GENE_DEPENDENCY_GENE_SYMBOL_2,
+					GENE_DEPENDENCY_GENE_SYMBOL_3,
+					PATHWAY_MEMBER_GENE_SYMBOL_2,
+					PATHWAY_MEMBER_GENE_SYMBOL_3
+				},
+				asList(
+					geneDrugs[12],
+					geneDrugs[15]
+				),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2, PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[13]),
+				emptyMap()
+			),
+			new GeneDrugGroup(
+				new String[] { GENE_DEPENDENCY_GENE_SYMBOL_2, PATHWAY_MEMBER_GENE_SYMBOL_2 },
+				asList(geneDrugs[14]),
 				emptyMap()
 			)
 		};
 	}
 	
-	public static GeneDrugGroupInfos singleGeneGroupInfosDirect() {
-		return new GeneDrugGroupInfos(asList(singleGeneGroupDirect()));
+	public static GeneDrugGroupInfos singleGeneDrugGroupInfosDirect() {
+		return new GeneDrugGroupInfos(asList(singleGeneDrugGroupDirect()));
 	}
 	
-	public static GeneDrugGroupInfos multipleGeneGroupInfosDirect() {
-		return new GeneDrugGroupInfos(asList(multipleGeneGroupDirect()));
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosDirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupMixedOnlyDirect()));
 	}
 	
-	public static GeneDrugGroupInfos singleGeneGroupInfosIndirect() {
-		return new GeneDrugGroupInfos(asList(singleGeneGroupIndirect()));
+	public static GeneDrugGroupInfos singleGeneDrugGroupInfosPathwayMember() {
+		return new GeneDrugGroupInfos(asList(singleGeneDrugGroupPathwayMember()));
 	}
 	
-	public static GeneDrugGroupInfos multipleGeneGroupInfosIndirect() {
-		return new GeneDrugGroupInfos(asList(multipleGeneGroupIndirect()));
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosPathwayMember() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupPathwayMember()));
 	}
 	
-	public static GeneDrugGroupInfos multipleGeneGroupInfosMixed() {
-		return new GeneDrugGroupInfos(asList(multipleGeneGroupMixed()));
+	public static GeneDrugGroupInfos singleGeneDrugGroupInfosGeneDependency() {
+		return new GeneDrugGroupInfos(asList(singleGeneDrugGroupGeneDependency()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosGeneDependency() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupGeneDependency()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosIndirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupMixedOnlyIndirect()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosMixed() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupMixed()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosMixedOnlyDirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupMixedOnlyDirect()));
+	}
+	
+	public static GeneDrugGroupInfos multipleGeneDrugGroupInfosMixedOnlyIndirect() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupMixedOnlyIndirect()));
 	}
 	
 	public static String absentGeneSymbol() {
@@ -487,15 +958,15 @@ public final class GeneDrugDataset {
 			ABSENT_GENE_SYMBOL_1,
 			ABSENT_GENE_SYMBOL_2,
 			ABSENT_GENE_SYMBOL_3,
-			INDIRECT_GENE_SYMBOL_2
+			PATHWAY_MEMBER_GENE_SYMBOL_2
 		};
 	}
 	
 	public static String[] presentGeneSymbols() {
 		return new String[] {
 			DIRECT_GENE_SYMBOL_1,
-			WITH_INDIRECT_GENE_SYMBOL_1,
-			WITH_INDIRECT_GENE_SYMBOL_2
+			WITH_PATHWAY_MEMBER_SYMBOL_1,
+			WITH_PATHWAY_MEMBER_SYMBOL_2
 		};
 	}
 	
@@ -521,21 +992,60 @@ public final class GeneDrugDataset {
 		return new String[] { singleGeneSymbolDirect(), DIRECT_GENE_SYMBOL_2 };
 	}
 
-	public static String singleGeneSymbolIndirect() {
-		return INDIRECT_GENE_SYMBOL_1;
+	public static String singleGeneSymbolPathwayMember() {
+		return PATHWAY_MEMBER_GENE_SYMBOL_1;
 	}
 
+	public static String[] multipleGeneSymbolsPathwayMember() {
+		return new String[] { singleGeneSymbolPathwayMember(), PATHWAY_MEMBER_GENE_SYMBOL_2, PATHWAY_MEMBER_GENE_SYMBOL_3 };
+	}
+	
+	public static String singleGeneSymbolGeneDependency() {
+		return GENE_DEPENDENCY_GENE_SYMBOL_1;
+	}
+	
+	public static String[] multipleGeneSymbolsGeneDependency() {
+		return new String[] { singleGeneSymbolGeneDependency(), GENE_DEPENDENCY_GENE_SYMBOL_2, GENE_DEPENDENCY_GENE_SYMBOL_3 };
+	}
+	
+	public static String[] multipleGeneSymbolsWithBothIndirect() {
+		return new String[] {
+			GENE_DEPENDENCY_GENE_SYMBOL_2,
+			GENE_DEPENDENCY_GENE_SYMBOL_3,
+			PATHWAY_MEMBER_GENE_SYMBOL_2,
+			PATHWAY_MEMBER_GENE_SYMBOL_3
+		};
+	}
+	
 	public static String[] multipleGeneSymbolsIndirect() {
-		return new String[] { singleGeneSymbolIndirect(), INDIRECT_GENE_SYMBOL_2 };
+		return Stream.of(
+			multipleGeneSymbolsPathwayMember(),
+			multipleGeneSymbolsGeneDependency(),
+			multipleGeneSymbolsWithBothIndirect()
+		)
+			.flatMap(Stream::of)
+			.distinct()
+		.toArray(String[]::new);
 	}
 	
 	public static String[] multipleGeneSymbolsMixed() {
-		return concat(stream(multipleGeneSymbolsDirect()), stream(multipleGeneSymbolsIndirect()))
-			.toArray(String[]::new);
+		return Stream.of(
+			multipleGeneSymbolsDirect(),
+			multipleGeneSymbolsPathwayMember(),
+			multipleGeneSymbolsGeneDependency(),
+			multipleGeneSymbolsWithBothIndirect()
+		)
+			.flatMap(Stream::of)
+			.distinct()
+		.toArray(String[]::new);
 	}
-	
+
 	public static String absentDrugName() {
 		return ABSENT_DRUG_NAME;
+	}
+
+	public static String[] inactiveDrugNames() {
+		return new String[] { DRUG_NAME_20, DRUG_NAME_21 };
 	}
 	
 	public static String singleDrugName() {
@@ -549,13 +1059,19 @@ public final class GeneDrugDataset {
 			DRUG_NAME_11,
 			DRUG_NAME_12,
 			DRUG_NAME_2,
+			DRUG_NAME_20,
 			DRUG_NAME_21,
-			DRUG_NAME_22,
-			DRUG_NAME_3
+			DRUG_NAME_3,
+			DRUG_NAME_30,
+			DRUG_NAME_31,
+			DRUG_NAME_32,
+			DRUG_NAME_40,
+			DRUG_NAME_41,
+			DRUG_NAME_42
 		};
 	}
 	
-	public static GeneDrugGroup[] singleDrugGeneDrugGroups() {
+	public static GeneDrugGroup[] singleGeneDrugGroupByDrug() {
 		final GeneDrug[] geneDrugs = geneDrugs();
 		
 		return new GeneDrugGroup[] {
@@ -567,49 +1083,37 @@ public final class GeneDrugDataset {
 		};
 	}
 	
-	public static GeneDrugGroup[] multipleDrugGeneDrugGroups() {
+	public static GeneDrugGroup[] multipleGeneDrugGroupsByDrugs() {
 		final GeneDrug[] geneDrugs = geneDrugs();
 		
-		return new GeneDrugGroup[] {
-			new GeneDrugGroup(
-				new String[] { WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[7]),
+		final Function<Drug, String[]> listGeneSymbols = drug -> stream(geneDrugs)
+			.filter(gd -> gd.getDrug().equals(drug))
+			.map(GeneDrug::getGeneSymbol)
+			.distinct()
+		.toArray(String[]::new);
+		final Function<Drug, Collection<GeneDrug>> listGeneDrugs = drug -> stream(geneDrugs)
+			.filter(gd -> gd.getDrug().equals(drug))
+			.distinct()
+		.collect(toList());
+		
+		return stream(geneDrugs)
+			.map(GeneDrug::getDrug)
+			.filter(Drug::hasActiveStatus)
+			.distinct()
+			.map(drug -> new GeneDrugGroup(
+				listGeneSymbols.apply(drug),
+				listGeneDrugs.apply(drug),
 				emptyMap()
-			),
-			new GeneDrugGroup(
-				new String[] { WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[8]),
-				emptyMap()
-			),
-			new GeneDrugGroup(
-				new String[] { DIRECT_GENE_SYMBOL_1, DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[0], geneDrugs[1]),
-				emptyMap()
-			),
-			new GeneDrugGroup(
-				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[2]),
-				emptyMap()
-			),
-			new GeneDrugGroup(
-				new String[] { DIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[3]),
-				emptyMap()
-			),
-			new GeneDrugGroup(
-				new String[] { WITH_INDIRECT_GENE_SYMBOL_1, WITH_INDIRECT_GENE_SYMBOL_2 },
-				asList(geneDrugs[5], geneDrugs[6]),
-				emptyMap()
-			)
-		};
+			))
+		.toArray(GeneDrugGroup[]::new);
 	}
 	
 	public static GeneDrugGroupInfos singleDrugGeneDrugGroupsInfos() {
-		return new GeneDrugGroupInfos(asList(singleDrugGeneDrugGroups()));
+		return new GeneDrugGroupInfos(asList(singleGeneDrugGroupByDrug()));
 	}
 	
-	public static GeneDrugGroupInfos multipleDrugGeneDrugGroupsMixed() {
-		return new GeneDrugGroupInfos(asList(multipleDrugGeneDrugGroups()));
+	public static GeneDrugGroupInfos multipleDrugGeneDrugGroupsInfosMixed() {
+		return new GeneDrugGroupInfos(asList(multipleGeneDrugGroupsByDrugs()));
 	}
 	
 	public static GeneDrugGroupInfos emptyGeneDrugGroupInfo() {

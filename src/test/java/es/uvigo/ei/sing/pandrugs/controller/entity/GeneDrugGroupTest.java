@@ -329,7 +329,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptyMap());
 
-		assertThat(group.getIndirectGeneSymbols(), is(arrayContaining("IG1")));
+		assertThat(group.getPathwayMemberGeneSymbols(), is(arrayContaining("IG1")));
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		
 		final GeneDrugGroup group = new GeneDrugGroup(genes, geneDrugs, emptyMap());
 		
-		assertTrue(group.isIndirect(indirectGeneDrug));
+		assertTrue(group.isPathwayMember(indirectGeneDrug));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -868,7 +868,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 			newGeneDrug(giHigh, drug),
 			newGeneDrug(giMedium, drug)
 		);
-		geneDrugs.forEach(gd -> expect(gd.getIndirectGeneSymbols()).andReturn(emptyList()).anyTimes());
+		geneDrugs.forEach(gd -> expect(gd.getPathwayMemberGeneSymbols()).andReturn(emptyList()).anyTimes());
 		
 		replayAll();
 		
@@ -968,7 +968,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		expect(gd.getDrug()).andReturn(drug).anyTimes();
 		expect(gd.getDrugId()).andAnswer(drug::getId).anyTimes();
 		expect(gd.getStandardDrugName()).andAnswer(drug::getStandardName).anyTimes();
-		expect(gd.getIndirectGeneSymbols()).andReturn(asList(indirect)).anyTimes();
+		expect(gd.getPathwayMemberGeneSymbols()).andReturn(asList(indirect)).anyTimes();
 		
 		return gd;
 	}
@@ -988,7 +988,7 @@ public class GeneDrugGroupTest extends EasyMockSupport {
 		expect(gd.getDrug()).andReturn(drug).anyTimes();
 		expect(gd.getDrugId()).andAnswer(drug::getId).anyTimes();
 		expect(gd.getStandardDrugName()).andAnswer(drug::getStandardName).anyTimes();
-		expect(gd.getIndirectGeneSymbols()).andReturn(asList(indirect)).anyTimes();
+		expect(gd.getPathwayMemberGeneSymbols()).andReturn(asList(indirect)).anyTimes();
 		expect(gd.getDrugSources()).andAnswer(drugSourcesAnswer).anyTimes();
 		expect(gd.getCuratedDrugSources()).andAnswer(drugSourcesCuratedAnswer).anyTimes();
 		

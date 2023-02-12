@@ -26,13 +26,16 @@ package es.uvigo.ei.sing.pandrugs.persistence.entity;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -250,32 +253,62 @@ public class GeneDrug implements Serializable {
 		return score;
 	}
 	
-	public List<Gene> getDirectAndIndirectGenes() {
+	public List<Gene> getAllGenes() {
 		return Stream.concat(
 			Stream.of(this.getGene()),
-			this.getIndirectGenes().stream()
-				.map(IndirectGene::getGene)
+			getIndirectGenes().stream()
 		)
 			.distinct()
 		.collect(toList());
 	}
 	
-	public List<String> getDirectAndIndirectGeneSymbols() {
+	public List<String> getAllGeneSymbols() {
 		final List<String> genes = new ArrayList<>(getIndirectGeneSymbols());
 		genes.add(this.getGeneSymbol());
 		
 		return genes;
 	}
 	
-	public boolean hasIndirectGenes() {
-		return !this.indirectGenes.isEmpty();
+	public Map<String, Optional<Gene>> getIndirectGenesByGeneSymbol() {
+		final Map<String, Optional<Gene>> genes = new HashMap<>();
+		
+		this.getPathwayMemberGenes().stream()
+			.forEach(pm -> genes.put(pm.getGeneSymbol(), Optional.ofNullable(pm.getGene())));
+		
+		this.getGeneDependencies().stream()
+			.forEach(gd -> genes.put(gd.getGeneSymbol(), Optional.ofNullable(gd.getGene())));
+		
+		return genes;
 	}
 	
-	public List<IndirectGene> getIndirectGenes() {
-		return unmodifiableList(this.indirectGenes);
+	public List<Gene> getIndirectGenes() {
+		return Stream.concat(
+			this.getPathwayMemberGenes().stream()
+				.map(IndirectGene::getGene),
+			this.getGeneDependencies().stream()
+				.map(GeneDependency::getGene)
+		)
+			.filter(Objects::nonNull)
+			.distinct()
+		.collect(toList());
 	}
 	
 	public List<String> getIndirectGeneSymbols() {
+		final List<String> genes = new ArrayList<>(getPathwayMemberGeneSymbols());
+		genes.addAll(this.getGeneDependenciesGeneSymbols());
+		
+		return genes;
+	}
+	
+	public boolean hasPathwayMembers() {
+		return !this.indirectGenes.isEmpty();
+	}
+	
+	public List<IndirectGene> getPathwayMemberGenes() {
+		return unmodifiableList(this.indirectGenes);
+	}
+	
+	public List<String> getPathwayMemberGeneSymbols() {
 		return this.indirectGenes.stream()
 			.map(IndirectGene::getGeneSymbol)
 		.collect(toList());
@@ -293,6 +326,22 @@ public class GeneDrug implements Serializable {
 		return this.geneDependencies.stream()
 			.map(GeneDependency::getGeneSymbol)
 		.collect(toList());
+	}
+
+	public Map<String, String> getGeneDependencyAlterationsFor(List<Gene> genes) {
+		final Set<String> geneSymbols = genes.stream().map(Gene::getGeneSymbol).collect(toSet());
+		
+		return this.geneDependencies.stream()
+			.filter(gd -> geneSymbols.contains(gd.getGeneSymbol()))
+		.collect(toMap(
+			GeneDependency::getGeneSymbol,
+			GeneDependency::getAlteration
+		));
+	}
+	
+	public boolean hasIndirectGene(String geneSymbol) {
+		return this.indirectGenes.stream().anyMatch(ig -> ig.getGeneSymbol().equals(geneSymbol))
+			|| this.geneDependencies.stream().anyMatch(gd -> gd.getGeneSymbol().equals(geneSymbol));
 	}
 	
 	@Override

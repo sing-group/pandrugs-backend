@@ -210,6 +210,10 @@ public class Drug implements Serializable {
 			.filter(DrugSource::isCurated)
 		.count();
 	}
+	
+	public boolean hasActiveStatus() {
+		return this.status.isActive();
+	}
 
 	@Override
 	public int hashCode() {
@@ -279,5 +283,10 @@ public class Drug implements Serializable {
 		if (status != other.status)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Drug [id=" + id + ", standardName=" + standardName + ", showName=" + showName + ", status=" + status + "]";
 	}
 }

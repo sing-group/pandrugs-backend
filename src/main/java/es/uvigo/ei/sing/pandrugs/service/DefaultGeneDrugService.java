@@ -92,10 +92,11 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		return this.listByGeneOrDrug(
-			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 		);
 	}
 
@@ -111,10 +112,11 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@FormParam("cancer") Set<String> cancerTypes,
 		@FormParam("directTarget") boolean directTarget,
 		@FormParam("biomarker") boolean biomarker,
-		@FormParam("pathwayMember") boolean pathwayMember
+		@FormParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		return this.listByGeneOrDrug(
-			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+			genes, drugs, cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 		);
 	}
 	
@@ -126,7 +128,8 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		Set<String> cancerTypes,
 		boolean directTarget,
 		boolean biomarker,
-		boolean pathwayMember
+		boolean pathwayMember,
+		boolean geneDependency
 	) throws BadRequestException {
 		try {
 			if (!isEmpty(genes) && !isEmpty(drugs)) {
@@ -136,7 +139,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else if (isEmpty(drugs)) {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByGenes(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 					),
 					genes.stream().toArray(String[]::new)
 				);
@@ -145,7 +148,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			} else {
 				final List<GeneDrugGroup> geneDrugs = controller.searchByDrugs(
 					new GeneDrugQueryParameters(
-						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+						cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 					),
 					drugs.stream().toArray(String[]::new)
 				);
@@ -169,7 +172,8 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		try {
 			requireNonNull(geneRanking, "geneRanking can't be null");
@@ -177,7 +181,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			
 			final List<GeneDrugGroup> geneDrugs = controller.searchByRanking(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 				),
 				geneRanking
 			);
@@ -201,7 +205,8 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		try {
 			requireNonNull(cnvData, "cnv can't be null");
@@ -209,7 +214,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			
 			final List<GeneDrugGroup> geneDrugs = controller.searchByCnv(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 				),
 				cnvData
 			);
@@ -233,7 +238,8 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		try {
 			requireNonNull(multiOmicsAnalysisInputData.getCnvData(), "cnv can't be null");
@@ -246,7 +252,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 
 			final List<GeneDrugGroup> geneDrugs = controller.searchByCnvWithExpression(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 				),
 				cnvData, new GeneExpression(geneExpressionData.getGeneExpression())
 			);
@@ -270,14 +276,15 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		try {
 			requireNonNull(computationId, "A computation Id must be provided");
 
 			final List<GeneDrugGroup> geneDrugs = controller.searchFromComputationId(
 				new GeneDrugQueryParameters(
-					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember
+					cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency
 				),
 				computationId
 			);
@@ -302,7 +309,8 @@ public class DefaultGeneDrugService implements GeneDrugService {
 		@QueryParam("cancer") Set<String> cancerTypes,
 		@QueryParam("directTarget") boolean directTarget,
 		@QueryParam("biomarker") boolean biomarker,
-		@QueryParam("pathwayMember") boolean pathwayMember
+		@QueryParam("pathwayMember") boolean pathwayMember,
+		@QueryParam("geneDependency") boolean geneDependency
 	) throws BadRequestException {
 		try {
 			requireNonNull(computationId, "A computation Id must be provided");
@@ -324,7 +332,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			}
 
 			GeneDrugQueryParameters queryParameters = new GeneDrugQueryParameters(
-				cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember);
+				cancerDrugStatus, nonCancerDrugStatus, cancerTypes, directTarget, biomarker, pathwayMember, geneDependency);
 
 			final List<GeneDrugGroup> geneDrugs;
 			if (cnvData == null && geneExpressionData != null) {
@@ -407,7 +415,7 @@ public class DefaultGeneDrugService implements GeneDrugService {
 			final Map<String, Boolean> presence = this.controller.checkGenePresence(gsArray);
 			
 			return Response.ok(new GenePresence(presence)).build();
-		} catch (NullPointerException e) {
+		} catch (NullPointerException | IllegalArgumentException e) {
 			LOG.warn("Error checking gene presence", e);
 			throw createBadRequestException(e);
 		}

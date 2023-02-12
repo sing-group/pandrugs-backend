@@ -29,8 +29,6 @@ import static java.util.Arrays.sort;
 import static java.util.Arrays.stream;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.stream.Stream;
 
@@ -40,13 +38,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations;
 import es.uvigo.ei.sing.pandrugs.controller.entity.GeneDrugGroup;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.CancerType;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.DrugStatus;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Extra;
-import es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrug;
 import es.uvigo.ei.sing.pandrugs.service.CalculatedGeneAnnotation;
 import es.uvigo.ei.sing.pandrugs.util.Compare;
 import es.uvigo.ei.sing.pandrugs.util.StringJoiner;
@@ -86,6 +82,10 @@ public class GeneDrugGroupInfo {
 	@XmlElement(name = "indirectGene")
 	private GeneInfo[] indirect;
 	
+	@XmlElementWrapper(name = "geneDependencies")
+	@XmlElement(name = "geneDependency")
+	private GeneInfo[] geneDependencies;
+	
 	private boolean target;
 	private int[] pubchemId;
 	private double dScore;
@@ -123,10 +123,14 @@ public class GeneDrugGroupInfo {
 		this.cancers = gdg.getCancers();
 		sort(this.cancers);
 		this.therapy = gdg.getExtra();
-		this.indirect = stream(gdg.getIndirectGenes())
+		this.indirect = stream(gdg.getPathwayMemberGenes())
 			.map(GeneInfo::new)
 		.toArray(GeneInfo[]::new);
 		sort(this.indirect);
+		this.geneDependencies = stream(gdg.getGeneDependencyGenes())
+			.map(GeneInfo::new)
+		.toArray(GeneInfo[]::new);
+		sort(this.geneDependencies);
 		this.target = gdg.isTarget();
 		this.pubchemId = gdg.getPubchemId();
 		sort(this.pubchemId);
@@ -173,15 +177,16 @@ public class GeneDrugGroupInfo {
 	}
 
 	private static GeneDrugInfo[] createGeneDrugInfos(GeneDrugGroup gdg) {
-		final Stream<GeneDrugInfo> directAndIndirectGDIs = gdg.getGeneDrugs().stream()
+		final Stream<GeneDrugInfo> directAndIndirectGDIs = gdg.getGeneDrugsDirect().stream()
 			.map(gd -> new GeneDrugInfo(gd, gdg));
 		
-		final Stream<GeneDrugInfo> directAsIndirectGDIs = gdg.getGeneDrugs().stream()
-			.filter(gdg::isDirectAndIndirect)
-			.filter(GeneDrug::isTarget)
-		.map(gd -> new GeneDrugInfo(gd, gdg, true));
+		final Stream<GeneDrugInfo> directAsPatwayMemberGDIs = gdg.getGeneDrugsPathwayMember().stream()
+			.map(gd -> new GeneDrugInfo(gd, gdg, true, false));
 		
-		return Stream.concat(directAndIndirectGDIs, directAsIndirectGDIs)
+		final Stream<GeneDrugInfo> directAsGeneDependencyGDIs = gdg.getGeneDrugsGeneDepencency().stream()
+			.map(gd -> new GeneDrugInfo(gd, gdg, false, true));
+		
+		return Stream.concat(directAndIndirectGDIs, Stream.concat(directAsPatwayMemberGDIs, directAsGeneDependencyGDIs))
 			.sorted((g1, g2) -> Compare.objects(g1, g2)
 				.byReverseOrderOf(GeneDrugInfo::getDScore)
 					.thenByReverseOrderOf(GeneDrugInfo::getGScore)

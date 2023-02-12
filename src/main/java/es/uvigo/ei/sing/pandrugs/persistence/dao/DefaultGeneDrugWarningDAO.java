@@ -116,7 +116,7 @@ public class DefaultGeneDrugWarningDAO implements GeneDrugWarningDAO {
 			case BIOMARKER:
 				return !geneDrug.isTarget();
 			case PATHWAY_MEMBER:
-				return geneDrug.isTarget() && geneDrug.getIndirectGeneSymbols().contains(warning.getIndirectGene());
+				return geneDrug.isTarget() && geneDrug.getPathwayMemberGeneSymbols().contains(warning.getIndirectGene());
 			default:
 				throw new IllegalStateException("GeneDrugWarning must have a valid interaction type");
 			}

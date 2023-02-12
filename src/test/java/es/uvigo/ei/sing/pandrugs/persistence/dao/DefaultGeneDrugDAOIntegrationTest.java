@@ -30,17 +30,17 @@ import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.geneD
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listDrugs;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.listGeneSymbols;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleDrugNames;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneIndirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneMixed;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugDirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugPathwayMember;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneDrugMixed;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.multipleGeneSymbolsMixed;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleDrugName;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneDrugPathwayMember;
 import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolDirect;
-import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolIndirect;
+import static es.uvigo.ei.sing.pandrugs.persistence.entity.GeneDrugDataset.singleGeneSymbolPathwayMember;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
@@ -202,25 +202,25 @@ public class DefaultGeneDrugDAOIntegrationTest {
 			new GeneDrugQueryParameters(), multipleGeneSymbolsDirect()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneDirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugDirect()));
 	}
 	
 	@Test
 	public void testSearchByGeneSingleGeneIndirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneDrugQueryParameters(), new String[]{ singleGeneSymbolIndirect() }
+			new GeneDrugQueryParameters(), new String[]{ singleGeneSymbolPathwayMember() }
 		);
 		
-		assertThat(result, containsInAnyOrder(singleGeneIndirect()));
+		assertThat(result, containsInAnyOrder(singleGeneDrugPathwayMember()));
 	}
 	
 	@Test
 	public void testSearchByGeneMultipleGeneIndirect() {
 		final List<GeneDrug> result = this.dao.searchByGene(
-			new GeneDrugQueryParameters(), multipleGeneSymbolsIndirect()
+			new GeneDrugQueryParameters(), multipleGeneSymbolsPathwayMember()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneIndirect()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugPathwayMember()));
 	}
 	
 	@Test
@@ -229,7 +229,7 @@ public class DefaultGeneDrugDAOIntegrationTest {
 			new GeneDrugQueryParameters(), multipleGeneSymbolsMixed()
 		);
 		
-		assertThat(result, containsInAnyOrder(multipleGeneMixed()));
+		assertThat(result, containsInAnyOrder(multipleGeneDrugMixed()));
 	}
 	
 	@Test

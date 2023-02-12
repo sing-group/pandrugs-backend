@@ -47,7 +47,7 @@ public class IndirectGeneInfo implements Comparable<IndirectGeneInfo> {
 
 	IndirectGeneInfo() {}
 
-	public IndirectGeneInfo(String directGeneSymbol, Gene gene, GeneInfo[] queryGenes) {
+	public IndirectGeneInfo(Gene gene, GeneInfo[] queryGenes) {
 		final String[] queryGeneSymbols = stream(queryGenes)
 			.map(GeneInfo::getGeneSymbol)
 		.toArray(String[]::new);
