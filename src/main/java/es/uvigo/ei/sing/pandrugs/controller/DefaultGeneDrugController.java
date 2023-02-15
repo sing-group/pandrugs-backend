@@ -61,6 +61,7 @@ import es.uvigo.ei.sing.pandrugs.controller.entity.MultiOmicsAnalysisQueryData;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.GermLineAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatAnnotation;
 import es.uvigo.ei.sing.pandrugs.core.variantsanalysis.pharmcat.PharmCatJsonReportParser;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDrugWarningDAO;
 import es.uvigo.ei.sing.pandrugs.persistence.entity.Drug;
@@ -89,6 +90,9 @@ public class DefaultGeneDrugController implements GeneDrugController {
 	
 	@Inject
 	private VariantsAnalysisController variantsAnalysisController;
+
+	@Inject
+	private GeneDAO geneDao;
 	
 	@Override
 	public Map<String, Boolean> checkGenePresence(String ... geneSymbols) {
@@ -193,7 +197,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		requireNonNull(cnvData);
 		requireNonNull(geneExpression);
 
-		MultiOmicsAnalysisQueryData multiOmicsQueryData = new MultiOmicsAnalysisQueryData(cnvData, geneExpression);
+		MultiOmicsAnalysisQueryData multiOmicsQueryData = 
+			new MultiOmicsAnalysisQueryData(geneDao, cnvData, geneExpression);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
@@ -242,7 +247,8 @@ public class DefaultGeneDrugController implements GeneDrugController {
 			pharmCatAnnotations.putAll(this.variantsAnalysisController.getPharmCatAnnotations(computationId));
 		}
 
-		MultiOmicsAnalysisQueryData multiOmicsQueryData = new MultiOmicsAnalysisQueryData(cnvData, geneExpression, geneRank);
+		MultiOmicsAnalysisQueryData multiOmicsQueryData = 
+			new MultiOmicsAnalysisQueryData(geneDao, cnvData, geneExpression, geneRank);
 
 		return searchForGeneDrugsWithGenes(
 			queryParameters,

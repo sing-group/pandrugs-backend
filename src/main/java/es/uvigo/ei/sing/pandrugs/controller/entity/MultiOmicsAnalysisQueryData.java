@@ -32,6 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import es.uvigo.ei.sing.pandrugs.controller.entity.CalculatedGeneAnnotations.CalculatedGeneAnnotationType;
+import es.uvigo.ei.sing.pandrugs.persistence.dao.GeneDAO;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DriverGene;
+import es.uvigo.ei.sing.pandrugs.persistence.entity.Gene;
 import es.uvigo.ei.sing.pandrugs.service.entity.CnvData;
 
 public class MultiOmicsAnalysisQueryData {
@@ -41,6 +44,8 @@ public class MultiOmicsAnalysisQueryData {
     private static final String DEFAULT_NOT_EXPRESSION_LABEL = GeneExpressionAnnotation.NOT_EXPRESSED.toString();
     private static final String DEFAULT_NOT_MUTATED_LABEL = SnvAnnotation.NOT_MUTATED.toString();
     
+    private GeneDAO geneDao;
+
     private CnvData cnvData;
     private GeneExpression geneExpression;
     private Map<String, String> snvData;
@@ -49,14 +54,15 @@ public class MultiOmicsAnalysisQueryData {
     private Set<String> queryGenes;
     private Set<String> queryGenesFromExpression;
 
-    public MultiOmicsAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression) {
-        this(cnvData, geneExpression, null);
+    public MultiOmicsAnalysisQueryData(GeneDAO geneDao, CnvData cnvData, GeneExpression geneExpression) {
+        this(geneDao, cnvData, geneExpression, null);
     }
 
-    public MultiOmicsAnalysisQueryData(CnvData cnvData, GeneExpression geneExpression, Map<String, Double> vcfGeneRank) {
+    public MultiOmicsAnalysisQueryData(GeneDAO geneDao, CnvData cnvData, GeneExpression geneExpression, Map<String, Double> vcfGeneRank) {
         this.cnvData = cnvData;
         this.geneExpression = geneExpression;
         this.initializeSnvAnnotations(vcfGeneRank);
+        this.geneDao = geneDao;
     }
 
     private void initializeSnvAnnotations(Map<String, Double> vcfGeneRank) {
@@ -95,7 +101,7 @@ public class MultiOmicsAnalysisQueryData {
 
             this.getQueryGenes().forEach(g -> {
                 /*
-                 * #TODO: the gene driver annotation must ben retrieved from the DB when available.
+                 * #TODO: this annotation can be removed from the GeneExpressionCoherence as it is now send with other gene information
                  */
                 String driverAnnotation = "UNCLASSIFIED";
                 
@@ -155,19 +161,23 @@ public class MultiOmicsAnalysisQueryData {
         return this.getExpressionGenes(this.geneExpression.getAnnotations());
     }
     
-    /*
-     * #TODO: this method should be updated in the future to retrieve only oncogenes. This will be a new
-     * annotation in the genes table.
-     */
 	private Set<String> getExpressionGenes(Map<String, GeneExpressionAnnotation> expressionMap) {
         if (this.queryGenesFromExpression == null) {
             this.queryGenesFromExpression = expressionMap.entrySet().stream()
                 .filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
+                .filter(e -> this.isOncoGene(e.getKey()))
                 .map(e -> e.getKey()).collect(toSet());
         }
-
+        
         return this.queryGenesFromExpression;
 	}
+
+    private boolean isOncoGene(String gene) {
+        Gene dbGene = this.geneDao.get(gene);
+
+        return dbGene == null ? false : 
+            (dbGene.getDriverGene() == null ? false : dbGene.getDriverGene().equals(DriverGene.ONC));
+    }
 
     public Set<String> getGeneNamesExcludedAsIndirect() {
         if (this.geneExpression == null) {
