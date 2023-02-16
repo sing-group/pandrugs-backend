@@ -26,15 +26,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.uvigo.ei.sing.pandrugs.persistence.entity.DriverGene;
+
 public class GeneExpressionCoherence {
 
     private String gene;
-    private String geneDriverAnnotation;
+    private DriverGene geneDriverAnnotation;
     private String snvAnnotation;
     private String cnvAnnotation;
     private String expressionAnnotation;
 
-    public GeneExpressionCoherence(String gene, String geneDriverAnnotation, String snvAnnotation, String cnvAnnotation,
+    public GeneExpressionCoherence(String gene, DriverGene geneDriverAnnotation, String snvAnnotation, String cnvAnnotation,
         String expressionAnnotation
     ) {
         this.gene = gene;
@@ -101,16 +103,16 @@ public class GeneExpressionCoherence {
         return this.snvAnnotation.toLowerCase();
     }
 
-    public String getGeneDriverAnnotation() {
+    public DriverGene getGeneDriverAnnotation() {
         return this.geneDriverAnnotation;
     }
 
     private String geneDriverText() {
-        if(this.geneDriverAnnotation.equals("ONC")) {
+        if (this.geneDriverAnnotation.equals(DriverGene.ONC)) {
             return "(oncogene)";
-        } else if(this.geneDriverAnnotation.equals("TSG")) {
+        } else if (this.geneDriverAnnotation.equals(DriverGene.TSG)) {
             return "(tumor suppressor gene)";
-        } else if(this.geneDriverAnnotation.equals("UNCLASSIFIED")) {
+        } else if (this.geneDriverAnnotation.equals(DriverGene.UNCLASSIFIED)) {
             return "";
         } else {
             return "not specified (driver)";

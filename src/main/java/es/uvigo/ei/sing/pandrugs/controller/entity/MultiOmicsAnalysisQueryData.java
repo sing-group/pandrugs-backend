@@ -100,10 +100,13 @@ public class MultiOmicsAnalysisQueryData {
             Map<String, String> coherenceMap = new HashMap<>();
 
             this.getQueryGenes().forEach(g -> {
-                /*
-                 * #TODO: this annotation can be removed from the GeneExpressionCoherence as it is now send with other gene information
-                 */
-                String driverAnnotation = "UNCLASSIFIED";
+                DriverGene driverAnnotation = DriverGene.UNCLASSIFIED;
+
+                Gene dbGene = this.geneDao.get(g);
+
+                if (dbGene != null && dbGene.getDriverGene() != null) {
+                    driverAnnotation = dbGene.getDriverGene();
+                }
                 
                 String snv = "";
                 if (this.snvData != null) {
