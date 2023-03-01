@@ -49,8 +49,8 @@ import es.uvigo.ei.sing.pandrugs.util.ContextParameterName;
 public class PerlVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalculator {
 	private final static Logger LOG = LoggerFactory.getLogger(PerlVEPtoVariantsScoreCalculator.class);
 
-	public static final String VARIANT_SCORES_FILE_NAME = "vep_data.csv";
-	public static final String AFFECTED_GENES_FILE_NAME = "genes_affected.csv";
+	public static final String VARIANT_SCORES_FILE_NAME = "pandrugs2backend_VEP/vep_data.csv";
+	public static final String AFFECTED_GENES_FILE_NAME = "pandrugs2backend_VEP/genes_affected.csv";
 
 	private static final String VEPTOVSCORE_COMMAND_TEMPLATE_PARAMETER = "veptovscore.command.template";
 
@@ -129,8 +129,6 @@ public class PerlVEPtoVariantsScoreCalculator implements VEPtoVariantsScoreCalcu
 		// command parameters:
 		// 1) input VEP absolute path
 		// 2) Results absolute path
-		// 3) Name for results subdir
-		return String.format(commandTemplate, path.toString(), resultsBasePath.getParent().toString(), resultsBasePath
-				.getFileName());
+		return String.format(commandTemplate, path.toString(), resultsBasePath.toString());
 	}
 }
