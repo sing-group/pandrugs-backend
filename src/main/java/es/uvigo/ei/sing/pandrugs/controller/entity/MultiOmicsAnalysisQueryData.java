@@ -22,9 +22,6 @@
  */
 package es.uvigo.ei.sing.pandrugs.controller.entity;
 
-import static java.util.Collections.emptySet;
-import static java.util.stream.Collectors.toSet;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,7 +49,6 @@ public class MultiOmicsAnalysisQueryData {
 
     private CalculatedGeneAnnotations calculatedGeneAnnotations;
     private Set<String> queryGenes;
-    private Set<String> queryGenesFromExpression;
 
     public MultiOmicsAnalysisQueryData(GeneDAO geneDao, CnvData cnvData, GeneExpression geneExpression) {
         this(geneDao, cnvData, geneExpression, null);
@@ -148,55 +144,8 @@ public class MultiOmicsAnalysisQueryData {
             if (this.cnvData != null) {
                 queryGenes.addAll(this.cnvData.getDataMap().keySet());
             }
-
-            if (this.geneExpression != null) {
-                queryGenes.addAll(this.getExpressionGenes());
-            }
         }
 
         return this.queryGenes;
-    }
-
-	private Set<String> getExpressionGenes() {
-        if (this.geneExpression == null) {
-            throw new IllegalStateException("Expression data is required for obtaining the expression query genes");
-        }
-        return this.getExpressionGenes(this.geneExpression.getAnnotations());
-    }
-    
-	private Set<String> getExpressionGenes(Map<String, GeneExpressionAnnotation> expressionMap) {
-        if (this.queryGenesFromExpression == null) {
-            this.queryGenesFromExpression = expressionMap.entrySet().stream()
-                .filter(e -> e.getValue().equals(GeneExpressionAnnotation.HIGHLY_OVEREXPRESSED))
-                .filter(e -> this.isOncoGene(e.getKey()))
-                .map(e -> e.getKey()).collect(toSet());
-        }
-        
-        return this.queryGenesFromExpression;
-	}
-
-    private boolean isOncoGene(String gene) {
-        Gene dbGene = this.geneDao.get(gene);
-
-        return dbGene == null ? false : 
-            (dbGene.getDriverGene() == null ? false : dbGene.getDriverGene().equals(DriverGene.ONC));
-    }
-
-    public Set<String> getGeneNamesExcludedAsIndirect() {
-        if (this.geneExpression == null) {
-            return emptySet();
-        }
-
-        Set<String> toret = new HashSet<>();
-        toret.addAll(this.getExpressionGenes());
-        if (this.snvData != null) {
-            toret.removeAll(this.snvData.keySet());
-        }
-
-        if (this.cnvData != null) {
-            toret.removeAll(this.cnvData.getDataMap().keySet());
-        }
-
-        return toret;
     }
 }

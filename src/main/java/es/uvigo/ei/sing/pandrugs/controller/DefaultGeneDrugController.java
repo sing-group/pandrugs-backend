@@ -203,7 +203,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			multiOmicsQueryData.getQueryGenes(),
-			multiOmicsQueryData.getGeneNamesExcludedAsIndirect(),
+			Collections.emptySet(),
 			new DefaultGeneScoreCalculator(),
 			multiOmicsQueryData.getCalculatedGeneAnnotations()
 		);
@@ -253,7 +253,7 @@ public class DefaultGeneDrugController implements GeneDrugController {
 		return searchForGeneDrugsWithGenes(
 			queryParameters,
 			multiOmicsQueryData.getQueryGenes(),
-			multiOmicsQueryData.getGeneNamesExcludedAsIndirect(),
+			Collections.emptySet(),
 			new StaticGeneScoreCalculator(geneRank, true),
 			pharmCatAnnotations,
 			multiOmicsQueryData.getCalculatedGeneAnnotations()
