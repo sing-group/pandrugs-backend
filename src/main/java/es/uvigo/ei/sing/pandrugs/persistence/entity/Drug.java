@@ -84,7 +84,7 @@ public class Drug implements Serializable {
 	private Set<String> families;
 	
 	@ElementCollection(fetch = FetchType.LAZY)
-	@CollectionTable(name = "pubchem", joinColumns = @JoinColumn(name = "standard_drug_name", referencedColumnName = "standard_name"))
+	@CollectionTable(name = "pubchem", joinColumns = @JoinColumn(name = "show_drug_name", referencedColumnName = "show_name"))
 	@Column(name = "pubchem_id", nullable = false)
 	private Set<Integer> pubChemIds;
 
