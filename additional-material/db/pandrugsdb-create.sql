@@ -174,7 +174,7 @@ CREATE TABLE `drug_source` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `pubchem` (
-  `standard_drug_name` varchar(500) NOT NULL,
+  `show_drug_name` varchar(500) NOT NULL,
   `pubchem_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
